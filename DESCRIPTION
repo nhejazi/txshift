@@ -1,17 +1,29 @@
 Package: shifttx
-Title: Stochastic shifting of treatment effects
+Title: Causal Inference with Stochastic Shifting of Treatment Effects
 Version: 0.0.0.9000
 Authors@R: c(
   person("Nima", "Hejazi", email = "nhejazi@berkeley.edu",
          role = c("aut", "cre", "cph")),
   person("David", "Benkeser", email = "benkeser@emory.edu",
-         role = "aut"))
-Description: What the package does (one paragraph).
+         role = "aut")
+  )
+Description: Targeted minimum loss-based estimates of population-level causal
+    effects of interventions with stochastically assigned exposures, using a
+    causal parameter defined in the context of stochastic treatment regimes,
+    including both iterative and one-step variations of the proposed estimator
+    (Muñoz, ID, and van der Laan, M. Biometrics, 2012.
+    <doi:10.1111/j.1541-0420.2011.01685.x>).
 Depends: R (>= 3.4.1)
 Imports:
- stats
+    stats
+Suggests:
+    testthat,
+    knitr,
+    rmarkdown
 License: MIT + file LICENSE
+URL: https://github.com/nhejazi/shifttx
+BugReports: https://github.com/nhejazi/shifttx/issues
 Encoding: UTF-8
 LazyData: true
+VignetteBuilder: knitr
 RoxygenNote: 6.0.1
-Suggests: testthat

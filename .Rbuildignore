@@ -4,5 +4,7 @@
 ^README\.Rmd$
 ^README\.html$
 ^README-.*\.png$
-
 ^\.travis\.yml$
+^appveyor\.yml$
+^codecov\.yml$
+
