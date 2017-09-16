@@ -90,3 +90,4 @@ tmle_shift_new <- tmle_shift(Y = Y, A = A, W = W, Qn = Qn.0, gn = gn.0,
 test_that("Revised tmle_shift procedure matches code from 2012 manuscript", {
   expect_equal(tmle_shift_new, tmle_shift_2012)
 })
+
