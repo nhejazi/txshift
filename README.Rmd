@@ -21,6 +21,8 @@ knitr::opts_chunk$set(
 
 ## What's `shifttx`?
 
+[![Travis-CI Build Status](https://travis-ci.org/nhejazi/shifttx.svg?branch=master)](https://travis-ci.org/nhejazi/shifttx)
+
 `shifttx` is an R package that ...
 
 ---
@@ -56,7 +58,7 @@ issue](https://github.com/nhejazi/shifttx/issues).
 ## License
 
 &copy; 2017 [Nima S. Hejazi](http://nimahejazi.org) and [David C.
-Benkeser]()
+Benkeser](https://www.benkeserstatistics.com)
 
 The contents of this repository are distributed under the MIT license. See file
 `LICENSE` for details.
