@@ -1,6 +1,6 @@
 ---
 output: rmarkdown::github_document
-#bibliography: README-refs.bib
+bibliography: README-refs.bib
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -15,15 +15,26 @@ knitr::opts_chunk$set(
 
 # R/`shifttx`
 
+[![Travis-CI Build Status](https://travis-ci.org/nhejazi/shifttx.svg?branch=master)](https://travis-ci.org/nhejazi/shifttx)
+[![AppVeyor Build  Status](https://ci.appveyor.com/api/projects/status/github/nhejazi/shifttx?branch=master&svg=true)](https://ci.appveyor.com/project/nhejazi/shifttx)
+[![Coverage Status](https://img.shields.io/codecov/c/github/nhejazi/shifttx/master.svg)](https://codecov.io/github/nhejazi/shifttx?branch=master)
+[![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
+[![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
+
 > ...
+
+__Authors:__ [Nima Hejazi](http://nimahejazi.org) and [David
+Benkeser](https://www.benkeserstatistics.com/)
 
 ---
 
 ## What's `shifttx`?
 
-[![Travis-CI Build Status](https://travis-ci.org/nhejazi/shifttx.svg?branch=master)](https://travis-ci.org/nhejazi/shifttx)
 
 `shifttx` is an R package that ...
+
+* Original technique propsoed in @munoz2012population
+* One-step estimator introduced in @vdl2017targeted
 
 ---
 
@@ -84,3 +95,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+---
+
+## References
+

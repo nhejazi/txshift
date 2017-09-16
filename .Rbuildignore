@@ -3,6 +3,7 @@
 ^Makefile$
 ^README\.Rmd$
 ^README\.html$
+^README-refs\.bib$
 ^README-.*\.png$
 ^\.travis\.yml$
 ^appveyor\.yml$
