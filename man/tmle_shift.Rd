@@ -7,25 +7,27 @@
 tmle_shift(Y, A, W, Qn, gn, delta, tol = 1e-05, iter_max = 5, A_val)
 }
 \arguments{
-\item{Y}{Outcome vector.}
+\item{Y}{A \code{numeric} vector of observed outcomes.}
 
-\item{A}{Treatment vector.}
+\item{A}{A \code{numeric} vector of observed treatments.}
 
-\item{W}{Covariate \code{matrix} or \code{data.frame}.}
+\item{W}{A \code{matrix} or \code{data.frame} of baseline covariates.}
 
-\item{Qn}{Function to compute Q(A, W) = E(Y | A, W).}
+\item{Qn}{Function to compute the outcome regression: Q(A, W) = E(Y | A, W).}
 
-\item{gn}{Function to compute g(A, W) = density(A | W)}
+\item{gn}{Function to compute the propensity score: g(A, W) = density(A | W).}
 
-\item{delta}{Shift value of interest (i.e., compute the effect of shifting
-the treatment A by delta units.}
+\item{delta}{A \code{numeric} for the shift to be placed on the treatment of
+interest (i.e., the effect of shifting treatment \code{A} by delta units).}
 
-\item{tol}{Convergence tolerance for parametric fluctuation.}
+\item{tol}{A \code{numeric} for the tolerance for measuring convergence of
+the parametric fluctuation.}
 
-\item{iter_max}{Maximum number of iterations.}
+\item{iter_max}{A \code{numeric} for the maximum number of iterations.}
 
-\item{A_val}{Points in the range of the treatment A to approximate integrals
-by Riemmann sums. These must be equally spaced along a grid.}
+\item{A_val}{A \code{vector} of \code{numeric} values for the points in the
+range of the treatment \code{A} to approximate integrals by Riemmann sums.
+Note that these must be equally spaced along a grid.}
 }
 \description{
 Estimate the effect of a continuous treatment

@@ -1,16 +1,18 @@
 #' Estimate the effect of a continuous treatment
 #'
-#' @param Y Outcome vector.
-#' @param A Treatment vector.
-#' @param W Covariate \code{matrix} or \code{data.frame}.
-#' @param Qn Function to compute Q(A, W) = E(Y | A, W).
-#' @param gn Function to compute g(A, W) = density(A | W)
-#' @param delta Shift value of interest (i.e., compute the effect of shifting
-#' the treatment A by delta units.
-#' @param tol Convergence tolerance for parametric fluctuation.
-#' @param iter_max Maximum number of iterations.
-#' @param A_val Points in the range of the treatment A to approximate integrals
-#' by Riemmann sums. These must be equally spaced along a grid.
+#' @param Y A \code{numeric} vector of observed outcomes.
+#' @param A A \code{numeric} vector of observed treatments.
+#' @param W A \code{matrix} or \code{data.frame} of baseline covariates.
+#' @param Qn Function to compute the outcome regression: Q(A, W) = E(Y | A, W).
+#' @param gn Function to compute the propensity score: g(A, W) = density(A | W).
+#' @param delta A \code{numeric} for the shift to be placed on the treatment of
+#' interest (i.e., the effect of shifting treatment \code{A} by delta units).
+#' @param tol A \code{numeric} for the tolerance for measuring convergence of
+#' the parametric fluctuation.
+#' @param iter_max A \code{numeric} for the maximum number of iterations.
+#' @param A_val A \code{vector} of \code{numeric} values for the points in the
+#' range of the treatment \code{A} to approximate integrals by Riemmann sums.
+#' Note that these must be equally spaced along a grid.
 #'
 #' @importFrom stats var
 #'
@@ -78,19 +80,25 @@ tmle_shift <- function(Y, A, W, Qn, gn, delta, tol = 1e-5, iter_max = 5, A_val) 
 
 ################################################################################
 
-#' Fluctuation (iterative)
+#' Iterative Fluctuation
 #'
-#' @param Qn Function to compute Q(A, W) = E(Y | A, W).
-#' @param gn Function to compute g(A, W) = density(A | W).
-#' @param gn0d \code{Numeric} computed for gn from the first iteration only.
-#' @param prev_sum ...
-#' @param first ...
-#' @param W ...
-#' @param A_val ...
-#' @param h_int ...
-#' @param A ...
-#' @param Y ...
-#' @param delta ...
+#' @param Qn Function to compute the outcome regression: Q(A, W) = E(Y | A, W).
+#' @param gn Function to compute the propensity score: g(A, W) = density(A | W).
+#' @param gn0d A \code{Numeric} computed for the propensity score (gn) from the
+#' first iteration only.
+#' @param prev_sum The sum computed from this fluctuation step in the previous
+#' iteration.
+#' @param first A \code{logical} for whether this is the first iteration of the
+#' iterative fluctutation step.
+#' @param h_int ???
+#' @param Y A \code{numeric} vector of observed outcomes.
+#' @param A A \code{numeric} vector of observed treatments.
+#' @param W A \code{matrix} or \code{data.frame} of baseline covariates.
+#' @param delta A \code{numeric} for the shift to be placed on the treatment of
+#' interest (i.e., the effect of shifting treatment \code{A} by delta units).
+#' @param A_val A \code{vector} of \code{numeric} values for the points in the
+#' range of the treatment \code{A} to approximate integrals by Riemmann sums.
+#' Note that these must be equally spaced along a grid.
 #'
 #' @importFrom stats uniroot
 #'
@@ -98,7 +106,7 @@ tmle_shift <- function(Y, A, W, Qn, gn, delta, tol = 1e-5, iter_max = 5, A_val) 
 #' @author Nima Hejazi
 #
 f_iter <- function(Qn, gn, gn0d = NULL, prev_sum = 0, first = FALSE, h_int,
-                   W, A, A_val, Y, delta) {
+                   Y, A, W, delta, A_val) {
 
   # numerical integrals and equation (7)
   Qnd <- t(sapply(seq_len(nrow(W)), function(i) Qn(A_val + delta, W[i, ])))
@@ -107,9 +115,9 @@ f_iter <- function(Qn, gn, gn0d = NULL, prev_sum = 0, first = FALSE, h_int,
   if (first) gn0d <- gnd
 
   EQnd <- rowSums(Qnd * gnd) * h_int
-  D2   <- Qnd - EQnd
+  D2 <- Qnd - EQnd
   QnAW <- Qn(A, W)
-  H1   <- gn(A - delta, W) / gn(A, W)
+  H1 <- gn(A - delta, W) / gn(A, W)
 
   # equation (8)
   est_eqn_min  <- stats::uniroot(est_eqn, c(-1, 1),  Y = Y, A = A, W = W,
@@ -119,10 +127,10 @@ f_iter <- function(Qn, gn, gn0d = NULL, prev_sum = 0, first = FALSE, h_int,
   eps <- est_eqn_min$root
 
   # updated values
-  gn.new   <- function(a, w) exp(eps * Qn(a + delta, w)) * gn(a, w)
-  Qn.new   <- function(a, w) Qn(a, w) + eps * gn(a - delta, w) / gn(a, w)
+  gn_new   <- function(a, w) exp(eps * Qn(a + delta, w)) * gn(a, w)
+  Qn_new   <- function(a, w) Qn(a, w) + eps * gn(a - delta, w) / gn(a, w)
   prev_sum <- prev_sum + eps * D2
-  return(list(Qn = Qn.new, gn = gn.new, prev_sum = prev_sum, eps = eps,
+  return(list(Qn = Qn_new, gn = gn_new, prev_sum = prev_sum, eps = eps,
               gn0d = gn0d))
 }
 
@@ -131,23 +139,27 @@ f_iter <- function(Qn, gn, gn0d = NULL, prev_sum = 0, first = FALSE, h_int,
 #' Estimating equation
 #'
 #' @param eps ...
-#' @param Y ...
-#' @param A ...
-#' @param W ...
-#' @param delta ...
+#' @param Qn Function to compute the outcome regression: Q(A, W) = E(Y | A, W).
 #' @param QnAW ...
-#' @param Qn ...
-#' @param H1 ...
-#' @param gn0d ...
-#' @param prev_sum ...
 #' @param EQnd ...
+#' @param gn0d A \code{Numeric} computed for the propensity score (gn) from the
+#' first iteration only.
+#' @param H1 Ratio obtained from comparing the propensity score (gn) before and
+#' after application of the shift \code{delta}.
 #' @param D2 ...
+#' @param prev_sum The sum computed from this fluctuation step in the previous
+#' iteration.
+#' @param Y A \code{numeric} vector of observed outcomes.
+#' @param A A \code{numeric} vector of observed treatments.
+#' @param W A \code{matrix} or \code{data.frame} of baseline covariates.
+#' @param delta A \code{numeric} for the shift to be placed on the treatment of
+#' interest (i.e., the effect of shifting treatment \code{A} by delta units).
 #'
 #' @author Ivan Diaz
 #' @author Nima Hejazi
 #
-est_eqn <- function(eps, Y, A, W, delta, QnAW, Qn, H1, gn0d, EQnd, D2,
-                    prev_sum) {
+est_eqn <- function(eps, QnAW, Qn, H1, gn0d, EQnd, D2, prev_sum, Y, A, W,
+                    delta) {
 
   sum((Y - (QnAW + eps * H1)) * H1 + (Qn(A + delta, W) - EQnd) -
       rowSums(D2 * exp(eps * D2 + prev_sum) * gn0d) /

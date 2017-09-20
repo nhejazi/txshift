@@ -4,32 +4,36 @@
 \alias{est_eqn}
 \title{Estimating equation}
 \usage{
-est_eqn(eps, Y, A, W, delta, QnAW, Qn, H1, gn0d, EQnd, D2, prev_sum)
+est_eqn(eps, QnAW, Qn, H1, gn0d, EQnd, D2, prev_sum, Y, A, W, delta)
 }
 \arguments{
 \item{eps}{...}
 
-\item{Y}{...}
-
-\item{A}{...}
-
-\item{W}{...}
-
-\item{delta}{...}
-
 \item{QnAW}{...}
 
-\item{Qn}{...}
+\item{Qn}{Function to compute the outcome regression: Q(A, W) = E(Y | A, W).}
 
-\item{H1}{...}
+\item{H1}{Ratio obtained from comparing the propensity score (gn) before and
+after application of the shift \code{delta}.}
 
-\item{gn0d}{...}
+\item{gn0d}{A \code{Numeric} computed for the propensity score (gn) from the
+first iteration only.}
 
 \item{EQnd}{...}
 
 \item{D2}{...}
 
-\item{prev_sum}{...}
+\item{prev_sum}{The sum computed from this fluctuation step in the previous
+iteration.}
+
+\item{Y}{A \code{numeric} vector of observed outcomes.}
+
+\item{A}{A \code{numeric} vector of observed treatments.}
+
+\item{W}{A \code{matrix} or \code{data.frame} of baseline covariates.}
+
+\item{delta}{A \code{numeric} for the shift to be placed on the treatment of
+interest (i.e., the effect of shifting treatment \code{A} by delta units).}
 }
 \description{
 Estimating equation

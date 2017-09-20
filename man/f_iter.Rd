@@ -2,36 +2,42 @@
 % Please edit documentation in R/tmle_shift.R
 \name{f_iter}
 \alias{f_iter}
-\title{Fluctuation (iterative)}
+\title{Iterative Fluctuation}
 \usage{
-f_iter(Qn, gn, gn0d = NULL, prev_sum = 0, first = FALSE, h_int, W, A,
-  A_val, Y, delta)
+f_iter(Qn, gn, gn0d = NULL, prev_sum = 0, first = FALSE, h_int, Y, A, W,
+  delta, A_val)
 }
 \arguments{
-\item{Qn}{Function to compute Q(A, W) = E(Y | A, W).}
+\item{Qn}{Function to compute the outcome regression: Q(A, W) = E(Y | A, W).}
 
-\item{gn}{Function to compute g(A, W) = density(A | W).}
+\item{gn}{Function to compute the propensity score: g(A, W) = density(A | W).}
 
-\item{gn0d}{\code{Numeric} computed for gn from the first iteration only.}
+\item{gn0d}{A \code{Numeric} computed for the propensity score (gn) from the
+first iteration only.}
 
-\item{prev_sum}{...}
+\item{prev_sum}{The sum computed from this fluctuation step in the previous
+iteration.}
 
-\item{first}{...}
+\item{first}{A \code{logical} for whether this is the first iteration of the
+iterative fluctutation step.}
 
-\item{h_int}{...}
+\item{h_int}{???}
 
-\item{W}{...}
+\item{Y}{A \code{numeric} vector of observed outcomes.}
 
-\item{A}{...}
+\item{A}{A \code{numeric} vector of observed treatments.}
 
-\item{A_val}{...}
+\item{W}{A \code{matrix} or \code{data.frame} of baseline covariates.}
 
-\item{Y}{...}
+\item{delta}{A \code{numeric} for the shift to be placed on the treatment of
+interest (i.e., the effect of shifting treatment \code{A} by delta units).}
 
-\item{delta}{...}
+\item{A_val}{A \code{vector} of \code{numeric} values for the points in the
+range of the treatment \code{A} to approximate integrals by Riemmann sums.
+Note that these must be equally spaced along a grid.}
 }
 \description{
-Fluctuation (iterative)
+Iterative Fluctuation
 }
 \author{
 Ivan Diaz
