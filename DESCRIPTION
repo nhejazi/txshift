@@ -2,10 +2,10 @@ Package: shifttx
 Title: Causal Inference with Stochastic Shifting of Treatment Effects
 Version: 0.0.0.9000
 Authors@R: c(
-  person("Nima", "Hejazi", email = "nhejazi@berkeley.edu",
-         role = c("aut", "cre", "cph")),
-  person("David", "Benkeser", email = "benkeser@emory.edu",
-         role = "aut")
+    person("Nima", "Hejazi", email = "nhejazi@berkeley.edu",
+           role = c("aut", "cre", "cph")),
+    person("David", "Benkeser", email = "benkeser@emory.edu", role = "aut"),
+    person("Iván", "Díaz", email = "ild2005@med.cornell.edu", role = "ctb")
   )
 Description: Targeted minimum loss-based estimates of population-level causal
     effects of interventions with stochastically assigned exposures, using a

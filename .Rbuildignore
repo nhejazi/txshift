@@ -9,3 +9,9 @@
 ^appveyor\.yml$
 ^codecov\.yml$
 
+# Extra miscellaneous support files/directories.
+^cran-comments\.md$
+^Makefile$
+^LICENSE$
+^sandbox$
+

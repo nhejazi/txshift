@@ -3,4 +3,5 @@
 .RData
 *.html
 vignettes/*.html
+.ipynb_checkpoints
 

@@ -1,4 +1,4 @@
-#' Estimate the effect of a continuous treatment
+#' TML Estimate the effect of a continuous treatment
 #'
 #' @param Y A \code{numeric} vector of observed outcomes.
 #' @param A A \code{numeric} vector of observed treatments.
@@ -18,7 +18,7 @@
 #'
 #' @export
 #'
-#' @author Ivan Diaz
+#' @author Iván Díaz
 #' @author Nima Hejazi
 #'
 #' @examples
@@ -42,7 +42,9 @@
 #' tmle00 <- tmle_shift(Y = Y, A = A, W = W, Qn = Qn.0, gn = gn.0, delta = 2,
 #'                      tol = 1e-4, iter_max = 5, A_val = seq(1, 60, 1))
 #
-tmle_shift <- function(Y, A, W, Qn, gn, delta, tol = 1e-5, iter_max = 5, A_val) {
+tmle_shift <- function(Y, A, W,
+                       Qn, gn,
+                       delta, tol = 1e-5, iter_max = 5, A_val) {
 
   # interval partition length, A_val assumed equally spaced
   h_int <- A_val[3] - A_val[2]
@@ -102,7 +104,7 @@ tmle_shift <- function(Y, A, W, Qn, gn, delta, tol = 1e-5, iter_max = 5, A_val) 
 #'
 #' @importFrom stats uniroot
 #'
-#' @author Ivan Diaz
+#' @author Iván Díaz
 #' @author Nima Hejazi
 #
 f_iter <- function(Qn, gn, gn0d = NULL, prev_sum = 0, first = FALSE, h_int,
@@ -136,7 +138,7 @@ f_iter <- function(Qn, gn, gn0d = NULL, prev_sum = 0, first = FALSE, h_int,
 
 ################################################################################
 
-#' Estimating equation
+#' Estimating Equation
 #'
 #' @param eps ...
 #' @param Qn Function to compute the outcome regression: Q(A, W) = E(Y | A, W).
@@ -155,7 +157,7 @@ f_iter <- function(Qn, gn, gn0d = NULL, prev_sum = 0, first = FALSE, h_int,
 #' @param delta A \code{numeric} for the shift to be placed on the treatment of
 #' interest (i.e., the effect of shifting treatment \code{A} by delta units).
 #'
-#' @author Ivan Diaz
+#' @author Iván Díaz
 #' @author Nima Hejazi
 #
 est_eqn <- function(eps, QnAW, Qn, H1, gn0d, EQnd, D2, prev_sum, Y, A, W,
