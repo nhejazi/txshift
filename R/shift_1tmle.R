@@ -1,4 +1,4 @@
-#' 1-TML Estimate the effect of a continuous treatment
+#' 1-TML Estimate of the Effect of a Continuous Treatment
 #'
 #' @param Y A \code{numeric} vector of observed outcomes.
 #' @param A A \code{numeric} vector of observed treatments.
