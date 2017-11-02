@@ -1,5 +1,6 @@
 .onAttach <- function(...) {
-  packageStartupMessage("shifttx: Estimate Causal Effects with Stochastic Treatments")
+  packageStartupMessage(paste("shifttx: Targeted Learning with",
+                              "Stochastic Treatment Regimes"))
   packageStartupMessage("Version: ",
                         utils::packageDescription("shifttx")$Version)
 }
