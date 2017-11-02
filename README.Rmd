@@ -35,8 +35,10 @@ loss-based estimates of the population-level causal effects of interventions
 based on stochastic mechanisms for treatment assignment.
 
 * Original estimator and iterative algorithm proposed in @munoz2012population
-* One-step estimation procedure introduced in Chapter 12 ("Stochastic Treatment
-  Regimes") of @vdl2017targeted
+* One-step estimation procedure and algorithm introduced in @diaz2017stochastic.
+* See @vdl2017targeted for a discussion on recent developments in Targeted
+  Learning.
+* See @vdl2011targeted for an introduction to Targeted Learning.
 
 ---
 

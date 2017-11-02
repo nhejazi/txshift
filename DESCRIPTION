@@ -1,5 +1,5 @@
 Package: shifttx
-Title: Causal Inference with Stochastic Shifting of Treatment Effects
+Title: Targeted Maximum Likelihood Estimation with Stochastic Treatment Regimes
 Version: 0.0.0.9000
 Authors@R: c(
     person("Nima", "Hejazi", email = "nhejazi@berkeley.edu",
@@ -7,19 +7,24 @@ Authors@R: c(
     person("David", "Benkeser", email = "benkeser@emory.edu", role = "aut"),
     person("Iván", "Díaz", email = "ild2005@med.cornell.edu", role = "ctb")
   )
+Maintainer: Nima Hejazi <nh@nimahejazi.org>
 Description: Targeted minimum loss-based estimates of population-level causal
     effects of interventions with stochastically assigned exposures, using a
     causal parameter defined in the context of stochastic treatment regimes,
     including both iterative and one-step variations of the proposed estimator
     (Muñoz, ID, and van der Laan, M. Biometrics, 2012.
     <doi:10.1111/j.1541-0420.2011.01685.x>).
-Depends: R (>= 3.4.1)
+Depends: R (>= 3.2.0)
 Imports:
-    stats
+    stats,
+    condensier,
+    SuperLearner
 Suggests:
     testthat,
     knitr,
     rmarkdown
+Remotes:
+    github::osofr/condensier
 License: MIT + file LICENSE
 URL: https://github.com/nhejazi/shifttx
 BugReports: https://github.com/nhejazi/shifttx/issues
