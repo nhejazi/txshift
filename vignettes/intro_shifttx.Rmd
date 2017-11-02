@@ -1,0 +1,22 @@
+---
+title: "Targeted Learning with Stochastic Treatment Regimes"
+author: "Nima Hejazi and David Benkeser"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+bibliography: vignette-refs.bib
+vignette: >
+  %\VignetteIndexEntry{Targeted Learning with Stochastic Treatment Regimes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Introduction
+
+...
+
+## Preliminaries
+
+...
+
+## References
+
