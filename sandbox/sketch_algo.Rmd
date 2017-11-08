@@ -1,0 +1,571 @@
+---
+title: "The 1-TMLE algorithm for treatment shift parameters"
+subtitle: "An implementation based on stochastic treatment regimes"
+author: "[Nima Hejazi](https://nimahejazi.org) & [David
+  Benkeser](https://www.benkeserstatistics.com/)"
+date: "`r Sys.Date()`"
+#output: tint::tintHtml
+output: html_document
+bibliography: refs.bib
+link-citations: yes
+---
+
+# Introduction
+
+Stochastic treatment regimes present a relatively simple manner in which to
+assess the effects of continuous treatments by way of parameters that examine
+the effects induced by the counterfactual shifting of the observed values of a
+treatment of interest. Here, we present an implementation of a new algorithm for
+computing targeted minimum loss-based estimates of treatment shift parameters
+defined based on a shifting function $d(A,W)$. For a full technical presentation
+of the algorithm, the interested reader is invited to consult
+@diaz2017stochastic. For additional background on Targeted Learning and previous
+work on stochastic treatment regimes, please consider consulting
+@vdl2011targeted, @vdl2017targeted, and @munoz2012population.
+
+## Starting Assumptions
+
+1. Start with a simple additive shift -- i.e., $d(a,w) = a + \delta$ if $a <
+    u(w) - \delta$ or $d(a,w) = a$ if $a \geq u(w) - \delta$.
+2. The additive shift will have _support everywhere_ -- i.e., $a < u(w)$ is true
+    everywhere.
+3. The data structure that we know and love $O = (W,A,Y)$.
+
+## Functions Needed
+
+* estimate $g_n(W)$
+* estimate $Q_n(A, W)$
+* estimate auxiliary covariate $H_n(A_i, W_i)$
+* fluctuation procedure
+* 1-TMLE procedure
+* EIF procedure
+
+---
+
+# Implementation
+
+```{r pkgs}
+library(sl3)
+library(condensier)
+set.seed(429153)
+```
+
+```{r setup}
+n_obs <- 100
+n_w <- 3
+
+# simulate simple data for tmle-shift sketch
+W <- replicate(n_w, rnorm(n_obs))
+A <- rowSums(cos(exp(W)) + W)
+Y <- sin(A)
+O <- as.data.frame(cbind(W,A,Y))
+colnames(O) <- c(paste0("W", seq_len(n_w)), "A", "Y")
+head(O)
+```
+
+## Utility functions
+
+```{r precision}
+bound_precision <- function(values_scaled) {
+    if (max(values_scaled) > 1 | min(values_scaled) < 0) {
+        stop("Scaled values are not in the interval [0, 1].")
+    }
+    values_scaled[values_scaled == 0] <- .Machine$double.neg.eps
+    values_scaled[values_scaled == 1] <- 1 - .Machine$double.neg.eps
+    return(values_scaled)
+}
+```
+
+```{r scaling}
+bound_scaling <- function(Y, preds_scaled = NULL,
+                          scale = c("zero_one", "original")) {
+    y_min <- min(Y)
+    y_max <- max(Y)
+    
+    if (scale == "zero_one") {
+        y_star <- (Y - y_min) / (y_max - y_min)
+        return(y_star)
+    } else if (scale == "original" & !is.null(preds_scaled)) {
+        preds_original <- (y_max - y_min) * preds_scaled + y_min
+        return(preds_original)
+    }
+}
+```
+
+## Super Learning with `sl3`
+
+```{r sl3_find_lrnrs}
+sl3_list_learners(c("continuous"))
+```
+
+```{r sl3_make_task}
+# create sl3 task from the input data
+task <- make_sl3_Task(data = O, covariates = c("A", paste0("W", seq_len(n_w))),
+                      outcome = "Y", outcome_type = "continuous")
+task
+```
+
+```{r sl3_make_stack}
+# create learners and set up a stack
+lrnr_mean <- make_learner(Lrnr_mean)
+lrnr_glm_fast <- make_learner(Lrnr_glm_fast)
+lrnr_xgboost <- make_learner(Lrnr_xgboost)
+stack <- make_learner(Stack, lrnr_mean, lrnr_glm_fast, lrnr_xgboost)
+
+# use the NNLS meta-learner
+metalearner <- make_learner(Lrnr_nnls)
+```
+
+```{r sl3_fit_sl}
+fit_sl <- function(learners_stack, metalearner) {
+    sl <- Lrnr_sl$new(learners = stack,
+                      metalearner = metalearner)
+    sl_fit <- sl$train(task)
+    lrnr_sl_preds <- sl_fit$predict() 
+    return(lrnr_sl_preds)
+}
+```
+
+---
+
+## Treatment Shifting Under Stochastic Regimes
+
+
+
+### functions for treatment shift $d(a,w)$
+
+```{r tx_shift}
+tx_shift <- function(a, w = NULL, delta, type = "additive",
+                     reg = c("g", "Q")) {
+    if (type == "additive") {
+        if (reg == "g") {
+            a_shift <- A - delta
+        }
+        if (reg == "Q") {
+            a_shift <- A + delta
+        }
+    }
+    # can support other types of treatment shifts
+    # (e.g., multiplicative shifting?)
+    return(a_shift)
+}
+```
+
+---
+
+## Estimation of propensity score $g_n(W)$
+
+* _input_: W, a
+* _output_: a 2-column matrix, with columns for $g_n(A_i - \delta \mid W_i)$ and
+    $g_n(A_i \mid W_i)$
+* in the inputs $a$ is the additive shift
+* use the __fit_density__ function from Oleg's __condensier__ package, need to
+    use __predict_prob__ function twice: once for $A_i - \delta$ and once for
+    $A_i$
+
+### function for estimating $g_n$
+
+```{r est_gn}
+est_g <- function(A, W, delta = 0, ...) {
+    # make data object
+    data_O <- as.data.frame(cbind(A, W))
+    colnames(data_O) <- c("A", paste0("W", seq_len(ncol(W))))
+    
+    # fit conditional density with condensier
+    fit_g_A <- fit_density(X = c(paste0("W", seq_len(ncol(W)))),
+                           Y = "A", input_data = data_O, ...)
+
+    # predict probabilities for the un-shifted data (A = a)
+    pred_g_A <- predict_probability(model_fit = fit_g_A, newdata = data_O)
+
+    # predict probabilities for the shifted data (A = a - delta)
+    data_O_shifted <- data_O
+    data_O_shifted$A <- tx_shift(a = data_O_shifted$A, delta = delta,
+                                 type = "additive", reg = "g")
+    pred_g_A_shifted <- predict_probability(model_fit = fit_g_A,
+                                            newdata = data_O_shifted)
+
+    # create output matrix: scenarios A = a, A = a - delta
+    out <- as.data.frame(cbind(pred_g_A, pred_g_A_shifted))
+    colnames(out) <- c("gn_unshifted", "gn_shifted")
+    rownames(out) <- NULL
+    return(out)
+}
+```
+
+Let's test the function for estimating $g_n$:
+
+```{r test_est_gn}
+test_est_g <- est_g(A = A,
+                    W = W,
+                    delta = 0.5,
+                    nbins = 20,
+                    bin_method = "equal.mass",
+                    bin_estimator = speedglmR6$new())
+
+head(test_est_g)
+```
+
+---
+
+## Estimation of outcome regression $Q_n(A, W)$
+
+* _input_: W, a
+* _output_: a 2-column matrix, with columns for $\bar{Q}_n(A_i, W_i)$ and
+    $\bar{Q}_n(A_i + \delta, W_i)$
+
+### function for estimating $Q_n$
+
+```{r est_Qn}
+est_Q <- function(Y, A, W, delta = 0, glm_form = "Y ~ .",
+                  sl_lrnrs = NULL, sl_meta = NULL) {
+    # scale the outcome for the logit transform
+    y_star <- bound_scaling(Y = Y, scale = "zero_one")
+    
+    # make data object but using y_star rather than raw outcome
+    data_O <- as.data.frame(cbind(y_star, A, W))
+    colnames(data_O) <- c("Y", "A", paste0("W", seq_len(ncol(W))))
+    
+    # get the shifted treatment values
+    a_shifted <- tx_shift(a = data_O$A, delta = delta,
+                          type = "additive", reg = "Q")
+    
+    # create a copy of the data for the shifted data set
+    # and replace A with the shifted treatment (A = a + delta)
+    data_O_shifted <- data_O
+    data_O_shifted$A <- a_shifted
+
+    if (!is.null(glm_form)) {
+        # obtain a GLM model fit for the outcome regression
+        fit_Qn <- glm(as.formula(glm_form), data = data_O)
+        
+        # predict Qn for the un-shifted data (A = a)
+        pred_star_Qn <- predict(fit_Qn, newdata = data_O)
+        
+        # predict Qn for the shifted data (A = a + delta)
+        pred_star_Qn_shifted <- predict(fit_Qn, newdata = data_O_shifted)
+    }
+    
+    if (!is.null(sl_lrnrs) & !is.null(sl_meta)) {
+        # make sl3 task for original data
+        task_noshift <- make_sl3_Task(data = data_O,
+                                      covariates = c("A", paste0("W", seq_len(n_w))),
+                                      outcome = "Y", outcome_type = "continuous")
+
+        # make sl3 task for data with the shifted treatment
+        task_shifted <- make_sl3_Task(data = data_O_shifted,
+                                      covariates = c("A", paste0("W", seq_len(n_w))),
+                                      outcome = "Y", outcome_type = "continuous")
+        # fit SL
+    }
+
+    # avoid values that are exactly 0 or 1 in the scaled Qn and Qn_shifted
+    pred_star_Qn <- bound_precision(values_scaled = pred_star_Qn)
+    pred_star_Qn_shifted <- bound_precision(values_scaled = pred_star_Qn_shifted)
+
+    # create output matrix: scenarios A = a, A = a - delta
+    out <- as.data.frame(cbind(pred_star_Qn, pred_star_Qn_shifted))
+    colnames(out) <- c("Qn_unshifted", "Qn_shifted")
+    rownames(out) <- NULL
+    return(out)
+}
+```
+
+Let's test the function for estimating $Q_n$:
+
+```{r test_est_Qn}
+test_est_Q <- est_Q(Y = Y,
+                    A = A,
+                    W = W,
+                    delta = 0.5)
+
+head(test_est_Q)
+```
+
+---
+
+## Estimation of auxiliary covariate $H_n(A_i, W_i)$
+
+* _input_: matrix output produced by $g_n(w)$
+* _output_: vector (possibly shifted) of the form described in the eqn below
+* $H(a,w) = I(a < u(w)) \frac{g_0(a - \delta \mid w)}{g_0(a \mid w)} + I(a
+    \geq u(w) - \delta)$
+* By our assumption (2) above -- that we have _support everywhere_ -- we reduce
+    the above formulation
+* That is, we assume that $I(a < u(w)) = 1$ and $I(a \geq u(w) - \delta) = 0$
+* Thus the form of the covariate reduces simply to $H(a,w) = \frac{g_0(a -
+    \delta \mid w)}{g_0(a \mid w)}$
+
+### function for estimating $H_n$
+
+```{r est_Hn}
+est_h <- function(gn, a = NULL, w = NULL) {
+    # compute upper and lower limits for treatment
+    #...
+    #...
+    
+    # compute the ratio of the propensity scores
+    ratio_g <- gn$gn_shifted / gn$gn_unshifted
+    
+    # modify the ratio of the propensity scores
+    # based on the indicators for shifting
+    #ind_a <- ...
+    #ind_a_delta <- ...
+    #h_n <- ind_a * ratio_g + ind_a_delta
+    
+    # TODO: consider case where there is not support everywhere
+    # that is, when the indicators kick in -- ignored for now...
+    hn <- ratio_g + 1
+    
+    # output
+    return(hn)
+}
+```
+
+Let's test the function for estimating $H_n$:
+
+```{r test_est_Hn}
+test_est_h <- est_h(gn = test_est_g)
+head(test_est_h)
+```
+
+---
+
+## Fluctuation Regression
+
+* _input_: matrix output from $Q_n(a,w)$, vector output of $H_n$, vector Y
+* _output_: model fit object produced from a call to `glm` or `SuperLearner`
+* We have the fluctuation model: $logit \bar{Q}_{\epsilon, n}(a,w) =
+    logit(\bar{Q}_n(a,w)) + \epsilon \cdot H_n(a,w)$
+* Note that the first term on the RHS of the above equation is one of the
+    columns generated as output by the function to estimate $Q_n(A,W)$
+* this could be fit with R code like the following `glm(Y ~ -1 +
+    offset(logitQn_AW) + Hn_AW, family = "binomial")`, from which we may extract
+    the coefficient, which is $\epsilon_n$ from the above
+
+### function for fluctuation fit
+
+```{r fit_fluc}
+fit_fluc <- function(Y, Qn_scaled, Hn,
+                     method = c("standard", "weighted")) {
+    # scale the outcome for the logit transform
+    y_star <- bound_scaling(Y = Y, scale = "zero_one")
+    
+    # transform the predictions for the unshifted data back to the original scale
+    Qn_star_unshifted <- bound_scaling(Y = Y, preds_scaled = Qn_scaled$Qn_unshifted,
+                                       scale = "original")
+    
+    # extract Q and obtain logit transform
+    logit_Qn <- qlogis(Qn_star_unshifted)
+    
+    # fit the fluctuation regression in one of two ways
+    if (method == "standard") {
+        # note that \epsilon_n will be the coefficient of the covariate Hn
+        mod_fluc <- glm(y_star ~ -1 + offset(logit_Qn) + Hn,
+                        family = "binomial")
+    } else if (method == "weighted") {
+        # note that \epsilon_n will be the intercept term here (?)
+        mod_fluc <- glm(y_star ~ logit_Qn,
+                        weights = Hn,
+                        family = "binomial")
+    }
+   
+    # return the fit model object
+    out <- list(fluc_fit = mod_fluc, covar_method = method)
+    return(out)
+}
+```
+
+Let's test the function for the fluctuation fit with covariate $H_n$:
+
+```{r test_fit_fluc_std}
+test_fit_fluc1 <- fit_fluc(Y = Y,
+                           Qn_scaled = test_est_Q,
+                           Hn = test_est_h,
+                           method = "standard")
+
+test_fit_fluc1
+```
+
+Let's test the function for the fluctuation fit with $H_n$ in the weights:
+
+```{r test_fit_fluc_weight}
+test_fit_fluc2 <- fit_fluc(Y = Y,
+                           Qn_scaled = test_est_Q,
+                           Hn = test_est_h,
+                           method = "weighted")
+
+test_fit_fluc2
+```
+
+---
+
+## 1-TMLE Procedure
+
+* _input_: model fit object produced by the fluctuation procedure above, matrix
+    produced by procedure to estimate $Q_n(A,W)$
+* _output_: numeric scalar for the mean of $\bar{Q}^*_n$
+* note that we have $\psi_n = \frac{1}{n} \sum_{i=1}^n \bar{Q}_n^*(d(A_i, W_i),
+    W_i)$
+* we obtain $\bar{Q}_n^*$ by calling the appropriate method of predict on the
+    shifted data -- i.e., `predict(fit, newdata = data.frame(Qn_dAW), type =
+    "response"` (note that use of 'response' performs the `expit()` transform).
+* compute the $\psi_n$ as the mean of the vector produced by calling `predict`
+    on the fit object, as described above
+
+### function for the 1-TMLE procedure
+
+```{r tmle_shifttx}
+tmle_shifttx <- function(fluc_fit, Qn_scaled, Hn, Y) {
+    # get Qn(d(A,W)) by unscaling the shifted Qn
+    Qn_shifted <- bound_scaling(Y = Y, preds_scaled = Qn_scaled$Qn_shifted,
+                                scale = "original")
+    Qn_shifted <- as.data.frame(Qn_shifted)
+    
+    # HACK: looks like newdata has to have the same name as terms in the
+    # previously fit GLM model fit object
+    colnames(Qn_shifted) <- "logit_Qn"
+    
+    # get Qn_star for the shifted data
+    Qn_star_shifted <- predict(object = fluc_fit, newdata = Qn_shifted,
+                               type = "response")
+    
+    # compute the 1-TMLE
+    psi <- mean(Qn_star_shifted)
+    return(psi)   
+}
+```
+
+Let's test the function for the 1-TMLE procedure:
+
+```{r test_tmle_shifttx}
+est_tmle <- tmle_shifttx(fluc_fit = test_fit_fluc1$fluc_fit,
+                         Qn_scaled = test_est_Q,
+                         Hn = test_est_h,
+                         Y = Y)
+est_tmle
+```
+
+---
+
+## EIF Procedure
+
+* _input_: matrix produced by $Q^*$: a 2-column matrix, with columns for
+    $\bar{Q}_n(A_i, W_i)$ and $\bar{Q}_n(A_i + \delta, W_i)$
+* _output_: scalar, the variance of the efficient influence function
+* note that we have the _efficient influence function_ (EIF): $D(P)(o) =
+    H(a,w)(y - \bar{Q}(a,w)) + \bar{Q}(d(a,w)) - \psi(P)$
+* to compute the EIF from the above, we may set up a function like the following
+    `eif <- function(Y, H, Qn_AW, Qn_dAW, Psi)`, which can then compute $\psi$
+    by calling 1-TMLE (alternatively, the mean of the vector `Qn_dAW`) and then
+    using the formula above
+* compute $\sigma^2_n = \frac{1}{n}(EIF^2)$, that is simply call mean on the
+    vector produced by the above
+
+### function for the EIF procedure
+
+```{r eif_shifttx}
+eif_shifttx <- function(Y, Qn_scaled, Hn, Psi) {
+    # transform Qn based on shifted and unshifted treatments back to the...
+    # original outcome scale
+    Qn_unshifted <- bound_scaling(Y = Y, preds_scaled = Qn_scaled$Qn_unshifted,
+                                  scale = "original")
+    Qn_shifted <- bound_scaling(Y = Y, preds_scaled = Qn_scaled$Qn_shifted,
+                                scale = "original")
+    
+    # compute the efficient influence function (canonical gradient)
+    eif <- Hn * (Y - Qn_unshifted) + Qn_shifted - Psi
+    
+    # compute the variance based on the EIF
+    var_eif <- mean(eif^2)
+    
+    # return the variance and the EIF value at each observation
+    out <- list(var_psi = var_eif, eif = eif)
+    return(out)
+}
+```
+
+Let's test the function for the EIF procedure:
+
+```{r test_eif_shifttx}
+est_eif <- eif_shifttx(Y = Y,
+                       Qn_scaled = test_est_Q,
+                       Hn = test_est_h,
+                       Psi = est_tmle)
+est_eif
+```
+
+---
+
+## Inference based on the EIF
+
+Recall that the asymptotic distribution of TML estimators has been studied
+thoroughly:
+$$\psi_n - \psi_0 = (P_n - P_0) \cdot D(\bar{Q}_n^*, g_n) + R(\hat{P}^*, P_0),$$
+which, provided the following two conditions:
+
+1. If $D(\bar{Q}_n^*, g_n)$ converges to $D(P_0)$ in $L_2(P_0)$ norm, and
+2. the size of the class of functions considered for estimation of $\bar{Q}_n^*$
+   and $g_n$ is bounded (technically, $\exists \mathcal{F}$ st
+   $D(\bar{Q}_n^*, g_n) \in \mathcal{F}$ *__whp__*, where $\mathcal{F}$ is a
+   Donsker class),
+
+readily admits the conclusion that
+$\psi_n - \psi_0 = (P_n - P_0) \cdot D(P_0) + R(\hat{P}^*, P_0)$.
+
+Under the additional condition that the remainder term $R(\hat{P}^*, P_0)$
+decays as $o_P \left( \frac{1}{\sqrt{n}} \right),$ we have that
+$\psi_n - \psi_0 = (P_n - P_0) \cdot D(P_0) + o_P \left( \frac{1}{\sqrt{n}} \right),$
+which, by a central limit theorem, establishes a Gaussian limiting distribution
+for the estimator:
+
+$$\sqrt{n}(\psi_n - \psi) \to N(0, V(D(P_0))),$$
+
+where $V(D(P_0))$ is the variance of the efficient influence curve (canonical
+gradient) when $\psi$ admits an asymptotically linear representation.
+
+The above implies that $\psi_n$ is a $\sqrt{n}$-consistent estimator of $\psi$,
+that it is asymptotically normal (as given above), and that it is locally
+efficient. This allows us to build Wald-type confidence intervals in a
+straightforward manner:
+
+$$\psi_n \pm z_{\alpha} \cdot \frac{\sigma_n}{\sqrt{n}},$$
+
+where $\sigma_n^2$ is an estimator of $V(D(P_0))$. The estimator $\sigma_n^2$
+may be obtained using the bootstrap or computed directly via the following
+
+$$ \sigma_n^2 = \frac{1}{n} \sum_{i = 1}^{n} D^2(\bar{Q}_n^*, g_n)(O_i)$$
+
+### Inference for $\psi_{TMLE}$ with the EIF
+
+```{r ci_shifttx}
+ci_shifttx <- function(psi, eif, level = 0.95) {
+    # first, let's get Z_(1 - alpha)
+    norm_bounds <- c(-1, 1) * abs(qnorm(p = (1 - level) / 2))
+    
+    # compute the EIF variance multiplier for the CI
+    n_obs <- length(eif$eif)
+    sd_eif <- sqrt(eif$var_psi / n_obs)
+    
+    # compute the interval around the point estimate
+    ci_psi <- norm_bounds * sd_eif + psi
+    
+    # set up output CI object
+    ci_out <- as.data.frame(cbind(ci_psi[1], psi, ci_psi[2]))
+    colnames(ci_out) <- c("lower_ci", "est_psi", "upper_ci")
+    return(ci_out)
+}
+```
+
+Let's test the function for obtianing inference for $\psi_{TMLE}$:
+
+```{r test_ci_shifttx}
+test_ci <- ci_shifttx(psi = est_tmle,
+                      eif = est_eif,
+                      level = 0.95)
+test_ci
+```
+
+---
+
+## References
