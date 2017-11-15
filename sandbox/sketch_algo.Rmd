@@ -48,17 +48,30 @@ work on stochastic treatment regimes, please consider consulting
 library(sl3)
 library(condensier)
 set.seed(429153)
+options(scipen=999)
 ```
 
 ```{r setup}
-n_obs <- 100
-n_w <- 3
-
 # simulate simple data for tmle-shift sketch
-W <- replicate(n_w, rnorm(n_obs))
-A <- rowSums(cos(exp(W)) + W)
-Y <- sin(A)
-O <- as.data.frame(cbind(W,A,Y))
+n_obs <- 1000
+n_w <- 1
+a1_mean <- 2
+a0_mean <- 0
+
+## baseline covariate -- simple, binary
+W <- as.numeric(replicate(n_w, rbinom(n_obs, 1, 0.5)))
+
+## set and organize treatment based on baseline W
+A1 <- rnorm(length(which(W == 1)), mean = a1_mean, sd = 1)
+A0 <- rnorm(length(which(W == 0)), mean = a0_mean, sd = 1)
+A <- rep(NA, n_obs)
+A[which(W == 0)] <- A0
+A[which(W == 1)] <- A1
+
+# create outcome and observed data structure
+#Y <- rnorm(n_obs, plogis(-1 + 10 * W * A^2 - tan(W)^2), sd = 1)
+Y <- A + W + rnorm(n_obs)
+O <- as.data.frame(cbind(W, A, Y))
 colnames(O) <- c(paste0("W", seq_len(n_w)), "A", "Y")
 head(O)
 ```
@@ -66,13 +79,10 @@ head(O)
 ## Utility functions
 
 ```{r precision}
-bound_precision <- function(values_scaled) {
-    if (max(values_scaled) > 1 | min(values_scaled) < 0) {
-        stop("Scaled values are not in the interval [0, 1].")
-    }
-    values_scaled[values_scaled == 0] <- .Machine$double.neg.eps
-    values_scaled[values_scaled == 1] <- 1 - .Machine$double.neg.eps
-    return(values_scaled)
+bound_precision <- function(vals) {
+    vals[vals == 0] <- .Machine$double.neg.eps
+    vals[vals == 1] <- 1 - .Machine$double.neg.eps
+    return(vals)
 }
 ```
 
@@ -130,8 +140,6 @@ fit_sl <- function(learners_stack, metalearner) {
 
 ## Treatment Shifting Under Stochastic Regimes
 
-
-
 ### functions for treatment shift $d(a,w)$
 
 ```{r tx_shift}
@@ -169,6 +177,7 @@ tx_shift <- function(a, w = NULL, delta, type = "additive",
 est_g <- function(A, W, delta = 0, ...) {
     # make data object
     data_O <- as.data.frame(cbind(A, W))
+    if (!is.matrix(W)) W <- as.matrix(W)
     colnames(data_O) <- c("A", paste0("W", seq_len(ncol(W))))
     
     # fit conditional density with condensier
@@ -202,7 +211,6 @@ test_est_g <- est_g(A = A,
                     nbins = 20,
                     bin_method = "equal.mass",
                     bin_estimator = speedglmR6$new())
-
 head(test_est_g)
 ```
 
@@ -217,13 +225,17 @@ head(test_est_g)
 ### function for estimating $Q_n$
 
 ```{r est_Qn}
-est_Q <- function(Y, A, W, delta = 0, glm_form = "Y ~ .",
+est_Q <- function(Y, A, W,
+                  delta = 0,
+                  glm_form = "Y ~ .",
                   sl_lrnrs = NULL, sl_meta = NULL) {
+
     # scale the outcome for the logit transform
     y_star <- bound_scaling(Y = Y, scale = "zero_one")
     
     # make data object but using y_star rather than raw outcome
     data_O <- as.data.frame(cbind(y_star, A, W))
+    if (!is.matrix(W)) W <- as.matrix(W)
     colnames(data_O) <- c("Y", "A", paste0("W", seq_len(ncol(W))))
     
     # get the shifted treatment values
@@ -236,14 +248,22 @@ est_Q <- function(Y, A, W, delta = 0, glm_form = "Y ~ .",
     data_O_shifted$A <- a_shifted
 
     if (!is.null(glm_form)) {
-        # obtain a GLM model fit for the outcome regression
-        fit_Qn <- glm(as.formula(glm_form), data = data_O)
+        # obtain a logistic regression fit for the (scaled) outcome regression
+        suppressWarnings(
+          fit_Qn <- glm(as.formula(glm_form),
+                        data = data_O,
+                        family = "binomial")
+        )
         
         # predict Qn for the un-shifted data (A = a)
-        pred_star_Qn <- predict(fit_Qn, newdata = data_O)
+        pred_star_Qn <- predict(fit_Qn,
+                                newdata = data_O,
+                                type = "response")
         
         # predict Qn for the shifted data (A = a + delta)
-        pred_star_Qn_shifted <- predict(fit_Qn, newdata = data_O_shifted)
+        pred_star_Qn_shifted <- predict(fit_Qn,
+                                        newdata = data_O_shifted,
+                                        type = "response")
     }
     
     if (!is.null(sl_lrnrs) & !is.null(sl_meta)) {
@@ -260,8 +280,8 @@ est_Q <- function(Y, A, W, delta = 0, glm_form = "Y ~ .",
     }
 
     # avoid values that are exactly 0 or 1 in the scaled Qn and Qn_shifted
-    pred_star_Qn <- bound_precision(values_scaled = pred_star_Qn)
-    pred_star_Qn_shifted <- bound_precision(values_scaled = pred_star_Qn_shifted)
+    pred_star_Qn <- bound_precision(vals = pred_star_Qn)
+    pred_star_Qn_shifted <- bound_precision(vals = pred_star_Qn_shifted)
 
     # create output matrix: scenarios A = a, A = a - delta
     out <- as.data.frame(cbind(pred_star_Qn, pred_star_Qn_shifted))
@@ -278,7 +298,6 @@ test_est_Q <- est_Q(Y = Y,
                     A = A,
                     W = W,
                     delta = 0.5)
-
 head(test_est_Q)
 ```
 
@@ -315,7 +334,7 @@ est_h <- function(gn, a = NULL, w = NULL) {
     
     # TODO: consider case where there is not support everywhere
     # that is, when the indicators kick in -- ignored for now...
-    hn <- ratio_g + 1
+    hn <- ratio_g
     
     # output
     return(hn)
@@ -346,32 +365,47 @@ head(test_est_h)
 ### function for fluctuation fit
 
 ```{r fit_fluc}
-fit_fluc <- function(Y, Qn_scaled, Hn,
+fit_fluc <- function(Y,
+                     Qn_scaled,
+                     Hn,
                      method = c("standard", "weighted")) {
+
     # scale the outcome for the logit transform
     y_star <- bound_scaling(Y = Y, scale = "zero_one")
-    
-    # transform the predictions for the unshifted data back to the original scale
-    Qn_star_unshifted <- bound_scaling(Y = Y, preds_scaled = Qn_scaled$Qn_unshifted,
-                                       scale = "original")
-    
+
     # extract Q and obtain logit transform
-    logit_Qn <- qlogis(Qn_star_unshifted)
+    logit_Qn <- qlogis(Qn_scaled$Qn_unshifted)
     
     # fit the fluctuation regression in one of two ways
     if (method == "standard") {
         # note that \epsilon_n will be the coefficient of the covariate Hn
-        mod_fluc <- glm(y_star ~ -1 + offset(logit_Qn) + Hn,
-                        family = "binomial")
+        suppressWarnings(
+          mod_fluc <- glm(y_star ~ -1 + offset(logit_Qn) + Hn,
+                          family = "binomial")
+        )
     } else if (method == "weighted") {
         # note that \epsilon_n will be the intercept term here (?)
-        mod_fluc <- glm(y_star ~ logit_Qn,
-                        weights = Hn,
-                        family = "binomial")
+        suppressWarnings(
+          mod_fluc <- glm(y_star ~ offset(logit_Qn),
+                          weights = Hn,
+                          family = "binomial")
+        )
     }
-   
+
+    # get Qn_star for the SHIFTED data
+    Qn_shift_star_in <- as.data.frame(qlogis(Qn_scaled$Qn_shifted))
+    colnames(Qn_shift_star_in) <- "logit_Qn"
+    Qn_shift_star_pred <- predict(object = mod_fluc,
+                                  newdata = Qn_shift_star_in,
+                                  type = "response")
+    Qn_shift_star <- bound_scaling(Y = Y,
+                                   preds_scaled = Qn_shift_star_pred,
+                                   scale = "original")
+  
     # return the fit model object
-    out <- list(fluc_fit = mod_fluc, covar_method = method)
+    out <- list(fluc_fit = mod_fluc,
+                covar_method = method,
+                Qn_shift_star = Qn_shift_star)
     return(out)
 }
 ```
@@ -383,7 +417,6 @@ test_fit_fluc1 <- fit_fluc(Y = Y,
                            Qn_scaled = test_est_Q,
                            Hn = test_est_h,
                            method = "standard")
-
 test_fit_fluc1
 ```
 
@@ -394,13 +427,12 @@ test_fit_fluc2 <- fit_fluc(Y = Y,
                            Qn_scaled = test_est_Q,
                            Hn = test_est_h,
                            method = "weighted")
-
 test_fit_fluc2
 ```
 
 ---
 
-## 1-TMLE Procedure
+## 1-TMLE and EIF Procedures
 
 * _input_: model fit object produced by the fluctuation procedure above, matrix
     produced by procedure to estimate $Q_n(A,W)$
@@ -412,43 +444,6 @@ test_fit_fluc2
     "response"` (note that use of 'response' performs the `expit()` transform).
 * compute the $\psi_n$ as the mean of the vector produced by calling `predict`
     on the fit object, as described above
-
-### function for the 1-TMLE procedure
-
-```{r tmle_shifttx}
-tmle_shifttx <- function(fluc_fit, Qn_scaled, Hn, Y) {
-    # get Qn(d(A,W)) by unscaling the shifted Qn
-    Qn_shifted <- bound_scaling(Y = Y, preds_scaled = Qn_scaled$Qn_shifted,
-                                scale = "original")
-    Qn_shifted <- as.data.frame(Qn_shifted)
-    
-    # HACK: looks like newdata has to have the same name as terms in the
-    # previously fit GLM model fit object
-    colnames(Qn_shifted) <- "logit_Qn"
-    
-    # get Qn_star for the shifted data
-    Qn_star_shifted <- predict(object = fluc_fit, newdata = Qn_shifted,
-                               type = "response")
-    
-    # compute the 1-TMLE
-    psi <- mean(Qn_star_shifted)
-    return(psi)   
-}
-```
-
-Let's test the function for the 1-TMLE procedure:
-
-```{r test_tmle_shifttx}
-est_tmle <- tmle_shifttx(fluc_fit = test_fit_fluc1$fluc_fit,
-                         Qn_scaled = test_est_Q,
-                         Hn = test_est_h,
-                         Y = Y)
-est_tmle
-```
-
----
-
-## EIF Procedure
 
 * _input_: matrix produced by $Q^*$: a 2-column matrix, with columns for
     $\bar{Q}_n(A_i, W_i)$ and $\bar{Q}_n(A_i + \delta, W_i)$
@@ -462,37 +457,33 @@ est_tmle
 * compute $\sigma^2_n = \frac{1}{n}(EIF^2)$, that is simply call mean on the
     vector produced by the above
 
-### function for the EIF procedure
+### function for the 1-TMLE and EIF procedures
 
-```{r eif_shifttx}
-eif_shifttx <- function(Y, Qn_scaled, Hn, Psi) {
-    # transform Qn based on shifted and unshifted treatments back to the...
-    # original outcome scale
-    Qn_unshifted <- bound_scaling(Y = Y, preds_scaled = Qn_scaled$Qn_unshifted,
-                                  scale = "original")
-    Qn_shifted <- bound_scaling(Y = Y, preds_scaled = Qn_scaled$Qn_shifted,
-                                scale = "original")
+```{r tmle_shifttx}
+tmle_shifttx <- function(fluc_fit_out, Qn_scaled, Hn, Y) {
+    # compute the 1-TMLE
+    psi <- mean(fluc_fit_out$Qn_shift_star)
     
-    # compute the efficient influence function (canonical gradient)
-    eif <- Hn * (Y - Qn_unshifted) + Qn_shifted - Psi
+    # compute the efficient influence function (EIF) / canonical gradient (D*)
+    eif <- Hn * (Y - Qn_scaled$Qn_unshifted) + Qn_scaled$Qn_shifted - psi
     
     # compute the variance based on the EIF
     var_eif <- mean(eif^2)
     
     # return the variance and the EIF value at each observation
-    out <- list(var_psi = var_eif, eif = eif)
+    out <- list(psi = psi, var = var_eif, eif = eif)
     return(out)
 }
 ```
 
-Let's test the function for the EIF procedure:
+Let's test the function for the 1-TMLE procedure:
 
-```{r test_eif_shifttx}
-est_eif <- eif_shifttx(Y = Y,
-                       Qn_scaled = test_est_Q,
-                       Hn = test_est_h,
-                       Psi = est_tmle)
-est_eif
+```{r test_tmle_shifttx}
+est_tmle <- tmle_shifttx(fluc_fit_out = test_fit_fluc1,
+                         Qn_scaled = test_est_Q,
+                         Hn = test_est_h,
+                         Y = Y)
+est_tmle
 ```
 
 ---
@@ -539,20 +530,20 @@ $$ \sigma_n^2 = \frac{1}{n} \sum_{i = 1}^{n} D^2(\bar{Q}_n^*, g_n)(O_i)$$
 ### Inference for $\psi_{TMLE}$ with the EIF
 
 ```{r ci_shifttx}
-ci_shifttx <- function(psi, eif, level = 0.95) {
+ci_shifttx <- function(tmle_shifttx_out, level = 0.95) {
     # first, let's get Z_(1 - alpha)
     norm_bounds <- c(-1, 1) * abs(qnorm(p = (1 - level) / 2))
     
     # compute the EIF variance multiplier for the CI
-    n_obs <- length(eif$eif)
-    sd_eif <- sqrt(eif$var_psi / n_obs)
+    n_obs <- length(tmle_shifttx_out$eif)
+    sd_eif <- sqrt(tmle_shifttx_out$var / n_obs)
     
     # compute the interval around the point estimate
-    ci_psi <- norm_bounds * sd_eif + psi
+    ci_psi <- norm_bounds * sd_eif + tmle_shifttx_out$psi
     
     # set up output CI object
-    ci_out <- as.data.frame(cbind(ci_psi[1], psi, ci_psi[2]))
-    colnames(ci_out) <- c("lower_ci", "est_psi", "upper_ci")
+    ci_out <- c(ci_psi[1], tmle_shifttx_out$psi, ci_psi[2])
+    names(ci_out) <- c("lwrCI_psi", "est_psi", "uprCI_psi")
     return(ci_out)
 }
 ```
@@ -560,8 +551,7 @@ ci_shifttx <- function(psi, eif, level = 0.95) {
 Let's test the function for obtianing inference for $\psi_{TMLE}$:
 
 ```{r test_ci_shifttx}
-test_ci <- ci_shifttx(psi = est_tmle,
-                      eif = est_eif,
+test_ci <- ci_shifttx(tmle_shifttx_out = est_tmle,
                       level = 0.95)
 test_ci
 ```
