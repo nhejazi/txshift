@@ -1,6 +1,6 @@
 ---
-title: "The 1-TMLE algorithm for treatment shift parameters"
-subtitle: "An implementation based on stochastic treatment regimes"
+title: "The 1-TMLE algorithm for an additive treatment shift parameter"
+#subtitle: "An implementation based on stochastic treatment regimes"
 author: "[Nima Hejazi](https://nimahejazi.org) & [David
   Benkeser](https://www.benkeserstatistics.com/)"
 date: "`r Sys.Date()`"
@@ -80,6 +80,9 @@ head(O)
 
 ```{r precision}
 bound_precision <- function(vals) {
+    if (max(vals) > 1 | min(vals) < 0) {
+        stop("Scaled values are not in the interval [0, 1].")
+    }
     vals[vals == 0] <- .Machine$double.neg.eps
     vals[vals == 1] <- 1 - .Machine$double.neg.eps
     return(vals)
@@ -144,12 +147,12 @@ fit_sl <- function(learners_stack, metalearner) {
 
 ```{r tx_shift}
 tx_shift <- function(a, w = NULL, delta, type = "additive",
-                     reg = c("g", "Q")) {
+                     direc = c("down", "up")) {
     if (type == "additive") {
-        if (reg == "g") {
+        if (direc == "down") {
             a_shift <- A - delta
         }
-        if (reg == "Q") {
+        if (direc == "up") {
             a_shift <- A + delta
         }
     }
@@ -185,18 +188,27 @@ est_g <- function(A, W, delta = 0, ...) {
                            Y = "A", input_data = data_O, ...)
 
     # predict probabilities for the un-shifted data (A = a)
-    pred_g_A <- predict_probability(model_fit = fit_g_A, newdata = data_O)
+    pred_g_A_noshift <- predict_probability(model_fit = fit_g_A,
+                                            newdata = data_O)
 
-    # predict probabilities for the shifted data (A = a - delta)
-    data_O_shifted <- data_O
-    data_O_shifted$A <- tx_shift(a = data_O_shifted$A, delta = delta,
-                                 type = "additive", reg = "g")
-    pred_g_A_shifted <- predict_probability(model_fit = fit_g_A,
-                                            newdata = data_O_shifted)
+    # predict probabilities for the DOWNSHIFTED data (A = a - delta)
+    data_O_downshifted <- data_O
+    data_O_downshifted$A <- tx_shift(a = data_O_downshifted$A, delta = delta,
+                                     type = "additive", direc = "down")
+    pred_g_A_downshifted <- predict_probability(model_fit = fit_g_A,
+                                                newdata = data_O_downshifted)
+    
+    # predict probabilities for the UPSHIFTED data (A = a + delta)
+    data_O_upshifted <- data_O
+    data_O_upshifted$A <- tx_shift(a = data_O_upshifted$A, delta = delta,
+                                   type = "additive", direc = "up")
+    pred_g_A_upshifted <- predict_probability(model_fit = fit_g_A,
+                                              newdata = data_O_upshifted)
 
     # create output matrix: scenarios A = a, A = a - delta
-    out <- as.data.frame(cbind(pred_g_A, pred_g_A_shifted))
-    colnames(out) <- c("gn_unshifted", "gn_shifted")
+    out <- as.data.frame(cbind(pred_g_A_downshifted, pred_g_A_noshift,
+                               pred_g_A_upshifted))
+    colnames(out) <- c("downshift", "noshift", "upshift")
     rownames(out) <- NULL
     return(out)
 }
@@ -209,8 +221,9 @@ test_est_g <- est_g(A = A,
                     W = W,
                     delta = 0.5,
                     nbins = 20,
-                    bin_method = "equal.mass",
-                    bin_estimator = speedglmR6$new())
+                    bin_method = "dhist",
+                    bin_estimator = speedglmR6$new(),
+                    parfit = FALSE)
 head(test_est_g)
 ```
 
@@ -232,16 +245,16 @@ est_Q <- function(Y, A, W,
 
     # scale the outcome for the logit transform
     y_star <- bound_scaling(Y = Y, scale = "zero_one")
-    
+
     # make data object but using y_star rather than raw outcome
     data_O <- as.data.frame(cbind(y_star, A, W))
     if (!is.matrix(W)) W <- as.matrix(W)
     colnames(data_O) <- c("Y", "A", paste0("W", seq_len(ncol(W))))
-    
+
     # get the shifted treatment values
     a_shifted <- tx_shift(a = data_O$A, delta = delta,
-                          type = "additive", reg = "Q")
-    
+                          type = "additive", direc = "up")
+
     # create a copy of the data for the shifted data set
     # and replace A with the shifted treatment (A = a + delta)
     data_O_shifted <- data_O
@@ -259,13 +272,13 @@ est_Q <- function(Y, A, W,
         pred_star_Qn <- predict(fit_Qn,
                                 newdata = data_O,
                                 type = "response")
-        
+
         # predict Qn for the shifted data (A = a + delta)
         pred_star_Qn_shifted <- predict(fit_Qn,
                                         newdata = data_O_shifted,
                                         type = "response")
     }
-    
+
     if (!is.null(sl_lrnrs) & !is.null(sl_meta)) {
         # make sl3 task for original data
         task_noshift <- make_sl3_Task(data = data_O,
@@ -285,7 +298,7 @@ est_Q <- function(Y, A, W,
 
     # create output matrix: scenarios A = a, A = a - delta
     out <- as.data.frame(cbind(pred_star_Qn, pred_star_Qn_shifted))
-    colnames(out) <- c("Qn_unshifted", "Qn_shifted")
+    colnames(out) <- c("noshift", "upshift")
     rownames(out) <- NULL
     return(out)
 }
@@ -318,33 +331,37 @@ head(test_est_Q)
 ### function for estimating $H_n$
 
 ```{r est_Hn}
-est_h <- function(gn, a = NULL, w = NULL) {
+est_Hn <- function(gn, a = NULL, w = NULL) {
     # compute upper and lower limits for treatment
     #...
     #...
     
-    # compute the ratio of the propensity scores
-    ratio_g <- gn$gn_shifted / gn$gn_unshifted
+    # compute the ratio of the propensity scores for Hn(A,W)
+    ratio_g_noshift <- gn$downshift / gn$noshift
+    
+    # compute the ratio of the propensity scores for Hn(d(A,W),W)
+    ratio_g_shift <- gn$noshift / gn$upshift
     
     # modify the ratio of the propensity scores
     # based on the indicators for shifting
     #ind_a <- ...
     #ind_a_delta <- ...
-    #h_n <- ind_a * ratio_g + ind_a_delta
+    #H_n <- ind_a * ratio_g + ind_a_delta
     
     # TODO: consider case where there is not support everywhere
     # that is, when the indicators kick in -- ignored for now...
-    hn <- ratio_g
-    
+    H_n <- as.data.frame(cbind(ratio_g_noshift, ratio_g_shift))
+    colnames(H_n) <- c("noshift", "shift")
+
     # output
-    return(hn)
+    return(H_n)
 }
 ```
 
 Let's test the function for estimating $H_n$:
 
 ```{r test_est_Hn}
-test_est_h <- est_h(gn = test_est_g)
+test_est_h <- est_Hn(gn = test_est_g)
 head(test_est_h)
 ```
 
@@ -374,30 +391,51 @@ fit_fluc <- function(Y,
     y_star <- bound_scaling(Y = Y, scale = "zero_one")
 
     # extract Q and obtain logit transform
-    logit_Qn <- qlogis(Qn_scaled$Qn_unshifted)
+    logit_Qn <- qlogis(Qn_scaled$noshift)
     
     # fit the fluctuation regression in one of two ways
     if (method == "standard") {
         # note that \epsilon_n will be the coefficient of the covariate Hn
         suppressWarnings(
-          mod_fluc <- glm(y_star ~ -1 + offset(logit_Qn) + Hn,
+          mod_fluc <- glm(y_star ~ -1 + offset(logit_Qn) + Hn$noshift,
                           family = "binomial")
         )
     } else if (method == "weighted") {
-        # note that \epsilon_n will be the intercept term here (?)
+        # note that \epsilon_n will be the intercept term here
         suppressWarnings(
           mod_fluc <- glm(y_star ~ offset(logit_Qn),
-                          weights = Hn,
+                          weights = Hn$noshift,
                           family = "binomial")
         )
     }
 
+    # get fitted values from fluctuation model
+    Qn_noshift_star_pred <- fitted(mod_fluc)
+    Qn_noshift_star <- bound_scaling(Y = Y,
+                                     preds_scaled = Qn_noshift_star_pred,
+                                     scale = "original")
+    
     # get Qn_star for the SHIFTED data
-    Qn_shift_star_in <- as.data.frame(qlogis(Qn_scaled$Qn_shifted))
-    colnames(Qn_shift_star_in) <- "logit_Qn"
-    Qn_shift_star_pred <- predict(object = mod_fluc,
-                                  newdata = Qn_shift_star_in,
-                                  type = "response")
+    if (method == "standard") {
+          Qn_shift_star_in <- as.data.frame(cbind(qlogis(Qn_scaled$upshift),
+                                                         Hn$shift))
+          colnames(Qn_shift_star_in) <- c("logit_Qn", "Hn$noshift")
+          
+          # predict from fluctuation model on Q(d(A,W),W) and Hn(d(A,W))
+          Qn_shift_star_pred <- predict(object = mod_fluc,
+                                        newdata = Qn_shift_star_in,
+                                        type = "response")
+
+    } else if (method == "weighted") {
+          Qn_shift_star_in <- as.data.frame(qlogis(Qn_scaled$upshift))
+          colnames(Qn_shift_star_in) <- "logit_Qn"
+          
+          # predict from fluctuation model on Q(d(A,W),W)
+          Qn_shift_star_pred <- predict(object = mod_fluc,
+                                        newdata = Qn_shift_star_in,
+                                        type = "response")
+    }
+
     Qn_shift_star <- bound_scaling(Y = Y,
                                    preds_scaled = Qn_shift_star_pred,
                                    scale = "original")
@@ -405,7 +443,8 @@ fit_fluc <- function(Y,
     # return the fit model object
     out <- list(fluc_fit = mod_fluc,
                 covar_method = method,
-                Qn_shift_star = Qn_shift_star)
+                Qn_shift_star = as.numeric(Qn_shift_star),
+                Qn_noshift_star = as.numeric(Qn_noshift_star))
     return(out)
 }
 ```
@@ -460,13 +499,17 @@ test_fit_fluc2
 ### function for the 1-TMLE and EIF procedures
 
 ```{r tmle_shifttx}
-tmle_shifttx <- function(fluc_fit_out, Qn_scaled, Hn, Y) {
+tmle_shifttx <- function(fluc_fit_out, Hn, Y, tol_eif = 1e-7) {
     # compute the 1-TMLE
     psi <- mean(fluc_fit_out$Qn_shift_star)
     
     # compute the efficient influence function (EIF) / canonical gradient (D*)
-    eif <- Hn * (Y - Qn_scaled$Qn_unshifted) + Qn_scaled$Qn_shifted - psi
+    eif <- Hn$noshift * (Y - fluc_fit_out$Qn_noshift_star) +
+      fluc_fit_out$Qn_shift_star - psi
     
+    # sanity check on EIF; NOTE: EIF ~ N(0, V(D(P)(o))), so mean(EIF) ~= 0
+    stopifnot(mean(eif) < tol_eif)
+
     # compute the variance based on the EIF
     var_eif <- mean(eif^2)
     
@@ -480,7 +523,6 @@ Let's test the function for the 1-TMLE procedure:
 
 ```{r test_tmle_shifttx}
 est_tmle <- tmle_shifttx(fluc_fit_out = test_fit_fluc1,
-                         Qn_scaled = test_est_Q,
                          Hn = test_est_h,
                          Y = Y)
 est_tmle

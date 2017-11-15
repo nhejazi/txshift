@@ -6,13 +6,13 @@
 #' @param Qn Function to compute the outcome regression: Q(A, W) = E(Y | A, W).
 #' @param gn Function to compute the propensity score: g(A, W) = density(A | W).
 #' @param delta A \code{numeric} for the shift to be placed on the treatment of
-#' interest (i.e., the effect of shifting treatment \code{A} by delta units).
+#'  interest (i.e., the effect of shifting treatment \code{A} by delta units).
 #' @param tol A \code{numeric} for the tolerance for measuring convergence of
-#' the parametric fluctuation.
+#'  the parametric fluctuation.
 #' @param iter_max A \code{numeric} for the maximum number of iterations.
 #' @param A_val A \code{vector} of \code{numeric} values for the points in the
-#' range of the treatment \code{A} to approximate integrals by Riemmann sums.
-#' Note that these must be equally spaced along a grid.
+#'  range of the treatment \code{A} to approximate integrals by Riemmann sums.
+#'  Note that these must be equally spaced along a grid.
 #'
 #' @importFrom stats var
 #'
@@ -87,20 +87,20 @@ tmle_shift <- function(Y, A, W,
 #' @param Qn Function to compute the outcome regression: Q(A, W) = E(Y | A, W).
 #' @param gn Function to compute the propensity score: g(A, W) = density(A | W).
 #' @param gn0d A \code{Numeric} computed for the propensity score (gn) from the
-#' first iteration only.
+#'  first iteration only.
 #' @param prev_sum The sum computed from this fluctuation step in the previous
-#' iteration.
+#'  iteration.
 #' @param first A \code{logical} for whether this is the first iteration of the
-#' iterative fluctutation step.
+#'  iterative fluctutation step.
 #' @param h_int ???
 #' @param Y A \code{numeric} vector of observed outcomes.
 #' @param A A \code{numeric} vector of observed treatments.
 #' @param W A \code{matrix} or \code{data.frame} of baseline covariates.
 #' @param delta A \code{numeric} for the shift to be placed on the treatment of
-#' interest (i.e., the effect of shifting treatment \code{A} by delta units).
+#'  interest (i.e., the effect of shifting treatment \code{A} by delta units).
 #' @param A_val A \code{vector} of \code{numeric} values for the points in the
-#' range of the treatment \code{A} to approximate integrals by Riemmann sums.
-#' Note that these must be equally spaced along a grid.
+#'  range of the treatment \code{A} to approximate integrals by Riemmann sums.
+#'  Note that these must be equally spaced along a grid.
 #'
 #' @importFrom stats uniroot
 #'
@@ -145,17 +145,17 @@ f_iter <- function(Qn, gn, gn0d = NULL, prev_sum = 0, first = FALSE, h_int,
 #' @param QnAW ...
 #' @param EQnd ...
 #' @param gn0d A \code{Numeric} computed for the propensity score (gn) from the
-#' first iteration only.
+#'  first iteration only.
 #' @param H1 Ratio obtained from comparing the propensity score (gn) before and
-#' after application of the shift \code{delta}.
+#'  after application of the shift \code{delta}.
 #' @param D2 ...
 #' @param prev_sum The sum computed from this fluctuation step in the previous
-#' iteration.
+#'  iteration.
 #' @param Y A \code{numeric} vector of observed outcomes.
 #' @param A A \code{numeric} vector of observed treatments.
 #' @param W A \code{matrix} or \code{data.frame} of baseline covariates.
 #' @param delta A \code{numeric} for the shift to be placed on the treatment of
-#' interest (i.e., the effect of shifting treatment \code{A} by delta units).
+#'  interest (i.e., the effect of shifting treatment \code{A} by delta units).
 #'
 #' @author Iván Díaz
 #' @author Nima Hejazi
