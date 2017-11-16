@@ -16,7 +16,7 @@
 #'
 #' @importFrom stats var
 #'
-#' @export
+#' @keywords internal
 #'
 #' @author Iván Díaz
 #' @author Nima Hejazi
