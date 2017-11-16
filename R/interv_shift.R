@@ -1,8 +1,21 @@
 #' Shift Treatments
-
-
-tx_shift <- function(a, w = NULL, delta, type = "additive",
+#'
+#' description
+#'
+#' @param A ...
+#' @param W ...
+#' @param delta ...
+#' @param type ...
+#' @param direc ...
+#'
+#' @keywords internal
+#
+tx_shift <- function(A,
+                     W = NULL,
+                     delta,
+                     type = "additive",
                      direc = c("down", "up")) {
+    # could support more than just additive shifts?
     if (type == "additive") {
         if (direc == "down") {
             a_shift <- A - delta

@@ -3,6 +3,7 @@
 ^Makefile$
 ^README\.Rmd$
 ^README\.html$
+^README-norefs\.Rmd$
 ^README-refs\.bib$
 ^README-.*\.png$
 ^\.travis\.yml$
@@ -11,6 +12,5 @@
 
 # Extra miscellaneous support files/directories.
 ^cran-comments\.md$
-^LICENSE$
 ^sandbox$
 ^docs$

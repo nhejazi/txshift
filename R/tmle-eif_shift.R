@@ -17,7 +17,10 @@
 #' @author Nima Hejazi
 #' @author David Benkeser
 #
-tmle_eif <- function(fluc_fit_out, Hn, Y, tol_eif = 1e-7) {
+tmle_eif <- function(fluc_fit_out,
+                     Hn,
+                     Y,
+                     tol_eif = 1e-7) {
     # compute the 1-TMLE
     psi <- mean(fluc_fit_out$Qn_shift_star)
 

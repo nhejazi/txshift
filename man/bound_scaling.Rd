@@ -6,6 +6,14 @@
 \usage{
 bound_scaling(Y, preds_scaled = NULL, scale = c("zero_one", "original"))
 }
-\description{
-Induce Scaling
+\arguments{
+\item{Y}{...}
+
+\item{preds_scaled}{...}
+
+\item{scale}{...}
 }
+\description{
+description
+}
+\keyword{internal}

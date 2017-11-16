@@ -6,6 +6,10 @@
 \usage{
 bound_precision(vals)
 }
-\description{
-Bound Precision
+\arguments{
+\item{vals}{...}
 }
+\description{
+description
+}
+\keyword{internal}

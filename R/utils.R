@@ -1,7 +1,18 @@
 #' Confidence Intervals for Shifted Treatment Parameters
-confint.shifttx <- function(tmle_shifttx_out, level = 0.95) {
+#'
+#' description
+#'
+#' @param tmle_shifttx_out ...
+#' @param level ...
+#'
+#' @importFrom stats qnorm
+#'
+#' @keywords internal
+#
+confint.shifttx <- function(tmle_shifttx_out,
+                            level = 0.95) {
     # first, let's get Z_(1 - alpha)
-    norm_bounds <- c(-1, 1) * abs(qnorm(p = (1 - level) / 2))
+    norm_bounds <- c(-1, 1) * abs(stats::qnorm(p = (1 - level) / 2))
 
     # compute the EIF variance multiplier for the CI
     n_obs <- length(tmle_shifttx_out$eif)
@@ -19,6 +30,13 @@ confint.shifttx <- function(tmle_shifttx_out, level = 0.95) {
 ################################################################################
 
 #' Bound Precision
+#'
+#' description
+#'
+#' @param vals ...
+#'
+#' @keywords internal
+#
 bound_precision <- function(vals) {
     if (max(vals) > 1 | min(vals) < 0) {
         stop("Scaled values are not in the interval [0, 1].")
@@ -31,7 +49,17 @@ bound_precision <- function(vals) {
 ################################################################################
 
 #' Induce Scaling
-bound_scaling <- function(Y, preds_scaled = NULL,
+#'
+#' description
+#'
+#' @param Y ...
+#' @param preds_scaled ...
+#' @param scale ...
+#'
+#' @keywords internal
+#
+bound_scaling <- function(Y,
+                          preds_scaled = NULL,
                           scale = c("zero_one", "original")) {
     y_min <- min(Y)
     y_max <- max(Y)

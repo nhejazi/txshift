@@ -12,7 +12,8 @@
 #' @param sl_learners ...
 #' @param sl_meta ...
 #'
-#' @importFrom stats glm
+#' @importFrom stats glm as.formula predict
+#' @importFrom sl3 make_sl3_Task
 #'
 #' @keywords internal
 #'
@@ -38,7 +39,7 @@ est_Q <- function(Y,
     colnames(data_O) <- c("Y", "A", paste0("W", seq_len(ncol(W))))
 
     # get the shifted treatment values
-    a_shifted <- tx_shift(a = data_O$A, delta = delta,
+    a_shifted <- tx_shift(A = data_O$A, delta = delta,
                           type = "additive", direc = "up")
 
     # create a copy of the data for the shifted data set
@@ -49,32 +50,34 @@ est_Q <- function(Y,
     if (!is.null(glm_form)) {
         # obtain a logistic regression fit for the (scaled) outcome regression
         suppressWarnings(
-          fit_Qn <- glm(as.formula(glm_form),
-                        data = data_O,
-                        family = "binomial")
+          fit_Qn <- stats::glm(stats::as.formula(glm_form),
+                               data = data_O,
+                               family = "binomial")
         )
 
         # predict Qn for the un-shifted data (A = a)
-        pred_star_Qn <- predict(fit_Qn,
-                                newdata = data_O,
-                                type = "response")
+        pred_star_Qn <- stats::predict(fit_Qn,
+                                       newdata = data_O,
+                                       type = "response")
 
         # predict Qn for the shifted data (A = a + delta)
-        pred_star_Qn_shifted <- predict(fit_Qn,
-                                        newdata = data_O_shifted,
-                                        type = "response")
+        pred_star_Qn_shifted <- stats::predict(fit_Qn,
+                                               newdata = data_O_shifted,
+                                               type = "response")
     }
 
     if (!is.null(sl_lrnrs) & !is.null(sl_meta)) {
         # make sl3 task for original data
-        task_noshift <- make_sl3_Task(data = data_O,
-                                      covariates = c("A", paste0("W", seq_len(n_w))),
-                                      outcome = "Y", outcome_type = "continuous")
+        task_noshift <- sl3::make_sl3_Task(data = data_O,
+                                           covariates = c("A", "W"),
+                                           outcome = "Y",
+                                           outcome_type = "continuous")
 
         # make sl3 task for data with the shifted treatment
-        task_shifted <- make_sl3_Task(data = data_O_shifted,
-                                      covariates = c("A", paste0("W", seq_len(n_w))),
-                                      outcome = "Y", outcome_type = "continuous")
+        task_shifted <- sl3::make_sl3_Task(data = data_O_shifted,
+                                           covariates = c("A", "W"),
+                                           outcome = "Y",
+                                           outcome_type = "continuous")
         # fit SL
     }
 

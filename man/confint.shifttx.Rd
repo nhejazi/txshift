@@ -6,6 +6,12 @@
 \usage{
 \method{confint}{shifttx}(tmle_shifttx_out, level = 0.95)
 }
-\description{
-Confidence Intervals for Shifted Treatment Parameters
+\arguments{
+\item{tmle_shifttx_out}{...}
+
+\item{level}{...}
 }
+\description{
+description
+}
+\keyword{internal}
