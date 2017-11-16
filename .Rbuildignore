@@ -11,7 +11,6 @@
 
 # Extra miscellaneous support files/directories.
 ^cran-comments\.md$
-^Makefile$
 ^LICENSE$
 ^sandbox$
-
+^docs$

@@ -1,4 +1,3 @@
-
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 R/`shifttx`
 ===========
@@ -29,15 +28,6 @@ What’s `shifttx`?
 loss-based estimates of the population-level causal effects of
 interventions based on stochastic mechanisms for treatment assignment.
 
--   Original estimator and iterative algorithm proposed in Muñoz and van
-    der Laan (2012)
--   One-step estimation procedure and algorithm introduced in Díaz and
-    van der Laan (2017).
--   See van der Laan and Rose (2017) for a discussion on recent
-    developments in Targeted Learning.
--   See van der Laan and Rose (2011) for an introduction to Targeted
-    Learning.
-
 ------------------------------------------------------------------------
 
 Installation
@@ -46,9 +36,7 @@ Installation
 Install the most recent *stable release* from GitHub via
 [`devtools`](https://www.rstudio.com/products/rpackages/devtools/):
 
-``` r
-devtools::install_github("nhejazi/shifttx")
-```
+    devtools::install_github("nhejazi/shifttx")
 
 ------------------------------------------------------------------------
 
@@ -58,42 +46,40 @@ Example
 To illustrate how `shifttx` may be used to ascertain the effect of a
 treatment, consider the following example:
 
-``` r
-library(shifttx)
-#> shifttx: Estimate Causal Effects with Stochastic Treatments
-#> Version: 0.0.0.9000
+    library(shifttx)
+    #> shifttx: Estimate Causal Effects with Stochastic Treatments
+    #> Version: 0.0.0.9000
 
-# first, define simulation parameters and observed data
-n <- 100
-W <- data.frame(W1 = runif(n), W2 = rbinom(n, 1, 0.7))
-A <- rpois(n, lambda = exp(3 + 0.3 * log(W$W1) - 0.2 * exp(W$W1) * W$W2))
-Y <- rbinom(n, 1, plogis(-1 + 0.05 * A - 0.02 * A * W$W2 + 0.2 * A * tan(W$W1^2)
-                         - 0.02 * W$W1 * W$W2 + 0.1 * A * W$W1 * W$W2))
-fitA.0 <- glm(A ~ I(log(W1)) + I(exp(W1)):W2, family = poisson,
-              data = data.frame(A, W))
-fitY.0 <- glm(Y ~ A + A:W2 + A:I(tan(W1^2)) + W1:W2 + A:W1:W2,
-              family = binomial, data = data.frame(A, W))
+    # first, define simulation parameters and observed data
+    n <- 100
+    W <- data.frame(W1 = runif(n), W2 = rbinom(n, 1, 0.7))
+    A <- rpois(n, lambda = exp(3 + 0.3 * log(W$W1) - 0.2 * exp(W$W1) * W$W2))
+    Y <- rbinom(n, 1, plogis(-1 + 0.05 * A - 0.02 * A * W$W2 + 0.2 * A * tan(W$W1^2)
+                             - 0.02 * W$W1 * W$W2 + 0.1 * A * W$W1 * W$W2))
+    fitA.0 <- glm(A ~ I(log(W1)) + I(exp(W1)):W2, family = poisson,
+                  data = data.frame(A, W))
+    fitY.0 <- glm(Y ~ A + A:W2 + A:I(tan(W1^2)) + W1:W2 + A:W1:W2,
+                  family = binomial, data = data.frame(A, W))
 
-# next, we define the treatment mechanisma and outcome in the true model
-gn.0  <- function(A = A, W = W) {
-  dpois(A, lambda = predict(fitA.0, newdata = W, type = "response"))
-}
-Qn.0 <- function(A = A, W = W) {
-  predict(fitY.0, newdata = data.frame(A, W, row.names = NULL),
-          type = "response")
-}
+    # next, we define the treatment mechanisma and outcome in the true model
+    gn.0  <- function(A = A, W = W) {
+      dpois(A, lambda = predict(fitA.0, newdata = W, type = "response"))
+    }
+    Qn.0 <- function(A = A, W = W) {
+      predict(fitY.0, newdata = data.frame(A, W, row.names = NULL),
+              type = "response")
+    }
 
-# finally, we may compute targeted estimates of the intervention effect
-est_target <- tmle_shift(Y = Y, A = A, W = W, Qn = Qn.0, gn = gn.0, delta = 2,
-                         tol = 1e-4, iter_max = 5, A_val = seq(1, 60, 1))
+    # finally, we may compute targeted estimates of the intervention effect
+    est_target <- tmle_shift(Y = Y, A = A, W = W, Qn = Qn.0, gn = gn.0, delta = 2,
+                             tol = 1e-4, iter_max = 5, A_val = seq(1, 60, 1))
 
-# let's just examine the first few results
-head(est_target)
-#>      psi.hat      var.hat         IC.1         IC.2         IC.3 
-#>  0.584564153  0.003225504  0.429013014 -1.007698967  0.462008069 
-#>         IC.4 
-#>  0.420323583
-```
+    # let's just examine the first few results
+    head(est_target)
+    #>      psi.hat      var.hat         IC.1         IC.2         IC.3 
+    #>  0.660440860  0.002426703  0.759473538  0.369275173  0.202600131 
+    #>         IC.4 
+    #> -0.406507316
 
 ------------------------------------------------------------------------
 
@@ -134,24 +120,3 @@ See below for details:
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-
-------------------------------------------------------------------------
-
-References
-----------
-
-Díaz, Iván, and Mark J van der Laan. 2017. “Stochastic Treatment
-Regimes.” In *Targeted Learning in Data Science: Causal Inference for
-Complex Longitudinal Studies*, 167–80. Springer Science & Business
-Media.
-
-Muñoz, Iván Díaz, and Mark J van der Laan. 2012. “Population
-Intervention Causal Effects Based on Stochastic Interventions.”
-*Biometrics* 68 (2). Wiley Online Library: 541–49.
-
-van der Laan, Mark J, and Sherri Rose. 2011. *Targeted Learning: Causal
-Inference for Observational and Experimental Data*. Springer Science &
-Business Media.
-
-———. 2017. *Targeted Learning in Data Science: Causal Inference for
-Complex Longitudinal Studies*. Springer Science & Business Media.

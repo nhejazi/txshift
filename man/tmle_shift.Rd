@@ -2,7 +2,7 @@
 % Please edit documentation in R/shift_tmle_iter.R
 \name{tmle_shift}
 \alias{tmle_shift}
-\title{TML Estimate the effect of a continuous treatment}
+\title{TML Estimate of the Effect of a Continuous Treatment}
 \usage{
 tmle_shift(Y, A, W, Qn, gn, delta, tol = 1e-05, iter_max = 5, A_val)
 }
@@ -30,7 +30,7 @@ range of the treatment \code{A} to approximate integrals by Riemmann sums.
 Note that these must be equally spaced along a grid.}
 }
 \description{
-TML Estimate the effect of a continuous treatment
+TML Estimate of the Effect of a Continuous Treatment
 }
 \examples{
 n <- 100
