@@ -4,33 +4,30 @@ utils::globalVariables(c("eif", "psi"))
 #'
 #' description
 #'
-#' @param object A structure of class \code{shifttx}, as produced by invoking
+#' @param tmle_shift An tmle_shift of class \code{shifttx}, as produced by invoking
 #'  the function \code{tmle_shifttx}, for which a confidence interval is to be
 #'  computed.
-#' @param parm 
 #' @param level A \code{numeric} indicating the level of the confidence interval
 #'  to be computed.
-#' @param ... Additional arguments passed to \code{confint} as necessary. These
-#'  are currently unused.
 #'
 #' @importFrom stats qnorm
 #'
-#' @keywords internal
+#' @export
 #
-confint.shifttx <- function(object, parm = NULL, level = 0.95, ...) {
+ci_shifttx <- function(tmle_shift, level = 0.95) {
 
     # first, let's get Z_(1 - alpha)
     norm_bounds <- c(-1, 1) * abs(stats::qnorm(p = (1 - level) / 2))
 
     # compute the EIF variance multiplier for the CI
-    n_obs <- length(object$eif)
-    sd_eif <- sqrt(object$var / n_obs)
+    n_obs <- length(tmle_shift$eif)
+    sd_eif <- sqrt(tmle_shift$var / n_obs)
 
     # compute the interval around the point estimate
-    ci_psi <- norm_bounds * sd_eif + object$psi
+    ci_psi <- norm_bounds * sd_eif + tmle_shift$psi
 
-    # set up output CI object
-    ci_out <- c(ci_psi[1], object$psi, ci_psi[2])
+    # set up output CI tmle_shift
+    ci_out <- c(ci_psi[1], tmle_shift$psi, ci_psi[2])
     names(ci_out) <- c("lwrCI_psi", "est_psi", "uprCI_psi")
     return(ci_out)
 }

@@ -15,6 +15,8 @@
 #'
 #' @return S3 object of class \code{shifttx} containing the results of the
 #'  procedure to compute a TML estimate of the treatment shift parameter.
+#'
+#' @export
 #
 tmle_shifttx <- function(W,
                          A,

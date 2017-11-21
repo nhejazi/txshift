@@ -131,7 +131,7 @@ may be obtained using the bootstrap or computed directly via the following
 $$ \sigma_n^2 = \frac{1}{n} \sum_{i = 1}^{n} D^2(\bar{Q}_n^*, g_n)(O_i)$$
 
 ```{r}
-ci_shift <- confint(tmle_shift)
+ci_shift <- ci_shifttx(tmle_shift)
 ```
 
 ---
