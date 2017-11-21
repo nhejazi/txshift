@@ -4,8 +4,9 @@
 \alias{est_Q}
 \title{Estimate the Outcome Regression}
 \usage{
-est_Q(Y, A, W, delta = 0, glm_form = "Y ~ .", sl_lrnrs = NULL,
-  sl_meta = NULL)
+est_Q(Y, A, W, delta = 0, fit_method = c("glm", "sl"),
+  glm_formula = "Y ~ .", sl_learners = c("mean", "glm_fast"),
+  sl_metalearner = "nnls")
 }
 \arguments{
 \item{Y}{A \code{numeric} vector of observed outcomes.}
@@ -14,13 +15,24 @@ est_Q(Y, A, W, delta = 0, glm_form = "Y ~ .", sl_lrnrs = NULL,
 
 \item{W}{A \code{numeric} matrix of observed baseline covariate values.}
 
-\item{delta}{...}
+\item{delta}{A \code{numeric} indicating the magnitude of the shift to be
+computed for the treatment \code{A}. This is passed directly to the internal
+function \code{tx_shift} and is currently limited to additive shifts.}
 
-\item{glm_form}{...}
+\item{fit_method}{A \code{character} indicating whether to use GLMs or Super
+Learner to fit the outcome regression. If the option "glm" is selected, the
+argument \code{glm_formula} must NOT be \code{NULL}, instead containing a
+model formula (in the style of \code{stats::glm}) as a \code{character}. If
+the option "sl" is selected, both of the arguments \code{sl_learners} and
+\code{sl_metalearner} must NOT be \code{NULL}, instead containing a set of
+learners and a metalearner for the Super Learner fit. Please consult the
+documentation of the \code{sl3} package for details on Super Learner fits.}
 
-\item{sl_meta}{...}
+\item{glm_formula}{...}
 
 \item{sl_learners}{...}
+
+\item{sl_metalearner}{...}
 }
 \description{
 Compute the outcome regression for the observed data, including with the

@@ -4,12 +4,20 @@
 \alias{confint.shifttx}
 \title{Confidence Intervals for Shifted Treatment Parameters}
 \usage{
-\method{confint}{shifttx}(tmle_shifttx_out, level = 0.95)
+\method{confint}{shifttx}(object, parm = NULL, level = 0.95, ...)
 }
 \arguments{
-\item{tmle_shifttx_out}{...}
+\item{object}{A structure of class \code{shifttx}, as produced by invoking
+the function \code{tmle_shifttx}, for which a confidence interval is to be
+computed.}
 
-\item{level}{...}
+\item{parm}{}
+
+\item{level}{A \code{numeric} indicating the level of the confidence interval
+to be computed.}
+
+\item{...}{Additional arguments passed to \code{confint} as necessary. These
+are currently unused.}
 }
 \description{
 description

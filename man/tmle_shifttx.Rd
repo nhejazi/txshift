@@ -4,7 +4,8 @@
 \alias{tmle_shifttx}
 \title{Compute Targeted Minimum Loss-Based Estimates of Treatment Shift Parameters}
 \usage{
-tmle_shifttx(W, A, Y, delta, parallel)
+tmle_shifttx(W, A, Y, delta, parallel = NULL, Q_fit_method = c("glm", "sl"),
+  fluc_method = c("standard", "weighted"), eif_tol = 1e-07, ...)
 }
 \arguments{
 \item{W}{...}
@@ -16,6 +17,15 @@ tmle_shifttx(W, A, Y, delta, parallel)
 \item{delta}{...}
 
 \item{parallel}{...}
+
+\item{Q_fit_method}{...}
+
+\item{fluc_method}{...}
+
+\item{eif_tol}{...}
+
+\item{...}{Passed to internal function \code{est_g}, which then internally
+passes these arguments to \code{fit_density} from package \code{condensier}.}
 }
 \value{
 S3 object of class \code{shifttx} containing the results of the

@@ -7,13 +7,23 @@
 #' @param Y A \code{numeric} vector of observed outcomes.
 #' @param A A \code{numeric} vector of observed treatment values.
 #' @param W A \code{numeric} matrix of observed baseline covariate values.
-#' @param delta ...
-#' @param glm_form ...
+#' @param delta A \code{numeric} indicating the magnitude of the shift to be
+#'  computed for the treatment \code{A}. This is passed directly to the internal
+#'  function \code{tx_shift} and is currently limited to additive shifts.
+#' @param fit_method A \code{character} indicating whether to use GLMs or Super
+#'  Learner to fit the outcome regression. If the option "glm" is selected, the
+#'  argument \code{glm_formula} must NOT be \code{NULL}, instead containing a
+#'  model formula (in the style of \code{stats::glm}) as a \code{character}. If
+#'  the option "sl" is selected, both of the arguments \code{sl_learners} and
+#'  \code{sl_metalearner} must NOT be \code{NULL}, instead containing a set of
+#'  learners and a metalearner for the Super Learner fit. Please consult the
+#'  documentation of the \code{sl3} package for details on Super Learner fits.
+#' @param glm_formula ...
 #' @param sl_learners ...
-#' @param sl_meta ...
+#' @param sl_metalearner ...
 #'
 #' @importFrom stats glm as.formula predict
-#' @importFrom sl3 make_sl3_Task
+#' @importFrom sl3 make_sl3_Task make_learner Stack Lrnr_sl
 #'
 #' @keywords internal
 #'
@@ -26,9 +36,10 @@ est_Q <- function(Y,
                   A,
                   W,
                   delta = 0,
-                  glm_form = "Y ~ .",
-                  sl_lrnrs = NULL,
-                  sl_meta = NULL) {
+                  fit_method = c("glm", "sl"),
+                  glm_formula = "Y ~ .",
+                  sl_learners = c("mean", "glm_fast"),
+                  sl_metalearner = "nnls") {
 
     # scale the outcome for the logit transform
     y_star <- bound_scaling(Y = Y, scale = "zero_one")
@@ -47,10 +58,10 @@ est_Q <- function(Y,
     data_O_shifted <- data_O
     data_O_shifted$A <- a_shifted
 
-    if (!is.null(glm_form)) {
+    if (fit_method == "glm" & !is.null(glm_formula)) {
         # obtain a logistic regression fit for the (scaled) outcome regression
         suppressWarnings(
-          fit_Qn <- stats::glm(stats::as.formula(glm_form),
+          fit_Qn <- stats::glm(stats::as.formula(glm_formula),
                                data = data_O,
                                family = "binomial")
         )
@@ -66,7 +77,7 @@ est_Q <- function(Y,
                                                type = "response")
     }
 
-    if (!is.null(sl_lrnrs) & !is.null(sl_meta)) {
+    if (fit_method == "sl" & !is.null(sl_learners) & !is.null(sl_metalearner)) {
         # make sl3 task for original data
         task_noshift <- sl3::make_sl3_Task(data = data_O,
                                            covariates = c("A", "W"),
@@ -78,14 +89,37 @@ est_Q <- function(Y,
                                            covariates = c("A", "W"),
                                            outcome = "Y",
                                            outcome_type = "continuous")
-        # fit SL
+
+        # create learners from arbitrary list and set up a stack
+        sl_lrnrs <- list()
+        for (i in seq_along(sl_learners)) {
+          sl_lrnrs[[i]] <- eval(parse(text = paste("sl3::Lrnr", sl_learners[i],
+                                                   sep = "_")))
+        }
+        sl_lrnrs_ready <- lapply(sl_lrnrs, sl3::make_learner)
+        stack <- sl3::make_learner(sl3::Stack, sl_lrnrs_ready)
+
+        # extract meta-learner and create an sl3 Super Learner
+        metalearner <- sl3::make_learner(eval(parse(text = paste("Lrnr",
+                                                                 sl_metalearner,
+                                                                 sep = "_"))))
+        sl <- sl3::Lrnr_sl$new(learners = stack, metalearner = metalearner)
+
+        # fit new Super Learner to the no-shift data and predict
+        sl_fit_noshift <- sl$train(task_noshift)
+        pred_star_Qn <- sl_fit_noshift$predict()
+
+        # fit new Super Learner to the shifted data and predict
+        sl_fit_shifted <- sl$train(task_shifted)
+        pred_star_Qn_shifted <- sl_fit_shifted$predict()
     }
 
     # avoid values that are exactly 0 or 1 in the scaled Qn and Qn_shifted
-    pred_star_Qn <- bound_precision(vals = pred_star_Qn)
-    pred_star_Qn_shifted <- bound_precision(vals = pred_star_Qn_shifted)
+    pred_star_Qn <- bound_precision(vals = as.numeric(pred_star_Qn))
+    pred_star_Qn_shifted <- bound_precision(vals =
+                                            as.numeric(pred_star_Qn_shifted))
 
-    # create output matrix: scenarios A = a, A = a - delta
+    # create output data frame and return result
     out <- as.data.frame(cbind(pred_star_Qn, pred_star_Qn_shifted))
     colnames(out) <- c("noshift", "upshift")
     rownames(out) <- NULL
