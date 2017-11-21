@@ -51,8 +51,7 @@ tmle_shifttx <- function(W,
                           Y = Y, tol_eif = eif_tol)
 
     # create output object
-    tmle_results <- list(tml_estim)
-    class(tmle_results) <- "shifttx"
-    return(tmle_results)
+    class(tml_estim) <- "shifttx"
+    return(tml_estim)
 }
 

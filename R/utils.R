@@ -1,35 +1,59 @@
-utils::globalVariables(c("eif", "psi"))
-
 #' Confidence Intervals for Shifted Treatment Parameters
 #'
 #' description
 #'
-#' @param tmle_shift An tmle_shift of class \code{shifttx}, as produced by invoking
+#' @param object An object of class \code{shifttx}, as produced by invoking
 #'  the function \code{tmle_shifttx}, for which a confidence interval is to be
 #'  computed.
+#' @param parm A \code{numeric} vector indicating indices of \code{object$est}
+#'  for which to return confidence intervals.
 #' @param level A \code{numeric} indicating the level of the confidence interval
 #'  to be computed.
+#' @param ... Other arguments. Not currently used.
 #'
 #' @importFrom stats qnorm
 #'
+#' @method confint shifttx
+#'
 #' @export
 #
-ci_shifttx <- function(tmle_shift, level = 0.95) {
+confint.shifttx <- function(object,
+                            parm = seq_len(object$psi),
+                            level = 0.95,
+                            ...) {
 
     # first, let's get Z_(1 - alpha)
     norm_bounds <- c(-1, 1) * abs(stats::qnorm(p = (1 - level) / 2))
 
     # compute the EIF variance multiplier for the CI
-    n_obs <- length(tmle_shift$eif)
-    sd_eif <- sqrt(tmle_shift$var / n_obs)
+    n_obs <- length(object$eif)
+    sd_eif <- sqrt(object$var / n_obs)
 
     # compute the interval around the point estimate
-    ci_psi <- norm_bounds * sd_eif + tmle_shift$psi
+    ci_psi <- norm_bounds * sd_eif + object$psi
 
-    # set up output CI tmle_shift
-    ci_out <- c(ci_psi[1], tmle_shift$psi, ci_psi[2])
-    names(ci_out) <- c("lwrCI_psi", "est_psi", "uprCI_psi")
+    # set up output CI object
+    ci_out <- c(ci_psi[1], object$psi, ci_psi[2])
+    names(ci_out) <- c("lwr_CI", "est", "upr_CI")
     return(ci_out)
+}
+
+################################################################################
+
+#' Print Method for shifttx Objects
+#'
+#' The \code{print} method for objects of class \code{shifttx}.
+#'
+#' @param x An object of class \code{shifttx}.
+#' @param ... Other options (not currently used).
+#'
+#' @export
+#'
+#' @method print shifttx
+#'
+
+print.shifttx <- function(x, ...) {
+  print(x[c("psi", "var")])
 }
 
 ################################################################################

@@ -3,22 +3,18 @@ Title: Targeted Maximum Likelihood Estimation with Stochastic Interventions
 Version: 0.0.1
 Authors@R: c(
     person("Nima", "Hejazi", email = "nhejazi@berkeley.edu",
-           role = c("aut", "cre", "cph")),
-    person("David", "Benkeser", email = "benkeser@emory.edu", role = "aut"),
-    person("Iván", "Díaz", email = "ild2005@med.cornell.edu", role = "ctb")
+           role = c("aut", "cre", "cph"),
+           comment = c(ORCID = "0000-0002-7127-2789")),
+    person("David", "Benkeser", email = "benkeser@emory.edu",
+           role = "aut"),
+    person("Iván", "Díaz", email = "ild2005@med.cornell.edu",
+           role = "ctb")
   )
 Maintainer: Nima Hejazi <nh@nimahejazi.org>
 Description: Targeted minimum loss-based estimates of population-level causal
     effects of interventions with stochastically assigned exposures, using a
     causal parameter defined in the context of stochastic treatment regimes,
     including both iterative and one-step variations of the estimator.
-    References:
-    1. Muñoz, I.D., and van der Laan, M.J. (2012). "Population Intervention
-       Causal Effects Based on Stochastic Interventions". Biometrics.
-       <doi:10.1111/j.1541-0420.2011.01685.x>
-    2. Díaz, I., and van der Laan, M.J. (2017). "Stochastic Treatment Regimes",
-       in "Targeted Learning in Data Science: Causal Inference for Complex
-       Longitudinal Studies".
 Depends: R (>= 3.2.0)
 Imports:
     stats,

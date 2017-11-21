@@ -82,13 +82,13 @@ est_Q <- function(Y,
         task_noshift <- sl3::make_sl3_Task(data = data_O,
                                            covariates = c("A", "W"),
                                            outcome = "Y",
-                                           outcome_type = "continuous")
+                                           outcome_type = "binomial")
 
         # make sl3 task for data with the shifted treatment
         task_shifted <- sl3::make_sl3_Task(data = data_O_shifted,
                                            covariates = c("A", "W"),
                                            outcome = "Y",
-                                           outcome_type = "continuous")
+                                           outcome_type = "binomial")
 
         # create learners from arbitrary list and set up a stack
         sl_lrnrs <- list()
@@ -106,11 +106,11 @@ est_Q <- function(Y,
         sl <- sl3::Lrnr_sl$new(learners = stack, metalearner = metalearner)
 
         # fit new Super Learner to the no-shift data and predict
-        sl_fit_noshift <- sl$train(task_noshift)
+        sl_fit_noshift <- suppressMessages(sl$train(task_noshift))
         pred_star_Qn <- sl_fit_noshift$predict()
 
         # fit new Super Learner to the shifted data and predict
-        sl_fit_shifted <- sl$train(task_shifted)
+        sl_fit_shifted <- suppressMessages(sl$train(task_shifted))
         pred_star_Qn_shifted <- sl_fit_shifted$predict()
     }
 

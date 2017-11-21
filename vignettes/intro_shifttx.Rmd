@@ -63,12 +63,8 @@ A <- rep(NA, n_obs)
 A[which(W == 0)] <- A0
 A[which(W == 1)] <- A1
 
-# create outcome and observed data structure
-#Y <- rnorm(n_obs, plogis(-1 + 10 * W * A^2 - tan(W)^2), sd = 1)
+# create outcome
 Y <- A + W + rnorm(n_obs)
-O <- as.data.frame(cbind(W, A, Y))
-colnames(O) <- c(paste0("W", seq_len(n_w)), "A", "Y")
-head(O)
 ```
 
 ---
@@ -88,6 +84,7 @@ tmle_shift <- tmle_shifttx(W = W,
                            bin_estimator = speedglmR6$new(),
                            parfit = FALSE
                           )
+tmle_shift
 ```
 
 Recall that the asymptotic distribution of TML estimators has been studied
@@ -131,7 +128,8 @@ may be obtained using the bootstrap or computed directly via the following
 $$ \sigma_n^2 = \frac{1}{n} \sum_{i = 1}^{n} D^2(\bar{Q}_n^*, g_n)(O_i)$$
 
 ```{r}
-ci_shift <- ci_shifttx(tmle_shift)
+ci_shift <- confint(tmle_shift)
+ci_shift
 ```
 
 ---
