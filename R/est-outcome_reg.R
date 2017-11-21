@@ -82,13 +82,13 @@ est_Q <- function(Y,
         task_noshift <- sl3::make_sl3_Task(data = data_O,
                                            covariates = c("A", "W"),
                                            outcome = "Y",
-                                           outcome_type = "binomial")
+                                           outcome_type = "quasibinomial")
 
         # make sl3 task for data with the shifted treatment
         task_shifted <- sl3::make_sl3_Task(data = data_O_shifted,
                                            covariates = c("A", "W"),
                                            outcome = "Y",
-                                           outcome_type = "binomial")
+                                           outcome_type = "quasibinomial")
 
         # create learners from arbitrary list and set up a stack
         sl_lrnrs <- list()
