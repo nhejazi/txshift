@@ -5,16 +5,20 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 ---
 
+```{r rmd_setup, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+rm(list = ls())
+library(here)
+library(sl3)
+library(condensier)
+library(shifttx)
+```
 
 ```{r sim_args}
 library(future)
 library(foreach)
 library(doFuture)
 registerDoFuture()
-
-library(sl3)
-library(condensier)
-library(shifttx)
 
 # parameters for simulating simple data for tmle-shift sketch
 n_w <- 1
