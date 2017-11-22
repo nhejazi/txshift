@@ -1,4 +1,4 @@
-#' Compute Targeted Minimum Loss-Based Estimates of Treatment Shift Parameters
+#' Compute Targeted Maximum Likelihood Estimate for Treatment Shift Parameter
 #'
 #' description THIS IS A USER-FACING WRAPPER FUNCTION
 #'
@@ -6,12 +6,16 @@
 #' @param A ...
 #' @param Y ...
 #' @param delta ...
-#' @param parallel ...
-#' @param Q_fit_method ...
+#' @param g_fit_args A \code{list} of arguments to be passed to the internal
+#'  function \code{est_g}, which then passes these same arguments on to the
+#'  function \code{fit_density} of the package \code{condensier}.
+#' @param Q_fit_args A \code{list} of arugments to be passed to the function to
+#'  estimate the outcome regression. Consult the documentation for the function
+#'  \code{est_Q} for details.
 #' @param fluc_method ...
 #' @param eif_tol ...
-#' @param ... Passed to internal function \code{est_g}, which then internally
-#'  passes these arguments to \code{fit_density} from package \code{condensier}.
+#'
+#' @importFrom condensier speedglmR6
 #'
 #' @return S3 object of class \code{shifttx} containing the results of the
 #'  procedure to compute a TML estimate of the treatment shift parameter.
@@ -22,36 +26,48 @@ tmle_shifttx <- function(W,
                          A,
                          Y,
                          delta,
-                         parallel = NULL,
-                         Q_fit_method = c("glm", "sl"),
-                         fluc_method = c("standard", "weighted"),
-                         eif_tol = 1e-7,
-                         ...) {
+                         g_fit_args = list(nbins = 20,
+                                           bin_method = "dhist",
+                                           bin_estimator =
+                                               condensier::speedglmR6$new(),
+                                           parfit = FALSE),
+                         Q_fit_args = list(fit_method = "sl",
+                                           glm_formula = "Y ~ .",
+                                           sl_learners = c("mean", "glm_fast"),
+                                           sl_metalearner = "nnls"),
+                         fluc_method = "standard",
+                         eif_tol = 1e-7
+                        ) {
     # check arguments
     # TODO
 
     # estimate the treatment mechanism (propensity score)
-    gn_estim <- est_g(A = A, W = W, delta = delta, ...)
+    gn_estim_in <- list(A = A, W = W, delta = delta)
+    gn_estim_args <- unlist(list(gn_estim_in, g_fit_args), recursive = FALSE)
+    gn_estim <- do.call(est_g, gn_estim_args)
 
     # estimate the outcome regression
-    Qn_estim <- est_Q(Y = Y, A = A, W = W, delta = delta,
-                      fit_method = Q_fit_method)
+    Qn_estim_in <- list(Y = Y, A = A, W = W, delta = delta)
+    Qn_estim_args <- unlist(list(Qn_estim_in, Q_fit_args), recursive = FALSE)
+    Qn_estim <- do.call(est_Q, Qn_estim_args)
 
-    # estimate the auxiliary covariate
+    # estimate the auxiliary ("clever") covariate
     Hn_estim <- est_Hn(gn = gn_estim)
 
-    # fit the regression for submodel fluctuation
+    # fit the logistic regression to fluctuate along the sub-model
     fitted_fluc_mod <- fit_fluc(Y = Y,
                                 Qn_scaled = Qn_estim,
                                 Hn = Hn_estim,
                                 method = fluc_method)
 
-    # compute the TML estimate for the treatment shift parameter
-    tml_estim <- tmle_eif(fluc_fit_out = fitted_fluc_mod, Hn = Hn_estim,
-                          Y = Y, tol_eif = eif_tol)
+    # compute Targeted Maximum Likelihood estimate for treatment shift parameter
+    tmle_eif_out <- tmle_eif(Y = Y,
+                             Hn = Hn_estim,
+                             fluc_fit_out = fitted_fluc_mod,
+                             tol_eif = eif_tol)
 
     # create output object
-    class(tml_estim) <- "shifttx"
-    return(tml_estim)
+    class(tmle_eif_out) <- "shifttx"
+    return(tmle_eif_out)
 }
 

@@ -48,6 +48,7 @@ est_Q <- function(Y,
     data_O <- as.data.frame(cbind(y_star, A, W))
     if (!is.matrix(W)) W <- as.matrix(W)
     colnames(data_O) <- c("Y", "A", paste0("W", seq_len(ncol(W))))
+    names_W <- colnames(data_O)[stringr::str_detect(colnames(data_O), "W")]
 
     # get the shifted treatment values
     a_shifted <- tx_shift(A = data_O$A, delta = delta,
@@ -80,13 +81,13 @@ est_Q <- function(Y,
     if (fit_method == "sl" & !is.null(sl_learners) & !is.null(sl_metalearner)) {
         # make sl3 task for original data
         task_noshift <- sl3::make_sl3_Task(data = data_O,
-                                           covariates = c("A", "W"),
+                                           covariates = c("A", names_W),
                                            outcome = "Y",
                                            outcome_type = "quasibinomial")
 
         # make sl3 task for data with the shifted treatment
         task_shifted <- sl3::make_sl3_Task(data = data_O_shifted,
-                                           covariates = c("A", "W"),
+                                           covariates = c("A", names_W),
                                            outcome = "Y",
                                            outcome_type = "quasibinomial")
 
