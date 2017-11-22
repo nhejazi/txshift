@@ -106,12 +106,11 @@ est_Q <- function(Y,
         sl <- sl3::Lrnr_sl$new(learners = stack, metalearner = metalearner)
 
         # fit new Super Learner to the no-shift data and predict
-        sl_fit_noshift <- suppressMessages(sl$train(task_noshift))
+        sl_fit_noshift <- sl$train(task_noshift)
         pred_star_Qn <- sl_fit_noshift$predict()
 
-        # fit new Super Learner to the shifted data and predict
-        sl_fit_shifted <- suppressMessages(sl$train(task_shifted))
-        pred_star_Qn_shifted <- sl_fit_shifted$predict()
+        # predict with Super Learner from unshifted data on shifted data
+        pred_star_Qn_shifted <- sl_fit_noshift$predict(task_shifted)
     }
 
     # avoid values that are exactly 0 or 1 in the scaled Qn and Qn_shifted
