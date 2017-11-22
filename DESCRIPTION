@@ -21,7 +21,8 @@ Imports:
     stats,
     sl3,
     condensier,
-    SuperLearner
+    SuperLearner,
+    stringr
 Suggests:
     testthat,
     knitr,

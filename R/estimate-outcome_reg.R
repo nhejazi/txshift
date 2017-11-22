@@ -24,6 +24,7 @@
 #'
 #' @importFrom stats glm as.formula predict
 #' @importFrom sl3 make_sl3_Task make_learner Stack Lrnr_sl
+#' @importFrom stringr str_detect
 #'
 #' @keywords internal
 #'

@@ -76,13 +76,17 @@ tmle_shift <- tmle_shifttx(W = W,
                            A = A,
                            Y = Y,
                            delta = 0.5,
-                           Q_fit_method = "glm",
+                           g_fit_args = list(nbins = 20,
+                                             bin_method = "dhist",
+                                             bin_estimator = speedglmR6$new(),
+                                             parfit = FALSE),
+                           Q_fit_args = list(fit_method = "sl",
+                                             glm_formula = "Y ~ .",
+                                             sl_learners = c("mean",
+                                                             "glm_fast"),
+                                             sl_metalearner = "nnls"),
                            fluc_method = "standard",
-                           eif_tol = 1e-7,
-                           nbins = 20,
-                           bin_method = "dhist",
-                           bin_estimator = speedglmR6$new(),
-                           parfit = FALSE
+                           eif_tol = 1e-7
                           )
 tmle_shift
 ```
