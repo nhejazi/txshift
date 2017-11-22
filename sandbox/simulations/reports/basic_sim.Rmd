@@ -16,7 +16,6 @@ library(shifttx)
 
 ```{r sim_args}
 library(future)
-library(foreach)
 library(doFuture)
 registerDoFuture()
 
@@ -34,7 +33,7 @@ n_obs <- c(50, 250, 1000)
 Q_fit_type <- c("glm", "sl")
 ```
 
-```{r run_sim}
+```{r run_sim, message = FALSE}
 # simulation
 for (fit_type in Q_fit_type) {
   for (samp in n_obs) {
@@ -49,17 +48,17 @@ for (fit_type in Q_fit_type) {
       }
     
       ## baseline covariate -- simple, binary
-      W <- as.numeric(replicate(n_w, rbinom(n_obs, 1, 0.5)))
+      W <- as.numeric(replicate(n_w, rbinom(samp, 1, 0.5)))
     
       ## set and organize treatment based on baseline W
       A1 <- rnorm(length(which(W == 1)), mean = a1_mean, sd = 1)
       A0 <- rnorm(length(which(W == 0)), mean = a0_mean, sd = 1)
-      A <- rep(NA, n_obs)
+      A <- rep(NA, samp)
       A[which(W == 0)] <- A0
       A[which(W == 1)] <- A1
     
       # create outcome
-      Y <- A + W + rnorm(n_obs)
+      Y <- A + W + rnorm(samp)
     
       # do a TMLE
       tmle_shift <- tmle_shifttx(W = W,
