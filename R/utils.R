@@ -26,8 +26,8 @@ confint.shifttx <- function(object,
     norm_bounds <- c(-1, 1) * abs(stats::qnorm(p = (1 - level) / 2))
 
     # compute the EIF variance multiplier for the CI
-    n_obs <- length(object$eif)
-    sd_eif <- sqrt(object$var / n_obs)
+    # NOTE: the variance value is already scaled by length of observations
+    sd_eif <- sqrt(object$var)
 
     # compute the interval around the point estimate
     ci_psi <- norm_bounds * sd_eif + object$psi
