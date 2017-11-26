@@ -31,6 +31,12 @@ est_g <- function(A,
     if (!is.matrix(W)) W <- as.matrix(W)
     colnames(data_O) <- c("A", paste0("W", seq_len(ncol(W))))
 
+    # if fitting sl3 density make sl3 task with data
+    if (fit_type == "sl") {
+        task <- sl3::sl3_Task$new(data_O, outcome = "A",
+                                  covariates = paste0("W", seq_len(ncol(W))))
+    }
+
     # fit conditional density with condensier
     if (fit_type != "sl") {
         fit_g_A <- condensier::fit_density(X = c(paste0("W", seq_len(ncol(W)))),
@@ -43,18 +49,31 @@ est_g <- function(A,
                                       list(nrounds = 50,
                                            objective = "reg:logistic")
                                      )
-        built_bin_ests <- list()
-        for (i in seq_len(bin_estimator_args_in)) {
-            built_bin_ests[[i]] <- sl3::make_learner(bin_est_lib[[i]],
-                                                     bin_estimator_args_in[[i]])
+        built_bin_est <- list()
+        for (i in seq_along(bin_est_lib)) {
+            built_bin_est[[i]] <- sl3::make_learner(bin_est_lib[[i]],
+                                                    bin_estimator_args_in[[i]])
         }
         condensier_args_in <- list(list(nbins = 25, bin_method = "equal.len",
-                                        pool = TRUE, bin_estimator = NULL),
+                                        pool = TRUE),
                                    list(nbins = 20, bin_method = "equal.mass",
-                                        pool = TRUE, bin_estimator = NULL),
+                                        pool = TRUE),
                                    list(nbins = 35, bin_method = "equal.len",
-                                        pool = TRUE, bin_estimator = NULL)
+                                        pool = TRUE)
                                   )
+        lrnrs_sl_in <- list()
+        for (i in seq_along(bin_est_lib)) {
+            make_condensier_args <- unlist(list(condensier_args_in[[i]],
+                                                built_bin_est[[i]]),
+                                           recursive = FALSE)
+            names(make_condensier_args)[[length(make_condensier_args)]] <-
+                "bin_estimator"
+            lrnrs_sl_in[[i]] <- sl3::make_learner(sl3::Lrnr_condensier,
+                                                  unlist(make_condensier_args,
+                                                         recursive = TRUE))
+        }
+        sl <- sl3::Lrnr_sl$new(learners = lrnrs_sl_in, metalearner =
+                                 sl3::Lrnr_solnp_density$new())
     } else {
         stop("Inappropriate fit_type specified. Please fix, then try again.")
     }
