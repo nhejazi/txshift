@@ -2,7 +2,7 @@
 title: "Basic Simulations for Targeted Learning in Stochastic Treatment Regimes"
 author: "Nima Hejazi and David Benkeser"
 date: "`r Sys.Date()`"
-output: rmarkdown::pdf_vignette
+output: pdf_document
 ---
 
 ```{r rmd_setup, echo = FALSE, message = FALSE}
