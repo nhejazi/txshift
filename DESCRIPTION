@@ -1,5 +1,6 @@
 Package: shifttx
-Title: Targeted Maximum Likelihood Estimation with Stochastic Interventions
+Title: Targeted Maximum Likelihood Estimation of Continuous Treatment Effects
+  with Stochastic Interventions
 Version: 0.0.3
 Authors@R: c(
     person("Nima", "Hejazi", email = "nhejazi@berkeley.edu",
@@ -19,10 +20,9 @@ Description: Targeted minimum loss-based estimates of population-level causal
 Depends: R (>= 3.2.0)
 Imports:
     stats,
-    sl3,
+    stringr,
     condensier,
-    SuperLearner,
-    stringr
+    sl3
 Suggests:
     testthat,
     knitr,
