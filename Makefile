@@ -17,3 +17,6 @@ doc:
 build:
 	Rscript -e "devtools::build()"
 
+style:
+	Rscript -e "styler::style_pkg()"
+

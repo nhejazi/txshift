@@ -125,6 +125,13 @@ If you encounter any bugs or have any specific feature requests, please
 
 -----
 
+## Funding
+
+The development of this software was supported in part through a grant
+from the National Library of Medicine of the NIH (T32 LM012417).
+
+-----
+
 ## License
 
 © 2017 [Nima S. Hejazi](http://nimahejazi.org)

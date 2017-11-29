@@ -117,6 +117,13 @@ issue](https://github.com/nhejazi/shifttx/issues).
 
 ---
 
+## Funding
+
+The development of this software was supported in part through a grant from the
+National Library of Medicine of the NIH (T32 LM012417).
+
+---
+
 ## License
 
 &copy; 2017 [Nima S. Hejazi](http://nimahejazi.org)

@@ -1,5 +1,5 @@
 ---
-output: rmarkdown::md_document
+output: rmarkdown::github_document
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -88,6 +88,13 @@ head(est_target)
 
 If you encounter any bugs or have any specific feature requests, please [file an
 issue](https://github.com/nhejazi/shifttx/issues).
+
+---
+
+## Funding
+
+The development of this software was supported in part through a grant from the
+National Library of Medicine of the NIH (T32 LM012417).
 
 ---
 
