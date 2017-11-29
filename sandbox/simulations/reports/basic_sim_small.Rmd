@@ -2,7 +2,7 @@
 title: "Basic Simulations for Targeted Learning in Stochastic Treatment Regimes"
 author: "Nima Hejazi and David Benkeser"
 date: "`r Sys.Date()`"
-output: pdf_document
+output: html_document
 ---
 
 ```{r rmd_setup, echo = FALSE, message = FALSE}
@@ -95,8 +95,8 @@ delta_shift <- 0.5
 
 # meta-parameters for controlling simulation type
 seed_int <- 9461287
-n_sim <- 1e3
-n_obs <- c(50, 250, 1000)
+n_sim <- 500
+n_obs <- c(100, 1000)
 ```
 
 ### Fitting outcome model with GLMs
@@ -154,8 +154,7 @@ simple_sim_sl <- foreach(samp_it = seq_along(n_obs), .combine = rbind) %do% {
                               n_w = n_w, w1_prob = w_win_prob,
                               a1_mean = a1_mean, a0_mean = a0_mean,
                               fit_type = "sl",
-                              sl_lrnrs = c("mean", "glm_fast", "randomForest",
-                                           "xgboost"),
+                              sl_lrnrs = c("mean", "glm_fast", "randomForest"),
                               sl_meta = "nnls")
     out
   }
