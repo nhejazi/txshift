@@ -1,4 +1,4 @@
-#' Estimate the Treatment Mechanism
+#' Estimate the Treatment Mechanism (Propensity Score)
 #'
 #' Compute the propensity score (treatment mechanism) for the observed data,
 #' including the shift. This returns the propensity score for the observed data

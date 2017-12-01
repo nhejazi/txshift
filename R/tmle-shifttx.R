@@ -5,6 +5,12 @@
 #' @param W ...
 #' @param A ...
 #' @param Y ...
+#' @param C A \code{numeric} binary vector giving information on whether a given
+#'  observation was subject to censoring. This is used to compute an IPCW-TMLE
+#'  in cases where two-stage sampling is performed. The default assumes that no
+#'  censoring was present (i.e., a two-stage design was NOT used). N.B., this is
+#'  equivalent to \Delta from the original Rose & van der Laan manuscript that
+#'  introduced the IPCW-TMLE.
 #' @param delta ...
 #' @param g_fit_args A \code{list} of arguments to be passed to the internal
 #'  function \code{est_g}, which then passes these same arguments on to the
@@ -15,6 +21,7 @@
 #' @param fluc_method ...
 #' @param eif_tol ...
 #'
+#' @importFrom dplyr filter
 #' @importFrom condensier speedglmR6
 #'
 #' @return S3 object of class \code{shifttx} containing the results of the
@@ -25,6 +32,7 @@
 tmle_shifttx <- function(W,
                          A,
                          Y,
+                         C = rep(1, length(Y)),
                          delta,
                          g_fit_args = list(nbins = 20,
                                            bin_method = "dhist",
@@ -38,8 +46,14 @@ tmle_shifttx <- function(W,
                          fluc_method = "standard",
                          eif_tol = 1e-7
                         ) {
-    # check arguments
-    # TODO
+    # TODO: check arguments
+
+    # perform subsetting of data and implement IPC weighting if required
+    if (all(unique(C) != 1)) {
+      censoring_weights <- ipcw_estim(V = W, Delta = C)
+      O_nocensoring <- as.data.frame(cbind(W, A, C, Y)) %>%
+        dplyr::filter(C == 1)
+    }
 
     # estimate the treatment mechanism (propensity score)
     gn_estim_in <- list(A = A, W = W, delta = delta)
@@ -54,7 +68,7 @@ tmle_shifttx <- function(W,
     # estimate the auxiliary ("clever") covariate
     Hn_estim <- est_Hn(gn = gn_estim)
 
-    # fit the logistic regression to fluctuate along the sub-model
+    # fit logistic regression to fluctuate along the sub-model
     fitted_fluc_mod <- fit_fluc(Y = Y,
                                 Qn_scaled = Qn_estim,
                                 Hn = Hn_estim,

@@ -1,4 +1,4 @@
-#' Fit Logistic Regression in the Fluctuation Submodel
+#' Fit Logistic Regression to Traverse the Fluctuation Submodel
 #'
 #' description
 #'
