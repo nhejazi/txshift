@@ -23,59 +23,37 @@
 est_g <- function(A,
                   W,
                   delta = 0,
+                  ipc_weights = NULL,
                   fit_type = "standard",
+                  lrnrs_sl = NULL,
                   ...) {
 
     # make data object
-    data_O <- as.data.frame(cbind(A, W))
+    data_O <- data.table::as.data.table(cbind(A, W))
     if (!is.matrix(W)) W <- as.matrix(W)
-    colnames(data_O) <- c("A", paste0("W", seq_len(ncol(W))))
+    data.table::setnames(data_O, c("A", paste0("W", seq_len(ncol(W)))))
 
     # if fitting sl3 density make sl3 task with data
     if (fit_type == "sl") {
-        task <- sl3::sl3_Task$new(data_O, outcome = "A",
-                                  covariates = paste0("W", seq_len(ncol(W))))
+        if(!is.null(ipc_weights)) {
+          data_O$ipc_weights <- ipc_weights
+          task <- sl3::sl3_Task$new(data_O, outcome = "A",
+                                    covariates = paste0("W", seq_len(ncol(W))),
+                                    weights = "ipc_weights")
+        } else {
+          task <- sl3::sl3_Task$new(data_O, outcome = "A",
+                                    covariates = paste0("W", seq_len(ncol(W))))
+        }
     }
 
     # fit conditional density with condensier
-    if (fit_type != "sl") {
+    if (fit_type == "standard" & is.null(lrnrs_sl)) {
         fit_g_A <- condensier::fit_density(X = c(paste0("W", seq_len(ncol(W)))),
                                            Y = "A", input_data = data_O, ...)
-    } else if (fit_type == "sl") {
-        bin_est_lib <- list(Lrnr_glm_fast, Lrnr_xgboost, Lrnr_xgboost)
-        bin_estimator_args_in <- list(list(family = "binomial"),
-                                      list(nrounds = 50,
-                                           objective = "reg:logistic"),
-                                      list(nrounds = 50,
-                                           objective = "reg:logistic")
-                                     )
-        built_bin_est <- list()
-        for (i in seq_along(bin_est_lib)) {
-            built_bin_est[[i]] <- sl3::make_learner(bin_est_lib[[i]],
-                                                    bin_estimator_args_in[[i]])
-        }
-        condensier_args_in <- list(list(nbins = 25, bin_method = "equal.len",
-                                        pool = TRUE),
-                                   list(nbins = 20, bin_method = "equal.mass",
-                                        pool = TRUE),
-                                   list(nbins = 35, bin_method = "equal.len",
-                                        pool = TRUE)
-                                  )
-        lrnrs_sl_in <- list()
-        for (i in seq_along(bin_est_lib)) {
-            make_condensier_args <- unlist(list(condensier_args_in[[i]],
-                                                built_bin_est[[i]]),
-                                           recursive = FALSE)
-            names(make_condensier_args)[[length(make_condensier_args)]] <-
-                "bin_estimator"
-            lrnrs_sl_in[[i]] <- sl3::make_learner(sl3::Lrnr_condensier,
-                                                  unlist(make_condensier_args,
-                                                         recursive = TRUE))
-        }
-        sl <- sl3::Lrnr_sl$new(learners = lrnrs_sl_in, metalearner =
-                                 sl3::Lrnr_solnp_density$new())
-    } else {
-        stop("Inappropriate fit_type specified. Please fix, then try again.")
+    } else if (fit_type == "sl" & !is.null(lrnrs_sl)) {
+        sl <- sl3::Lrnr_sl$new(learners = lrnrs_sl, metalearner =
+                               sl3::Lrnr_solnp_density$new())
+        sl_fit <- sl$train(task)
     }
 
     # predict probabilities for the un-shifted data (A = a)

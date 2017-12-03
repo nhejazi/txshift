@@ -25,6 +25,7 @@
 #' @importFrom stats glm as.formula predict
 #' @importFrom sl3 make_sl3_Task make_learner Stack Lrnr_sl
 #' @importFrom stringr str_detect
+#' @importFrom data.table as.data.table setnames
 #'
 #' @keywords internal
 #'
@@ -37,18 +38,20 @@ est_Q <- function(Y,
                   A,
                   W,
                   delta = 0,
+                  ipc_weights = NULL,
                   fit_method = c("glm", "sl"),
                   glm_formula = "Y ~ .",
-                  sl_learners = c("mean", "glm_fast"),
+                  sl_learners = c(list("Lrnr_mean"),
+                                  list("Lrnr_glm_fast")),
                   sl_metalearner = "nnls") {
 
     # scale the outcome for the logit transform
     y_star <- bound_scaling(Y = Y, scale = "zero_one")
 
     # make data object but using y_star rather than raw outcome
-    data_O <- as.data.frame(cbind(y_star, A, W))
+    data_O <- data.table::as.data.table(cbind(y_star, A, W))
     if (!is.matrix(W)) W <- as.matrix(W)
-    colnames(data_O) <- c("Y", "A", paste0("W", seq_len(ncol(W))))
+    data.table::setnames(data_O, c("Y", "A", paste0("W", seq_len(ncol(W)))))
     names_W <- colnames(data_O)[stringr::str_detect(colnames(data_O), "W")]
 
     # get the shifted treatment values
@@ -65,7 +68,8 @@ est_Q <- function(Y,
         suppressWarnings(
           fit_Qn <- stats::glm(stats::as.formula(glm_formula),
                                data = data_O,
-                               family = "binomial")
+                               family = "binomial",
+                               weights = ipc_weights)
         )
 
         # predict Qn for the un-shifted data (A = a)
@@ -80,19 +84,40 @@ est_Q <- function(Y,
     }
 
     if (fit_method == "sl" & !is.null(sl_learners) & !is.null(sl_metalearner)) {
-        # make sl3 task for original data
-        task_noshift <- sl3::make_sl3_Task(data = data_O,
-                                           covariates = c("A", names_W),
-                                           outcome = "Y",
-                                           outcome_type = "quasibinomial")
+        # add IPC weights to the data
+        if (!is.null(ipc_weights)) {
+          data_O$ipc_weights <- ipc_weights
+          data_O_shifted$ipc_weights <- ipc_weights
 
-        # make sl3 task for data with the shifted treatment
-        task_shifted <- sl3::make_sl3_Task(data = data_O_shifted,
-                                           covariates = c("A", names_W),
-                                           outcome = "Y",
-                                           outcome_type = "quasibinomial")
+          # make sl3 task for original data
+          task_noshift <- sl3::make_sl3_Task(data = data_O,
+                                             covariates = c("A", names_W),
+                                             outcome = "Y",
+                                             outcome_type = "quasibinomial",
+                                             weights = "ipc_weights")
+
+          # make sl3 task for data with the shifted treatment
+          task_shifted <- sl3::make_sl3_Task(data = data_O_shifted,
+                                             covariates = c("A", names_W),
+                                             outcome = "Y",
+                                             outcome_type = "quasibinomial",
+                                             weights = "ipc_weights")
+        } else {
+          # make sl3 task for original data
+          task_noshift <- sl3::make_sl3_Task(data = data_O,
+                                             covariates = c("A", names_W),
+                                             outcome = "Y",
+                                             outcome_type = "quasibinomial")
+
+          # make sl3 task for data with the shifted treatment
+          task_shifted <- sl3::make_sl3_Task(data = data_O_shifted,
+                                             covariates = c("A", names_W),
+                                             outcome = "Y",
+                                             outcome_type = "quasibinomial")
+        }
 
         # create learners from arbitrary list and set up a stack
+        # TODO: change to use sl3::make_learner_stack
         sl_lrnrs <- list()
         for (i in seq_along(sl_learners)) {
           sl_lrnrs[[i]] <- eval(parse(text = paste("sl3::Lrnr", sl_learners[i],

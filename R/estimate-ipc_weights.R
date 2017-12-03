@@ -1,4 +1,4 @@
-#' Estimate Inverse Probability of Censoring Weights for IPCW-TMLEs
+#' Estimate Inverse Probability of Censoring Weights
 #'
 #' description
 #'
@@ -13,9 +13,9 @@
 #'  predicted probability of belonging to a censoring class as computed using
 #'  standard logistic regression.
 #
-ipcw_est <- funcion(V,
+est_ipcw <- funcion(V,
                     Delta) {
-  # fit a logistic regression to get class probabilities for IPCW
+  # fit logistic regression to get class probabilities for IPCW
   ipcw_reg <- stats::glm(Delta ~ V, family = stats::binomial)
   ipcw_probs <- stats::predict(object = ipcw_reg,
                                newdata = as.data.frame(cbind(V, Delta)))

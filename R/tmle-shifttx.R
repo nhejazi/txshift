@@ -48,9 +48,9 @@ tmle_shifttx <- function(W,
                         ) {
     # TODO: check arguments
 
-    # perform subsetting of data and implement IPC weighting if required
+    # perform sub-setting of data and implement IPC weighting if required
     if (all(unique(C) != 1)) {
-      censoring_weights <- ipcw_estim(V = W, Delta = C)
+      censoring_weights <- est_ipcw(V = W, Delta = C)
       O_nocensoring <- as.data.frame(cbind(W, A, C, Y)) %>%
         dplyr::filter(C == 1)
     }
