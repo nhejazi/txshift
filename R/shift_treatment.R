@@ -15,17 +15,16 @@ tx_shift <- function(A,
                      delta,
                      type = "additive",
                      direc = c("down", "up")) {
-    # could support more than just additive shifts?
-    if (type == "additive") {
-        if (direc == "down") {
-            a_shift <- A - delta
-        }
-        if (direc == "up") {
-            a_shift <- A + delta
-        }
+  # could support more than just additive shifts?
+  if (type == "additive") {
+    if (direc == "down") {
+      a_shift <- A - delta
     }
-    # can support other types of treatment shifts
-    # (e.g., multiplicative shifting?)
-    return(a_shift)
+    if (direc == "up") {
+      a_shift <- A + delta
+    }
+  }
+  # can support other types of treatment shifts
+  # (e.g., multiplicative shifting?)
+  return(a_shift)
 }
-

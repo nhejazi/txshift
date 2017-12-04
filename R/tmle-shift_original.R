@@ -51,19 +51,23 @@ tmle_shift <- function(Y, A, W,
 
   # this function takes as input initial estimator of Q and g and returns
   # their updated value
-  ini.out <- f_iter(Qn = Qn, gn = gn, gn0d = NULL, prev_sum = 0, first = TRUE,
-                    h_int = h_int, W = W, A = A, A_val = A_val, Y = Y,
-                    delta = delta)
+  ini.out <- f_iter(
+    Qn = Qn, gn = gn, gn0d = NULL, prev_sum = 0, first = TRUE,
+    h_int = h_int, W = W, A = A, A_val = A_val, Y = Y,
+    delta = delta
+  )
 
   gn0d <- ini.out$gn0d
-  iter = 0
+  iter <- 0
 
   # iterative procedure
-  while(abs(ini.out$eps) > tol & iter <= iter_max){
-    iter = iter + 1
-    new.out <- f_iter(Qn = ini.out$Qn, gn = ini.out$gn, gn0d = gn0d,
-                      prev_sum = ini.out$prev_sum, first = FALSE, h_int = h_int,
-                      W = W, A = A, A_val = A_val, Y = Y, delta = delta)
+  while (abs(ini.out$eps) > tol & iter <= iter_max) {
+    iter <- iter + 1
+    new.out <- f_iter(
+      Qn = ini.out$Qn, gn = ini.out$gn, gn0d = gn0d,
+      prev_sum = ini.out$prev_sum, first = FALSE, h_int = h_int,
+      W = W, A = A, A_val = A_val, Y = Y, delta = delta
+    )
     ini.out <- new.out
   }
   Qnd <- t(sapply(seq_len(nrow(W)), function(i) ini.out$Qn(A_val + delta, W[i, ])))
@@ -122,18 +126,22 @@ f_iter <- function(Qn, gn, gn0d = NULL, prev_sum = 0, first = FALSE, h_int,
   H1 <- gn(A - delta, W) / gn(A, W)
 
   # equation (8)
-  est_eqn_min  <- stats::uniroot(est_eqn, c(-1, 1),  Y = Y, A = A, W = W,
-                                 delta = delta, QnAW = QnAW, Qn = Qn, H1 = H1,
-                                 gn0d = gn0d, EQnd = EQnd, D2 = D2,
-                                 prev_sum = prev_sum)
+  est_eqn_min <- stats::uniroot(
+    est_eqn, c(-1, 1), Y = Y, A = A, W = W,
+    delta = delta, QnAW = QnAW, Qn = Qn, H1 = H1,
+    gn0d = gn0d, EQnd = EQnd, D2 = D2,
+    prev_sum = prev_sum
+  )
   eps <- est_eqn_min$root
 
   # updated values
-  gn_new   <- function(a, w) exp(eps * Qn(a + delta, w)) * gn(a, w)
-  Qn_new   <- function(a, w) Qn(a, w) + eps * gn(a - delta, w) / gn(a, w)
+  gn_new <- function(a, w) exp(eps * Qn(a + delta, w)) * gn(a, w)
+  Qn_new <- function(a, w) Qn(a, w) + eps * gn(a - delta, w) / gn(a, w)
   prev_sum <- prev_sum + eps * D2
-  return(list(Qn = Qn_new, gn = gn_new, prev_sum = prev_sum, eps = eps,
-              gn0d = gn0d))
+  return(list(
+    Qn = Qn_new, gn = gn_new, prev_sum = prev_sum, eps = eps,
+    gn0d = gn0d
+  ))
 }
 
 ################################################################################
@@ -162,9 +170,7 @@ f_iter <- function(Qn, gn, gn0d = NULL, prev_sum = 0, first = FALSE, h_int,
 #
 est_eqn <- function(eps, QnAW, Qn, H1, gn0d, EQnd, D2, prev_sum, Y, A, W,
                     delta) {
-
   sum((Y - (QnAW + eps * H1)) * H1 + (Qn(A + delta, W) - EQnd) -
-      rowSums(D2 * exp(eps * D2 + prev_sum) * gn0d) /
+    rowSums(D2 * exp(eps * D2 + prev_sum) * gn0d) /
       rowSums(exp(eps * D2 + prev_sum) * gn0d))
 }
-

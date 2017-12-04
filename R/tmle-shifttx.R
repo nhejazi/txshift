@@ -34,56 +34,62 @@ tmle_shifttx <- function(W,
                          Y,
                          C = rep(1, length(Y)),
                          delta,
-                         g_fit_args = list(nbins = 20,
-                                           bin_method = "dhist",
-                                           bin_estimator =
-                                               condensier::speedglmR6$new(),
-                                           parfit = FALSE),
-                         Q_fit_args = list(fit_method = "sl",
-                                           glm_formula = "Y ~ .",
-                                           sl_learners = c("mean", "glm_fast"),
-                                           sl_metalearner = "nnls"),
+                         g_fit_args = list(
+                           nbins = 20,
+                           bin_method = "dhist",
+                           bin_estimator =
+                             condensier::speedglmR6$new(),
+                           parfit = FALSE
+                         ),
+                         Q_fit_args = list(
+                           fit_method = "sl",
+                           glm_formula = "Y ~ .",
+                           sl_learners = c("mean", "glm_fast"),
+                           sl_metalearner = "nnls"
+                         ),
                          fluc_method = "standard",
-                         eif_tol = 1e-7
-                        ) {
-    # TODO: check arguments
+                         eif_tol = 1e-7) {
+  # TODO: check arguments
 
-    # perform sub-setting of data and implement IPC weighting if required
-    if (all(unique(C) != 1)) {
-      cens_weights <- est_ipcw(V = W, Delta = C)
-      O_nocensoring <- as.data.frame(cbind(W, A, C, Y)) %>%
-        dplyr::filter(C == 1)
-    } else {
-      cens_weights <- C
-    }
+  # perform sub-setting of data and implement IPC weighting if required
+  if (all(unique(C) != 1)) {
+    cens_weights <- est_ipcw(V = W, Delta = C)
+    O_nocensoring <- as.data.frame(cbind(W, A, C, Y)) %>%
+      dplyr::filter(C == 1)
+  } else {
+    cens_weights <- C
+  }
 
-    # estimate the treatment mechanism (propensity score)
-    gn_estim_in <- list(A = A, W = W, delta = delta, ipc_weights = cens_weights)
-    gn_estim_args <- unlist(list(gn_estim_in, g_fit_args), recursive = FALSE)
-    gn_estim <- do.call(est_g, gn_estim_args)
+  # estimate the treatment mechanism (propensity score)
+  gn_estim_in <- list(A = A, W = W, delta = delta, ipc_weights = cens_weights)
+  gn_estim_args <- unlist(list(gn_estim_in, g_fit_args), recursive = FALSE)
+  gn_estim <- do.call(est_g, gn_estim_args)
 
-    # estimate the outcome regression
-    Qn_estim_in <- list(Y = Y, A = A, W = W, delta = delta)
-    Qn_estim_args <- unlist(list(Qn_estim_in, Q_fit_args), recursive = FALSE)
-    Qn_estim <- do.call(est_Q, Qn_estim_args)
+  # estimate the outcome regression
+  Qn_estim_in <- list(Y = Y, A = A, W = W, delta = delta)
+  Qn_estim_args <- unlist(list(Qn_estim_in, Q_fit_args), recursive = FALSE)
+  Qn_estim <- do.call(est_Q, Qn_estim_args)
 
-    # estimate the auxiliary ("clever") covariate
-    Hn_estim <- est_Hn(gn = gn_estim)
+  # estimate the auxiliary ("clever") covariate
+  Hn_estim <- est_Hn(gn = gn_estim)
 
-    # fit logistic regression to fluctuate along the sub-model
-    fitted_fluc_mod <- fit_fluc(Y = Y,
-                                Qn_scaled = Qn_estim,
-                                Hn = Hn_estim,
-                                method = fluc_method)
+  # fit logistic regression to fluctuate along the sub-model
+  fitted_fluc_mod <- fit_fluc(
+    Y = Y,
+    Qn_scaled = Qn_estim,
+    Hn = Hn_estim,
+    method = fluc_method
+  )
 
-    # compute Targeted Maximum Likelihood estimate for treatment shift parameter
-    tmle_eif_out <- tmle_eif(Y = Y,
-                             Hn = Hn_estim,
-                             fluc_fit_out = fitted_fluc_mod,
-                             tol_eif = eif_tol)
+  # compute Targeted Maximum Likelihood estimate for treatment shift parameter
+  tmle_eif_out <- tmle_eif(
+    Y = Y,
+    Hn = Hn_estim,
+    fluc_fit_out = fitted_fluc_mod,
+    tol_eif = eif_tol
+  )
 
-    # create output object
-    class(tmle_eif_out) <- "shifttx"
-    return(tmle_eif_out)
+  # create output object
+  class(tmle_eif_out) <- "shifttx"
+  return(tmle_eif_out)
 }
-

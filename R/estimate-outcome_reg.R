@@ -41,111 +41,135 @@ est_Q <- function(Y,
                   ipc_weights = NULL,
                   fit_method = c("glm", "sl"),
                   glm_formula = "Y ~ .",
-                  sl_learners = c(list("Lrnr_mean"),
-                                  list("Lrnr_glm_fast")),
+                  sl_learners = c(
+                    list("Lrnr_mean"),
+                    list("Lrnr_glm_fast")
+                  ),
                   sl_metalearner = "nnls") {
 
-    # scale the outcome for the logit transform
-    y_star <- bound_scaling(Y = Y, scale = "zero_one")
+  # scale the outcome for the logit transform
+  y_star <- bound_scaling(Y = Y, scale = "zero_one")
 
-    # make data object but using y_star rather than raw outcome
-    data_O <- data.table::as.data.table(cbind(y_star, A, W))
-    if (!is.matrix(W)) W <- as.matrix(W)
-    data.table::setnames(data_O, c("Y", "A", paste0("W", seq_len(ncol(W)))))
-    names_W <- colnames(data_O)[stringr::str_detect(colnames(data_O), "W")]
+  # make data object but using y_star rather than raw outcome
+  data_O <- data.table::as.data.table(cbind(y_star, A, W))
+  if (!is.matrix(W)) W <- as.matrix(W)
+  data.table::setnames(data_O, c("Y", "A", paste0("W", seq_len(ncol(W)))))
+  names_W <- colnames(data_O)[stringr::str_detect(colnames(data_O), "W")]
 
-    # get the shifted treatment values
-    a_shifted <- tx_shift(A = data_O$A, delta = delta,
-                          type = "additive", direc = "up")
+  # get the shifted treatment values
+  a_shifted <- tx_shift(
+    A = data_O$A, delta = delta,
+    type = "additive", direc = "up"
+  )
 
-    # explicitly copy data.table and replace (by reference) A w/ A = a + delta
-    data_O_shifted <- data.table::copy(data_O)
-    data_O_shifted[, A := a_shifted]
+  # explicitly copy data.table and replace (by reference) A w/ A = a + delta
+  data_O_shifted <- data.table::copy(data_O)
+  data_O_shifted[, A := a_shifted]
 
-    if (fit_method == "glm" & !is.null(glm_formula)) {
-        # obtain a logistic regression fit for the (scaled) outcome regression
-        suppressWarnings(
-          fit_Qn <- stats::glm(stats::as.formula(glm_formula),
-                               data = data_O,
-                               family = "binomial",
-                               weights = ipc_weights)
-        )
+  if (fit_method == "glm" & !is.null(glm_formula)) {
+    # obtain a logistic regression fit for the (scaled) outcome regression
+    suppressWarnings(
+      fit_Qn <- stats::glm(
+        stats::as.formula(glm_formula),
+        data = data_O,
+        family = "binomial",
+        weights = ipc_weights
+      )
+    )
 
-        # predict Qn for the un-shifted data (A = a)
-        pred_star_Qn <- stats::predict(fit_Qn,
-                                       newdata = data_O,
-                                       type = "response")
+    # predict Qn for the un-shifted data (A = a)
+    pred_star_Qn <- stats::predict(
+      fit_Qn,
+      newdata = data_O,
+      type = "response"
+    )
 
-        # predict Qn for the shifted data (A = a + delta)
-        pred_star_Qn_shifted <- stats::predict(fit_Qn,
-                                               newdata = data_O_shifted,
-                                               type = "response")
+    # predict Qn for the shifted data (A = a + delta)
+    pred_star_Qn_shifted <- stats::predict(
+      fit_Qn,
+      newdata = data_O_shifted,
+      type = "response"
+    )
+  }
+
+  if (fit_method == "sl" & !is.null(sl_learners) & !is.null(sl_metalearner)) {
+    # add IPC weights to the data
+    if (!is.null(ipc_weights)) {
+      data_O$ipc_weights <- ipc_weights
+      data_O_shifted$ipc_weights <- ipc_weights
+
+      # make sl3 task for original data
+      task_noshift <- sl3::make_sl3_Task(
+        data = data_O,
+        covariates = c("A", names_W),
+        outcome = "Y",
+        outcome_type = "quasibinomial",
+        weights = "ipc_weights"
+      )
+
+      # make sl3 task for data with the shifted treatment
+      task_shifted <- sl3::make_sl3_Task(
+        data = data_O_shifted,
+        covariates = c("A", names_W),
+        outcome = "Y",
+        outcome_type = "quasibinomial",
+        weights = "ipc_weights"
+      )
+    } else {
+      # make sl3 task for original data
+      task_noshift <- sl3::make_sl3_Task(
+        data = data_O,
+        covariates = c("A", names_W),
+        outcome = "Y",
+        outcome_type = "quasibinomial"
+      )
+
+      # make sl3 task for data with the shifted treatment
+      task_shifted <- sl3::make_sl3_Task(
+        data = data_O_shifted,
+        covariates = c("A", names_W),
+        outcome = "Y",
+        outcome_type = "quasibinomial"
+      )
     }
 
-    if (fit_method == "sl" & !is.null(sl_learners) & !is.null(sl_metalearner)) {
-        # add IPC weights to the data
-        if (!is.null(ipc_weights)) {
-          data_O$ipc_weights <- ipc_weights
-          data_O_shifted$ipc_weights <- ipc_weights
-
-          # make sl3 task for original data
-          task_noshift <- sl3::make_sl3_Task(data = data_O,
-                                             covariates = c("A", names_W),
-                                             outcome = "Y",
-                                             outcome_type = "quasibinomial",
-                                             weights = "ipc_weights")
-
-          # make sl3 task for data with the shifted treatment
-          task_shifted <- sl3::make_sl3_Task(data = data_O_shifted,
-                                             covariates = c("A", names_W),
-                                             outcome = "Y",
-                                             outcome_type = "quasibinomial",
-                                             weights = "ipc_weights")
-        } else {
-          # make sl3 task for original data
-          task_noshift <- sl3::make_sl3_Task(data = data_O,
-                                             covariates = c("A", names_W),
-                                             outcome = "Y",
-                                             outcome_type = "quasibinomial")
-
-          # make sl3 task for data with the shifted treatment
-          task_shifted <- sl3::make_sl3_Task(data = data_O_shifted,
-                                             covariates = c("A", names_W),
-                                             outcome = "Y",
-                                             outcome_type = "quasibinomial")
-        }
-
-        # create learners from arbitrary list and set up a stack
-        # TODO: change to use sl3::make_learner_stack
-        sl_lrnrs <- list()
-        for (i in seq_along(sl_learners)) {
-          sl_lrnrs[[i]] <- eval(parse(text = paste("sl3::Lrnr", sl_learners[i],
-                                                   sep = "_")))
-        }
-        sl_lrnrs_ready <- lapply(sl_lrnrs, sl3::make_learner)
-        stack <- sl3::make_learner(sl3::Stack, sl_lrnrs_ready)
-
-        # extract meta-learner and create an sl3 Super Learner
-        metalearner <- sl3::make_learner(eval(parse(text = paste("Lrnr",
-                                                                 sl_metalearner,
-                                                                 sep = "_"))))
-        sl <- sl3::Lrnr_sl$new(learners = stack, metalearner = metalearner)
-
-        # fit new Super Learner to the no-shift data and predict
-        sl_fit_noshift <- sl$train(task_noshift)
-        pred_star_Qn <- sl_fit_noshift$predict()
-
-        # predict with Super Learner from unshifted data on shifted data
-        pred_star_Qn_shifted <- sl_fit_noshift$predict(task_shifted)
+    # create learners from arbitrary list and set up a stack
+    # TODO: change to use sl3::make_learner_stack
+    sl_lrnrs <- list()
+    for (i in seq_along(sl_learners)) {
+      sl_lrnrs[[i]] <- eval(parse(text = paste(
+        "sl3::Lrnr", sl_learners[i],
+        sep = "_"
+      )))
     }
+    sl_lrnrs_ready <- lapply(sl_lrnrs, sl3::make_learner)
+    stack <- sl3::make_learner(sl3::Stack, sl_lrnrs_ready)
 
-    # avoid values that are exactly 0 or 1 in the scaled Qn and Qn_shifted
-    pred_star_Qn <- bound_precision(vals = as.numeric(pred_star_Qn))
-    pred_star_Qn_shifted <- bound_precision(vals =
-                                            as.numeric(pred_star_Qn_shifted))
+    # extract meta-learner and create an sl3 Super Learner
+    metalearner <- sl3::make_learner(eval(parse(text = paste(
+      "Lrnr",
+      sl_metalearner,
+      sep = "_"
+    ))))
+    sl <- sl3::Lrnr_sl$new(learners = stack, metalearner = metalearner)
 
-    # create output data frame and return result
-    out <- data.table::as.data.table(cbind(pred_star_Qn, pred_star_Qn_shifted))
-    data.table::setnames(out, c("noshift", "upshift"))
-    return(out)
+    # fit new Super Learner to the no-shift data and predict
+    sl_fit_noshift <- sl$train(task_noshift)
+    pred_star_Qn <- sl_fit_noshift$predict()
+
+    # predict with Super Learner from unshifted data on shifted data
+    pred_star_Qn_shifted <- sl_fit_noshift$predict(task_shifted)
+  }
+
+  # avoid values that are exactly 0 or 1 in the scaled Qn and Qn_shifted
+  pred_star_Qn <- bound_precision(vals = as.numeric(pred_star_Qn))
+  pred_star_Qn_shifted <- bound_precision(
+    vals =
+      as.numeric(pred_star_Qn_shifted)
+  )
+
+  # create output data frame and return result
+  out <- data.table::as.data.table(cbind(pred_star_Qn, pred_star_Qn_shifted))
+  data.table::setnames(out, c("noshift", "upshift"))
+  return(out)
 }

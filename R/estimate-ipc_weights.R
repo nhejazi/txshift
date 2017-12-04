@@ -18,12 +18,14 @@
 est_ipcw <- function(V,
                      Delta) {
   # coerce input V to matrix
-  if(!is.matrix(V)) V <- as.matrix(V)
+  if (!is.matrix(V)) V <- as.matrix(V)
 
   # fit logistic regression to get class probabilities for IPCW
   ipcw_reg <- stats::glm(Delta ~ V, family = stats::binomial())
-  ipcw_probs <- stats::predict(object = ipcw_reg,
-                               newdata = as.data.frame(cbind(V, Delta)))
+  ipcw_probs <- stats::predict(
+    object = ipcw_reg,
+    newdata = as.data.frame(cbind(V, Delta))
+  )
 
   # compute the inverse weights as Delta/Pi_n and return this vector
   ipc_weights <- Delta / as.numeric(ipcw_probs)
