@@ -12,17 +12,21 @@
 #'  nothing more than \frac{\Delta}{\Pi_n}, where the term \Pi_n is simply the
 #'  predicted probability of belonging to a censoring class as computed using
 #'  standard logistic regression.
+#'
+#' @export
 #
-est_ipcw <- funcion(V,
-                    Delta) {
+est_ipcw <- function(V,
+                     Delta) {
+  # coerce input V to matrix
+  if(!is.matrix(V)) V <- as.matrix(V)
+
   # fit logistic regression to get class probabilities for IPCW
-  ipcw_reg <- stats::glm(Delta ~ V, family = stats::binomial)
+  ipcw_reg <- stats::glm(Delta ~ V, family = stats::binomial())
   ipcw_probs <- stats::predict(object = ipcw_reg,
                                newdata = as.data.frame(cbind(V, Delta)))
 
   # compute the inverse weights as Delta/Pi_n and return this vector
-  ipc_weights <- (Delta / as.numeric(ipcw_probs))
+  ipc_weights <- Delta / as.numeric(ipcw_probs)
   ipc_weights_out <- ipc_weights[ipc_weights != 0]
   return(ipc_weights_out)
 }
-

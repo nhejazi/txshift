@@ -9,8 +9,8 @@
 #'  observation was subject to censoring. This is used to compute an IPCW-TMLE
 #'  in cases where two-stage sampling is performed. The default assumes that no
 #'  censoring was present (i.e., a two-stage design was NOT used). N.B., this is
-#'  equivalent to \Delta from the original Rose & van der Laan manuscript that
-#'  introduced the IPCW-TMLE.
+#'  equivalent to the term \Delta in the notation used in the original Rose and
+#'  van der Laan manuscript that introduced/formulated IPCW-TML estimators.
 #' @param delta ...
 #' @param g_fit_args A \code{list} of arguments to be passed to the internal
 #'  function \code{est_g}, which then passes these same arguments on to the
@@ -50,13 +50,15 @@ tmle_shifttx <- function(W,
 
     # perform sub-setting of data and implement IPC weighting if required
     if (all(unique(C) != 1)) {
-      censoring_weights <- est_ipcw(V = W, Delta = C)
+      cens_weights <- est_ipcw(V = W, Delta = C)
       O_nocensoring <- as.data.frame(cbind(W, A, C, Y)) %>%
         dplyr::filter(C == 1)
+    } else {
+      cens_weights <- C
     }
 
     # estimate the treatment mechanism (propensity score)
-    gn_estim_in <- list(A = A, W = W, delta = delta)
+    gn_estim_in <- list(A = A, W = W, delta = delta, ipc_weights = cens_weights)
     gn_estim_args <- unlist(list(gn_estim_in, g_fit_args), recursive = FALSE)
     gn_estim <- do.call(est_g, gn_estim_args)
 

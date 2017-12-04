@@ -7,11 +7,13 @@
 #' @param A A \code{numeric} vector of observed treatment values.
 #' @param W A \code{numeric} matrix of observed baseline covariate values.
 #' @param delta A \code{numeric} ...
+#' @param ipc_weights ...
 #' @param fit_type A \code{character} specifying whether to use Super Learner to
 #'  fit the density estimation.
 #' @param ...
 #'
 #' @importFrom condensier fit_density predict_probability
+#' @importFrom data.table as.data.table setnames
 #'
 #' @keywords internal
 #'
@@ -50,6 +52,7 @@ est_g <- function(A,
     if (fit_type == "standard" & is.null(lrnrs_sl)) {
         fit_g_A <- condensier::fit_density(X = c(paste0("W", seq_len(ncol(W)))),
                                            Y = "A", input_data = data_O, ...)
+
     } else if (fit_type == "sl" & !is.null(lrnrs_sl)) {
         sl <- sl3::Lrnr_sl$new(learners = lrnrs_sl, metalearner =
                                sl3::Lrnr_solnp_density$new())
@@ -77,10 +80,10 @@ est_g <- function(A,
                                         newdata = data_O_upshifted)
 
     # create output matrix: scenarios A = a, A = a - delta
-    out <- as.data.frame(cbind(pred_g_A_downshifted, pred_g_A_noshift,
-                               pred_g_A_upshifted))
-    colnames(out) <- c("downshift", "noshift", "upshift")
-    rownames(out) <- NULL
+    out <- data.table::as.data.table(cbind(pred_g_A_downshifted,
+                                           pred_g_A_noshift,
+                                           pred_g_A_upshifted))
+    data.table::setnames(out, c("downshift", "noshift", "upshift"))
     return(out)
 }
 

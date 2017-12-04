@@ -25,7 +25,7 @@
 #' @importFrom stats glm as.formula predict
 #' @importFrom sl3 make_sl3_Task make_learner Stack Lrnr_sl
 #' @importFrom stringr str_detect
-#' @importFrom data.table as.data.table setnames
+#' @importFrom data.table as.data.table setnames copy
 #'
 #' @keywords internal
 #'
@@ -58,10 +58,9 @@ est_Q <- function(Y,
     a_shifted <- tx_shift(A = data_O$A, delta = delta,
                           type = "additive", direc = "up")
 
-    # create a copy of the data for the shifted data set
-    # and replace A with the shifted treatment (A = a + delta)
-    data_O_shifted <- data_O
-    data_O_shifted$A <- a_shifted
+    # explicitly copy data.table and replace (by reference) A w/ A = a + delta
+    data_O_shifted <- data.table::copy(data_O)
+    data_O_shifted[, A := a_shifted]
 
     if (fit_method == "glm" & !is.null(glm_formula)) {
         # obtain a logistic regression fit for the (scaled) outcome regression
@@ -146,9 +145,7 @@ est_Q <- function(Y,
                                             as.numeric(pred_star_Qn_shifted))
 
     # create output data frame and return result
-    out <- as.data.frame(cbind(pred_star_Qn, pred_star_Qn_shifted))
-    colnames(out) <- c("noshift", "upshift")
-    rownames(out) <- NULL
+    out <- data.table::as.data.table(cbind(pred_star_Qn, pred_star_Qn_shifted))
+    data.table::setnames(out, c("noshift", "upshift"))
     return(out)
 }
-
