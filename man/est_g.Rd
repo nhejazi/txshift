@@ -2,9 +2,10 @@
 % Please edit documentation in R/estimate-propensity_score.R
 \name{est_g}
 \alias{est_g}
-\title{Estimate the Treatment Mechanism}
+\title{Estimate the Treatment Mechanism (Propensity Score)}
 \usage{
-est_g(A, W, delta = 0, ...)
+est_g(A, W, delta = 0, ipc_weights = NULL, fit_type = "standard",
+  lrnrs_sl = NULL, ...)
 }
 \arguments{
 \item{A}{A \code{numeric} vector of observed treatment values.}
@@ -12,6 +13,11 @@ est_g(A, W, delta = 0, ...)
 \item{W}{A \code{numeric} matrix of observed baseline covariate values.}
 
 \item{delta}{A \code{numeric} ...}
+
+\item{ipc_weights}{...}
+
+\item{fit_type}{A \code{character} specifying whether to use Super Learner to
+fit the density estimation.}
 
 \item{...}{}
 }

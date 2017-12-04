@@ -9,7 +9,7 @@
 #'  observation was subject to censoring. This is used to compute an IPCW-TMLE
 #'  in cases where two-stage sampling is performed. The default assumes that no
 #'  censoring was present (i.e., a two-stage design was NOT used). N.B., this is
-#'  equivalent to the term \Delta in the notation used in the original Rose and
+#'  equivalent to the term %\Delta in the notation used in the original Rose and
 #'  van der Laan manuscript that introduced/formulated IPCW-TML estimators.
 #' @param delta ...
 #' @param g_fit_args A \code{list} of arguments to be passed to the internal
@@ -21,8 +21,9 @@
 #' @param fluc_method ...
 #' @param eif_tol ...
 #'
-#' @importFrom dplyr filter
+#' @importFrom dplyr filter "%>%"
 #' @importFrom condensier speedglmR6
+#' @importFrom data.table as.data.table
 #'
 #' @return S3 object of class \code{shifttx} containing the results of the
 #'  procedure to compute a TML estimate of the treatment shift parameter.
@@ -54,7 +55,7 @@ tmle_shifttx <- function(W,
   # perform sub-setting of data and implement IPC weighting if required
   if (all(unique(C) != 1)) {
     cens_weights <- est_ipcw(V = W, Delta = C)
-    O_nocensoring <- as.data.frame(cbind(W, A, C, Y)) %>%
+    O_nocensoring <- data.table::as.data.table(cbind(W, A, C, Y)) %>%
       dplyr::filter(C == 1)
   } else {
     cens_weights <- C

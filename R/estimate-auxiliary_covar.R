@@ -6,6 +6,8 @@
 #' @param a ...
 #' @param w ...
 #'
+#' @importFrom data.table as.data.table setnames
+#'
 #' @keywords internal
 #
 est_Hn <- function(gn, a = NULL, w = NULL) {
@@ -27,8 +29,8 @@ est_Hn <- function(gn, a = NULL, w = NULL) {
 
   # TODO: consider case where there is not support everywhere
   # that is, when the indicators kick in -- ignored for now...
-  H_n <- as.data.frame(cbind(ratio_g_noshift, ratio_g_shift))
-  colnames(H_n) <- c("noshift", "shift")
+  H_n <- data.table::as.data.table(cbind(ratio_g_noshift, ratio_g_shift))
+  data.table::setnames(H_n, c("noshift", "shift"))
 
   # output
   return(H_n)

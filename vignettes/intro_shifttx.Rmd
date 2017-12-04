@@ -13,6 +13,7 @@ vignette: >
 ```{r, echo=FALSE}
 set.seed(429153)
 options(scipen=999)
+library(dplyr)
 ```
 
 ## Introduction

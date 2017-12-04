@@ -37,8 +37,8 @@ tmle_eif <- function(fluc_fit_out,
   # compute the variance based on the EIF
   # NOTE: scale by length of observations to get on same scale as parameter
   # NOTE: var(eif) and mean(eif^2) are nearly equivalent
+  #var_eif <- mean(eif^2) / length(Y)
   var_eif <- stats::var(eif) / length(Y)
-  # var_eif <- mean(eif^2) / length(Y)
 
   # return the variance and the EIF value at each observation
   out <- list(psi = psi, var = var_eif, eif = eif)

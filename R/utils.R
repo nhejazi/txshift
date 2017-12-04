@@ -51,7 +51,7 @@ confint.shifttx <- function(object,
 #'
 #' @method print shifttx
 #'
-
+#
 print.shifttx <- function(x, ...) {
   print(x[c("psi", "var")])
 }

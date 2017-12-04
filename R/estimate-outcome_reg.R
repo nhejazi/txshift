@@ -25,14 +25,12 @@
 #' @importFrom stats glm as.formula predict
 #' @importFrom sl3 make_sl3_Task make_learner Stack Lrnr_sl
 #' @importFrom stringr str_detect
-#' @importFrom data.table as.data.table setnames copy
+#' @importFrom data.table as.data.table setnames copy set
 #'
 #' @keywords internal
 #'
 #' @export
 #'
-#' @author Nima Hejazi
-#' @author David Benkeser
 #
 est_Q <- function(Y,
                   A,
@@ -64,7 +62,7 @@ est_Q <- function(Y,
 
   # explicitly copy data.table and replace (by reference) A w/ A = a + delta
   data_O_shifted <- data.table::copy(data_O)
-  data_O_shifted[, A := a_shifted]
+  data.table::set(data_O_shifted, j = "A", value = a_shifted)
 
   if (fit_method == "glm" & !is.null(glm_formula)) {
     # obtain a logistic regression fit for the (scaled) outcome regression
@@ -95,8 +93,8 @@ est_Q <- function(Y,
   if (fit_method == "sl" & !is.null(sl_learners) & !is.null(sl_metalearner)) {
     # add IPC weights to the data
     if (!is.null(ipc_weights)) {
-      data_O$ipc_weights <- ipc_weights
-      data_O_shifted$ipc_weights <- ipc_weights
+      data.table::set(data_O, j = "ipc_weights", value = ipc_weights)
+      data.table::set(data_O_shifted, j = "ipc_weights", value = ipc_weights)
 
       # make sl3 task for original data
       task_noshift <- sl3::make_sl3_Task(

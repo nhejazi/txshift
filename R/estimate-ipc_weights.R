@@ -9,7 +9,7 @@
 #'
 #' @return A \code{numeric} vector corresponding to the inverse probability of
 #'  censoring weights required for computing an IPCW-TMLE. Formally, this is
-#'  nothing more than \frac{\Delta}{\Pi_n}, where the term \Pi_n is simply the
+#'  nothing more than %\frac{\Delta}{\Pi_n}, where the term %\Pi_n is simply the
 #'  predicted probability of belonging to a censoring class as computed using
 #'  standard logistic regression.
 #'

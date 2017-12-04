@@ -4,9 +4,9 @@
 \alias{est_Q}
 \title{Estimate the Outcome Regression}
 \usage{
-est_Q(Y, A, W, delta = 0, fit_method = c("glm", "sl"),
-  glm_formula = "Y ~ .", sl_learners = c("mean", "glm_fast"),
-  sl_metalearner = "nnls")
+est_Q(Y, A, W, delta = 0, ipc_weights = NULL, fit_method = c("glm", "sl"),
+  glm_formula = "Y ~ .", sl_learners = c(list("Lrnr_mean"),
+  list("Lrnr_glm_fast")), sl_metalearner = "nnls")
 }
 \arguments{
 \item{Y}{A \code{numeric} vector of observed outcomes.}
@@ -38,10 +38,5 @@ documentation of the \code{sl3} package for details on Super Learner fits.}
 Compute the outcome regression for the observed data, including with the
 shift imposed by the intervention. This returns the propensity score for the
 observed data (at A_i) and the shift of interest (at A_i - delta).
-}
-\author{
-Nima Hejazi
-
-David Benkeser
 }
 \keyword{internal}

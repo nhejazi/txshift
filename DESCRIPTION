@@ -20,6 +20,7 @@ Description: Targeted minimum loss-based estimates of population-level causal
 Depends: R (>= 3.2.0)
 Imports:
     stats,
+    dplyr,
     stringr,
     data.table,
     condensier,
@@ -27,7 +28,8 @@ Imports:
 Suggests:
     testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    dtplyr
 Remotes:
     github::osofr/condensier,
     github::jeremyrcoyle/sl3

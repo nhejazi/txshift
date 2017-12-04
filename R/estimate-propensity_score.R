@@ -13,7 +13,7 @@
 #' @param ...
 #'
 #' @importFrom condensier fit_density predict_probability
-#' @importFrom data.table as.data.table setnames
+#' @importFrom data.table as.data.table setnames set
 #'
 #' @keywords internal
 #'
@@ -38,7 +38,7 @@ est_g <- function(A,
   # if fitting sl3 density make sl3 task with data
   if (fit_type == "sl") {
     if (!is.null(ipc_weights)) {
-      data_O$ipc_weights <- ipc_weights
+      data.table::set(data_O, j = "ipc_weights", ipc_weights)
       task <- sl3::sl3_Task$new(
         data_O, outcome = "A",
         covariates = paste0("W", seq_len(ncol(W))),
@@ -73,11 +73,10 @@ est_g <- function(A,
   )
 
   # predict probabilities for the DOWNSHIFTED data (A = a - delta)
-  data_O_downshifted <- data_O
-  data_O_downshifted$A <- tx_shift(
-    A = data_O_downshifted$A, delta = delta,
-    type = "additive", direc = "down"
-  )
+  data_O_downshifted <- data.table::copy(data_O)
+  data.table::set(data_O_downshifted, j = "A", value = tx_shift(
+    A = data_O$A, delta = delta, type = "additive", direc = "down"
+  ))
   pred_g_A_downshifted <-
     condensier::predict_probability(
       model_fit = fit_g_A,
@@ -85,11 +84,10 @@ est_g <- function(A,
     )
 
   # predict probabilities for the UPSHIFTED data (A = a + delta)
-  data_O_upshifted <- data_O
-  data_O_upshifted$A <- tx_shift(
-    A = data_O_upshifted$A, delta = delta,
-    type = "additive", direc = "up"
-  )
+  data_O_upshifted <- data.table::copy(data_O)
+  data.table::set(data_O_upshifted, j = "A", value = tx_shift(
+    A = data_O$A, delta = delta, type = "additive", direc = "up"
+  ))
   pred_g_A_upshifted <-
     condensier::predict_probability(
       model_fit = fit_g_A,
