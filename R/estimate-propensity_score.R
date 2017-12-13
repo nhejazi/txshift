@@ -25,38 +25,37 @@
 est_g <- function(A,
                   W,
                   delta = 0,
-                  ipc_weights = NULL,
-                  fit_type = "standard",
-                  lrnrs_sl = NULL,
+                  ipc_weights = rep(1, length(Y)),
+                  fit_type = c("sl", "glm"),
+                  glm_formula = "A ~ .",
+                  sl_lrnrs = NULL,
+                  sl_task = NULL,
                   ...) {
 
   # make data object
-  data_O <- data.table::as.data.table(cbind(A, W))
+  data_in <- data.table::as.data.table(cbind(A, W))
   if (!is.matrix(W)) W <- as.matrix(W)
-  data.table::setnames(data_O, c("A", paste0("W", seq_len(ncol(W)))))
+  data.table::setnames(data_in, c("A", paste0("W", seq_len(ncol(W)))))
 
   # if fitting sl3 density make sl3 task with data
-  if (fit_type == "sl") {
-    if (!is.null(ipc_weights)) {
-      data.table::set(data_O, j = "ipc_weights", ipc_weights)
-      task <- sl3::sl3_Task$new(
-        data_O, outcome = "A",
-        covariates = paste0("W", seq_len(ncol(W))),
-        weights = "ipc_weights"
-      )
-    } else {
-      task <- sl3::sl3_Task$new(
-        data_O, outcome = "A",
-        covariates = paste0("W", seq_len(ncol(W)))
-      )
-    }
+  if (fit_type == "sl" & !is.null(sl_lrnrs) & is.null(sl_task)) {
+    data.table::set(data_in, j = "ipc_weights", ipc_weights)
+    sl_task <- sl3::sl3_Task$new(
+      data_in, outcome = "A",
+      covariates = paste0("W", seq_len(ncol(W))),
+      weights = "ipc_weights"
+    )
   }
 
   # fit conditional density with condensier
-  if (fit_type == "standard" & is.null(lrnrs_sl)) {
+  if (fit_type == "glm" & is.null(sl_lrnrs)) {
+    fit_args <- unlist(list(X = c(paste0("W", seq_len(ncol(W)))),
+                            Y = "A", input_data = data_in,
+                            condensier_args), recursive = FALSE)
+    fit_g_A <- do.call(condensier::fit_density, fit_args)
     fit_g_A <- condensier::fit_density(
       X = c(paste0("W", seq_len(ncol(W)))),
-      Y = "A", input_data = data_O, ...
+      Y = "A", input_data = data_in, ...
     )
   } else if (fit_type == "sl" & !is.null(lrnrs_sl)) {
     sl <- sl3::Lrnr_sl$new(
@@ -69,29 +68,29 @@ est_g <- function(A,
   # predict probabilities for the un-shifted data (A = a)
   pred_g_A_noshift <- condensier::predict_probability(
     model_fit = fit_g_A,
-    newdata = data_O
+    newdata = data_in
   )
 
   # predict probabilities for the DOWNSHIFTED data (A = a - delta)
-  data_O_downshifted <- data.table::copy(data_O)
-  data.table::set(data_O_downshifted, j = "A", value = tx_shift(
-    A = data_O$A, delta = delta, type = "additive", direc = "down"
+  data_in_downshifted <- data.table::copy(data_in)
+  data.table::set(data_in_downshifted, j = "A", value = tx_shift(
+    A = data_in$A, delta = delta, type = "additive", direc = "down"
   ))
   pred_g_A_downshifted <-
     condensier::predict_probability(
       model_fit = fit_g_A,
-      newdata = data_O_downshifted
+      newdata = data_in_downshifted
     )
 
   # predict probabilities for the UPSHIFTED data (A = a + delta)
-  data_O_upshifted <- data.table::copy(data_O)
-  data.table::set(data_O_upshifted, j = "A", value = tx_shift(
-    A = data_O$A, delta = delta, type = "additive", direc = "up"
+  data_in_upshifted <- data.table::copy(data_in)
+  data.table::set(data_in_upshifted, j = "A", value = tx_shift(
+    A = data_in$A, delta = delta, type = "additive", direc = "up"
   ))
   pred_g_A_upshifted <-
     condensier::predict_probability(
       model_fit = fit_g_A,
-      newdata = data_O_upshifted
+      newdata = data_in_upshifted
     )
 
   # create output matrix: scenarios A = a, A = a - delta

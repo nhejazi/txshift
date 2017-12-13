@@ -31,7 +31,7 @@ Suggests:
     rmarkdown,
     dtplyr
 Remotes:
-    github::osofr/condensier,
+    github::osofr/condensier@weights,
     github::jeremyrcoyle/sl3
 License: MIT + file LICENSE
 URL: https://github.com/nhejazi/shifttx

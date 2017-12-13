@@ -33,8 +33,9 @@
 tmle_shifttx <- function(W,
                          A,
                          Y,
-                         C = rep(1, length(Y)),
                          delta,
+                         C = rep(1, length(Y)),
+                         ipc_fit_type = "glm",
                          g_fit_args = list(
                            nbins = 20,
                            bin_method = "dhist",
@@ -43,10 +44,9 @@ tmle_shifttx <- function(W,
                            parfit = FALSE
                          ),
                          Q_fit_args = list(
-                           fit_method = "sl",
+                           fit_method = "glm",
                            glm_formula = "Y ~ .",
-                           sl_learners = c("mean", "glm_fast"),
-                           sl_metalearner = "nnls"
+                           sl_lrnr = NULL,
                          ),
                          fluc_method = "standard",
                          eif_tol = 1e-7) {
@@ -54,7 +54,7 @@ tmle_shifttx <- function(W,
 
   # perform sub-setting of data and implement IPC weighting if required
   if (all(unique(C) != 1)) {
-    cens_weights <- est_ipcw(V = W, Delta = C)
+    cens_weights <- est_ipcw(V = W, Delta = C, fit_type = ipc_fit_type)
     O_nocensoring <- data.table::as.data.table(cbind(W, A, C, Y)) %>%
       dplyr::filter(C == 1)
   } else {

@@ -7,7 +7,6 @@ output: html_document
 
 ```{r rmd_setup, echo = FALSE, message = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-rm(list = ls())
 library(data.table)
 library(here)
 library(sl3)

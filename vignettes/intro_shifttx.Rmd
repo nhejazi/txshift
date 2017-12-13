@@ -11,9 +11,7 @@ vignette: >
 ---
 
 ```{r, echo=FALSE}
-set.seed(429153)
 options(scipen=999)
-library(dplyr)
 ```
 
 ## Introduction
@@ -44,9 +42,9 @@ treatment regimes, please consider consulting @vdl2011targeted,
 ### Simulate Data
 
 ```{r}
-library(sl3)
+set.seed(429153)
+library(dplyr)
 library(condensier)
-library(shifttx)
 
 # simulate simple data for tmle-shift sketch
 n_obs <- 1000
@@ -72,25 +70,63 @@ Y <- A + W + rnorm(n_obs)
 
 ## Methodology
 
+### Estimating Stochastic Interventions Effects with Generalized Linear Models
+
 ```{r}
-tmle_shift <- tmle_shifttx(W = W,
-                           A = A,
-                           Y = Y,
-                           delta = 0.5,
-                           g_fit_args = list(nbins = 20,
-                                             bin_method = "dhist",
-                                             bin_estimator = speedglmR6$new(),
-                                             parfit = FALSE),
-                           Q_fit_args = list(fit_method = "sl",
-                                             glm_formula = "Y ~ .",
-                                             sl_learners = c("mean",
-                                                             "glm_fast"),
-                                             sl_metalearner = "nnls"),
-                           fluc_method = "standard",
-                           eif_tol = 1e-7
-                          )
-tmle_shift
+library(shifttx)
+tmle_shift_glm <- tmle_shifttx(W = W, A = A, Y = Y, delta = 0.5,
+                               g_fit_args = list(nbins = 20,
+                                                 bin_method = "dhist",
+                                                 bin_estimator =
+                                                   speedglmR6$new(),
+                                                 parfit = FALSE),
+                               Q_fit_args = list(fit_method = "glm",
+                                                 glm_formula = "Y ~ ."),
+                               fluc_method = "standard",
+                               eif_tol = 1e-7)
+tmle_shift_glm
 ```
+
+### Interlude: Constructing Super Learners
+
+```{r}
+library(sl3)
+
+# SL learners to be used for most fits (e.g., IPCW, outcome regression)
+lrn1 <- Lrnr_mean$new()
+lrn2 <- Lrnr_glm_fast$new()
+lrn3 <- Lrnr_randomForest$new()
+sl_lrn <- Lrnr_sl$new(learners = list(lrn1, lrn2, lrn3),
+                      metalearner = Lrnr_nnls$new())
+
+# SL learners to be used for the propensity score fit
+lrn1_g <- Lrnr_condensier$new(nbins = 35, bin_estimator = lrn1,
+                              bin_method = "equal.len")
+lrn2_g <- Lrnr_condensier$new(nbins = 25, bin_estimator = lrn2,
+                              bin_method = "equal.len")
+lrn3_g <- Lrnr_condensier$new(nbins = 35, bin_estimator = lrn3,
+                              bin_method = "equal.len")
+sl_lrn_g <- Lrnr_sl$new(learners = list(lrn1_g, lrn2_g, lrn3_g),
+                        metalearner = Lrnr_solnp_density$new())
+```
+
+### Estimating Stochastic Interventions Effects with Generalized Linear Models
+
+```{r}
+tmle_shift_sl <- tmle_shifttx(W = W, A = A, Y = Y, delta = 0.5,
+                              g_fit_args = list(nbins = 20,
+                                                bin_method = "dhist",
+                                                bin_estimator =
+                                                  speedglmR6$new(),
+                                                parfit = FALSE),
+                              Q_fit_args = list(fit_method = "sl",
+                                                sl_lrnrs = sl_lrn),
+                              fluc_method = "standard",
+                              eif_tol = 1e-7)
+tmle_shift_sl
+```
+
+### Statistical Inference with Targeted Maximum Likelihood Estimation
 
 Recall that the asymptotic distribution of TML estimators has been studied
 thoroughly:
@@ -137,9 +173,7 @@ ci_shift <- confint(tmle_shift)
 ci_shift
 ```
 
----
-
-## IPCW-TMLEs
+### Incorporating Inverse Probability of Censoring Weights into TML Estimation
 
 Comments about this estimation procedure...
 
@@ -182,8 +216,6 @@ gn_estim <- do.call(est_g, gn_estim_args)
 # ## 5) efficient influence function computation
 # tmle_eif_out <- tmle_eif(Y = Y, Hn = Hn_estim, fluc_fit_out = fitted_fluc_mod,
 #                          tol_eif = eif_tol)
-
-
 ```
 
 ---

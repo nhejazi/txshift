@@ -4,6 +4,11 @@
 #'
 #' @param V ...
 #' @param Delta ...
+#' @param fit_type A \code{character} indicating whether to perform the fit
+#'  using GLMs or a Super Learner. If use of Super Learner is desired, then the
+#'  argument \code{sl_lrnrs} must be provided.
+#' @parm sl_lrnrs An \code{R6} object of class \code{Lrnr_sl}, a Super Learner
+#'  object created externally using the \code{sl3} package.
 #'
 #' @importFrom stats glm predict binomial
 #'
@@ -16,19 +21,44 @@
 #' @export
 #
 est_ipcw <- function(V,
-                     Delta) {
+                     Delta,
+                     fit_type = c("sl", "glm"),
+                     sl_lrnrs = NULL,
+                     sl_task = NULL) {
   # coerce input V to matrix
+  data_in <- data.table::as.data.table(cbind(Delta, V))
   if (!is.matrix(V)) V <- as.matrix(V)
+  data.table::setnames(data_in, c("Delta", paste0("V", seq_len(ncol(V)))))
+
+  # argument checks and setup for using SL
+  if (fit_type == "sl" & !is.null(sl_lrnrs) & is.null(sl_task)) {
+    sl_task <- sl3::sl3_Task$new(
+      data_in, outcome = "Delta",
+      covariates = paste0("V", seq_len(ncol(V))),
+      outcome_type = "quasibinomial"
+    )
+  }
 
   # fit logistic regression to get class probabilities for IPCW
-  ipcw_reg <- stats::glm(Delta ~ V, family = stats::binomial())
-  ipcw_probs <- stats::predict(
-    object = ipcw_reg,
-    newdata = as.data.frame(cbind(V, Delta))
-  )
+  if (fit_type == "glm") {
+    ipcw_reg <- stats::glm(as.formula("Delta ~ ."),
+                           family = stats::binomial(),
+                           data = data_in)
+    ipcw_probs <- stats::predict(
+      object = ipcw_reg,
+      newdata = data_in
+    )
+  } else if (fit_type == "sl" & !is.null(sl_lrnrs)) {
+    sl_fit <- sl_lrnrs$train(sl_task)
+    sl_fit_preds <- sl_fit$predict()
+    ipcw_probs <- as.numeric(sl_fit_preds)
+  } else {
+    stop("Arguments for the model fitting process specified incorrectly.")
+  }
 
   # compute the inverse weights as Delta/Pi_n and return this vector
   ipc_weights <- Delta / as.numeric(ipcw_probs)
   ipc_weights_out <- ipc_weights[ipc_weights != 0]
   return(ipc_weights_out)
 }
+

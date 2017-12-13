@@ -36,14 +36,11 @@ est_Q <- function(Y,
                   A,
                   W,
                   delta = 0,
-                  ipc_weights = NULL,
-                  fit_method = c("glm", "sl"),
+                  ipc_weights = rep(1, length(Y)),
+                  fit_type = c("sl", "glm"),
                   glm_formula = "Y ~ .",
-                  sl_learners = c(
-                    list("Lrnr_mean"),
-                    list("Lrnr_glm_fast")
-                  ),
-                  sl_metalearner = "nnls") {
+                  sl_lrnrs = NULL,
+                  sl_task = NULL) {
 
   # scale the outcome for the logit transform
   y_star <- bound_scaling(Y = Y, scale = "zero_one")
