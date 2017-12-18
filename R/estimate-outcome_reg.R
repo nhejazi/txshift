@@ -10,16 +10,16 @@
 #' @param delta A \code{numeric} indicating the magnitude of the shift to be
 #'  computed for the treatment \code{A}. This is passed directly to the internal
 #'  function \code{tx_shift} and is currently limited to additive shifts.
-#' @param fit_method A \code{character} indicating whether to use GLMs or Super
+#' @param fit_type A \code{character} indicating whether to use GLMs or Super
 #'  Learner to fit the outcome regression. If the option "glm" is selected, the
 #'  argument \code{glm_formula} must NOT be \code{NULL}, instead containing a
 #'  model formula (in the style of \code{stats::glm}) as a \code{character}. If
-#'  the option "sl" is selected, both of the arguments \code{sl_learners} and
+#'  the option "sl" is selected, both of the arguments \code{sl_lrnrs} and
 #'  \code{sl_metalearner} must NOT be \code{NULL}, instead containing a set of
 #'  learners and a metalearner for the Super Learner fit. Please consult the
 #'  documentation of the \code{sl3} package for details on Super Learner fits.
 #' @param glm_formula ...
-#' @param sl_learners ...
+#' @param sl_lrnrs ...
 #' @param sl_metalearner ...
 #'
 #' @importFrom stats glm as.formula predict
@@ -61,7 +61,7 @@ est_Q <- function(Y,
   data_O_shifted <- data.table::copy(data_O)
   data.table::set(data_O_shifted, j = "A", value = a_shifted)
 
-  if (fit_method == "glm" & !is.null(glm_formula)) {
+  if (fit_type == "glm" & !is.null(glm_formula)) {
     # obtain a logistic regression fit for the (scaled) outcome regression
     suppressWarnings(
       fit_Qn <- stats::glm(
@@ -87,7 +87,7 @@ est_Q <- function(Y,
     )
   }
 
-  if (fit_method == "sl" & !is.null(sl_learners) & !is.null(sl_metalearner)) {
+  if (fit_type == "sl" & !is.null(sl_lrnrs) & !is.null(sl_metalearner)) {
     # add IPC weights to the data
     if (!is.null(ipc_weights)) {
       data.table::set(data_O, j = "ipc_weights", value = ipc_weights)
@@ -131,9 +131,9 @@ est_Q <- function(Y,
     # create learners from arbitrary list and set up a stack
     # TODO: change to use sl3::make_learner_stack
     sl_lrnrs <- list()
-    for (i in seq_along(sl_learners)) {
+    for (i in seq_along(sl_lrnrs)) {
       sl_lrnrs[[i]] <- eval(parse(text = paste(
-        "sl3::Lrnr", sl_learners[i],
+        "sl3::Lrnr", sl_lrnrs[i],
         sep = "_"
       )))
     }

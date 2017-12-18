@@ -48,6 +48,7 @@ tmle_shifttx <- function(W,
                              sl_task = NULL
                            ),
                            g_fit = list(
+                             fit_type = "glm",
                              nbins = 20,
                              bin_method = "dhist",
                              bin_estimator =
@@ -55,7 +56,7 @@ tmle_shifttx <- function(W,
                              parfit = FALSE
                            ),
                            Q_fit = list(
-                             fit_method = "glm",
+                             fit_type = "glm",
                              glm_formula = "Y ~ .",
                              sl_lrnrs = NULL
                            )
@@ -72,44 +73,76 @@ tmle_shifttx <- function(W,
     ipcw_estim_in <- list(V = W, Delta = C)
     ipcw_estim_args <- unlist(list(ipcw_estim_in, ipcw_fit_args),
                               recursive = FALSE)
-    cens_weights <- ipcw_estim_args %>% purrr::map_dbl(., est_ipcw)
-      purrr::map(., est_ipcw)
     cens_weights <- do.call(est_ipcw, ipcw_estim_args)
-    O_nocensoring <- data.table::as.data.table(cbind(W, A, C, Y)) %>%
+    O_nocensoring <- tibble::as_tibble(list(W = W, A = A, C = C, Y = Y)) %>%
       dplyr::filter(C == 1)
   } else {
     cens_weights <- C
   }
+  if (all(unique(C) != 1)) {
+    # estimate the treatment mechanism (propensity score)
+    gn_estim_in <- list(A = O_nocensoring$A, W = O_nocensoring$W, delta = delta,
+                        ipc_weights = cens_weights, fit_type = fit_type)
+    gn_estim_args <- unlist(list(gn_estim_in, std_args = list(g_fit_args)),
+                            recursive = FALSE)
+    gn_estim <- do.call(est_g, gn_estim_args)
 
-  # estimate the treatment mechanism (propensity score)
-  gn_estim_in <- list(A = A, W = W, delta = delta, ipc_weights = cens_weights)
-  gn_estim_args <- unlist(list(gn_estim_in, g_fit_args), recursive = FALSE)
-  gn_estim <- do.call(est_g, gn_estim_args)
+    # estimate the outcome regression
+    Qn_estim_in <- list(Y = O_nocensoring$Y, A = O_nocensoring$A,
+                        W = O_nocensoring$W, delta = delta)
+    Qn_estim_args <- unlist(list(Qn_estim_in, Q_fit_args), recursive = FALSE)
+    Qn_estim <- do.call(est_Q, Qn_estim_args)
 
-  # estimate the outcome regression
-  Qn_estim_in <- list(Y = Y, A = A, W = W, delta = delta)
-  Qn_estim_args <- unlist(list(Qn_estim_in, Q_fit_args), recursive = FALSE)
-  Qn_estim <- do.call(est_Q, Qn_estim_args)
+    # estimate the auxiliary ("clever") covariate
+    Hn_estim <- est_Hn(gn = gn_estim)
 
-  # estimate the auxiliary ("clever") covariate
-  Hn_estim <- est_Hn(gn = gn_estim)
+    # fit logistic regression to fluctuate along the sub-model
+    fitted_fluc_mod <- fit_fluc(
+      Y = Y,
+      Qn_scaled = Qn_estim,
+      Hn = Hn_estim,
+      method = fluc_method
+    )
 
-  # fit logistic regression to fluctuate along the sub-model
-  fitted_fluc_mod <- fit_fluc(
-    Y = Y,
-    Qn_scaled = Qn_estim,
-    Hn = Hn_estim,
-    method = fluc_method
-  )
+    # compute Targeted Maximum Likelihood estimate for treatment shift parameter
+    tmle_eif_out <- tmle_eif(
+      Y = Y,
+      Hn = Hn_estim,
+      fluc_fit_out = fitted_fluc_mod,
+      tol_eif = eif_tol
+    )
+  } else{
+    # estimate the treatment mechanism (propensity score)
+    gn_estim_in <- list(A = A, W = W, delta = delta, ipc_weights = cens_weights,
+                        fit_type = fit_type)
+    gn_estim_args <- unlist(list(gn_estim_in, std_args = list(g_fit_args)),
+                            recursive = FALSE)
+    gn_estim <- do.call(est_g, gn_estim_args)
 
-  # compute Targeted Maximum Likelihood estimate for treatment shift parameter
-  tmle_eif_out <- tmle_eif(
-    Y = Y,
-    Hn = Hn_estim,
-    fluc_fit_out = fitted_fluc_mod,
-    tol_eif = eif_tol
-  )
+    # estimate the outcome regression
+    Qn_estim_in <- list(Y = Y, A = A, W = W, delta = delta)
+    Qn_estim_args <- unlist(list(Qn_estim_in, Q_fit_args), recursive = FALSE)
+    Qn_estim <- do.call(est_Q, Qn_estim_args)
 
+    # estimate the auxiliary ("clever") covariate
+    Hn_estim <- est_Hn(gn = gn_estim)
+
+    # fit logistic regression to fluctuate along the sub-model
+    fitted_fluc_mod <- fit_fluc(
+      Y = Y,
+      Qn_scaled = Qn_estim,
+      Hn = Hn_estim,
+      method = fluc_method
+    )
+
+    # compute Targeted Maximum Likelihood estimate for treatment shift parameter
+    tmle_eif_out <- tmle_eif(
+      Y = Y,
+      Hn = Hn_estim,
+      fluc_fit_out = fitted_fluc_mod,
+      tol_eif = eif_tol
+    )
+  }
   # create output object
   class(tmle_eif_out) <- "shifttx"
   return(tmle_eif_out)

@@ -36,12 +36,11 @@ est_g <- function(A,
                                   bin_estimator = condensier::speedglmR6$new(),
                                   parfit = FALSE)
                  ) {
-
   # make data object
   data_in <- data.table::as.data.table(cbind(A, W))
   if (!is.matrix(W)) W <- as.matrix(W)
   data.table::setnames(data_in, c("A", paste0("W", seq_len(ncol(W)))))
-  data.table::set(data_in, j = "ipc_weights", ipc_weights)
+  data.table::set(data_in, j = "ipc_weights", value = ipc_weights)
 
   # if fitting sl3 density make sl3 task with data
   if (fit_type == "sl" & !is.null(sl_lrnrs) & is.null(sl_task)) {
@@ -57,8 +56,7 @@ est_g <- function(A,
     fit_args <- unlist(list(X = c(paste0("W", seq_len(ncol(W)))),
                             Y = "A", std_args), recursive = FALSE)
     fit_args$input_data <- data_in
-    fit_g_A <- fit_args %>%
-      purrr::map(condensier::fit_density, .)
+    fit_g_A <- do.call(condensier::fit_density, fit_args)
   } else if (fit_type == "sl" & !is.null(sl_lrnrs)) {
     sl_fit <- sl_lrnrs$train(task)
   }
