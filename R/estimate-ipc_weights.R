@@ -7,8 +7,12 @@
 #' @param fit_type A \code{character} indicating whether to perform the fit
 #'  using GLMs or a Super Learner. If use of Super Learner is desired, then the
 #'  argument \code{sl_lrnrs} must be provided.
-#' @parm sl_lrnrs An \code{R6} object of class \code{Lrnr_sl}, a Super Learner
+#' @param sl_lrnrs An \code{R6} object of class \code{Lrnr_sl}, a Super Learner
 #'  object created externally using the \code{sl3} package.
+#' @param sl_task An \code{R6} object of class \code{sl3_Task} containing data
+#'  to be used in fitting regressions via \code{sl3}. The default value of
+#'  \code{NULL} should suffice in most cases as an appropriate \code{sl3_Task}
+#'  is created automatically if the \code{sl_lrnrs} argument is NOT \code{NULL}.
 #'
 #' @importFrom stats glm predict binomial
 #'

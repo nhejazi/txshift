@@ -12,14 +12,17 @@
 #'  equivalent to the term %\Delta in the notation used in the original Rose and
 #'  van der Laan manuscript that introduced/formulated IPCW-TML estimators.
 #' @param delta ...
-#' @param g_fit_args A \code{list} of arguments to be passed to the internal
-#'  function \code{est_g}, which then passes these same arguments on to the
-#'  function \code{fit_density} of the package \code{condensier}.
-#' @param Q_fit_args A \code{list} of arugments to be passed to the function to
-#'  estimate the outcome regression. Consult the documentation for the function
-#'  \code{est_Q} for details.
-#' @param fluc_method ...
-#' @param eif_tol ...
+#' @param fluc_method The method to be used in submodel fluctuation step of
+#'  the TMLE computation. The choices are "standard" and "weighted".
+#' @param eif_tol The convergence criterion for the TML estimator. This is the
+#'  the maximum mean of the efficient influence function (EIF) to be accepted in
+#'  calling convergence (theoretically, the value is zero).
+#' @param args A nested \code{list} of \code{list}s that specifies arguments to
+#'  be passed to the various internal functions for the estimation procedure.
+#'  Each of sub-list corresponds to a single internal function. As such, for
+#'  details on (1) \code{ipcw_fit}, see the documention of \code{est_ipcw}; (2)
+#'  \code{g_fit}, see the documentation of \code{est_g}; (3) \code{Q_fit}, see
+#'  the documentation for \code{est_Q}.
 #'
 #' @importFrom dplyr filter "%>%"
 #' @importFrom condensier speedglmR6
@@ -33,35 +36,44 @@
 tmle_shifttx <- function(W,
                          A,
                          Y,
-                         delta,
+                         delta = 0,
                          C = rep(1, length(Y)),
-                         ipcw_fit_args = list(
-                           fit_type = "glm",
-                           glm_formula = "Delta ~ .",
-                           sl_lrnrs = NULL,
-                           sl_task = NULL
-                         ),
-                         g_fit_args = list(
-                           nbins = 20,
-                           bin_method = "dhist",
-                           bin_estimator =
-                             condensier::speedglmR6$new(),
-                           parfit = FALSE
-                         ),
-                         Q_fit_args = list(
-                           fit_method = "glm",
-                           glm_formula = "Y ~ .",
-                           sl_lrnrs = NULL
-                         ),
-                         fluc_method = "standard",
-                         eif_tol = 1e-7) {
+                         fluc_method = c("standard", "weighted"),
+                         eif_tol = 1e-7,
+                         args = list(
+                           ipcw_fit = list(
+                             fit_type = "glm",
+                             glm_formula = "Delta ~ .",
+                             sl_lrnrs = NULL,
+                             sl_task = NULL
+                           ),
+                           g_fit = list(
+                             nbins = 20,
+                             bin_method = "dhist",
+                             bin_estimator =
+                               condensier::speedglmR6$new(),
+                             parfit = FALSE
+                           ),
+                           Q_fit = list(
+                             fit_method = "glm",
+                             glm_formula = "Y ~ .",
+                             sl_lrnrs = NULL
+                           )
+                         )) {
   # TODO: check arguments
+
+  # unpack the list of extra arguments for convenience
+  ipcw_fit_args <- args$ipcw_fit
+  g_fit_args <- args$g_fit
+  Q_fit_args <- args$Q_fit
 
   # perform sub-setting of data and implement IPC weighting if required
   if (all(unique(C) != 1)) {
     ipcw_estim_in <- list(V = W, Delta = C)
     ipcw_estim_args <- unlist(list(ipcw_estim_in, ipcw_fit_args),
                               recursive = FALSE)
+    cens_weights <- ipcw_estim_args %>% purrr::map_dbl(., est_ipcw)
+      purrr::map(., est_ipcw)
     cens_weights <- do.call(est_ipcw, ipcw_estim_args)
     O_nocensoring <- data.table::as.data.table(cbind(W, A, C, Y)) %>%
       dplyr::filter(C == 1)
