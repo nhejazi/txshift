@@ -4,8 +4,10 @@
 \alias{est_g}
 \title{Estimate the Treatment Mechanism (Propensity Score)}
 \usage{
-est_g(A, W, delta = 0, ipc_weights = NULL, fit_type = "standard",
-  lrnrs_sl = NULL, ...)
+est_g(A, W, delta = 0, ipc_weights = rep(1, length(Y)), fit_type = c("sl",
+  "glm"), sl_lrnrs = NULL, sl_task = NULL, std_args = list(nbins = 20,
+  bin_method = "dhist", bin_estimator = condensier::speedglmR6$new(), parfit =
+  FALSE))
 }
 \arguments{
 \item{A}{A \code{numeric} vector of observed treatment values.}
@@ -19,7 +21,9 @@ est_g(A, W, delta = 0, ipc_weights = NULL, fit_type = "standard",
 \item{fit_type}{A \code{character} specifying whether to use Super Learner to
 fit the density estimation.}
 
-\item{...}{}
+\item{std_args}{A \code{list} of arguments to be passed to \code{fit_density}
+from the \code{condensier} package when the argument \code{fit_type} is set
+to "glm" (not invoking Super Learner).}
 }
 \description{
 Compute the propensity score (treatment mechanism) for the observed data,

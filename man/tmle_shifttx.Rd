@@ -4,11 +4,12 @@
 \alias{tmle_shifttx}
 \title{Compute Targeted Maximum Likelihood Estimate for Treatment Shift Parameter}
 \usage{
-tmle_shifttx(W, A, Y, C = rep(1, length(Y)), delta, g_fit_args = list(nbins
-  = 20, bin_method = "dhist", bin_estimator = condensier::speedglmR6$new(),
-  parfit = FALSE), Q_fit_args = list(fit_method = "sl", glm_formula = "Y ~ .",
-  sl_learners = c("mean", "glm_fast"), sl_metalearner = "nnls"),
-  fluc_method = "standard", eif_tol = 1e-07)
+tmle_shifttx(W, A, Y, delta, C = rep(1, length(Y)),
+  ipcw_fit_args = list(fit_type = "glm", glm_formula = "Delta ~ .", sl_lrnrs =
+  NULL, sl_task = NULL), g_fit_args = list(nbins = 20, bin_method = "dhist",
+  bin_estimator = condensier::speedglmR6$new(), parfit = FALSE),
+  Q_fit_args = list(fit_method = "glm", glm_formula = "Y ~ .", sl_lrnrs =
+  NULL), fluc_method = "standard", eif_tol = 1e-07)
 }
 \arguments{
 \item{W}{...}
@@ -17,14 +18,14 @@ tmle_shifttx(W, A, Y, C = rep(1, length(Y)), delta, g_fit_args = list(nbins
 
 \item{Y}{...}
 
+\item{delta}{...}
+
 \item{C}{A \code{numeric} binary vector giving information on whether a given
 observation was subject to censoring. This is used to compute an IPCW-TMLE
 in cases where two-stage sampling is performed. The default assumes that no
 censoring was present (i.e., a two-stage design was NOT used). N.B., this is
 equivalent to the term %\Delta in the notation used in the original Rose and
 van der Laan manuscript that introduced/formulated IPCW-TML estimators.}
-
-\item{delta}{...}
 
 \item{g_fit_args}{A \code{list} of arguments to be passed to the internal
 function \code{est_g}, which then passes these same arguments on to the

@@ -64,6 +64,9 @@ A[which(W == 1)] <- A1
 
 # create outcome
 Y <- A + W + rnorm(n_obs)
+
+# censoring based on covariates
+C <- rbinom(n_obs, 1, plogis(W))
 ```
 
 ---

@@ -23,6 +23,7 @@
 est_ipcw <- function(V,
                      Delta,
                      fit_type = c("sl", "glm"),
+                     glm_formula = "Delta ~ .",
                      sl_lrnrs = NULL,
                      sl_task = NULL) {
   # coerce input V to matrix
@@ -35,13 +36,13 @@ est_ipcw <- function(V,
     sl_task <- sl3::sl3_Task$new(
       data_in, outcome = "Delta",
       covariates = paste0("V", seq_len(ncol(V))),
-      outcome_type = "quasibinomial"
+      outcome_type = "binomial"
     )
   }
 
   # fit logistic regression to get class probabilities for IPCW
   if (fit_type == "glm") {
-    ipcw_reg <- stats::glm(as.formula("Delta ~ ."),
+    ipcw_reg <- stats::glm(as.formula(glm_formula),
                            family = stats::binomial(),
                            data = data_in)
     ipcw_probs <- stats::predict(
