@@ -11,6 +11,7 @@
 #' @param tol_eif ...
 #'
 #' @importFrom stats var
+#' @importFrom dplyr if_else
 #'
 #' @keywords internal
 #'
@@ -32,7 +33,11 @@ tmle_eif <- function(fluc_fit_out,
 
   # sanity check on EIF
   # NOTE: EIF ~ N(0, V(D(P)(o))), so mean(EIF) ~= 0
-  stopifnot(mean(eif) < tol_eif)
+  eif_msg <- dplyr::if_else(mean(eif) < tol_eif,
+                            paste("EIF mean <", tol_eif, "(sufficiently low)."),
+                            paste("EIF mean =", mean(eif),
+                                  "(higher than expected).")
+                           )
 
   # compute the variance based on the EIF
   # NOTE: scale by length of observations to get on same scale as parameter
@@ -41,6 +46,7 @@ tmle_eif <- function(fluc_fit_out,
   var_eif <- stats::var(eif) / length(Y)
 
   # return the variance and the EIF value at each observation
-  out <- list(psi = psi, var = var_eif, eif = eif)
+  out <- list(psi = psi, var = var_eif, eif = eif, msg = eif_msg)
   return(out)
 }
+
