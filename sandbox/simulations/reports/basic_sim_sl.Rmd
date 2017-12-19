@@ -1,5 +1,5 @@
 ---
-title: "Basic Simulations for Shift TMLEs with GLMs"
+title: "Basic Simulations for Shift TMLEs with SL"
 author: "Nima Hejazi and David Benkeser"
 date: "`r Sys.Date()`"
 output: html_document
@@ -57,7 +57,7 @@ simple_shifttx_sim_sl <- function(iter, samp, delta = 0.5, censoring = FALSE,
   # fit a TMLE
   if (!censoring) {
     tmle_shift <- tmle_shifttx(W = W, A = A, Y = Y, delta = delta,
-                               fluc_method = "standard", fit_type = "glm",
+                               fluc_method = "standard", fit_type = "sl",
                                eif_tol = eif_min_bound,
                                args = list(
                                  g_fit = list(sl_lrnrs = sl_lrn_dens),
@@ -65,7 +65,7 @@ simple_shifttx_sim_sl <- function(iter, samp, delta = 0.5, censoring = FALSE,
                                ))
   } else {
     tmle_shift <- tmle_shifttx(W = W, A = A, Y = Y, C = C, delta = delta,
-                               fluc_method = "standard", fit_type = "glm",
+                               fluc_method = "standard", fit_type = "sl",
                                eif_tol = eif_min_bound,
                                args = list(
                                  ipcw_fit = list(sl_lrnrs = sl_lrn),
@@ -108,7 +108,7 @@ delta_shift <- 0.5
 # meta-parameters for controlling simulation type
 seed_int <- 9461287
 n_sim <- 500
-n_obs <- c(100, 1000)
+n_obs <- c(250, 1000)
 ```
 
 ### Setup Super Learner with `sl3`
@@ -126,9 +126,9 @@ lrn1_dens <- Lrnr_condensier$new(nbins = 35, bin_estimator = lrn1,
                                  bin_method = "equal.len")
 lrn2_dens <- Lrnr_condensier$new(nbins = 25, bin_estimator = lrn2,
                                  bin_method = "equal.len")
-lrn3_dens <- Lrnr_condensier$new(nbins = 20, bin_estimator = lrn3,
-                                 bin_method = "equal.mass")
-sl_lrn_dens <- Lrnr_sl$new(learners = list(lrn1_dens, lrn2_dens, lrn3_dens),
+#lrn3_dens <- Lrnr_condensier$new(nbins = 20, bin_estimator = lrn3,
+                                 #bin_method = "equal.mass")
+sl_lrn_dens <- Lrnr_sl$new(learners = list(lrn1_dens, lrn2_dens),
                            metalearner = Lrnr_solnp_density$new())
 ```
 
@@ -136,7 +136,7 @@ sl_lrn_dens <- Lrnr_sl$new(learners = list(lrn1_dens, lrn2_dens, lrn3_dens),
 
 ```{r run_sim_sl_std, message = FALSE}
 # simulation
-simple_sim_sl <- foreach(in_samp = seq_along(n_obs), .combine = rbind) %do% {
+simple_sim_sl1 <- foreach(in_samp = seq_along(n_obs), .combine = rbind) %do% {
   # set sample size from foreach loop
   samp <- n_obs[in_samp]
 
@@ -163,7 +163,7 @@ simple_sim_sl <- foreach(in_samp = seq_along(n_obs), .combine = rbind) %do% {
 ```
 
 ```{r results_sim_sl_std, message = FALSE}
-knitr::kable(simple_sim_sl, format = "markdown",
+knitr::kable(simple_sim_sl1, format = "markdown",
              caption = "Simulation statistics for shift TMLE w/ SL")
 ```
 
@@ -171,17 +171,17 @@ knitr::kable(simple_sim_sl, format = "markdown",
 
 ```{r run_sim_sl_cens, message = FALSE}
 # simulation
-simple_sim_sl <- foreach(in_samp = seq_along(n_obs), .combine = rbind) %do% {
+simple_sim_sl2 <- foreach(in_samp = seq_along(n_obs), .combine = rbind) %do% {
   # set sample size from foreach loop
   samp <- n_obs[in_samp]
 
   # run simulation for given sample size
-  sim_results <- foreach(i = seq_len(n_sim), .combine = rbind) %dopar% {
+  sim_results <- foreach(j = seq_len(n_sim), .combine = rbind) %dopar% {
     # set seed in foreach
-    set.seed(seed_int + i)
+    set.seed(seed_int + j)
 
     # run the TMLE procedure
-    out <- simple_shifttx_sim_sl(iter = i, samp = samp, delta = delta_shift,
+    out <- simple_shifttx_sim_sl(iter = j, samp = samp, delta = delta_shift,
                                  n_w = n_w, w1_prob = w_win_prob,
                                  a1_mean = a1_mean, a0_mean = a0_mean,
                                  censoring = TRUE)
@@ -198,7 +198,7 @@ simple_sim_sl <- foreach(in_samp = seq_along(n_obs), .combine = rbind) %do% {
 ```
 
 ```{r results_sim_sl_cens, message = FALSE}
-knitr::kable(simple_sim_sl, format = "markdown",
+knitr::kable(simple_sim_sl2, format = "markdown",
              caption = "Simulation statistics for shift TMLE w/ SL")
 ```
 
