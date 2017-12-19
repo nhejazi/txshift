@@ -21,8 +21,8 @@ library(shifttx)
 
 ```{r sim_fun}
 simple_shifttx_sim_glm <- function(iter, samp, delta = 0.5, censoring = FALSE,
-                                   n_w, w1_prob, a1_mean, a0_mean) {
-
+                                   n_w, w1_prob, a1_mean, a0_mean,
+                                   eif_min_bound = 1e-5) {
   if ((iter %% 100) == 0) {
     print(paste("Starting simulation", iter, "for sample size", samp))
   }
@@ -40,8 +40,8 @@ simple_shifttx_sim_glm <- function(iter, samp, delta = 0.5, censoring = FALSE,
   # create outcome
   Y <- A + W + rnorm(samp)
 
-  # censoring based on covariates (DOESN'T CHANGE TRUTH?)
-  if (censoring) C <- rbinom(n_obs, 1, plogis(W))
+  # censoring based on covariates (DOESN'T CHANGE TRUTH!)
+  if (censoring) C <- rbinom(samp, 1, plogis(W))
 
   # compute the truth from the simulation
   # \Psi(P_0) = E_0( \bar{Q}_0(A + \delta, W))
@@ -57,6 +57,7 @@ simple_shifttx_sim_glm <- function(iter, samp, delta = 0.5, censoring = FALSE,
   if (!censoring) {
     tmle_shift <- tmle_shifttx(W = W, A = A, Y = Y, delta = delta,
                                fluc_method = "standard", fit_type = "glm",
+                               eif_tol = eif_min_bound,
                                args = list(
                                  g_fit = list(nbins = 20, bin_method = "dhist",
                                               bin_estimator = speedglmR6$new(),
@@ -66,6 +67,7 @@ simple_shifttx_sim_glm <- function(iter, samp, delta = 0.5, censoring = FALSE,
   } else {
     tmle_shift <- tmle_shifttx(W = W, A = A, Y = Y, C = C, delta = delta,
                                fluc_method = "standard", fit_type = "glm",
+                               eif_tol = eif_min_bound,
                                args = list(
                                  ipcw_fit = list(glm_formula = "Delta ~ ."),
                                  g_fit = list(nbins = 20, bin_method = "dhist",
