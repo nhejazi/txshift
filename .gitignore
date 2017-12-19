@@ -2,6 +2,7 @@
 .Rhistory
 .RData
 *.html
+!docs/*.html
 vignettes/*.html
 .ipynb_checkpoints
 
