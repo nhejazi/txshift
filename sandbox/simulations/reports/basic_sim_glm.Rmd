@@ -114,7 +114,7 @@ n_sim <- 1e3
 n_obs <- c(50, 250, 1000)
 ```
 
-### Fitting outcome model with GLMs without censoring
+### Fitting outcome model with GLMs _without censoring_
 
 ```{r run_sim_glm_std, message = FALSE}
 # simulation
