@@ -151,19 +151,19 @@ knitr::kable(simple_sim_glm, format = "markdown",
 
 ### Fitting outcome model with GLMs _with censoring_
 
-```{r run_sim_glm_cens, message = FALSE}
+```{r run_sim_glm_cens, message = FALSE, eval=FALSE}
 # simulation
 simple_sim_glm <- foreach(in_samp = seq_along(n_obs), .combine = rbind) %do% {
   # set sample size from foreach loop
   samp <- n_obs[in_samp]
 
   # run simulation for given sample size
-  sim_results <- foreach(i = seq_len(n_sim), .combine = rbind) %dopar% {
+  sim_results <- foreach(j = seq_len(n_sim), .combine = rbind) %dopar% {
     # set seed in foreach
-    set.seed(seed_int + i)
+    set.seed(seed_int + j)
 
     # run the TMLE procedure
-    out <- simple_shifttx_sim_glm(iter = i, samp = samp, delta = delta_shift,
+    out <- simple_shifttx_sim_glm(iter = j, samp = samp, delta = delta_shift,
                                   n_w = n_w, w1_prob = w_win_prob,
                                   a1_mean = a1_mean, a0_mean = a0_mean,
                                   censoring = TRUE)
@@ -179,7 +179,7 @@ simple_sim_glm <- foreach(in_samp = seq_along(n_obs), .combine = rbind) %do% {
 }
 ```
 
-```{r results_sim_glm_cens, message = FALSE}
+```{r results_sim_glm_cens, message = FALSE, eval=FALSE}
 knitr::kable(simple_sim_glm, format = "markdown",
              caption = "Simulation statistics for shift TMLE w/ GLMs")
 ```
