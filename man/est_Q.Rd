@@ -5,8 +5,7 @@
 \title{Estimate the Outcome Regression}
 \usage{
 est_Q(Y, A, W, delta = 0, ipc_weights = rep(1, length(Y)),
-  fit_type = c("sl", "glm"), glm_formula = "Y ~ .", sl_lrnrs = NULL,
-  sl_task = NULL)
+  fit_type = c("sl", "glm"), glm_formula = "Y ~ .", sl_lrnrs = NULL)
 }
 \arguments{
 \item{Y}{A \code{numeric} vector of observed outcomes.}
@@ -19,20 +18,18 @@ est_Q(Y, A, W, delta = 0, ipc_weights = rep(1, length(Y)),
 computed for the treatment \code{A}. This is passed directly to the internal
 function \code{tx_shift} and is currently limited to additive shifts.}
 
-\item{glm_formula}{...}
-
-\item{fit_method}{A \code{character} indicating whether to use GLMs or Super
+\item{fit_type}{A \code{character} indicating whether to use GLMs or Super
 Learner to fit the outcome regression. If the option "glm" is selected, the
 argument \code{glm_formula} must NOT be \code{NULL}, instead containing a
 model formula (in the style of \code{stats::glm}) as a \code{character}. If
-the option "sl" is selected, both of the arguments \code{sl_learners} and
-\code{sl_metalearner} must NOT be \code{NULL}, instead containing a set of
-learners and a metalearner for the Super Learner fit. Please consult the
+the option "sl" is selected, the argument \code{sl_lrnrs} must NOT be
+\code{NULL}, instead being a pre-defined object of class \code{Lrnr_sl},
+specifying learners and a metalearner for the Super Learner fit. Consult the
 documentation of the \code{sl3} package for details on Super Learner fits.}
 
-\item{sl_learners}{...}
+\item{glm_formula}{...}
 
-\item{sl_metalearner}{...}
+\item{sl_lrnrs}{...}
 }
 \description{
 Compute the outcome regression for the observed data, including with the

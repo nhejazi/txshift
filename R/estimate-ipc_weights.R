@@ -7,12 +7,9 @@
 #' @param fit_type A \code{character} indicating whether to perform the fit
 #'  using GLMs or a Super Learner. If use of Super Learner is desired, then the
 #'  argument \code{sl_lrnrs} must be provided.
+#' @param glm_formula ...
 #' @param sl_lrnrs An \code{R6} object of class \code{Lrnr_sl}, a Super Learner
 #'  object created externally using the \code{sl3} package.
-#' @param sl_task An \code{R6} object of class \code{sl3_Task} containing data
-#'  to be used in fitting regressions via \code{sl3}. The default value of
-#'  \code{NULL} should suffice in most cases as an appropriate \code{sl3_Task}
-#'  is created automatically if the \code{sl_lrnrs} argument is NOT \code{NULL}.
 #'
 #' @importFrom stats glm predict binomial
 #'
@@ -51,9 +48,11 @@ est_ipcw <- function(V,
   # fit logistic regression or binomial SL to get class probabilities for IPCW
   ##############################################################################
   if (fit_type == "glm" & is.null(sl_lrnrs)) {
-    ipcw_reg <- stats::glm(as.formula(glm_formula),
-                           family = stats::binomial(),
-                           data = data_in)
+    ipcw_reg <- stats::glm(
+      as.formula(glm_formula),
+      family = stats::binomial(),
+      data = data_in
+    )
     ipcw_probs <- stats::predict(
       object = ipcw_reg,
       newdata = data_in
@@ -70,4 +69,3 @@ est_ipcw <- function(V,
   ipc_weights_out <- ipc_weights[ipc_weights != 0]
   return(ipc_weights_out)
 }
-

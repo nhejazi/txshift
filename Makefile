@@ -2,10 +2,12 @@ md:
 	Rscript -e "rmarkdown::render('README.Rmd', output_file = 'README.md')"
 
 site:
-	Rscript -e "rmarkdown::render('README-norefs.Rmd', output_file = 'README.md')"
 	Rscript -e "pkgdown::build_site()"
 
-check:
+fastcheck:
+	Rscript -e "devtools::check(build_args = '--no-build-vignettes')"
+
+fullcheck:
 	Rscript -e "devtools::check()"
 
 test:

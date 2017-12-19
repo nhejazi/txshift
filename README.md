@@ -57,13 +57,12 @@ To illustrate how `shifttx` may be used to ascertain the effect of a
 treatment, consider the following example:
 
 ``` r
-library(sl3)
 library(condensier)
 #> condensier
 #> The condensier package is still in beta testing. Interpret results with caution.
 library(shifttx)
 #> shifttx: Targeted Learning with Stochastic Interventions
-#> Version: 0.0.3
+#> Version: 0.0.5
 
 # simulate simple data for tmle-shift sketch
 set.seed(429153)
@@ -85,35 +84,31 @@ A[which(W == 1)] <- A1
 # create outcome
 Y <- A + W + rnorm(n_obs)
 
+# induce censoring
+C <- rbinom(n_obs, 1, plogis(W))
+
 # fit the TMLE
-tmle_shift <- tmle_shifttx(W = W,
-                           A = A,
-                           Y = Y,
-                           delta = 0.5,
-                           g_fit_args = list(nbins = 20,
-                                             bin_method = "dhist",
-                                             bin_estimator = speedglmR6$new(),
-                                             parfit = FALSE),
-                           Q_fit_args = list(fit_method = "sl",
-                                             glm_formula = "Y ~ .",
-                                             sl_learners = c("mean",
-                                                             "glm_fast"),
-                                             sl_metalearner = "nnls"),
-                           fluc_method = "standard",
-                           eif_tol = 1e-7
-                          )
+tmle_shift <- tmle_shifttx(W = W, A = A, Y = Y, delta = 0.5,
+                           fluc_method = "standard", fit_type = "glm",
+                           args = list(
+                             g_fit = list(nbins = 25, bin_method = "dhist",
+                                          bin_estimator = speedglmR6$new(),
+                                          parfit = FALSE),
+                             Q_fit = list(glm_formula = "Y ~ .")
+                          ))
+
 # examine the results
 tmle_shift
 #> $psi
-#> [1] 2.04561
+#> [1] 2.056182
 #> 
 #> $var
-#> [1] 0.004666312
+#> [1] 0.004724677
 
 # compute the confidence interval and view the results
 (ci_shift <- confint(tmle_shift))
 #>   lwr_CI      est   upr_CI 
-#> 1.911724 2.045610 2.179496
+#> 1.921461 2.056182 2.190902
 ```
 
 -----
@@ -165,18 +160,38 @@ See below for details:
 
 ## References
 
+<div id="refs" class="references">
+
+<div id="ref-diaz2017stochastic">
+
 Díaz, Iván, and Mark J van der Laan. 2017. “Stochastic Treatment
 Regimes.” In *Targeted Learning in Data Science: Causal Inference for
 Complex Longitudinal Studies*, 167–80. Springer Science & Business
 Media.
 
+</div>
+
+<div id="ref-munoz2012population">
+
 Muñoz, Iván Díaz, and Mark J van der Laan. 2012. “Population
 Intervention Causal Effects Based on Stochastic Interventions.”
 *Biometrics* 68 (2). Wiley Online Library:541–49.
+
+</div>
+
+<div id="ref-vdl2011targeted">
 
 van der Laan, Mark J, and Sherri Rose. 2011. *Targeted Learning: Causal
 Inference for Observational and Experimental Data*. Springer Science &
 Business Media.
 
+</div>
+
+<div id="ref-vdl2017targeted">
+
 ———. 2017. *Targeted Learning in Data Science: Causal Inference for
 Complex Longitudinal Studies*. Springer Science & Business Media.
+
+</div>
+
+</div>

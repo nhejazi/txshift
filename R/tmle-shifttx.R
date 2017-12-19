@@ -12,6 +12,7 @@
 #'  equivalent to the term %\Delta in the notation used in the original Rose and
 #'  van der Laan manuscript that introduced/formulated IPCW-TML estimators.
 #' @param delta ...
+#' @param fit_type ...
 #' @param fluc_method The method to be used in submodel fluctuation step of
 #'  the TMLE computation. The choices are "standard" and "weighted".
 #' @param eif_tol The convergence criterion for the TML estimator. This is the
@@ -38,8 +39,8 @@
 tmle_shifttx <- function(W,
                          A,
                          Y,
-                         delta = 0,
                          C = rep(1, length(Y)),
+                         delta = 0,
                          fit_type = c("glm", "sl"),
                          fluc_method = c("standard", "weighted"),
                          eif_tol = 1e-7,
@@ -78,8 +79,10 @@ tmle_shifttx <- function(W,
   ##############################################################################
   if (all(unique(C) != 1)) {
     ipcw_estim_in <- list(V = W, Delta = C, fit_type = fit_type)
-    ipcw_estim_args <- unlist(list(ipcw_estim_in, ipcw_fit_args),
-                              recursive = FALSE)
+    ipcw_estim_args <- unlist(
+      list(ipcw_estim_in, ipcw_fit_args),
+      recursive = FALSE
+    )
     cens_weights <- do.call(est_ipcw, ipcw_estim_args)
     O_nocensoring <- tibble::as_tibble(list(W = W, A = A, C = C, Y = Y)) %>%
       dplyr::filter(C == 1)
@@ -94,15 +97,19 @@ tmle_shifttx <- function(W,
     ############################################################################
     # estimate the treatment mechanism (propensity score)
     ############################################################################
-    gn_estim_in <- list(A = O_nocensoring$A,
-                        W = O_nocensoring$W,
-                        delta = delta,
-                        ipc_weights = cens_weights,
-                        fit_type = fit_type)
+    gn_estim_in <- list(
+      A = O_nocensoring$A,
+      W = O_nocensoring$W,
+      delta = delta,
+      ipc_weights = cens_weights,
+      fit_type = fit_type
+    )
     if (fit_type == "glm") {
       g_fit_args <- g_fit_args[!stringr::str_detect(names(g_fit_args), "sl")]
-      gn_estim_args <- unlist(list(gn_estim_in, std_args = list(g_fit_args)),
-                              recursive = FALSE)
+      gn_estim_args <- unlist(
+        list(gn_estim_in, std_args = list(g_fit_args)),
+        recursive = FALSE
+      )
     } else {
       g_fit_args <- g_fit_args[stringr::str_detect(names(g_fit_args), "sl")]
       gn_estim_args <- unlist(list(gn_estim_in, g_fit_args), recursive = FALSE)
@@ -114,11 +121,13 @@ tmle_shifttx <- function(W,
     ############################################################################
     # estimate the outcome regression
     ############################################################################
-    Qn_estim_in <- list(Y = O_nocensoring$Y,
-                        A = O_nocensoring$A,
-                        W = O_nocensoring$W,
-                        delta = delta,
-                        fit_type = fit_type)
+    Qn_estim_in <- list(
+      Y = O_nocensoring$Y,
+      A = O_nocensoring$A,
+      W = O_nocensoring$W,
+      delta = delta,
+      fit_type = fit_type
+    )
     Qn_estim_args <- unlist(list(Qn_estim_in, Q_fit_args), recursive = FALSE)
     Qn_estim <- do.call(est_Q, Qn_estim_args)
 
@@ -146,22 +155,26 @@ tmle_shifttx <- function(W,
       fluc_fit_out = fitted_fluc_mod,
       tol_eif = eif_tol
     )
-  ##############################################################################
-  # when there is no censoring, just use a vanilla shift-TMLE
-  ##############################################################################
+    ##############################################################################
+    # when there is no censoring, just use a vanilla shift-TMLE
+    ##############################################################################
   } else {
     ############################################################################
     # estimate the treatment mechanism (propensity score)
     ############################################################################
-    gn_estim_in <- list(A = A,
-                        W = W,
-                        delta = delta,
-                        ipc_weights = cens_weights,
-                        fit_type = fit_type)
+    gn_estim_in <- list(
+      A = A,
+      W = W,
+      delta = delta,
+      ipc_weights = cens_weights,
+      fit_type = fit_type
+    )
     if (fit_type == "glm") {
       g_fit_args <- g_fit_args[!stringr::str_detect(names(g_fit_args), "sl")]
-      gn_estim_args <- unlist(list(gn_estim_in, std_args = list(g_fit_args)),
-                              recursive = FALSE)
+      gn_estim_args <- unlist(
+        list(gn_estim_in, std_args = list(g_fit_args)),
+        recursive = FALSE
+      )
     } else {
       g_fit_args <- g_fit_args[stringr::str_detect(names(g_fit_args), "sl")]
       gn_estim_args <- unlist(list(gn_estim_in, g_fit_args), recursive = FALSE)
@@ -173,11 +186,13 @@ tmle_shifttx <- function(W,
     ############################################################################
     # estimate the outcome regression
     ############################################################################
-    Qn_estim_in <- list(Y = Y,
-                        A = A,
-                        W = W,
-                        delta = delta,
-                        fit_type = fit_type)
+    Qn_estim_in <- list(
+      Y = Y,
+      A = A,
+      W = W,
+      delta = delta,
+      fit_type = fit_type
+    )
     Qn_estim_args <- unlist(list(Qn_estim_in, Q_fit_args), recursive = FALSE)
     Qn_estim <- do.call(est_Q, Qn_estim_args)
 

@@ -5,7 +5,7 @@
 \title{Estimate Inverse Probability of Censoring Weights}
 \usage{
 est_ipcw(V, Delta, fit_type = c("sl", "glm"), glm_formula = "Delta ~ .",
-  sl_lrnrs = NULL, sl_task = NULL)
+  sl_lrnrs = NULL)
 }
 \arguments{
 \item{V}{...}
@@ -15,6 +15,11 @@ est_ipcw(V, Delta, fit_type = c("sl", "glm"), glm_formula = "Delta ~ .",
 \item{fit_type}{A \code{character} indicating whether to perform the fit
 using GLMs or a Super Learner. If use of Super Learner is desired, then the
 argument \code{sl_lrnrs} must be provided.}
+
+\item{glm_formula}{...}
+
+\item{sl_lrnrs}{An \code{R6} object of class \code{Lrnr_sl}, a Super Learner
+object created externally using the \code{sl3} package.}
 }
 \value{
 A \code{numeric} vector corresponding to the inverse probability of

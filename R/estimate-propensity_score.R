@@ -27,14 +27,15 @@
 est_g <- function(A,
                   W,
                   delta = 0,
-                  ipc_weights = rep(1, length(Y)),
+                  ipc_weights = rep(1, length(A)),
                   fit_type = c("sl", "glm"),
                   sl_lrnrs_dens = NULL,
-                  std_args = list(nbins = 25,
-                                  bin_method = "dhist",
-                                  bin_estimator = condensier::speedglmR6$new(),
-                                  parfit = FALSE)
-                 ) {
+                  std_args = list(
+                    nbins = 25,
+                    bin_method = "dhist",
+                    bin_estimator = condensier::speedglmR6$new(),
+                    parfit = FALSE
+                  )) {
   ##############################################################################
   # make data objects from inputs
   ##############################################################################
@@ -88,9 +89,13 @@ est_g <- function(A,
   # fit conditional densities with condensier
   ##############################################################################
   if (fit_type == "glm" & is.null(sl_lrnrs_dens)) {
-    fit_args <- unlist(list(X = c(paste0("W", seq_len(ncol(W)))),
-                            Y = "A", weights = "ipc_weights", std_args),
-                       recursive = FALSE)
+    fit_args <- unlist(
+      list(
+        X = c(paste0("W", seq_len(ncol(W)))),
+        Y = "A", weights = "ipc_weights", std_args
+      ),
+      recursive = FALSE
+    )
     fit_args$input_data <- data_in
     fit_g_dens_glm <- do.call(condensier::fit_density, fit_args)
   } else if (fit_type == "sl" & !is.null(sl_lrnrs_dens)) {

@@ -4,10 +4,9 @@
 \alias{est_g}
 \title{Estimate the Treatment Mechanism (Propensity Score)}
 \usage{
-est_g(A, W, delta = 0, ipc_weights = rep(1, length(Y)), fit_type = c("sl",
-  "glm"), sl_lrnrs = NULL, sl_task = NULL, std_args = list(nbins = 20,
-  bin_method = "dhist", bin_estimator = condensier::speedglmR6$new(), parfit =
-  FALSE))
+est_g(A, W, delta = 0, ipc_weights = rep(1, length(A)), fit_type = c("sl",
+  "glm"), sl_lrnrs_dens = NULL, std_args = list(nbins = 25, bin_method =
+  "dhist", bin_estimator = condensier::speedglmR6$new(), parfit = FALSE))
 }
 \arguments{
 \item{A}{A \code{numeric} vector of observed treatment values.}
