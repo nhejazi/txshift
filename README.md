@@ -62,7 +62,7 @@ library(condensier)
 #> The condensier package is still in beta testing. Interpret results with caution.
 library(shifttx)
 #> shifttx: Targeted Learning with Stochastic Interventions
-#> Version: 0.0.5
+#> Version: 0.0.6
 
 # simulate simple data for tmle-shift sketch
 set.seed(429153)
@@ -104,6 +104,9 @@ tmle_shift
 #> 
 #> $var
 #> [1] 0.004724677
+#> 
+#> $msg
+#> [1] "EIF mean < 1e-07 (sufficiently low)."
 
 # compute the confidence interval and view the results
 (ci_shift <- confint(tmle_shift))
