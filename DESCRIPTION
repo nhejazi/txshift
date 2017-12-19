@@ -1,7 +1,7 @@
 Package: shifttx
 Title: Targeted Maximum Likelihood Estimation of Continuous Treatment Effects
-  with Stochastic Interventions
-Version: 0.0.3
+  from Stochastic Interventions
+Version: 0.0.5
 Authors@R: c(
     person("Nima", "Hejazi", email = "nhejazi@berkeley.edu",
            role = c("aut", "cre", "cph"),
@@ -13,15 +13,17 @@ Authors@R: c(
            role = "ctb")
   )
 Maintainer: Nima Hejazi <nh@nimahejazi.org>
-Description: Targeted minimum loss-based estimates of population-level causal
-    effects of interventions with stochastically assigned exposures, using a
-    causal parameter defined in the context of stochastic treatment regimes,
-    including both iterative and one-step variations of the estimator.
+Description: Facilitates computation of targeted maximum likelihood estimates of
+    population-level causal effects of additive interventions of stochastically
+    assigned exposures, based on a causal parameter defined in the context of
+    stochastic treatment regimes. Both iterative and one-step variations of the
+    TML estimator are implemented.
 Depends: R (>= 3.2.0)
 Imports:
     stats,
     dplyr,
     stringr,
+    tibble,
     data.table,
     condensier,
     sl3
@@ -29,7 +31,8 @@ Suggests:
     testthat,
     knitr,
     rmarkdown,
-    dtplyr
+    dtplyr,
+    tidyverse
 Remotes:
     github::osofr/condensier@weights,
     github::jeremyrcoyle/sl3

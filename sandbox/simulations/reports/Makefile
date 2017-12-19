@@ -1,8 +1,8 @@
 TITLE = basic_sim
 
-long_sim:
-	Rscript -e "rmarkdown::render('$(TITLE)_longer.Rmd')"
+glm_sim:
+	Rscript -e "rmarkdown::render('$(TITLE)_glm.Rmd')"
 
-short_sim:
-	Rscript -e "rmarkdown::render('$(TITLE)_short.Rmd')"
+sl_sim:
+	Rscript -e "rmarkdown::render('$(TITLE)_sl.Rmd')"
 

@@ -1,0 +1,151 @@
+---
+title: "Basic Simulations for Shift TMLEs with GLMs"
+author: "Nima Hejazi and David Benkeser"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r rmd_setup, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# housekeeping packages
+library(here)
+library(tidyverse)
+library(data.table)
+library(ProjectTemplate)
+load.project()
+
+# packages for this simulation
+library(sl3)
+library(condensier)
+library(shifttx)
+```
+
+### Compute TMLE for a single iteration of simulations
+
+```{r sim_fun}
+simple_shifttx_sim_glm <- function(iter, samp, delta = 0.5, censoring = FALSE,
+                                   n_w, w1_prob, a1_mean, a0_mean) {
+
+  if ((iter %% 100) == 0) {
+    print(paste("Starting simulation", iter, "for sample size", samp))
+  }
+
+  ## baseline covariate -- simple, binary
+  W <- as.numeric(replicate(n_w, rbinom(samp, 1, w1_prob)))
+
+  ## set and organize treatment based on baseline W
+  A1 <- rnorm(length(which(W == 1)), mean = a1_mean, sd = 1)
+  A0 <- rnorm(length(which(W == 0)), mean = a0_mean, sd = 1)
+  A <- rep(NA, samp)
+  A[which(W == 0)] <- A0
+  A[which(W == 1)] <- A1
+
+  # create outcome
+  Y <- A + W + rnorm(samp)
+  
+  # censoring based on covariates (DOESN'T CHANGE TRUTH?)
+  if (censoring) C <- rbinom(n_obs, 1, plogis(W))
+
+  # compute the truth from the simulation
+  # \Psi(P_0) = E_0( \bar{Q}_0(A + \delta, W))
+  #   = E_0(A + \delta + W)  -> definition of \bar{Q}_0
+  #   = E_0(E_0(A \mid W) + \delta + W)  -> iterated expectation
+  #   = \delta + P(W = 0) * (E_0(A \mid W = 0) + 0)
+  #     + P(W = 1) * (E_0(A \mid W = 1) + 1)  -> defn of expectation over W
+  #   = 0.5 + 0.5 * (0 + 0) + 0.5 * (2 + 1)
+  #   = 2
+  sim_truth = delta + (1 - w1_prob) * (a0_mean + 0) + w1_prob * (a1_mean + 1)
+
+  # fit a TMLE
+  if (!censoring) {
+    tmle_shift <- tmle_shifttx(W = W, A = A, Y = Y, delta = delta,
+                               fluc_method = "standard", fit_type = "glm",
+                               args = list(
+                                 g_fit = list(nbins = 20, bin_method = "dhist",
+                                              bin_estimator = speedglmR6$new(),
+                                              parfit = FALSE),
+                                 Q_fit = list(glm_formula = "Y ~ .")
+                               ))
+  } else {
+    tmle_shift <- tmle_shifttx(W = W, A = A, Y = Y, C = C, delta = delta,
+                               fluc_method = "standard", fit_type = "glm",
+                               args = list(
+                                 ipcw_fit = list(glm_formula = "Delta ~ ."),
+                                 g_fit = list(nbins = 20, bin_method = "dhist",
+                                              bin_estimator = speedglmR6$new(),
+                                              parfit = FALSE),
+                                 Q_fit = list(glm_formula = "Y ~ .")
+                               ))
+  }
+
+  # get inference for the TMLE fit
+  ci_shift <- confint(tmle_shift)
+
+  # summary statistics from TMLE procedure
+  ci_in <- dplyr::between(sim_truth, ci_shift[1], ci_shift[3]) %>%
+    as.numeric()
+  iter_out <- list(lwr_ci = ci_shift[1], est_psi = tmle_shift$psi,
+                   upr_ci = ci_shift[3], truth_in_ci = ci_in, truth = sim_truth)
+  iter_out <- tibble::as_tibble(iter_out)
+  return(iter_out)
+}
+```
+
+### Set up parameters for parallelized simulations
+
+```{r sim_args, message=FALSE}
+# easy foreach-future parallelization
+library(future)
+library(doFuture)
+registerDoFuture()
+
+# best for foreach simulations
+RNGkind("L'Ecuyer-CMRG")
+
+# parameters for simulating simple data for tmle-shift sketch
+n_w <- 1
+w_win_prob <- 0.5
+a1_mean <- 2
+a0_mean <- 0
+delta_shift <- 0.5
+
+# meta-parameters for controlling simulation type
+seed_int <- 9461287
+n_sim <- 1e3
+n_obs <- c(50, 250, 1000)
+```
+
+### Fitting outcome model with GLMs
+
+```{r run_sim_glm, message = FALSE}
+# simulation
+simple_sim_glm <- foreach(in_samp = seq_along(n_obs), .combine = rbind) %do% {
+  # set sample size from foreach loop
+  samp <- n_obs[in_samp]
+
+  # run simulation for given sample size
+  sim_results <- foreach(i = seq_len(n_sim), .combine = rbind) %dopar% {
+    # set seed in foreach
+    set.seed(seed_int + i)
+
+    # run the TMLE procedure
+    out <- simple_shifttx_sim_glm(iter = i, samp = samp, delta = delta_shift,
+                                  n_w = n_w, w1_prob = w_win_prob,
+                                  a1_mean = a1_mean, a0_mean = a0_mean,
+                                  censoring = FALSE)
+  }
+  # compute average estimate, bias, and sd across simulations
+  sim_est_mean <- mean(sim_results$est_psi)
+  sim_est_var <- var(sim_results$est_psi)
+  sim_est_bias <- sim_est_mean - mean(sim_results$truth)
+  sim_ci_cover <- sum(sim_results$truth_in_ci) / nrow(sim_results)
+  sim_out <- list(n_obs = samp, est = sim_est_mean, var = sim_est_var,
+                  bias = sim_est_bias, coverage = sim_ci_cover)
+  sim_samp_out <- tibble::as_tibble(sim_out)
+}
+```
+
+```{r results_sim_glm, message = FALSE}
+knitr::kable(simple_sim_glm, format = "html",
+             caption = "Simulation statistics for shift TMLE w/ GLMs")
+```

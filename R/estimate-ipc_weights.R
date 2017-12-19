@@ -28,15 +28,18 @@ est_ipcw <- function(V,
                      Delta,
                      fit_type = c("sl", "glm"),
                      glm_formula = "Delta ~ .",
-                     sl_lrnrs = NULL,
-                     sl_task = NULL) {
-  # coerce input V to matrix
+                     sl_lrnrs = NULL) {
+  ##############################################################################
+  # make data objects from inputs
+  ##############################################################################
   data_in <- data.table::as.data.table(cbind(Delta, V))
   if (!is.matrix(V)) V <- as.matrix(V)
   data.table::setnames(data_in, c("Delta", paste0("V", seq_len(ncol(V)))))
 
-  # argument checks and setup for using SL
-  if (fit_type == "sl" & !is.null(sl_lrnrs) & is.null(sl_task)) {
+  ##############################################################################
+  # make sl3 tasks from the data if fitting Super Learners
+  ##############################################################################
+  if (fit_type == "sl" & !is.null(sl_lrnrs)) {
     sl_task <- sl3::sl3_Task$new(
       data_in, outcome = "Delta",
       covariates = paste0("V", seq_len(ncol(V))),
@@ -44,8 +47,10 @@ est_ipcw <- function(V,
     )
   }
 
-  # fit logistic regression to get class probabilities for IPCW
-  if (fit_type == "glm") {
+  ##############################################################################
+  # fit logistic regression or binomial SL to get class probabilities for IPCW
+  ##############################################################################
+  if (fit_type == "glm" & is.null(sl_lrnrs)) {
     ipcw_reg <- stats::glm(as.formula(glm_formula),
                            family = stats::binomial(),
                            data = data_in)
@@ -55,8 +60,7 @@ est_ipcw <- function(V,
     )
   } else if (fit_type == "sl" & !is.null(sl_lrnrs)) {
     sl_fit <- sl_lrnrs$train(sl_task)
-    sl_fit_preds <- sl_fit$predict()
-    ipcw_probs <- as.numeric(sl_fit_preds)
+    ipcw_probs <- sl_fit$predict()
   } else {
     stop("Arguments for the model fitting process specified incorrectly.")
   }

@@ -29,101 +29,124 @@ est_g <- function(A,
                   delta = 0,
                   ipc_weights = rep(1, length(Y)),
                   fit_type = c("sl", "glm"),
-                  sl_lrnrs = NULL,
-                  sl_task = NULL,
-                  std_args = list(nbins = 20,
+                  sl_lrnrs_dens = NULL,
+                  std_args = list(nbins = 25,
                                   bin_method = "dhist",
                                   bin_estimator = condensier::speedglmR6$new(),
                                   parfit = FALSE)
                  ) {
-  # make data object
+  ##############################################################################
+  # make data objects from inputs
+  ##############################################################################
   data_in <- data.table::as.data.table(cbind(A, W))
   if (!is.matrix(W)) W <- as.matrix(W)
   data.table::setnames(data_in, c("A", paste0("W", seq_len(ncol(W)))))
   data.table::set(data_in, j = "ipc_weights", value = ipc_weights)
 
-  # if fitting sl3 density make sl3 task with data
-  if (fit_type == "sl" & !is.null(sl_lrnrs) & is.null(sl_task)) {
-    sl_task <- sl3::sl3_Task$new(
-      data_in, outcome = "A",
-      covariates = paste0("W", seq_len(ncol(W))),
-      weights = "ipc_weights"
-    )
-  }
-
-  # fit conditional density with condensier
-  if (fit_type == "glm" & is.null(sl_lrnrs)) {
-    fit_args <- unlist(list(X = c(paste0("W", seq_len(ncol(W)))),
-                            Y = "A", std_args), recursive = FALSE)
-    fit_args$input_data <- data_in
-    fit_g_A <- do.call(condensier::fit_density, fit_args)
-  } else if (fit_type == "sl" & !is.null(sl_lrnrs)) {
-    sl_fit <- sl_lrnrs$train(task)
-  }
-
-  # predict probabilities for the un-shifted data (A = a)
-  if (fit_type == "glm") {
-    pred_g_A_noshift <-
-      condensier::predict_probability(
-        model_fit = fit_g_A,
-        newdata = data_in
-      )
-  } else if (fit_type == "sl") {
-    pred_g_A_noshift <- sl_fit$predict()
-  }
-
-  # predict probabilities for the DOWNSHIFTED data (A = a - delta)
+  # need a data set with the treatment stochastically shifted DOWNWARDS...
   data_in_downshifted <- data.table::copy(data_in)
   data.table::set(data_in_downshifted, j = "A", value = tx_shift(
     A = data_in$A, delta = delta, type = "additive", direc = "down"
   ))
-  ## create new SL task if required
-  if (fit_type == "sl") {
-    sl_task_downshifted <- sl3::sl3_Task$new(
-      data_in_downshifted, outcome = "A",
-      covariates = paste0("W", seq_len(ncol(W))),
-      weights = "ipc_weights"
-    )
-  }
 
-  # predict for the downshifted data
-  if (fit_type == "glm") {
-    pred_g_A_downshifted <-
-      condensier::predict_probability(
-        model_fit = fit_g_A,
-        newdata = data_in_downshifted
-      )
-  } else if (fit_type == "sl") {
-    pred_g_A_downshifted <- sl_fit$predict(sl_task_downshifted)
-  }
-
-
-  # predict probabilities for the UPSHIFTED data (A = a + delta)
+  # need a data set with the treatment stochastically shifted UPWARDS...
   data_in_upshifted <- data.table::copy(data_in)
   data.table::set(data_in_upshifted, j = "A", value = tx_shift(
     A = data_in$A, delta = delta, type = "additive", direc = "up"
   ))
-  ## create new SL task if required
-  if (fit_type == "sl") {
+
+  ##############################################################################
+  # if fitting sl3 density make sl3 tasks from the data
+  ##############################################################################
+  if (fit_type == "sl" & !is.null(sl_lrnrs_dens)) {
+    # sl3 task for data with treatment UNSHIFTED
+    sl_task <- sl3::sl3_Task$new(
+      data = data_in,
+      outcome = "A",
+      covariates = paste0("W", seq_len(ncol(W))),
+      weights = "ipc_weights"
+    )
+
+    # sl3 task for data with treatment shifted DOWNWARDS
+    sl_task_downshifted <- sl3::sl3_Task$new(
+      data = data_in_downshifted,
+      outcome = "A",
+      covariates = paste0("W", seq_len(ncol(W))),
+      weights = "ipc_weights"
+    )
+
+    # sl3 task for data with treatment shifted UPWARDS
     sl_task_upshifted <- sl3::sl3_Task$new(
-      data_in_upshifted, outcome = "A",
+      data = data_in_upshifted,
+      outcome = "A",
       covariates = paste0("W", seq_len(ncol(W))),
       weights = "ipc_weights"
     )
   }
 
-  # predict for the upshifted data
-  if (fit_type == "glm") {
-    pred_g_A_upshifted <-
-      condensier::predict_probability(
-        model_fit = fit_g_A,
-        newdata = data_in_upshifted
-      )
-  } else if (fit_type == "sl") {
-    pred_g_A_upshifted <- sl_fit$predict(sl_task_upshifted)
+  ##############################################################################
+  # fit conditional densities with condensier
+  ##############################################################################
+  if (fit_type == "glm" & is.null(sl_lrnrs_dens)) {
+    fit_args <- unlist(list(X = c(paste0("W", seq_len(ncol(W)))),
+                            Y = "A", weights = "ipc_weights", std_args),
+                       recursive = FALSE)
+    fit_args$input_data <- data_in
+    fit_g_dens_glm <- do.call(condensier::fit_density, fit_args)
+  } else if (fit_type == "sl" & !is.null(sl_lrnrs_dens)) {
+    suppressMessages(
+      fit_g_dens_sl <- sl_lrnrs_dens$train(sl_task)
+    )
   }
 
-  # create output matrix: scenarios A = a, A = a - delta
+  ##############################################################################
+  # predict probabilities for the UNSHIFTED data (A = a)
+  ##############################################################################
+  if (fit_type == "glm" & is.null(sl_lrnrs_dens)) {
+    pred_g_A_noshift <-
+      condensier::predict_probability(
+        model_fit = fit_g_dens_glm,
+        newdata = data_in
+      )
+  } else if (fit_type == "sl" & !is.null(sl_lrnrs_dens)) {
+    suppressMessages(
+      pred_g_A_noshift <- fit_g_dens_sl$predict()
+    )
+  }
+
+  ##############################################################################
+  # predict probabilities for the DOWNSHIFTED data (A = a - delta)
+  ##############################################################################
+  if (fit_type == "glm" & is.null(sl_lrnrs_dens)) {
+    pred_g_A_downshifted <-
+      condensier::predict_probability(
+        model_fit = fit_g_dens_glm,
+        newdata = data_in_downshifted
+      )
+  } else if (fit_type == "sl" & !is.null(sl_lrnrs_dens)) {
+    suppressMessages(
+      pred_g_A_downshifted <- fit_g_dens_sl$predict(sl_task_downshifted)
+    )
+  }
+
+  ##############################################################################
+  # predict probabilities for the UPSHIFTED data (A = a + delta)
+  ##############################################################################
+  if (fit_type == "glm" & is.null(sl_lrnrs_dens)) {
+    pred_g_A_upshifted <-
+      condensier::predict_probability(
+        model_fit = fit_g_dens_glm,
+        newdata = data_in_upshifted
+      )
+  } else if (fit_type == "sl" & !is.null(sl_lrnrs_dens)) {
+    suppressMessages(
+      pred_g_A_upshifted <- fit_g_dens_sl$predict(sl_task_upshifted)
+    )
+  }
+
+  ##############################################################################
+  # create output data.tables: (1) A = a, (2) A = a - delta, (3) A = a + delta
+  ##############################################################################
   out <- data.table::as.data.table(cbind(
     pred_g_A_downshifted,
     pred_g_A_noshift,

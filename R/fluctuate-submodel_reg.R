@@ -30,8 +30,7 @@ fit_fluc <- function(Y,
     # note that \epsilon_n will be the coefficient of the covariate Hn
     suppressWarnings(
       mod_fluc <- stats::glm(
-        y_star ~ -1 + stats::offset(logit_Qn) +
-          Hn$noshift,
+        y_star ~ -1 + stats::offset(logit_Qn) + Hn$noshift,
         weights = ipc_weights,
         family = "binomial"
       )
