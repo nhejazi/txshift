@@ -21,8 +21,8 @@ library(shifttx)
 ### Compute TMLE for a single iteration of simulations
 
 ```{r sim_fun}
-simple_shifttx_sim_glm <- function(iter, samp, delta = 0.5, censoring = FALSE,
-                                   n_w, w1_prob, a1_mean, a0_mean) {
+simple_shifttx_sim_sl <- function(iter, samp, delta = 0.5, censoring = FALSE,
+                                  n_w, w1_prob, a1_mean, a0_mean) {
 
   if ((iter %% 100) == 0) {
     print(paste("Starting simulation", iter, "for sample size", samp))
@@ -105,8 +105,8 @@ delta_shift <- 0.5
 
 # meta-parameters for controlling simulation type
 seed_int <- 9461287
-n_sim <- 1e3
-n_obs <- c(50, 250, 1000)
+n_sim <- 500
+n_obs <- c(100, 1000)
 ```
 
 ### Setup Super Learner with `sl3`
@@ -124,13 +124,15 @@ lrn1_dens <- Lrnr_condensier$new(nbins = 35, bin_estimator = lrn1,
                                  bin_method = "equal.len")
 lrn2_dens <- Lrnr_condensier$new(nbins = 25, bin_estimator = lrn2,
                                  bin_method = "equal.len")
-sl_lrn_dens <- Lrnr_sl$new(learners = list(lrn1_dens, lrn2_dens),
+lrn3_dens <- Lrnr_condensier$new(nbins = 20, bin_estimator = lrn3,
+                                 bin_method = "equal.mass")
+sl_lrn_dens <- Lrnr_sl$new(learners = list(lrn1_dens, lrn2_dens, lrn3_dens),
                            metalearner = Lrnr_solnp_density$new())
 ```
 
-### Fitting outcome model with Super Learners
+### Fit TMLE with Super Learners *without censoring*
 
-```{r run_sim_glm, message = FALSE}
+```{r run_sim_sl_std, message = FALSE}
 # simulation
 simple_sim_sl <- foreach(in_samp = seq_along(n_obs), .combine = rbind) %do% {
   # set sample size from foreach loop
@@ -142,10 +144,10 @@ simple_sim_sl <- foreach(in_samp = seq_along(n_obs), .combine = rbind) %do% {
     set.seed(seed_int + i)
 
     # run the TMLE procedure
-    out <- simple_shifttx_sim_glm(iter = i, samp = samp, delta = delta_shift,
-                                  n_w = n_w, w1_prob = w_win_prob,
-                                  a1_mean = a1_mean, a0_mean = a0_mean,
-                                  censoring = FALSE)
+    out <- simple_shifttx_sim_sl(iter = i, samp = samp, delta = delta_shift,
+                                 n_w = n_w, w1_prob = w_win_prob,
+                                 a1_mean = a1_mean, a0_mean = a0_mean,
+                                 censoring = FALSE)
   }
   # compute average estimate, bias, and sd across simulations
   sim_est_mean <- mean(sim_results$est_psi)
@@ -158,7 +160,43 @@ simple_sim_sl <- foreach(in_samp = seq_along(n_obs), .combine = rbind) %do% {
 }
 ```
 
-```{r results_sim_glm, message = FALSE}
-knitr::kable(simple_sim_sl, format = "html",
+```{r results_sim_sl_std, message = FALSE}
+knitr::kable(simple_sim_sl, format = "markdown",
              caption = "Simulation statistics for shift TMLE w/ SL")
 ```
+
+### Fit TMLE with Super Learners *with censoring*
+
+```{r run_sim_sl_cens, message = FALSE}
+# simulation
+simple_sim_sl <- foreach(in_samp = seq_along(n_obs), .combine = rbind) %do% {
+  # set sample size from foreach loop
+  samp <- n_obs[in_samp]
+
+  # run simulation for given sample size
+  sim_results <- foreach(i = seq_len(n_sim), .combine = rbind) %dopar% {
+    # set seed in foreach
+    set.seed(seed_int + i)
+
+    # run the TMLE procedure
+    out <- simple_shifttx_sim_sl(iter = i, samp = samp, delta = delta_shift,
+                                 n_w = n_w, w1_prob = w_win_prob,
+                                 a1_mean = a1_mean, a0_mean = a0_mean,
+                                 censoring = TRUE)
+  }
+  # compute average estimate, bias, and sd across simulations
+  sim_est_mean <- mean(sim_results$est_psi)
+  sim_est_var <- var(sim_results$est_psi)
+  sim_est_bias <- sim_est_mean - mean(sim_results$truth)
+  sim_ci_cover <- sum(sim_results$truth_in_ci) / nrow(sim_results)
+  sim_out <- list(n_obs = samp, est = sim_est_mean, var = sim_est_var,
+                  bias = sim_est_bias, coverage = sim_ci_cover)
+  sim_samp_out <- tibble::as_tibble(sim_out)
+}
+```
+
+```{r results_sim_sl_cens, message = FALSE}
+knitr::kable(simple_sim_sl, format = "markdown",
+             caption = "Simulation statistics for shift TMLE w/ SL")
+```
+
