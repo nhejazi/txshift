@@ -8,7 +8,7 @@
 #' @param ipc_weights ...
 #' @param method ...
 #'
-#' @importFrom stats qlogis glm fitted predict
+#' @importFrom stats qlogis glm fitted predict offset
 #' @importFrom data.table as.data.table setnames
 #'
 #' @keywords internal

@@ -12,6 +12,8 @@
 #'  object created externally using the \code{sl3} package.
 #'
 #' @importFrom stats glm predict binomial
+#' @importFrom data.table as.data.table setnames
+#' @importFrom sl3 sl3_Task
 #'
 #' @return A \code{numeric} vector corresponding to the inverse probability of
 #'  censoring weights required for computing an IPCW-TMLE. Formally, this is

@@ -22,10 +22,10 @@
 #' @param sl_lrnrs ...
 #'
 #' @importFrom stats glm as.formula predict
-#' @importFrom sl3 make_sl3_Task make_learner Stack Lrnr_sl
+#' @importFrom data.table as.data.table setnames copy set
 #' @importFrom stringr str_detect
 #' @importFrom dplyr "%>%"
-#' @importFrom data.table as.data.table setnames copy set
+#' @importFrom sl3 make_sl3_Task
 #'
 #' @keywords internal
 #'

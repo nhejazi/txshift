@@ -14,8 +14,9 @@
 #'  from the \code{condensier} package when the argument \code{fit_type} is set
 #'  to "glm" (not invoking Super Learner).
 #'
+#' @importFrom data.table as.data.table setnames set copy
 #' @importFrom condensier fit_density predict_probability speedglmR6
-#' @importFrom data.table as.data.table setnames set
+#' @importFrom sl3 sl3_Task
 #'
 #' @keywords internal
 #'

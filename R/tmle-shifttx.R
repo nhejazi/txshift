@@ -27,7 +27,6 @@
 #'
 #' @importFrom dplyr filter "%>%"
 #' @importFrom condensier speedglmR6
-#' @importFrom data.table as.data.table
 #' @importFrom tibble as_tibble
 #' @importFrom stringr str_detect
 #'
