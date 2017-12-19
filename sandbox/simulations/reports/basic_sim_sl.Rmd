@@ -11,8 +11,6 @@ knitr::opts_chunk$set(echo = TRUE)
 library(here)
 library(tidyverse)
 library(data.table)
-library(ProjectTemplate)
-load.project()
 
 # packages for this simulation
 library(sl3)
