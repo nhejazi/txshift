@@ -15,6 +15,7 @@ library(future)
 library(doFuture)
 registerDoFuture()
 plan(multiprocess)
+RNGkind("L'Ecuyer-CMRG")
 ```
 
 ```{r setup_sim}
@@ -46,6 +47,11 @@ dens_no_cens <- foreach(i = seq_len(n_sim), .combine = c) %dopar% {
                      "equal.mass", nbins = n_bins, bin_estimator =
                      speedglmR6$new())
   preds <- sample_value(model_fit = fit, newdata = data_in)
+  # print simulation progress for sanity's sake
+  if ((iter %% 100) == 0) {
+    print(paste("Starting simulation", i, "/", n_sim, "for sample size",
+                n_samp))
+  }
   preds_strat_1 <- preds[which(data_in$w == 1)]
   preds_strat_0 <- preds[which(data_in$w == 0)]
   out <- list(preds_strat_1, preds_strat_0)
@@ -77,6 +83,11 @@ dens_cens <- foreach(i = seq_len(n_sim), .combine = rbind) %dopar% {
                      "equal.mass", nbins = n_bins, bin_estimator =
                      speedglmR6$new(), weights = "ip_weights")
   preds <- sample_value(model_fit = fit, newdata = data_in)
+  # print simulation progress for sanity's sake
+  if ((iter %% 100) == 0) {
+    print(paste("Starting simulation", i, "/", n_sim, "for sample size",
+                n_samp))
+  }
   preds_strat_1 <- preds[which(data_in$w == 1)]
   preds_strat_0 <- preds[which(data_in$w == 0)]
   out <- list(preds_strat_1, preds_strat_0)

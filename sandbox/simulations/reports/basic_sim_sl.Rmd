@@ -94,6 +94,7 @@ simple_shifttx_sim_sl <- function(iter, samp, delta = 0.5, censoring = FALSE,
 library(future)
 library(doFuture)
 registerDoFuture()
+plan(multiprocess)
 
 # best for foreach simulations
 RNGkind("L'Ecuyer-CMRG")
