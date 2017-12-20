@@ -118,7 +118,7 @@ n_obs <- c(50, 250, 1000)
 
 ```{r run_sim_glm_std, message = FALSE}
 # simulation
-simple_sim_glm <- foreach(in_samp = seq_along(n_obs), .combine = rbind) %do% {
+simple_sim_glm1 <- foreach(in_samp = seq_along(n_obs), .combine = rbind) %do% {
   # set sample size from foreach loop
   samp <- n_obs[in_samp]
 
@@ -145,7 +145,7 @@ simple_sim_glm <- foreach(in_samp = seq_along(n_obs), .combine = rbind) %do% {
 ```
 
 ```{r results_sim_glm_std, message = FALSE}
-knitr::kable(simple_sim_glm, format = "markdown",
+knitr::kable(simple_sim_glm1, format = "markdown",
              caption = "Simulation statistics for shift TMLE w/ GLMs")
 ```
 
@@ -153,7 +153,7 @@ knitr::kable(simple_sim_glm, format = "markdown",
 
 ```{r run_sim_glm_cens, message = FALSE, eval=FALSE}
 # simulation
-simple_sim_glm <- foreach(in_samp = seq_along(n_obs), .combine = rbind) %do% {
+simple_sim_glm2 <- foreach(in_samp = seq_along(n_obs), .combine = rbind) %do% {
   # set sample size from foreach loop
   samp <- n_obs[in_samp]
 
@@ -180,7 +180,7 @@ simple_sim_glm <- foreach(in_samp = seq_along(n_obs), .combine = rbind) %do% {
 ```
 
 ```{r results_sim_glm_cens, message = FALSE, eval=FALSE}
-knitr::kable(simple_sim_glm, format = "markdown",
+knitr::kable(simple_sim_glm2, format = "markdown",
              caption = "Simulation statistics for shift TMLE w/ GLMs")
 ```
 

@@ -6,3 +6,6 @@ glm_sim:
 sl_sim:
 	Rscript -e "rmarkdown::render('$(TITLE)_sl.Rmd')"
 
+dens:
+	Rscript -e "rmarkdown::render('condensier_weights.Rmd')"
+

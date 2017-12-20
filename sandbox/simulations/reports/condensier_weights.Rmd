@@ -7,8 +7,101 @@ output: html_document
 
 ```{r rmd_setup, echo = FALSE, message = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(data.table)
 library(here)
-library(sl3)
+library(data.table)
+library(tidyverse)
 library(condensier)
+library(future)
+library(doFuture)
+registerDoFuture()
+plan(multiprocess)
 ```
+
+```{r setup_sim}
+n_sim <- 500
+#n_samp <- c(50, 250, 1000)
+n_samp <- 500
+#n_bins <- c(10, 20, 30, 40)
+n_bins <- 20
+seed_int <- 57692
+```
+
+## Setting 1
+
+```{r setup_data1}
+sim_data <- function(n_obs = 1000, w_prob = 0.5) {
+  w <- rbinom(n_obs, 1, w_prob)
+  delta <- rbinom(n_obs, 1, plogis(w))
+  a <- rnorm(n_obs, mean = 2 * w, sd = 1)
+  data_in <- as.data.table(cbind(a, delta, w))
+  return(data_in)
+}
+```
+
+```{r condensier_no_weights_1}
+dens_no_cens <- foreach(i = seq_len(n_sim), .combine = c) %dopar% {
+  set.seed(seed_int + i)
+  data_in <- sim_data(n_obs = n_samp)
+  fit <- fit_density(X = "w", Y = "a", input_data = data_in, bin_method =
+                     "equal.mass", nbins = n_bins, bin_estimator =
+                     speedglmR6$new())
+  preds <- sample_value(model_fit = fit, newdata = data_in)
+  preds_strat_1 <- preds[which(data_in$w == 1)]
+  preds_strat_0 <- preds[which(data_in$w == 0)]
+  out <- list(preds_strat_1, preds_strat_0)
+}
+dens_nocens_w1 <- unlist(dens_no_cens[seq(1, 19, by = 2)])
+dens_nocens_w0 <- unlist(dens_no_cens[seq(2, 20, by = 2)])
+```
+
+```{r vis_condensier_no_weights_1}
+p_nocens_w1 <- gather(as.data.frame(dens_nocens_w1)) %>%
+  ggplot(., aes(value)) + geom_histogram(aes(y = ..density..), fill = "red") +
+  ggtitle("Conditional Density Histogram: A | W = 1") + theme_minimal() +
+  stat_function(fun = dnorm, args = list(mean = 2, sd = 1))
+p_nocens_w1
+
+p_nocens_w0 <- gather(as.data.frame(dens_nocens_w0)) %>%
+  ggplot(., aes(value)) + geom_histogram(aes(y = ..density..), fill = "red") +
+  ggtitle("Conditional Density Histogram: A | W = 0") + theme_minimal() +
+  stat_function(fun = dnorm, args = list(mean = 0, sd = 1))
+p_nocens_w0
+```
+
+```{r condensier_weights_1}
+dens_cens <- foreach(i = seq_len(n_sim), .combine = rbind) %dopar% {
+  set.seed(seed_int + i)
+  data_in <- sim_data(n_obs = n_samp)
+  set(data_in, j = "ip_weights", value = 1 / plogis(data_in$w))
+  fit <- fit_density(X = "w", Y = "a", input_data = data_in, bin_method =
+                     "equal.mass", nbins = n_bins, bin_estimator =
+                     speedglmR6$new(), weights = "ip_weights")
+  preds <- sample_value(model_fit = fit, newdata = data_in)
+  preds_strat_1 <- preds[which(data_in$w == 1)]
+  preds_strat_0 <- preds[which(data_in$w == 0)]
+  out <- list(preds_strat_1, preds_strat_0)
+}
+dens_cens_w1 <- unlist(dens_no_cens[seq(1, 2 * n_sim - 1, by = 2)])
+dens_cens_w0 <- unlist(dens_no_cens[seq(2, 2 * n_sim, by = 2)])
+```
+
+```{r vis_condensier_weights_1}
+p_cens_w1 <- gather(as.data.frame(dens_cens_w1)) %>%
+  ggplot(., aes(value)) + geom_histogram(aes(y = ..density..), fill = "red") +
+  ggtitle("Conditional Density Histogram: A | W = 1") + theme_minimal() +
+  stat_function(fun = dnorm, args = list(mean = 2, sd = 1))
+p_cens_w1
+
+p_cens_w0 <- gather(as.data.frame(dens_cens_w0)) %>%
+  ggplot(., aes(value)) + geom_histogram(aes(y = ..density..), fill = "red") +
+  ggtitle("Conditional Density Histogram: A | W = 0") + theme_minimal() +
+  stat_function(fun = dnorm, args = list(mean = 0, sd = 1))
+p_cens_w0
+```
+
+---
+
+## Setting 2
+
+Forthcoming...
+
