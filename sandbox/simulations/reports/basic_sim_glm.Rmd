@@ -111,8 +111,8 @@ delta_shift <- 0.5
 
 # meta-parameters for controlling simulation type
 seed_int <- 9461287
-n_sim <- 1e3
-n_obs <- c(50, 250, 1000)
+n_sim <- 10
+n_obs <- 5000
 ```
 
 ### Fitting outcome model with GLMs _without censoring_

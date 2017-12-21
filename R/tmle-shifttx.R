@@ -85,6 +85,9 @@ tmle_shifttx <- function(W,
     cens_weights <- do.call(est_ipcw, ipcw_estim_args)
     O_nocensoring <- tibble::as_tibble(list(W = W, A = A, C = C, Y = Y)) %>%
       dplyr::filter(C == 1)
+    W <- O_nocensoring$W
+    A <- O_nocensoring$A
+    Y <- O_nocensoring$Y
   } else {
     cens_weights <- C
   }
@@ -125,6 +128,7 @@ tmle_shifttx <- function(W,
       A = O_nocensoring$A,
       W = O_nocensoring$W,
       delta = delta,
+      ipc_weights = cens_weights,
       fit_type = fit_type
     )
     Qn_estim_args <- unlist(list(Qn_estim_in, Q_fit_args), recursive = FALSE)
@@ -142,6 +146,7 @@ tmle_shifttx <- function(W,
       Y = O_nocensoring$Y,
       Qn_scaled = Qn_estim,
       Hn = Hn_estim,
+      ipc_weights = cens_weights,
       method = fluc_method
     )
 
@@ -149,9 +154,10 @@ tmle_shifttx <- function(W,
     # compute Targeted Maximum Likelihood estimate for treatment shift parameter
     ############################################################################
     tmle_eif_out <- tmle_eif(
-      Y = O_nocensoring$Y,
-      Hn = Hn_estim,
       fluc_fit_out = fitted_fluc_mod,
+      Hn = Hn_estim,
+      Y = O_nocensoring$Y,
+      ipc_weights = cens_weights,
       tol_eif = eif_tol
     )
     ##############################################################################
@@ -190,6 +196,7 @@ tmle_shifttx <- function(W,
       A = A,
       W = W,
       delta = delta,
+      ipc_weights = cens_weights,
       fit_type = fit_type
     )
     Qn_estim_args <- unlist(list(Qn_estim_in, Q_fit_args), recursive = FALSE)
@@ -207,6 +214,7 @@ tmle_shifttx <- function(W,
       Y = Y,
       Qn_scaled = Qn_estim,
       Hn = Hn_estim,
+      ipc_weights = cens_weights,
       method = fluc_method
     )
     ############################################################################

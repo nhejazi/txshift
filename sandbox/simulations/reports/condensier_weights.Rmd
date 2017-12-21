@@ -21,9 +21,9 @@ RNGkind("L'Ecuyer-CMRG")
 ```{r setup_sim}
 n_sim <- 500
 #n_samp <- c(50, 250, 1000)
-n_samp <- 500
+n_samp <- 5000
 #n_bins <- c(10, 20, 30, 40)
-n_bins <- 20
+n_bins <- 50
 seed_int <- 57692
 ```
 
@@ -34,7 +34,8 @@ sim_data <- function(n_obs = 1000, w_prob = 0.5) {
   w <- rbinom(n_obs, 1, w_prob)
   delta <- rbinom(n_obs, 1, plogis(w))
   a <- rnorm(n_obs, mean = 2 * w, sd = 1)
-  data_in <- as.data.table(cbind(a, delta, w))
+  data_in <- as.data.table(cbind(a, delta, w)) %>%
+    dplyr::filter(delta == 1)
   return(data_in)
 }
 ```
@@ -61,13 +62,15 @@ dens_nocens_w0 <- unlist(dens_no_cens[seq(2, 20, by = 2)])
 ```
 
 ```{r vis_condensier_no_weights_1}
-p_nocens_w1 <- gather(as.data.frame(dens_nocens_w1)) %>%
+#p_nocens_w1 <- gather(as.data.frame(dens_nocens_w1)) %>%
+p_nocens_w1 <- gather(as.data.frame(preds_strat_1)) %>%
   ggplot(., aes(value)) + geom_histogram(aes(y = ..density..), fill = "red") +
   ggtitle("Conditional Density Histogram: A | W = 1") + theme_minimal() +
   stat_function(fun = dnorm, args = list(mean = 2, sd = 1))
 p_nocens_w1
 
-p_nocens_w0 <- gather(as.data.frame(dens_nocens_w0)) %>%
+#p_nocens_w0 <- gather(as.data.frame(dens_nocens_w0)) %>%
+p_nocens_w0 <- gather(as.data.frame(preds_strat_0)) %>%
   ggplot(., aes(value)) + geom_histogram(aes(y = ..density..), fill = "red") +
   ggtitle("Conditional Density Histogram: A | W = 0") + theme_minimal() +
   stat_function(fun = dnorm, args = list(mean = 0, sd = 1))
@@ -78,7 +81,7 @@ p_nocens_w0
 dens_cens <- foreach(i = seq_len(n_sim), .combine = rbind) %dopar% {
   set.seed(seed_int + i)
   data_in <- sim_data(n_obs = n_samp)
-  set(data_in, j = "ip_weights", value = 1 / plogis(data_in$w))
+  data_in$ip_weights <- 1 / plogis(data_in$w)
   fit <- fit_density(X = "w", Y = "a", input_data = data_in, bin_method =
                      "equal.mass", nbins = n_bins, bin_estimator =
                      speedglmR6$new(), weights = "ip_weights")
@@ -97,13 +100,15 @@ dens_cens_w0 <- unlist(dens_no_cens[seq(2, 2 * n_sim, by = 2)])
 ```
 
 ```{r vis_condensier_weights_1}
-p_cens_w1 <- gather(as.data.frame(dens_cens_w1)) %>%
+#p_cens_w1 <- gather(as.data.frame(dens_cens_w1)) %>%
+p_cens_w1 <- gather(as.data.frame(preds_strat_1)) %>%
   ggplot(., aes(value)) + geom_histogram(aes(y = ..density..), fill = "red") +
   ggtitle("Conditional Density Histogram: A | W = 1") + theme_minimal() +
   stat_function(fun = dnorm, args = list(mean = 2, sd = 1))
 p_cens_w1
 
-p_cens_w0 <- gather(as.data.frame(dens_cens_w0)) %>%
+#p_cens_w0 <- gather(as.data.frame(dens_cens_w0)) %>%
+p_cens_w0 <- gather(as.data.frame(preds_strat_0)) %>%
   ggplot(., aes(value)) + geom_histogram(aes(y = ..density..), fill = "red") +
   ggtitle("Conditional Density Histogram: A | W = 0") + theme_minimal() +
   stat_function(fun = dnorm, args = list(mean = 0, sd = 1))
