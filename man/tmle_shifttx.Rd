@@ -7,7 +7,7 @@
 tmle_shifttx(W, A, Y, C = rep(1, length(Y)), delta = 0,
   fit_type = c("glm", "sl"), fluc_method = c("standard", "weighted"),
   eif_tol = 1e-07, args = list(ipcw_fit = list(glm_formula = "Delta ~ .",
-  sl_lrnrs = NULL), g_fit = list(nbins = 25, bin_method = "dhist", bin_estimator
+  sl_lrnrs = NULL), g_fit = list(nbins = 35, bin_method = "dhist", bin_estimator
   = condensier::speedglmR6$new(), parfit = FALSE, sl_lrnrs_dens = NULL), Q_fit =
   list(glm_formula = "Y ~ .", sl_lrnrs = NULL)))
 }

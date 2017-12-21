@@ -49,7 +49,7 @@ tmle_shifttx <- function(W,
                              sl_lrnrs = NULL
                            ),
                            g_fit = list(
-                             nbins = 25,
+                             nbins = 35,
                              bin_method = "dhist",
                              bin_estimator =
                                condensier::speedglmR6$new(),
@@ -77,156 +77,83 @@ tmle_shifttx <- function(W,
   # perform sub-setting of data and implement IPC weighting if required
   ##############################################################################
   if (all(unique(C) != 1)) {
-    ipcw_estim_in <- list(V = W, Delta = C, fit_type = fit_type)
+    V_in <- tibble::as_tibble(list(W = W, Y = Y))
+    ipcw_estim_in <- list(V = V_in, Delta = C, fit_type = fit_type)
     ipcw_estim_args <- unlist(
       list(ipcw_estim_in, ipcw_fit_args),
       recursive = FALSE
     )
     cens_weights <- do.call(est_ipcw, ipcw_estim_args)
-    O_nocensoring <- tibble::as_tibble(list(W = W, A = A, C = C, Y = Y)) %>%
+    data_internal <- tibble::as_tibble(list(W = W, A = A, C = C, Y = Y)) %>%
       dplyr::filter(C == 1)
-    W <- O_nocensoring$W
-    A <- O_nocensoring$A
-    Y <- O_nocensoring$Y
   } else {
     cens_weights <- C
+    data_internal <- tibble::as_tibble(list(W = W, A = A, Y = Y))
   }
 
-  ##############################################################################
-  # handle estimation under censoring with IPCW-TMLEs
-  ##############################################################################
-  if (all(unique(C) != 1)) {
-    ############################################################################
-    # estimate the treatment mechanism (propensity score)
-    ############################################################################
-    gn_estim_in <- list(
-      A = O_nocensoring$A,
-      W = O_nocensoring$W,
-      delta = delta,
-      ipc_weights = cens_weights,
-      fit_type = fit_type
+  ############################################################################
+  # estimate the treatment mechanism (propensity score)
+  ############################################################################
+  gn_estim_in <- list(
+    A = data_internal$A,
+    W = data_internal$W,
+    delta = delta,
+    ipc_weights = cens_weights,
+    fit_type = fit_type
+  )
+  if (fit_type == "glm") {
+    g_fit_args <- g_fit_args[!stringr::str_detect(names(g_fit_args), "sl")]
+    gn_estim_args <- unlist(
+      list(gn_estim_in, std_args = list(g_fit_args)),
+      recursive = FALSE
     )
-    if (fit_type == "glm") {
-      g_fit_args <- g_fit_args[!stringr::str_detect(names(g_fit_args), "sl")]
-      gn_estim_args <- unlist(
-        list(gn_estim_in, std_args = list(g_fit_args)),
-        recursive = FALSE
-      )
-    } else {
-      g_fit_args <- g_fit_args[stringr::str_detect(names(g_fit_args), "sl")]
-      gn_estim_args <- unlist(list(gn_estim_in, g_fit_args), recursive = FALSE)
-    }
-    suppressMessages(
-      gn_estim <- do.call(est_g, gn_estim_args)
-    )
-
-    ############################################################################
-    # estimate the outcome regression
-    ############################################################################
-    Qn_estim_in <- list(
-      Y = O_nocensoring$Y,
-      A = O_nocensoring$A,
-      W = O_nocensoring$W,
-      delta = delta,
-      ipc_weights = cens_weights,
-      fit_type = fit_type
-    )
-    Qn_estim_args <- unlist(list(Qn_estim_in, Q_fit_args), recursive = FALSE)
-    Qn_estim <- do.call(est_Q, Qn_estim_args)
-
-    ############################################################################
-    # estimate the auxiliary ("clever") covariate
-    ############################################################################
-    Hn_estim <- est_Hn(gn = gn_estim)
-
-    ############################################################################
-    # fit logistic regression to fluctuate along the sub-model
-    ############################################################################
-    fitted_fluc_mod <- fit_fluc(
-      Y = O_nocensoring$Y,
-      Qn_scaled = Qn_estim,
-      Hn = Hn_estim,
-      ipc_weights = cens_weights,
-      method = fluc_method
-    )
-
-    ############################################################################
-    # compute Targeted Maximum Likelihood estimate for treatment shift parameter
-    ############################################################################
-    tmle_eif_out <- tmle_eif(
-      fluc_fit_out = fitted_fluc_mod,
-      Hn = Hn_estim,
-      Y = O_nocensoring$Y,
-      ipc_weights = cens_weights,
-      tol_eif = eif_tol
-    )
-    ##############################################################################
-    # when there is no censoring, just use a vanilla shift-TMLE
-    ##############################################################################
   } else {
-    ############################################################################
-    # estimate the treatment mechanism (propensity score)
-    ############################################################################
-    gn_estim_in <- list(
-      A = A,
-      W = W,
-      delta = delta,
-      ipc_weights = cens_weights,
-      fit_type = fit_type
-    )
-    if (fit_type == "glm") {
-      g_fit_args <- g_fit_args[!stringr::str_detect(names(g_fit_args), "sl")]
-      gn_estim_args <- unlist(
-        list(gn_estim_in, std_args = list(g_fit_args)),
-        recursive = FALSE
-      )
-    } else {
-      g_fit_args <- g_fit_args[stringr::str_detect(names(g_fit_args), "sl")]
-      gn_estim_args <- unlist(list(gn_estim_in, g_fit_args), recursive = FALSE)
-    }
-    suppressMessages(
-      gn_estim <- do.call(est_g, gn_estim_args)
-    )
-
-    ############################################################################
-    # estimate the outcome regression
-    ############################################################################
-    Qn_estim_in <- list(
-      Y = Y,
-      A = A,
-      W = W,
-      delta = delta,
-      ipc_weights = cens_weights,
-      fit_type = fit_type
-    )
-    Qn_estim_args <- unlist(list(Qn_estim_in, Q_fit_args), recursive = FALSE)
-    Qn_estim <- do.call(est_Q, Qn_estim_args)
-
-    ############################################################################
-    # estimate the auxiliary ("clever") covariate
-    ############################################################################
-    Hn_estim <- est_Hn(gn = gn_estim)
-
-    ############################################################################
-    # fit logistic regression to fluctuate along the sub-model
-    ############################################################################
-    fitted_fluc_mod <- fit_fluc(
-      Y = Y,
-      Qn_scaled = Qn_estim,
-      Hn = Hn_estim,
-      ipc_weights = cens_weights,
-      method = fluc_method
-    )
-    ############################################################################
-    # compute Targeted Maximum Likelihood estimate for treatment shift parameter
-    ############################################################################
-    tmle_eif_out <- tmle_eif(
-      Y = Y,
-      Hn = Hn_estim,
-      fluc_fit_out = fitted_fluc_mod,
-      tol_eif = eif_tol
-    )
+    g_fit_args <- g_fit_args[stringr::str_detect(names(g_fit_args), "sl")]
+    gn_estim_args <- unlist(list(gn_estim_in, g_fit_args), recursive = FALSE)
   }
+  gn_estim <- do.call(est_g, gn_estim_args)
+
+  ############################################################################
+  # estimate the outcome regression
+  ############################################################################
+  Qn_estim_in <- list(
+    Y = data_internal$Y,
+    A = data_internal$A,
+    W = data_internal$W,
+    delta = delta,
+    ipc_weights = cens_weights,
+    fit_type = fit_type
+  )
+  Qn_estim_args <- unlist(list(Qn_estim_in, Q_fit_args), recursive = FALSE)
+  Qn_estim <- do.call(est_Q, Qn_estim_args)
+
+  ############################################################################
+  # estimate the auxiliary ("clever") covariate
+  ############################################################################
+  Hn_estim <- est_Hn(gn = gn_estim)
+
+  ############################################################################
+  # fit logistic regression to fluctuate along the sub-model
+  ############################################################################
+  fitted_fluc_mod <- fit_fluc(
+    Y = data_internal$Y,
+    Qn_scaled = Qn_estim,
+    Hn = Hn_estim,
+    ipc_weights = cens_weights,
+    method = fluc_method
+  )
+
+  ############################################################################
+  # compute Targeted Maximum Likelihood estimate for treatment shift parameter
+  ############################################################################
+  tmle_eif_out <- tmle_eif(
+    fluc_fit_out = fitted_fluc_mod,
+    Hn = Hn_estim,
+    Y = data_internal$Y,
+    ipc_weights = cens_weights,
+    tol_eif = eif_tol
+  )
+
   ##############################################################################
   # create output object
   ##############################################################################
@@ -234,3 +161,4 @@ tmle_shifttx <- function(W,
   class(shifttx_out) <- "shifttx"
   return(shifttx_out)
 }
+

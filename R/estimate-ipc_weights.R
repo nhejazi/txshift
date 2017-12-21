@@ -33,7 +33,8 @@ est_ipcw <- function(V,
   ##############################################################################
   data_in <- data.table::as.data.table(cbind(Delta, V))
   if (!is.matrix(V)) V <- as.matrix(V)
-  data.table::setnames(data_in, c("Delta", paste0("V", seq_len(ncol(V)))))
+  names_V <- paste0("V", seq_len(ncol(V)))
+  data.table::setnames(data_in, c("Delta", names_V))
 
   ##############################################################################
   # make sl3 tasks from the data if fitting Super Learners
@@ -41,7 +42,7 @@ est_ipcw <- function(V,
   if (fit_type == "sl" & !is.null(sl_lrnrs)) {
     sl_task <- sl3::sl3_Task$new(
       data_in, outcome = "Delta",
-      covariates = paste0("V", seq_len(ncol(V))),
+      covariates = names_V,
       outcome_type = "binomial"
     )
   }
@@ -71,3 +72,4 @@ est_ipcw <- function(V,
   ipc_weights_out <- ipc_weights[ipc_weights != 0]
   return(ipc_weights_out)
 }
+

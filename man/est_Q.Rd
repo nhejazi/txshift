@@ -18,6 +18,8 @@ est_Q(Y, A, W, delta = 0, ipc_weights = rep(1, length(Y)),
 computed for the treatment \code{A}. This is passed directly to the internal
 function \code{tx_shift} and is currently limited to additive shifts.}
 
+\item{ipc_weights}{...}
+
 \item{fit_type}{A \code{character} indicating whether to use GLMs or Super
 Learner to fit the outcome regression. If the option "glm" is selected, the
 argument \code{glm_formula} must NOT be \code{NULL}, instead containing a

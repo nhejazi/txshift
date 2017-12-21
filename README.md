@@ -62,7 +62,7 @@ library(condensier)
 #> The condensier package is still in beta testing. Interpret results with caution.
 library(shifttx)
 #> shifttx: Targeted Learning with Stochastic Interventions
-#> Version: 0.0.6
+#> Version: 0.0.7
 
 # simulate simple data for tmle-shift sketch
 set.seed(429153)
