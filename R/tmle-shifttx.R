@@ -25,7 +25,7 @@
 #'  \code{g_fit}, see the documentation of \code{est_g}; (3) \code{Q_fit}, see
 #'  the documentation for \code{est_Q}.
 #'
-#' @importFrom dplyr filter "%>%"
+#' @importFrom dplyr filter select "%>%"
 #' @importFrom condensier speedglmR6
 #' @importFrom tibble as_tibble
 #' @importFrom stringr str_detect
@@ -85,7 +85,8 @@ tmle_shifttx <- function(W,
     )
     cens_weights <- do.call(est_ipcw, ipcw_estim_args)
     data_internal <- tibble::as_tibble(list(W = W, A = A, C = C, Y = Y)) %>%
-      dplyr::filter(C == 1)
+      dplyr::filter(C == 1) %>%
+      dplyr::select(-C)
   } else {
     cens_weights <- C
     data_internal <- tibble::as_tibble(list(W = W, A = A, Y = Y))

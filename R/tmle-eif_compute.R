@@ -27,7 +27,7 @@ tmle_eif <- function(fluc_fit_out,
                      ipc_weights = rep(1, length(Y)),
                      tol_eif = 1e-7) {
   # compute TMLE
-  psi <- mean(ipc_weights * fluc_fit_out$Qn_shift_star)
+  psi <- mean(fluc_fit_out$Qn_shift_star)
 
   # compute the efficient influence function (EIF) / canonical gradient (D*)
   eif <- ipc_weights * Hn$noshift * (Y - fluc_fit_out$Qn_noshift_star) +

@@ -10,6 +10,7 @@
 #'
 #' @importFrom stats qlogis glm fitted predict offset
 #' @importFrom data.table as.data.table setnames
+#' @importFrom dplyr "%>%"
 #'
 #' @keywords internal
 #
@@ -47,7 +48,8 @@ fit_fluc <- function(Y,
   }
 
   # get fitted values from fluctuation model
-  Qn_noshift_star_pred <- stats::fitted(mod_fluc)
+  Qn_noshift_star_pred <- stats::fitted(mod_fluc) %>%
+    as.numeric()
   Qn_noshift_star <- bound_scaling(
     Y = Y,
     preds_scaled = Qn_noshift_star_pred,
@@ -70,7 +72,8 @@ fit_fluc <- function(Y,
       object = mod_fluc,
       newdata = Qn_shift_star_in,
       type = "response"
-    )
+    ) %>%
+    as.numeric()
   } else if (method == "weighted") {
     Qn_shift_star_in <- data.table::as.data.table(Qn_shift_logit)
     data.table::setnames(Qn_shift_star_in, "logit_Qn")
@@ -80,7 +83,8 @@ fit_fluc <- function(Y,
       object = mod_fluc,
       newdata = Qn_shift_star_in,
       type = "response"
-    )
+    ) %>%
+    as.numeric()
   }
 
   Qn_shift_star <- bound_scaling(

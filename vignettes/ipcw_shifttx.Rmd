@@ -72,11 +72,11 @@ Comments about this estimation procedure...
 ```{r}
 library(condensier)
 library(shifttx)
-tmle_glm_shift1 <- tmle_shifttx(W = W, A = A, Y = Y, C= C, delta = 0.5,
+tmle_glm_shift1 <- tmle_shifttx(W = W, A = A, Y = Y, C = C, delta = 0.5,
                                 fluc_method = "standard", fit_type = "glm",
                                 args = list(
                                   ipcw_fit = list(glm_formula = "Delta ~ ."),
-                                  g_fit = list(nbins = 20, bin_method = "dhist",
+                                  g_fit = list(nbins = 35, bin_method = "dhist",
                                     bin_estimator = speedglmR6$new(),
                                     parfit = FALSE),
                                   Q_fit = list(glm_formula = "Y ~ .")
@@ -96,7 +96,7 @@ tmle_glm_shift2 <- tmle_shifttx(W = W, A = A, Y = Y, C = C, delta = 0.5,
                                 fluc_method = "weighted", fit_type = "glm",
                                 args = list(
                                   ipcw_fit = list(glm_formula = "Delta ~ ."),
-                                  g_fit = list(nbins = 20, bin_method = "dhist",
+                                  g_fit = list(nbins = 35, bin_method = "dhist",
                                     bin_estimator = speedglmR6$new(),
                                     parfit = FALSE),
                                   Q_fit = list(glm_formula = "Y ~ .")
