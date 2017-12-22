@@ -13,6 +13,7 @@
 #'
 #' @importFrom stats glm predict binomial
 #' @importFrom data.table as.data.table setnames
+#' @importFrom dplyr "%>%"
 #' @importFrom sl3 sl3_Task
 #'
 #' @return A \code{numeric} vector corresponding to the inverse probability of
@@ -58,17 +59,18 @@ est_ipcw <- function(V,
     )
     ipcw_probs <- stats::predict(
       object = ipcw_reg,
-      newdata = data_in
-    )
+      newdata = data_in,
+      type = "response"
+    ) %>%
+    as.numeric()
   } else if (fit_type == "sl" & !is.null(sl_lrnrs)) {
     sl_fit <- sl_lrnrs$train(sl_task)
-    ipcw_probs <- sl_fit$predict()
-  } else {
-    stop("Arguments for the model fitting process specified incorrectly.")
+    ipcw_probs <- sl_fit$predict() %>%
+      as.numeric()
   }
 
   # compute the inverse weights as Delta/Pi_n and return this vector
-  ipc_weights <- Delta / as.numeric(ipcw_probs)
+  ipc_weights <- Delta / ipcw_probs
   ipc_weights_out <- ipc_weights[ipc_weights != 0]
   return(ipc_weights_out)
 }
