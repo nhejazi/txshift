@@ -26,7 +26,7 @@
 #' @importFrom data.table as.data.table setnames copy set
 #' @importFrom stringr str_detect
 #' @importFrom dplyr "%>%"
-#' @importFrom sl3 make_sl3_Task
+#' @importFrom sl3 sl3_Task
 #'
 #' @keywords internal
 #'
@@ -99,7 +99,7 @@ est_Q <- function(Y,
   ##############################################################################
   if (fit_type == "sl" & !is.null(sl_lrnrs)) {
     # make sl3 task for original data
-    task_noshift <- sl3::make_sl3_Task(
+    task_noshift <- sl3::sl3_Task$new(
       data = data_in,
       covariates = c("A", names_W),
       outcome = "Y",

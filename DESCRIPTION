@@ -22,8 +22,8 @@ Depends: R (>= 3.2.0)
 Imports:
     stats,
     dplyr,
-    stringr,
     tibble,
+    stringr,
     data.table,
     condensier,
     sl3
@@ -31,7 +31,6 @@ Suggests:
     testthat,
     knitr,
     rmarkdown,
-    dtplyr,
     tidyverse
 Remotes:
     github::osofr/condensier@weights,

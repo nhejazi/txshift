@@ -42,8 +42,9 @@ est_ipcw <- function(V,
   ##############################################################################
   if (fit_type == "sl" & !is.null(sl_lrnrs)) {
     sl_task <- sl3::sl3_Task$new(
-      data_in, outcome = "Delta",
+      data = data_in,
       covariates = names_V,
+      outcome = "Delta",
       outcome_type = "binomial"
     )
   }
