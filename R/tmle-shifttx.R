@@ -12,7 +12,6 @@
 #'  equivalent to the term %\Delta in the notation used in the original Rose and
 #'  van der Laan manuscript that introduced/formulated IPCW-TML estimators.
 #' @param delta ...
-#' @param fit_type ...
 #' @param fluc_method The method to be used in submodel fluctuation step of
 #'  the TMLE computation. The choices are "standard" and "weighted".
 #' @param eif_tol The convergence criterion for the TML estimator. This is the
@@ -40,15 +39,16 @@ tmle_shifttx <- function(W,
                          Y,
                          C = rep(1, length(Y)),
                          delta = 0,
-                         fit_type = c("glm", "sl"),
                          fluc_method = c("standard", "weighted"),
                          eif_tol = 1e-7,
                          args = list(
                            ipcw_fit = list(
+                             fit_type = c("glm", "sl"),
                              glm_formula = "Delta ~ .",
                              sl_lrnrs = NULL
                            ),
                            g_fit = list(
+                             fit_type = c("glm", "sl"),
                              nbins = 35,
                              bin_method = "dhist",
                              bin_estimator =
@@ -57,6 +57,7 @@ tmle_shifttx <- function(W,
                              sl_lrnrs_dens = NULL
                            ),
                            Q_fit = list(
+                             fit_type = c("glm", "sl"),
                              glm_formula = "Y ~ .",
                              sl_lrnrs = NULL
                            )
@@ -69,16 +70,17 @@ tmle_shifttx <- function(W,
   fluc_method <- match.arg(fluc_method)
 
   # unpack the list of extra arguments for convenience
-  ipcw_fit_args <- args$ipcw_fit
-  g_fit_args <- args$g_fit
-  Q_fit_args <- args$Q_fit
+  ipcw_fit_args <- args$ipcw_fit[names(args$ipcw_fit) != "fit_type"]
+  g_fit_args <- args$g_fit[names(args$g_fit) != "fit_type"]
+  Q_fit_args <- args$Q_fit[names(args$Q_fit) != "fit_type"]
 
   ##############################################################################
   # perform sub-setting of data and implement IPC weighting if required
   ##############################################################################
   if (all(unique(C) != 1)) {
     V_in <- tibble::as_tibble(list(W = W, Y = Y))
-    ipcw_estim_in <- list(V = V_in, Delta = C, fit_type = fit_type)
+    ipcw_estim_in <- list(V = V_in, Delta = C,
+                          fit_type = args$ipcw_fit$fit_type)
     ipcw_estim_args <- unlist(
       list(ipcw_estim_in, ipcw_fit_args),
       recursive = FALSE
@@ -100,9 +102,9 @@ tmle_shifttx <- function(W,
     W = data_internal$W,
     delta = delta,
     ipc_weights = cens_weights,
-    fit_type = fit_type
+    fit_type = args$g_fit$fit_type
   )
-  if (fit_type == "glm") {
+  if (args$g_fit$fit_type == "glm") {
     g_fit_args <- g_fit_args[!stringr::str_detect(names(g_fit_args), "sl")]
     gn_estim_args <- unlist(
       list(gn_estim_in, std_args = list(g_fit_args)),
@@ -123,7 +125,7 @@ tmle_shifttx <- function(W,
     W = data_internal$W,
     delta = delta,
     ipc_weights = cens_weights,
-    fit_type = fit_type
+    fit_type = args$Q_fit$fit_type
   )
   Qn_estim_args <- unlist(list(Qn_estim_in, Q_fit_args), recursive = FALSE)
   Qn_estim <- do.call(est_Q, Qn_estim_args)
