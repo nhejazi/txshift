@@ -7,7 +7,7 @@ site:
 fastcheck:
 	Rscript -e "devtools::check(build_args = '--no-build-vignettes')"
 
-fullcheck:
+check:
 	Rscript -e "devtools::check()"
 
 test:

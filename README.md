@@ -62,7 +62,7 @@ library(condensier)
 #> The condensier package is still in beta testing. Interpret results with caution.
 library(shifttx)
 #> shifttx: Targeted Learning with Stochastic Interventions
-#> Version: 0.0.7
+#> Version: 0.0.8
 
 # simulate simple data for tmle-shift sketch
 set.seed(429153)
@@ -89,12 +89,14 @@ C <- rbinom(n_obs, 1, plogis(W))
 
 # fit the TMLE
 tmle_shift <- tmle_shifttx(W = W, A = A, Y = Y, delta = 0.5,
-                           fluc_method = "standard", fit_type = "glm",
+                           fluc_method = "standard",
                            args = list(
-                             g_fit = list(nbins = 25, bin_method = "dhist",
+                             g_fit = list(fit_type = "glm",
+                                          nbins = 25,  bin_method = "dhist",
                                           bin_estimator = speedglmR6$new(),
                                           parfit = FALSE),
-                             Q_fit = list(glm_formula = "Y ~ .")
+                             Q_fit = list(fit_type = "glm",
+                                          glm_formula = "Y ~ .")
                           ))
 
 # examine the results
@@ -126,13 +128,14 @@ If you encounter any bugs or have any specific feature requests, please
 ## Funding
 
 The development of this software was supported in part through a grant
-from the National Library of Medicine of the NIH (T32 LM012417).
+from the National Library of Medicine of the National Institutes of
+Health (T32 LM012417).
 
 -----
 
 ## License
 
-© 2017 [Nima S. Hejazi](http://nimahejazi.org)
+© 2017-2018 [Nima S. Hejazi](http://nimahejazi.org)
 
 The contents of this repository are distributed under the MIT license.
 See below for details:

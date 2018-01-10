@@ -66,7 +66,6 @@ tmle_shifttx <- function(W,
   # TODO: check arguments and set up some objects for programmatic convenience
   ##############################################################################
   call <- match.call(expand.dots = TRUE)
-  fit_type <- match.arg(fit_type)
   fluc_method <- match.arg(fluc_method)
 
   # unpack the list of extra arguments for convenience

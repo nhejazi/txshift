@@ -5,11 +5,12 @@
 \title{Compute Targeted Maximum Likelihood Estimate for Treatment Shift Parameter}
 \usage{
 tmle_shifttx(W, A, Y, C = rep(1, length(Y)), delta = 0,
-  fit_type = c("glm", "sl"), fluc_method = c("standard", "weighted"),
-  eif_tol = 1e-07, args = list(ipcw_fit = list(glm_formula = "Delta ~ .",
-  sl_lrnrs = NULL), g_fit = list(nbins = 35, bin_method = "dhist", bin_estimator
-  = condensier::speedglmR6$new(), parfit = FALSE, sl_lrnrs_dens = NULL), Q_fit =
-  list(glm_formula = "Y ~ .", sl_lrnrs = NULL)))
+  fluc_method = c("standard", "weighted"), eif_tol = 1e-07,
+  args = list(ipcw_fit = list(fit_type = c("glm", "sl"), glm_formula =
+  "Delta ~ .", sl_lrnrs = NULL), g_fit = list(fit_type = c("glm", "sl"), nbins =
+  35, bin_method = "dhist", bin_estimator = condensier::speedglmR6$new(), parfit
+  = FALSE, sl_lrnrs_dens = NULL), Q_fit = list(fit_type = c("glm", "sl"),
+  glm_formula = "Y ~ .", sl_lrnrs = NULL)))
 }
 \arguments{
 \item{W}{...}
@@ -26,8 +27,6 @@ equivalent to the term %\Delta in the notation used in the original Rose and
 van der Laan manuscript that introduced/formulated IPCW-TML estimators.}
 
 \item{delta}{...}
-
-\item{fit_type}{...}
 
 \item{fluc_method}{The method to be used in submodel fluctuation step of
 the TMLE computation. The choices are "standard" and "weighted".}
