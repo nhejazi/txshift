@@ -72,7 +72,9 @@ Comments about this estimation procedure...
 ```{r}
 library(condensier)
 library(shifttx)
-tmle_glm_shift1 <- tmle_shifttx(W = W, A = A, Y = Y, C = C, delta = 0.5,
+tmle_glm_shift1 <- tmle_shifttx(W = W, A = A, Y = Y,
+                                C = C, V = list(W = W, Y = Y),
+                                delta = 0.5,
                                 fluc_method = "standard",
                                 args = list(
                                   ipcw_fit = list(fit_type = "glm",
@@ -95,7 +97,9 @@ such a covariate directly in the regression fit. Please consult [INSERT REF] for
 details on potential benefits this approach may have.
 
 ```{r}
-tmle_glm_shift2 <- tmle_shifttx(W = W, A = A, Y = Y, C = C, delta = 0.5,
+tmle_glm_shift2 <- tmle_shifttx(W = W, A = A, Y = Y,
+                                C = C, V = list(W = W, Y = Y),
+                                delta = 0.5,
                                 fluc_method = "weighted",
                                 args = list(
                                   ipcw_fit = list(fit_type = "glm",
@@ -138,7 +142,9 @@ the TML estimator may be fit with ensemble learning, using the cross-validation
 framework of the Super Learner algorithm of [INSERT REF].
 
 ```{r}
-tmle_sl_shift1 <- tmle_shifttx(W = W, A = A, Y = Y, C = C, delta = 0.5,
+tmle_sl_shift1 <- tmle_shifttx(W = W, A = A, Y = Y,
+                               C = C, V = list(W = W, Y = Y),
+                               delta = 0.5,
                                fluc_method = "standard",
                                args = list(
                                  ipcw_fit = list(fit_type = "sl",
@@ -156,7 +162,9 @@ weighting each observation by the value of the so-called clever covariate rather
 than using such an auxiliary covariate directly in the regression procedure:
 
 ```{r}
-tmle_sl_shift2 <- tmle_shifttx(W = W, A = A, Y = Y, C = C, delta = 0.5,
+tmle_sl_shift2 <- tmle_shifttx(W = W, A = A, Y = Y,
+                               C = C, V = list(W = W, Y = Y),
+                               delta = 0.5,
                                fluc_method = "weighted",
                                args = list(
                                  ipcw_fit = list(fit_type = "sl",

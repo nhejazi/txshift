@@ -22,11 +22,12 @@ argument \code{sl_lrnrs} must be provided.}
 object created externally using the \code{sl3} package.}
 }
 \value{
-A \code{numeric} vector corresponding to the inverse probability of
- censoring weights required for computing an IPCW-TMLE. Formally, this is
- nothing more than %\frac{\Delta}{\Pi_n}, where the term %\Pi_n is simply the
- predicted probability of belonging to a censoring class as computed using
- standard logistic regression.
+A \code{list} containing a \code{numeric} vector corresponding to the
+ inverse probability of censoring weights that are required for computing an
+ IPCW-TMLE and \code{numeric} vector of the estimated missingness mechanism.
+ Formally, the former is nothing more than %\frac{\Delta}{\Pi_n}, where the
+ term %\Pi_n is simply the predicted probability of belonging to a censoring
+ class as computed using standard logistic regression.
 }
 \description{
 description

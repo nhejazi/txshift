@@ -4,9 +4,9 @@
 \alias{tmle_shifttx}
 \title{Compute Targeted Maximum Likelihood Estimate for Treatment Shift Parameter}
 \usage{
-tmle_shifttx(W, A, Y, C = rep(1, length(Y)), delta = 0,
+tmle_shifttx(W, A, Y, C = rep(1, length(Y)), V = NULL, delta = 0,
   fluc_method = c("standard", "weighted"), eif_tol = 1e-07,
-  args = list(ipcw_fit = list(fit_type = c("glm", "sl"), glm_formula =
+  mod_args = list(ipcw_fit = list(fit_type = c("glm", "sl"), glm_formula =
   "Delta ~ .", sl_lrnrs = NULL), g_fit = list(fit_type = c("glm", "sl"), nbins =
   35, bin_method = "dhist", bin_estimator = condensier::speedglmR6$new(), parfit
   = FALSE, sl_lrnrs_dens = NULL), Q_fit = list(fit_type = c("glm", "sl"),
@@ -26,6 +26,12 @@ censoring was present (i.e., a two-stage design was NOT used). N.B., this is
 equivalent to the term %\Delta in the notation used in the original Rose and
 van der Laan manuscript that introduced/formulated IPCW-TML estimators.}
 
+\item{V}{The covariates that are used in determining the sampling procedure
+that gives rise to censoring. The default is \code{NULL} and corresponds to
+scenarios in which there is no censoring (in which case all values in the
+preceding argument \code{C} must be uniquely 1. To specify this, pass in a
+\code{list} with variables among W, A, Y thought to be used in defining C.}
+
 \item{delta}{...}
 
 \item{fluc_method}{The method to be used in submodel fluctuation step of
@@ -35,8 +41,8 @@ the TMLE computation. The choices are "standard" and "weighted".}
 the maximum mean of the efficient influence function (EIF) to be accepted in
 calling convergence (theoretically, the value is zero).}
 
-\item{args}{A nested \code{list} of \code{list}s that specifies arguments to
-be passed to the various internal functions for the estimation procedure.
+\item{mod_args}{A nested \code{list} of \code{list}s that specifies arguments
+to be passed to the various internal functions for the estimation procedure.
 Each of sub-list corresponds to a single internal function. As such, for
 details on (1) \code{ipcw_fit}, see the documention of \code{est_ipcw}; (2)
 \code{g_fit}, see the documentation of \code{est_g}; (3) \code{Q_fit}, see

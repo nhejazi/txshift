@@ -16,11 +16,12 @@
 #' @importFrom dplyr "%>%"
 #' @importFrom sl3 sl3_Task
 #'
-#' @return A \code{numeric} vector corresponding to the inverse probability of
-#'  censoring weights required for computing an IPCW-TMLE. Formally, this is
-#'  nothing more than %\frac{\Delta}{\Pi_n}, where the term %\Pi_n is simply the
-#'  predicted probability of belonging to a censoring class as computed using
-#'  standard logistic regression.
+#' @return A \code{list} containing a \code{numeric} vector corresponding to the
+#'  inverse probability of censoring weights that are required for computing an
+#'  IPCW-TMLE and \code{numeric} vector of the estimated missingness mechanism.
+#'  Formally, the former is nothing more than %\frac{\Delta}{\Pi_n}, where the
+#'  term %\Pi_n is simply the predicted probability of belonging to a censoring
+#'  class as computed using standard logistic regression.
 #'
 #' @export
 #
@@ -73,6 +74,6 @@ est_ipcw <- function(V,
   # compute the inverse weights as Delta/Pi_n and return this vector
   ipc_weights <- Delta / ipcw_probs
   ipc_weights_out <- ipc_weights[ipc_weights != 0]
-  return(ipc_weights_out)
+  return(list(pi_mech = ipcw_probs, ipc_weights = ipc_weights_out))
 }
 

@@ -11,23 +11,29 @@
 #'  censoring was present (i.e., a two-stage design was NOT used). N.B., this is
 #'  equivalent to the term %\Delta in the notation used in the original Rose and
 #'  van der Laan manuscript that introduced/formulated IPCW-TML estimators.
+#' @param V The covariates that are used in determining the sampling procedure
+#'  that gives rise to censoring. The default is \code{NULL} and corresponds to
+#'  scenarios in which there is no censoring (in which case all values in the
+#'  preceding argument \code{C} must be uniquely 1. To specify this, pass in a
+#'  \code{list} with variables among W, A, Y thought to be used in defining C.
 #' @param delta ...
 #' @param fluc_method The method to be used in submodel fluctuation step of
 #'  the TMLE computation. The choices are "standard" and "weighted".
 #' @param eif_tol The convergence criterion for the TML estimator. This is the
 #'  the maximum mean of the efficient influence function (EIF) to be accepted in
 #'  calling convergence (theoretically, the value is zero).
-#' @param args A nested \code{list} of \code{list}s that specifies arguments to
-#'  be passed to the various internal functions for the estimation procedure.
+#' @param mod_args A nested \code{list} of \code{list}s that specifies arguments
+#'  to be passed to the various internal functions for the estimation procedure.
 #'  Each of sub-list corresponds to a single internal function. As such, for
 #'  details on (1) \code{ipcw_fit}, see the documention of \code{est_ipcw}; (2)
 #'  \code{g_fit}, see the documentation of \code{est_g}; (3) \code{Q_fit}, see
 #'  the documentation for \code{est_Q}.
 #'
-#' @importFrom dplyr filter select "%>%"
 #' @importFrom condensier speedglmR6
+#' @importFrom data.table as.data.table
 #' @importFrom tibble as_tibble
 #' @importFrom stringr str_detect
+#' @importFrom dplyr filter select "%>%"
 #'
 #' @return S3 object of class \code{shifttx} containing the results of the
 #'  procedure to compute a TML estimate of the treatment shift parameter.
@@ -38,10 +44,11 @@ tmle_shifttx <- function(W,
                          A,
                          Y,
                          C = rep(1, length(Y)),
+                         V = NULL,
                          delta = 0,
                          fluc_method = c("standard", "weighted"),
                          eif_tol = 1e-7,
-                         args = list(
+                         mod_args = list(
                            ipcw_fit = list(
                              fit_type = c("glm", "sl"),
                              glm_formula = "Delta ~ .",
@@ -69,92 +76,138 @@ tmle_shifttx <- function(W,
   fluc_method <- match.arg(fluc_method)
 
   # unpack the list of extra arguments for convenience
-  ipcw_fit_args <- args$ipcw_fit[names(args$ipcw_fit) != "fit_type"]
-  g_fit_args <- args$g_fit[names(args$g_fit) != "fit_type"]
-  Q_fit_args <- args$Q_fit[names(args$Q_fit) != "fit_type"]
+  ipcw_fit_args <- mod_args$ipcw_fit[names(mod_args$ipcw_fit) != "fit_type"]
+  g_fit_args <- mod_args$g_fit[names(mod_args$g_fit) != "fit_type"]
+  Q_fit_args <- mod_args$Q_fit[names(mod_args$Q_fit) != "fit_type"]
 
   ##############################################################################
   # perform sub-setting of data and implement IPC weighting if required
   ##############################################################################
-  if (all(unique(C) != 1)) {
-    V_in <- tibble::as_tibble(list(W = W, Y = Y))
+  if (!all(unique(C) == 1) & !is.null(V)) {
+    V_in <- data.table::as.data.table(V)
     ipcw_estim_in <- list(V = V_in, Delta = C,
-                          fit_type = args$ipcw_fit$fit_type)
+                          fit_type = mod_args$ipcw_fit$fit_type)
+    # reshapes the list of args so that it can be passed to do.call
     ipcw_estim_args <- unlist(
       list(ipcw_estim_in, ipcw_fit_args),
       recursive = FALSE
     )
-    cens_weights <- do.call(est_ipcw, ipcw_estim_args)
+    # compute the IPC weights by passing all args to the relevant function
+    ipcw_out <- do.call(est_ipcw, ipcw_estim_args)
+    cens_weights <- ipcw_out$ipc_weights
     data_internal <- tibble::as_tibble(list(W = W, A = A, C = C, Y = Y)) %>%
       dplyr::filter(C == 1) %>%
-      dplyr::select(-C)
+      dplyr::select(-C) %>%
+      data.table::as.data.table()
   } else {
+    # if no censoring, we can just use IPC weights that are identically 1
     cens_weights <- C
-    data_internal <- tibble::as_tibble(list(W = W, A = A, Y = Y))
+    data_internal <- data.table::as.data.table(list(W = W, A = A, Y = Y))
   }
 
-  ############################################################################
-  # estimate the treatment mechanism (propensity score)
-  ############################################################################
+  ##############################################################################
+  # initial estimate of the treatment mechanism (propensity score)
+  ##############################################################################
   gn_estim_in <- list(
     A = data_internal$A,
     W = data_internal$W,
     delta = delta,
     ipc_weights = cens_weights,
-    fit_type = args$g_fit$fit_type
+    fit_type = mod_args$g_fit$fit_type
   )
-  if (args$g_fit$fit_type == "glm") {
+  if (mod_args$g_fit$fit_type == "glm") {
+    # since fitting a GLM, can safely remove all args related to SL
     g_fit_args <- g_fit_args[!stringr::str_detect(names(g_fit_args), "sl")]
+    # reshape args to a list suitable to be passed to do.call
     gn_estim_args <- unlist(
       list(gn_estim_in, std_args = list(g_fit_args)),
       recursive = FALSE
     )
   } else {
+    # if fitting SL, we can discard all the standard condensier-related args
     g_fit_args <- g_fit_args[stringr::str_detect(names(g_fit_args), "sl")]
+    # reshapes list of args to make passing to do.call possible
     gn_estim_args <- unlist(list(gn_estim_in, g_fit_args), recursive = FALSE)
   }
+  # pass the relevant args for computing the propensity score to do.call
   gn_estim <- do.call(est_g, gn_estim_args)
 
-  ############################################################################
-  # estimate the outcome regression
-  ############################################################################
+  ##############################################################################
+  # initial estimate of the outcome regression
+  ##############################################################################
   Qn_estim_in <- list(
     Y = data_internal$Y,
     A = data_internal$A,
     W = data_internal$W,
     delta = delta,
     ipc_weights = cens_weights,
-    fit_type = args$Q_fit$fit_type
+    fit_type = mod_args$Q_fit$fit_type
   )
+  # reshape args to pass to the relevant function for the outcome regression
   Qn_estim_args <- unlist(list(Qn_estim_in, Q_fit_args), recursive = FALSE)
+  # invoke function to estimate outcome regression via do.call
   Qn_estim <- do.call(est_Q, Qn_estim_args)
 
-  ############################################################################
-  # estimate the auxiliary ("clever") covariate
-  ############################################################################
+  ##############################################################################
+  # initial estimate of the auxiliary ("clever") covariate
+  ##############################################################################
   Hn_estim <- est_Hn(gn = gn_estim)
 
-  ############################################################################
-  # fit logistic regression to fluctuate along the sub-model
-  ############################################################################
-  fitted_fluc_mod <- fit_fluc(
-    Y = data_internal$Y,
-    Qn_scaled = Qn_estim,
-    Hn = Hn_estim,
-    ipc_weights = cens_weights,
-    method = fluc_method
-  )
+  ##############################################################################
+  # invoke efficient IPCW-TMLE, per Rose & van der Laan (2009), if necessary
+  ##############################################################################
+  if (!all(unique(C) == 1) & !is.null(V)) {
+    stop("The efficient implementation of the IPCW-TMLE is not yet ready.")
+    # fit logistic regression to fluctuate along the sub-model
+    fitted_fluc_mod <- fit_fluc(
+      Y = data_internal$Y,
+      Qn_scaled = Qn_estim,
+      Hn = Hn_estim,
+      ipc_weights = cens_weights,
+      method = fluc_method
+    )
+    # compute Targeted Maximum Likelihood estimate for treatment shift parameter
+    tmle_eif_out <- tmle_eif(
+      fluc_fit_out = fitted_fluc_mod,
+      Hn = Hn_estim,
+      Y = data_internal$Y,
+      ipc_weights = cens_weights,
+      tol_eif = eif_tol
+    )
 
-  ############################################################################
-  # compute Targeted Maximum Likelihood estimate for treatment shift parameter
-  ############################################################################
-  tmle_eif_out <- tmle_eif(
-    fluc_fit_out = fitted_fluc_mod,
-    Hn = Hn_estim,
-    Y = data_internal$Y,
-    ipc_weights = cens_weights,
-    tol_eif = eif_tol
-  )
+    # WE'LL MOVE THIS TO A FUNCTION WHEN IT'S WORKING BUT SKETCHING FOR NOW
+    # the efficient influence function equation we're solving looks like
+    # pi_mech = 1 / cens_weights
+    # 0 = (C - pi_mech) * \E(f(eif ~ V, subset = (C = 1)) / pi_mech)
+    pi_n <- ipcw_out$pi_mech
+    mod <- stats::glm(tmle_eif_out$eif ~ .,
+                      data = subset(data_internal, select = names(V)))
+    p <- stats::predict(mod, newdata = data.table::as.data.table(V)) %>%
+      as.numeric()
+    ipcw_fluc <- stats::glm(C ~ -1 + stats::offset(stats::qlogis(pi_n)) +
+                            p / pi_n, family = "binomial")
+
+  ##############################################################################
+  # standard TMLE of the shift parameter / inefficient IPCW-TMLE
+  ##############################################################################
+  } else {
+    # fit logistic regression to fluctuate along the sub-model
+    fitted_fluc_mod <- fit_fluc(
+      Y = data_internal$Y,
+      Qn_scaled = Qn_estim,
+      Hn = Hn_estim,
+      ipc_weights = cens_weights,
+      method = fluc_method
+    )
+    # compute Targeted Maximum Likelihood estimate for treatment shift parameter
+    tmle_eif_out <- tmle_eif(
+      fluc_fit_out = fitted_fluc_mod,
+      Hn = Hn_estim,
+      Y = data_internal$Y,
+      ipc_weights = cens_weights,
+      tol_eif = eif_tol
+    )
+  }
 
   ##############################################################################
   # create output object
