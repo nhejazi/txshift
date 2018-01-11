@@ -30,9 +30,12 @@ van der Laan manuscript that introduced/formulated IPCW-TML estimators.}
 that gives rise to censoring. The default is \code{NULL} and corresponds to
 scenarios in which there is no censoring (in which case all values in the
 preceding argument \code{C} must be uniquely 1. To specify this, pass in a
-\code{list} with variables among W, A, Y thought to be used in defining C.}
+NAMED \code{list} identifying variables amongst W, A, Y that are thought to
+have played a role in defining the sampling/censoring mechanism (C).}
 
-\item{delta}{...}
+\item{delta}{A \code{numeric} value indicating the shift in the treatment to
+be used in defining the target parameter. This is defined with respect to
+the scale of the treatment (A).}
 
 \item{fluc_method}{The method to be used in submodel fluctuation step of
 the TMLE computation. The choices are "standard" and "weighted".}

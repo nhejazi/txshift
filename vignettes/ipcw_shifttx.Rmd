@@ -39,23 +39,18 @@ set.seed(429153)
 library(tidyverse)
 
 # simulate simple data for tmle-shift sketch
-n_obs <- 1000
-n_w <- 1
-a1_mean <- 2
-a0_mean <- 0
+n_obs <- 1000  # sample size
+n_w <- 1  # just one baseline covariate for this example
+tx_mult <- 2  # multiplier for the effect of W = 1 on the treatment
 
 ## baseline covariate -- simple, binary
 W <- as.numeric(replicate(n_w, rbinom(n_obs, 1, 0.5)))
 
 ## set and organize treatment based on baseline W
-A1 <- rnorm(length(which(W == 1)), mean = a1_mean, sd = 1)
-A0 <- rnorm(length(which(W == 0)), mean = a0_mean, sd = 1)
-A <- rep(NA, n_obs)
-A[which(W == 0)] <- A0
-A[which(W == 1)] <- A1
+A <- as.numeric(rnorm(n_obs, mean = tx_mult * W, sd = 1))
 
-# create outcome
-Y <- A + W + rnorm(n_obs)
+# create outcome as linear function of A, W + white noise
+Y <- A + W + rnorm(n_obs, mean = 0, sd = 1)
 
 # censoring based on covariates
 C <- rbinom(n_obs, 1, plogis(W))
@@ -76,7 +71,7 @@ tmle_glm_shift1 <- tmle_shifttx(W = W, A = A, Y = Y,
                                 C = C, V = list(W = W, Y = Y),
                                 delta = 0.5,
                                 fluc_method = "standard",
-                                args = list(
+                                mod_args = list(
                                   ipcw_fit = list(fit_type = "glm",
                                     glm_formula = "Delta ~ ."),
                                   g_fit = list(fit_type = "glm",
@@ -101,7 +96,7 @@ tmle_glm_shift2 <- tmle_shifttx(W = W, A = A, Y = Y,
                                 C = C, V = list(W = W, Y = Y),
                                 delta = 0.5,
                                 fluc_method = "weighted",
-                                args = list(
+                                mod_args = list(
                                   ipcw_fit = list(fit_type = "glm",
                                     glm_formula = "Delta ~ ."),
                                   g_fit = list(fit_type = "glm",
@@ -146,7 +141,7 @@ tmle_sl_shift1 <- tmle_shifttx(W = W, A = A, Y = Y,
                                C = C, V = list(W = W, Y = Y),
                                delta = 0.5,
                                fluc_method = "standard",
-                               args = list(
+                               mod_args = list(
                                  ipcw_fit = list(fit_type = "sl",
                                    sl_lrnrs = sl_lrn),
                                  g_fit = list(fit_type = "sl",
@@ -166,7 +161,7 @@ tmle_sl_shift2 <- tmle_shifttx(W = W, A = A, Y = Y,
                                C = C, V = list(W = W, Y = Y),
                                delta = 0.5,
                                fluc_method = "weighted",
-                               args = list(
+                               mod_args = list(
                                  ipcw_fit = list(fit_type = "sl",
                                    sl_lrnrs = sl_lrn),
                                  g_fit = list(fit_type = "sl",

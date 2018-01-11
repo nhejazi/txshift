@@ -63,26 +63,21 @@ consider the following example:
 ```{r example}
 library(condensier)
 library(shifttx)
+set.seed(429153)
 
 # simulate simple data for tmle-shift sketch
-set.seed(429153)
-n_obs <- 1000
-n_w <- 1
-a1_mean <- 2
-a0_mean <- 0
+n_obs <- 1000  # sample size
+n_w <- 1  # we're going to have one baseline covariate for this toy example
+tx_mult <- 2  # multiplier for the effect of having W = 1 on the treatment
 
 ## baseline covariate -- simple, binary
 W <- as.numeric(replicate(n_w, rbinom(n_obs, 1, 0.5)))
 
 ## set and organize treatment based on baseline W
-A1 <- rnorm(length(which(W == 1)), mean = a1_mean, sd = 1)
-A0 <- rnorm(length(which(W == 0)), mean = a0_mean, sd = 1)
-A <- rep(NA, n_obs)
-A[which(W == 0)] <- A0
-A[which(W == 1)] <- A1
+A <- as.numeric(rnorm(n_obs, mean = tx_mult * W, sd = 1))
 
-# create outcome
-Y <- A + W + rnorm(n_obs)
+# create outcome as linear function of A, W + white noise
+Y <- A + W + rnorm(n_obs, mean = 0, sd = 1)
 
 # induce censoring
 C <- rbinom(n_obs, 1, plogis(W))
@@ -90,7 +85,7 @@ C <- rbinom(n_obs, 1, plogis(W))
 # fit the TMLE
 tmle_shift <- tmle_shifttx(W = W, A = A, Y = Y, delta = 0.5,
                            fluc_method = "standard",
-                           args = list(
+                           mod_args = list(
                              g_fit = list(fit_type = "glm",
                                           nbins = 25,  bin_method = "dhist",
                                           bin_estimator = speedglmR6$new(),
