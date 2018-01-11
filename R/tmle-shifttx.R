@@ -15,8 +15,11 @@
 #'  that gives rise to censoring. The default is \code{NULL} and corresponds to
 #'  scenarios in which there is no censoring (in which case all values in the
 #'  preceding argument \code{C} must be uniquely 1. To specify this, pass in a
-#'  \code{list} with variables among W, A, Y thought to be used in defining C.
-#' @param delta ...
+#'  NAMED \code{list} identifying variables amongst W, A, Y that are thought to
+#'  have played a role in defining the sampling/censoring mechanism (C).
+#' @param delta A \code{numeric} value indicating the shift in the treatment to
+#'  be used in defining the target parameter. This is defined with respect to
+#'  the scale of the treatment (A).
 #' @param fluc_method The method to be used in submodel fluctuation step of
 #'  the TMLE computation. The choices are "standard" and "weighted".
 #' @param eif_tol The convergence criterion for the TML estimator. This is the
@@ -177,7 +180,7 @@ tmle_shifttx <- function(W,
 
     # WE'LL MOVE THIS TO A FUNCTION WHEN IT'S WORKING BUT SKETCHING FOR NOW
     # the efficient influence function equation we're solving looks like
-    # pi_mech = 1 / cens_weights
+    # pi_mech = missing-ness mechanism weights for ALL observations
     # 0 = (C - pi_mech) * \E(f(eif ~ V, subset = (C = 1)) / pi_mech)
     pi_n <- ipcw_out$pi_mech
     mod <- stats::glm(tmle_eif_out$eif ~ .,
@@ -186,6 +189,9 @@ tmle_shifttx <- function(W,
       as.numeric()
     ipcw_fluc <- stats::glm(C ~ -1 + stats::offset(stats::qlogis(pi_n)) +
                             p / pi_n, family = "binomial")
+    ipcw_fluc_pred <- fitted(ipcw_fluc) %>% as.numeric()
+    update_weights <- (C / ipcw_fluc_pred)[C == 1]
+    ipc_eif_out <- mean((C - ipcw_fluc_pred) * (p / ipcw_fluc_pred))
 
   ##############################################################################
   # standard TMLE of the shift parameter / inefficient IPCW-TMLE
