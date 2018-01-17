@@ -41,7 +41,7 @@ ipcw_eif <- function(fluc_fit_out,
   var_eif <- stats::var(eif) / length(Y)
 
   # return the variance and the EIF value at each observation
-  out <- list(psi = psi, var = var_eif, eif = eif, msg = eif_msg)
+  out <- list(psi = psi, var = var_eif, eif = eif)
   return(out)
 }
 

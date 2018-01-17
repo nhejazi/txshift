@@ -50,7 +50,7 @@ tmle_shifttx <- function(W,
                          V = NULL,
                          delta = 0,
                          fluc_method = c("standard", "weighted"),
-                         eif_tol = 1e-7,
+                         eif_tol = 1e-10,
                          mod_args = list(
                            ipcw_fit = list(
                              fit_type = c("glm", "sl"),
@@ -160,38 +160,53 @@ tmle_shifttx <- function(W,
   # invoke efficient IPCW-TMLE, per Rose & van der Laan (2009), if necessary
   ##############################################################################
   if (!all(unique(C) == 1) & !is.null(V)) {
-    stop("The efficient implementation of the IPCW-TMLE is not yet ready.")
-    # fit logistic regression to fluctuate along the sub-model
-    fitted_fluc_mod <- fit_fluc(
-      Y = data_internal$Y,
-      Qn_scaled = Qn_estim,
-      Hn = Hn_estim,
-      ipc_weights = cens_weights,
-      method = fluc_method
-    )
-    # compute Targeted Maximum Likelihood estimate for treatment shift parameter
-    tmle_eif_out <- tmle_eif(
-      fluc_fit_out = fitted_fluc_mod,
-      Hn = Hn_estim,
-      Y = data_internal$Y,
-      ipc_weights = cens_weights,
-      tol_eif = eif_tol
-    )
+    ## The efficient implementation of the IPCW-TMLE
+    n_steps <- 0
+    eif_mean <- Inf
+    while (abs(eif_mean) > eif_tol & n_steps < 100) {
+      # fit logistic regression to fluctuate along the sub-model
+      fitted_fluc_mod <- fit_fluc(
+        Y = data_internal$Y,
+        Qn_scaled = Qn_estim,
+        Hn = Hn_estim,
+        ipc_weights = cens_weights,
+        method = fluc_method
+      )
+      # compute Targeted Maximum Likelihood estimate for treatment shift parameter
+      tmle_eif_out <- tmle_eif(
+        fluc_fit_out = fitted_fluc_mod,
+        Hn = Hn_estim,
+        Y = data_internal$Y,
+        ipc_weights = cens_weights,
+        tol_eif = eif_tol
+      )
+      # WE'LL MOVE THIS TO A FUNCTION WHEN IT'S WORKING BUT SKETCHING FOR NOW
+      # the efficient influence function equation we're solving looks like
+      # pi_mech = missing-ness mechanism weights for ALL observations
+      # 0 = (C - pi_mech) * \E(f(eif ~ V, subset = (C = 1)) / pi_mech)
+      pi_n <- ipcw_out$pi_mech
+      ### mod is merely f(eif ~ V | C = 1); could be fit with SL also...
+      mod <- stats::glm(tmle_eif_out$eif ~ .,
+                        data = subset(data_internal, select = names(V)))
+      ### invoking predict is equivalent to applying E[.]
+      p <- stats::predict(mod, newdata = data.table::as.data.table(V)) %>%
+        as.numeric()
+      ### this fits the logistic regression for sub-model fluctuation
+      ipcw_fluc <- stats::glm(C ~ -1 + stats::offset(stats::qlogis(pi_n)) +
+                              p / pi_n, family = "binomial")
+      ### now, we can obtain P_n^* from the sub-model fluctuation
+      ipcw_fluc_pred <- fitted(ipcw_fluc) %>% as.numeric()
+      ### this is the mean of the second half of the EIF (for censoring bit...)
+      ipc_eif_out <- mean((C - ipcw_fluc_pred) * (p / ipcw_fluc_pred))
 
-    # WE'LL MOVE THIS TO A FUNCTION WHEN IT'S WORKING BUT SKETCHING FOR NOW
-    # the efficient influence function equation we're solving looks like
-    # pi_mech = missing-ness mechanism weights for ALL observations
-    # 0 = (C - pi_mech) * \E(f(eif ~ V, subset = (C = 1)) / pi_mech)
-    pi_n <- ipcw_out$pi_mech
-    mod <- stats::glm(tmle_eif_out$eif ~ .,
-                      data = subset(data_internal, select = names(V)))
-    p <- stats::predict(mod, newdata = data.table::as.data.table(V)) %>%
-      as.numeric()
-    ipcw_fluc <- stats::glm(C ~ -1 + stats::offset(stats::qlogis(pi_n)) +
-                            p / pi_n, family = "binomial")
-    ipcw_fluc_pred <- fitted(ipcw_fluc) %>% as.numeric()
-    update_weights <- (C / ipcw_fluc_pred)[C == 1]
-    ipc_eif_out <- mean((C - ipcw_fluc_pred) * (p / ipcw_fluc_pred))
+      ### so, now we need weights to feed back into the previous steps
+      cens_weights <- (C / ipcw_fluc_pred)[C == 1]
+
+      # compute updated mean of EIF
+      eif_mean <- mean(tmle_eif_out$eif) - ipc_eif_out
+      n_steps <- n_steps + 1
+      print(eif_mean, n_steps)
+    }
 
   ##############################################################################
   # standard TMLE of the shift parameter / inefficient IPCW-TMLE
