@@ -1,4 +1,5 @@
 library(testthat)
-library(shifttx)
+library(txshift)
 
-test_check("shifttx")
+test_check("txshift")
+

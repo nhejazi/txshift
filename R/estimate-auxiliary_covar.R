@@ -35,3 +35,4 @@ est_Hn <- function(gn, a = NULL, w = NULL) {
   # output
   return(H_n)
 }
+

@@ -1,4 +1,4 @@
-Package: shifttx
+Package: txshift
 Title: Targeted Maximum Likelihood Estimation of Continuous Treatment Effects
   from Stochastic Interventions
 Version: 0.0.9.2
@@ -36,8 +36,8 @@ Remotes:
     github::osofr/condensier@weights,
     github::jeremyrcoyle/sl3
 License: MIT + file LICENSE
-URL: https://github.com/nhejazi/shifttx
-BugReports: https://github.com/nhejazi/shifttx/issues
+URL: https://github.com/nhejazi/txshift
+BugReports: https://github.com/nhejazi/txshift/issues
 Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr

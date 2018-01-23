@@ -1,4 +1,4 @@
-#' Compute "extra" part of the Efficient Influence Function for IPCW-TMLE
+#' Compute IPCW Part of the Efficient Influence Function for IPCW-TMLE
 #'
 #' Computes an additional component of the efficient influence function needed
 #' for efficient estimation of IPCW-TMLEs. This takes the form:
@@ -20,12 +20,12 @@
 #' @author Nima Hejazi
 #' @author David Benkeser
 #
-ipcw_eif <- function(fluc_fit_out,
-                     Hn,
-                     Y,
-                     C,
-                     ipc_weights = rep(1, length(Y)),
-                     tol_eif = 1e-7) {
+ipcwtmle_eif <- function(fluc_fit_out,
+                         Hn,
+                         Y,
+                         C,
+                         ipc_weights = rep(1, length(Y)),
+                         tol_eif = 1e-7) {
   # compute TMLE
   psi <- mean(ipc_weights * fluc_fit_out$Qn_shift_star)
 
@@ -44,5 +44,4 @@ ipcw_eif <- function(fluc_fit_out,
   out <- list(psi = psi, var = var_eif, eif = eif)
   return(out)
 }
-
 

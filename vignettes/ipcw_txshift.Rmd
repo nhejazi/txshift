@@ -1,6 +1,7 @@
 ---
 title: "IPCW-TMLEs with Stochastic Treatment Regimes"
-author: "Nima Hejazi and David Benkeser"
+author: "[Nima Hejazi](https://nimahejazi.org) and [David
+  Benkeser](https://www.benkeserstatistics.com/)"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: vignette-refs.bib
@@ -25,12 +26,12 @@ options(scipen=999)
 TODO: ADD STUFF ON CENSORING
 
 1. Start with a simple additive shift -- i.e., $d(a,w) = a + \delta$ if
-   $a < u(w) - \delta$ or $d(a,w) = a$ if $a \geq u(w) - \delta$.
+   $a < u(w) - \delta$ or $d(a, w) = a$ if $a \geq u(w) - \delta$.
 
 2. The additive shift will have support everywhere -- i.e., $a < u(w)$ is true
    everywhere.
 
-3. The data structure that we know and love $O = (W,A,Y)$.
+3. The data structure that we know and love $O = (W, A, Y)$.
 
 ### Simulate Data
 
@@ -66,22 +67,22 @@ Comments about this estimation procedure...
 
 ```{r}
 library(condensier)
-library(shifttx)
-tmle_glm_shift1 <- tmle_shifttx(W = W, A = A, Y = Y,
-                                C = C, V = list(W = W, Y = Y),
-                                delta = 0.5,
-                                fluc_method = "standard",
-                                mod_args = list(
-                                  ipcw_fit = list(fit_type = "glm",
-                                    glm_formula = "Delta ~ ."),
-                                  g_fit = list(fit_type = "glm",
-                                    nbins = 35, bin_method = "dhist",
-                                    bin_estimator = speedglmR6$new(),
-                                    parfit = FALSE),
-                                  Q_fit = list(fit_type = "glm",
-                                    glm_formula = "Y ~ .")
+library(txshift)
+tmle_glm_shift_1 <- tmle_txshift(W = W, A = A, Y = Y,
+                                 C = C, V = list(W = W, Y = Y),
+                                 delta = 0.5,
+                                 fluc_method = "standard",
+                                 mod_args = list(
+                                   ipcw_fit = list(fit_type = "glm",
+                                     glm_formula = "Delta ~ ."),
+                                   g_fit = list(fit_type = "glm",
+                                     nbins = 35, bin_method = "dhist",
+                                     bin_estimator = speedglmR6$new(),
+                                     parfit = FALSE),
+                                   Q_fit = list(fit_type = "glm",
+                                     glm_formula = "Y ~ .")
                                 ))
-tmle_glm_shift1
+tmle_glm_shift_1
 ```
 
 When computing any such TML estimator, we may, of course, vary the regressions
@@ -92,21 +93,21 @@ such a covariate directly in the regression fit. Please consult [INSERT REF] for
 details on potential benefits this approach may have.
 
 ```{r}
-tmle_glm_shift2 <- tmle_shifttx(W = W, A = A, Y = Y,
-                                C = C, V = list(W = W, Y = Y),
-                                delta = 0.5,
-                                fluc_method = "weighted",
-                                mod_args = list(
-                                  ipcw_fit = list(fit_type = "glm",
-                                    glm_formula = "Delta ~ ."),
-                                  g_fit = list(fit_type = "glm",
-                                    nbins = 35, bin_method = "dhist",
-                                    bin_estimator = speedglmR6$new(),
-                                    parfit = FALSE),
-                                  Q_fit = list(fit_type = "glm",
-                                    glm_formula = "Y ~ .")
+tmle_glm_shift_2 <- tmle_txshift(W = W, A = A, Y = Y,
+                                 C = C, V = list(W = W, Y = Y),
+                                 delta = 0.5,
+                                 fluc_method = "weighted",
+                                 mod_args = list(
+                                   ipcw_fit = list(fit_type = "glm",
+                                     glm_formula = "Delta ~ ."),
+                                   g_fit = list(fit_type = "glm",
+                                     nbins = 35, bin_method = "dhist",
+                                     bin_estimator = speedglmR6$new(),
+                                     parfit = FALSE),
+                                   Q_fit = list(fit_type = "glm",
+                                     glm_formula = "Y ~ .")
                                 ))
-tmle_glm_shift2
+tmle_glm_shift_2
 ```
 
 ### Interlude: Constructing Super Learners with `sl3`
@@ -137,19 +138,19 @@ the TML estimator may be fit with ensemble learning, using the cross-validation
 framework of the Super Learner algorithm of [INSERT REF].
 
 ```{r}
-tmle_sl_shift1 <- tmle_shifttx(W = W, A = A, Y = Y,
-                               C = C, V = list(W = W, Y = Y),
-                               delta = 0.5,
-                               fluc_method = "standard",
-                               mod_args = list(
-                                 ipcw_fit = list(fit_type = "sl",
-                                   sl_lrnrs = sl_lrn),
-                                 g_fit = list(fit_type = "sl",
-                                   sl_lrnrs = sl_lrn_dens),
-                                 Q_fit = list(fit_type = "sl",
-                                   sl_lrnrs = sl_lrn)
+tmle_sl_shift_1 <- tmle_txshift(W = W, A = A, Y = Y,
+                                C = C, V = list(W = W, Y = Y),
+                                delta = 0.5,
+                                fluc_method = "standard",
+                                mod_args = list(
+                                  ipcw_fit = list(fit_type = "sl",
+                                    sl_lrnrs = sl_lrn),
+                                  g_fit = list(fit_type = "sl",
+                                    sl_lrnrs = sl_lrn_dens),
+                                  Q_fit = list(fit_type = "sl",
+                                    sl_lrnrs = sl_lrn)
                                ))
-tmle_sl_shift1
+tmle_sl_shift_1
 ```
 
 As before, we may vary the regression for the submodel fluctuation procedure by
@@ -157,19 +158,19 @@ weighting each observation by the value of the so-called clever covariate rather
 than using such an auxiliary covariate directly in the regression procedure:
 
 ```{r}
-tmle_sl_shift2 <- tmle_shifttx(W = W, A = A, Y = Y,
-                               C = C, V = list(W = W, Y = Y),
-                               delta = 0.5,
-                               fluc_method = "weighted",
-                               mod_args = list(
-                                 ipcw_fit = list(fit_type = "sl",
-                                   sl_lrnrs = sl_lrn),
-                                 g_fit = list(fit_type = "sl",
-                                   sl_lrnrs = sl_lrn_dens),
-                                 Q_fit = list(fit_type = "sl",
-                                   sl_lrnrs = sl_lrn)
+tmle_sl_shift_2 <- tmle_txshift(W = W, A = A, Y = Y,
+                                C = C, V = list(W = W, Y = Y),
+                                delta = 0.5,
+                                fluc_method = "weighted",
+                                mod_args = list(
+                                  ipcw_fit = list(fit_type = "sl",
+                                    sl_lrnrs = sl_lrn),
+                                  g_fit = list(fit_type = "sl",
+                                    sl_lrnrs = sl_lrn_dens),
+                                  Q_fit = list(fit_type = "sl",
+                                    sl_lrnrs = sl_lrn)
                                ))
-tmle_sl_shift2
+tmle_sl_shift_2
 ```
 
 ### Statistical Inference for Targeted Maximum Likelihood Estimates
@@ -180,8 +181,7 @@ this package. Here, we focus on addressing the issue of how censoring impacts
 the inferential procedure...
 
 ```{r}
-ci_shift <- confint(tmle_sl_shift1)
-ci_shift
+(ci_shift <- confint(tmle_sl_shift_1))
 ```
 
 ---

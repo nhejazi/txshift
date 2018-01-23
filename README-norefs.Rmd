@@ -1,5 +1,6 @@
 ---
-output: rmarkdown::github_document
+output:
+  rmarkdown::github_document
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -12,24 +13,25 @@ knitr::opts_chunk$set(
 )
 ```
 
-# R/`shifttx`
+# R/`txshift`
 
-[![Travis-CI Build Status](https://travis-ci.org/nhejazi/shifttx.svg?branch=master)](https://travis-ci.org/nhejazi/shifttx)
-[![AppVeyor Build  Status](https://ci.appveyor.com/api/projects/status/github/nhejazi/shifttx?branch=master&svg=true)](https://ci.appveyor.com/project/nhejazi/shifttx)
-[![Coverage Status](https://img.shields.io/codecov/c/github/nhejazi/shifttx/master.svg)](https://codecov.io/github/nhejazi/shifttx?branch=master)
+[![Travis-CI Build Status](https://travis-ci.org/nhejazi/txshift.svg?branch=master)](https://travis-ci.org/nhejazi/txshift)
+[![AppVeyor Build  Status](https://ci.appveyor.com/api/projects/status/github/nhejazi/txshift?branch=master&svg=true)](https://ci.appveyor.com/project/nhejazi/txshift)
+[![Coverage Status](https://img.shields.io/codecov/c/github/nhejazi/txshift/master.svg)](https://codecov.io/github/nhejazi/txshift?branch=master)
 [![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
-> ...
+> Targeted Learning of Continuous Interventions with Stochastic Treatment
+> Regimes
 
 __Authors:__ [Nima Hejazi](http://nimahejazi.org) and [David
 Benkeser](https://www.benkeserstatistics.com/)
 
 ---
 
-## What's `shifttx`?
+## What's `txshift`?
 
-`shifttx` is an R package that makes it easy to compute targeted minimum
+`txshift` is an R package that makes it easy to compute targeted minimum
 loss-based estimates of the population-level causal effects of interventions
 based on stochastic mechanisms for treatment assignment.
 
@@ -41,45 +43,57 @@ Install the most recent _stable release_ from GitHub via
 [`devtools`](https://www.rstudio.com/products/rpackages/devtools/):
 
 ```{r gh-master-installation, eval = FALSE}
-devtools::install_github("nhejazi/shifttx")
+devtools::install_github("nhejazi/txshift")
 ```
 
 ---
 
 ## Example
 
-To illustrate how `shifttx` may be used to ascertain the effect of a treatment,
+To illustrate how `txshift` may be used to ascertain the effect of a treatment,
 consider the following example:
 
 ```{r example}
-library(shifttx)
+set.seed(429153)
+library(tidyverse)
+library(condensier)
+library(txshift)
 
-# first, define simulation parameters and observed data
-n <- 100
-W <- data.frame(W1 = runif(n), W2 = rbinom(n, 1, 0.7))
-A <- rpois(n, lambda = exp(3 + 0.3 * log(W$W1) - 0.2 * exp(W$W1) * W$W2))
-Y <- rbinom(n, 1, plogis(-1 + 0.05 * A - 0.02 * A * W$W2 + 0.2 * A * tan(W$W1^2)
-                         - 0.02 * W$W1 * W$W2 + 0.1 * A * W$W1 * W$W2))
-fitA.0 <- glm(A ~ I(log(W1)) + I(exp(W1)):W2, family = poisson,
-              data = data.frame(A, W))
-fitY.0 <- glm(Y ~ A + A:W2 + A:I(tan(W1^2)) + W1:W2 + A:W1:W2,
-              family = binomial, data = data.frame(A, W))
+# simulate simple data for tmle-shift sketch
+n_obs <- 1000  # number of observations
+n_w <- 1  # number of baseline covariates
+p_w <- 0.5  # probability of a success ("1") in the baseline variables
+tx_mult <- 2  # multiplier for the effect of W = 1 on the treatment
 
-# next, we define the treatment mechanisma and outcome in the true model
-gn.0  <- function(A = A, W = W) {
-  dpois(A, lambda = predict(fitA.0, newdata = W, type = "response"))
-}
-Qn.0 <- function(A = A, W = W) {
-  predict(fitY.0, newdata = data.frame(A, W, row.names = NULL),
-          type = "response")
-}
+## baseline covariate -- simple, binary
+W <- as.numeric(replicate(n_w, rbinom(n_obs, 1, p_w)))
 
-# finally, we may compute targeted estimates of the intervention effect
-est_target <- tmle_shift(Y = Y, A = A, W = W, Qn = Qn.0, gn = gn.0, delta = 2,
-                         tol = 1e-4, iter_max = 5, A_val = seq(1, 60, 1))
+## create treatment based on baseline W
+A <- as.numeric(rnorm(n_obs, mean = tx_mult * W, sd = 1))
 
-# let's just examine the first few results
-head(est_target)
+# create outcome as a linear function of A, W + white noise
+Y <- A + W + rnorm(n_obs, mean = 0, sd = 1)
+
+# induce censoring
+C <- rbinom(n_obs, 1, plogis(W))
+
+# fit the TMLE
+tmle_shift <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
+                           fluc_method = "standard",
+                           mod_args = list(
+                             g_fit = list(fit_type = "glm",
+                                          nbins = 25,  bin_method = "dhist",
+                                          bin_estimator = speedglmR6$new(),
+                                          parfit = FALSE),
+                             Q_fit = list(fit_type = "glm",
+                                          glm_formula = "Y ~ .")
+                          ))
+
+# examine the results
+tmle_shift
+
+# compute the confidence interval and view the results
+(ci_shift <- confint(tmle_shift))
 ```
 
 ---
@@ -87,27 +101,28 @@ head(est_target)
 ## Issues
 
 If you encounter any bugs or have any specific feature requests, please [file an
-issue](https://github.com/nhejazi/shifttx/issues).
+issue](https://github.com/nhejazi/txshift/issues).
 
 ---
 
 ## Funding
 
 The development of this software was supported in part through a grant from the
-National Library of Medicine of the NIH (T32 LM012417).
+National Library of Medicine of the National Institutes of Health (T32
+LM012417).
 
 ---
 
 ## License
 
-&copy; 2017 [Nima S. Hejazi](http://nimahejazi.org)
+&copy; 2017-2018 [Nima S. Hejazi](http://nimahejazi.org)
 
 The contents of this repository are distributed under the MIT license. See below
 for details:
 ```
 MIT License
 
-Copyright (c) 2017 Nima S. Hejazi
+Copyright (c) 2017-2018 Nima S. Hejazi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -127,4 +142,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+---
+
+## References
 

@@ -22,15 +22,17 @@
 #'  the scale of the treatment (A).
 #' @param fluc_method The method to be used in submodel fluctuation step of
 #'  the TMLE computation. The choices are "standard" and "weighted".
-#' @param eif_tol The convergence criterion for the TML estimator. This is the
-#'  the maximum mean of the efficient influence function (EIF) to be accepted in
-#'  calling convergence (theoretically, the value is zero).
+#' @param eif_tol A \code{numeric} giving the convergence criterion for the TML
+#'  estimator. This is the the maximum mean of the efficient influence function
+#'  (EIF) to be used in declaring convergence (theoretically, should be zero).
+#' @param max_iter A \code{numeric} integer giving the maximum number of steps
+#'  to be taken in iterating to a solution of the efficient influence function.
 #' @param mod_args A nested \code{list} of \code{list}s that specifies arguments
 #'  to be passed to the various internal functions for the estimation procedure.
 #'  Each of sub-list corresponds to a single internal function. As such, for
-#'  details on (1) \code{ipcw_fit}, see the documention of \code{est_ipcw}; (2)
-#'  \code{g_fit}, see the documentation of \code{est_g}; (3) \code{Q_fit}, see
-#'  the documentation for \code{est_Q}.
+#'  details on (1) \code{ipcw_fit}, see the documentation of \code{est_ipcw};
+#'  (2) \code{g_fit}, see the documentation of \code{est_g}; (3) \code{Q_fit},
+#'  see the documentation for \code{est_Q}.
 #'
 #' @importFrom condensier speedglmR6
 #' @importFrom data.table as.data.table
@@ -38,19 +40,20 @@
 #' @importFrom stringr str_detect
 #' @importFrom dplyr filter select "%>%"
 #'
-#' @return S3 object of class \code{shifttx} containing the results of the
+#' @return S3 object of class \code{txshift} containing the results of the
 #'  procedure to compute a TML estimate of the treatment shift parameter.
 #'
 #' @export
 #
-tmle_shifttx <- function(W,
+tmle_txshift <- function(W,
                          A,
                          Y,
                          C = rep(1, length(Y)),
                          V = NULL,
                          delta = 0,
                          fluc_method = c("standard", "weighted"),
-                         eif_tol = 1e-10,
+                         eif_tol = 1e-9,
+                         max_iter = 1e5,
                          mod_args = list(
                            ipcw_fit = list(
                              fit_type = c("glm", "sl"),
@@ -71,7 +74,7 @@ tmle_shifttx <- function(W,
                              glm_formula = "Y ~ .",
                              sl_lrnrs = NULL
                            )
-                         )) {
+                        )) {
   ##############################################################################
   # TODO: check arguments and set up some objects for programmatic convenience
   ##############################################################################
@@ -163,13 +166,16 @@ tmle_shifttx <- function(W,
     ## The efficient implementation of the IPCW-TMLE
     n_steps <- 0
     eif_mean <- Inf
-    while (abs(eif_mean) > eif_tol & n_steps < 100) {
+    pi_n <- ipcw_out$pi_mech
+    cens_weights_full <- C / pi_n
+    # iterate over the IPCW-TMLE procedure until conditions satisfied
+    while (abs(eif_mean) > eif_tol & n_steps < max_iter) {
       # fit logistic regression to fluctuate along the sub-model
       fitted_fluc_mod <- fit_fluc(
         Y = data_internal$Y,
         Qn_scaled = Qn_estim,
         Hn = Hn_estim,
-        ipc_weights = cens_weights,
+        ipc_weights = cens_weights_full[C == 1],
         method = fluc_method
       )
       # compute Targeted Maximum Likelihood estimate for treatment shift parameter
@@ -177,14 +183,13 @@ tmle_shifttx <- function(W,
         fluc_fit_out = fitted_fluc_mod,
         Hn = Hn_estim,
         Y = data_internal$Y,
-        ipc_weights = cens_weights,
+        ipc_weights = cens_weights_full[C == 1],
         tol_eif = eif_tol
       )
       # WE'LL MOVE THIS TO A FUNCTION WHEN IT'S WORKING BUT SKETCHING FOR NOW
       # the efficient influence function equation we're solving looks like
       # pi_mech = missing-ness mechanism weights for ALL observations
       # 0 = (C - pi_mech) * \E(f(eif ~ V, subset = (C = 1)) / pi_mech)
-      pi_n <- ipcw_out$pi_mech
       ### mod is merely f(eif ~ V | C = 1); could be fit with SL also...
       mod <- stats::glm(tmle_eif_out$eif ~ .,
                         data = subset(data_internal, select = names(V)))
@@ -193,21 +198,30 @@ tmle_shifttx <- function(W,
         as.numeric()
       ### this fits the logistic regression for sub-model fluctuation
       ipcw_fluc <- stats::glm(C ~ -1 + stats::offset(stats::qlogis(pi_n)) +
-                              p / pi_n, family = "binomial")
+                              I(p / pi_n), family = "binomial")
       ### now, we can obtain P_n^* from the sub-model fluctuation
       ipcw_fluc_pred <- fitted(ipcw_fluc) %>% as.numeric()
       ### this is the mean of the second half of the EIF (for censoring bit...)
       ipc_eif_out <- mean((C - ipcw_fluc_pred) * (p / ipcw_fluc_pred))
+      #### sanity check: score of the fluctuation model
+      ipc_check <- mean((C - ipcw_fluc_pred) * (p / pi_n))
 
       ### so, now we need weights to feed back into the previous steps
-      cens_weights <- (C / ipcw_fluc_pred)[C == 1]
+      cens_weights_full <- (C / ipcw_fluc_pred)
+
+      tmle_eif_out2 <- tmle_eif(
+        fluc_fit_out = fitted_fluc_mod,
+        Hn = Hn_estim,
+        Y = data_internal$Y,
+        ipc_weights = cens_weights_full[C == 1],
+        tol_eif = eif_tol
+      )
 
       # compute updated mean of EIF
       eif_mean <- mean(tmle_eif_out$eif) - ipc_eif_out
       n_steps <- n_steps + 1
-      print(eif_mean, n_steps)
+      print(as_tibble(list(EIF_mean = eif_mean, step = n_steps)))
     }
-
   ##############################################################################
   # standard TMLE of the shift parameter / inefficient IPCW-TMLE
   ##############################################################################
@@ -233,8 +247,8 @@ tmle_shifttx <- function(W,
   ##############################################################################
   # create output object
   ##############################################################################
-  shifttx_out <- unlist(list(call = call, tmle_eif_out), recursive = FALSE)
-  class(shifttx_out) <- "shifttx"
-  return(shifttx_out)
+  txshift_out <- unlist(list(call = call, tmle_eif_out), recursive = FALSE)
+  class(txshift_out) <- "txshift"
+  return(txshift_out)
 }
 

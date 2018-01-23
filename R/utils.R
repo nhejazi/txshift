@@ -13,11 +13,11 @@
 #'
 #' @importFrom stats qnorm
 #'
-#' @method confint shifttx
+#' @method confint txshift
 #'
 #' @export
 #
-confint.shifttx <- function(object,
+confint.txshift <- function(object,
                             parm = seq_len(object$psi),
                             level = 0.95,
                             ...) {
@@ -49,10 +49,10 @@ confint.shifttx <- function(object,
 #'
 #' @export
 #'
-#' @method print shifttx
+#' @method print txshift
 #'
 #
-print.shifttx <- function(x, ...) {
+print.txshift <- function(x, ...) {
   print(x[c("psi", "var", "msg")])
 }
 
@@ -101,3 +101,4 @@ bound_scaling <- function(Y,
     return(preds_original)
   }
 }
+
