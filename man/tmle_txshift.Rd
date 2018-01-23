@@ -5,12 +5,12 @@
 \title{Compute Targeted Maximum Likelihood Estimate for Treatment Shift Parameter}
 \usage{
 tmle_txshift(W, A, Y, C = rep(1, length(Y)), V = NULL, delta = 0,
-  fluc_method = c("standard", "weighted"), eif_tol = 1e-09, max_iter = 5,
-  mod_args = list(ipcw_fit = list(fit_type = c("glm", "sl"), glm_formula =
-  "Delta ~ .", sl_lrnrs = NULL), g_fit = list(fit_type = c("glm", "sl"), nbins =
-  35, bin_method = "dhist", bin_estimator = condensier::speedglmR6$new(), parfit
-  = FALSE, sl_lrnrs_dens = NULL), Q_fit = list(fit_type = c("glm", "sl"),
-  glm_formula = "Y ~ .", sl_lrnrs = NULL)))
+  fluc_method = c("standard", "weighted"), eif_tol = 1e-09,
+  max_iter = 1e+05, mod_args = list(ipcw_fit = list(fit_type = c("glm",
+  "sl"), glm_formula = "Delta ~ .", sl_lrnrs = NULL), g_fit = list(fit_type =
+  c("glm", "sl"), nbins = 35, bin_method = "dhist", bin_estimator =
+  condensier::speedglmR6$new(), parfit = FALSE, sl_lrnrs_dens = NULL), Q_fit =
+  list(fit_type = c("glm", "sl"), glm_formula = "Y ~ .", sl_lrnrs = NULL)))
 }
 \arguments{
 \item{W}{...}

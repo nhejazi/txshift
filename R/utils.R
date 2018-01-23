@@ -102,3 +102,42 @@ bound_scaling <- function(Y,
   }
 }
 
+################################################################################
+
+#' Map NaN Values to A Chosen Value
+#'
+#' This is a heinous transformation function that makes it possible to map
+#' values of \code{NaN} to zeros. This may be useful for bookkeeping purposes
+#' but it is recommended that you never use this. It appears that this also
+#' works when when \code{NaN} is substituted for \code{NA}.
+#'
+#' @param nums_in A \code{numeric} vector containing some number of values that
+#'  are represented as \code{NaN}.
+#'
+#' @keywords internal
+#
+nan_to_num <- function(nums_in, map_val = 0) {
+  nums_in[is.na(nums_in)] <- map_val * nums_in[is.na(nums_in)]^0
+  return(nums_in)
+}
+
+################################################################################
+
+#' Wrap a Function in a Try Statement
+#'
+#' Function factory that generates versions of functions wrapped in \code{try}.
+#' Originally fround in and borrowed from package \code{origami}.
+#'
+#' @param fun A \code{function} to be wrapped in a \code{try} statement.
+#' @param ... Additional arguments passed to the previous argument \code{fun}.
+#'
+#' @keywords internal
+#
+wrap_in_try <- function(fun, ...) {
+  wrapped <- function(...)
+  try({
+    fun(...)
+  }, silent = TRUE)
+  return(wrapped)
+}
+

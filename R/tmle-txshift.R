@@ -166,11 +166,13 @@ tmle_txshift <- function(W,
     ## The efficient implementation of the IPCW-TMLE
     n_steps <- 0
     eif_mean <- Inf
+    conv_res <- rep(NA, max_iter)
     pi_n <- ipcw_out$pi_mech
     cens_weights_full <- C / pi_n
-    # iterate over the IPCW-TMLE procedure until conditions satisfied
+    # iterate procedure until convergence conditions are satisfied
     while (abs(eif_mean) > eif_tol & n_steps < max_iter) {
       # fit logistic regression to fluctuate along the sub-model
+      ### perform sub-model fluctuation with NEW WEIGHTS
       fitted_fluc_mod <- fit_fluc(
         Y = data_internal$Y,
         Qn_scaled = Qn_estim,
@@ -178,21 +180,26 @@ tmle_txshift <- function(W,
         ipc_weights = cens_weights_full[C == 1],
         method = fluc_method
       )
-      # compute Targeted Maximum Likelihood estimate for treatment shift parameter
-      tmle_eif_out <- tmle_eif(
+
+      # compute TML estimate and EIF for the treatment shift parameter
+      ### compute using the NEW WEIGHTS and UPDATED SUB-MODEL FLUCTUATION
+      tmle_eif_out <- tmle_eif_ipcw(
         fluc_fit_out = fitted_fluc_mod,
         Hn = Hn_estim,
         Y = data_internal$Y,
+        Delta = C,
         ipc_weights = cens_weights_full[C == 1],
         tol_eif = eif_tol
       )
+
       # WE'LL MOVE THIS TO A FUNCTION WHEN IT'S WORKING BUT SKETCHING FOR NOW
       # the efficient influence function equation we're solving looks like
       # pi_mech = missing-ness mechanism weights for ALL observations
       # 0 = (C - pi_mech) * \E(f(eif ~ V, subset = (C = 1)) / pi_mech)
       ### mod is merely f(eif ~ V | C = 1); could be fit with SL also...
-      mod <- stats::glm(tmle_eif_out$eif ~ .,
+      mod <- stats::glm(tmle_eif_out$eif[C == 1] ~ .,
                         data = subset(data_internal, select = names(V)))
+
       ### invoking predict is equivalent to applying E[.]
       p <- stats::predict(mod, newdata = data.table::as.data.table(V)) %>%
         as.numeric()
@@ -201,18 +208,24 @@ tmle_txshift <- function(W,
                               I(p / pi_n), family = "binomial")
       ### now, we can obtain P_n^* from the sub-model fluctuation
       ipcw_fluc_pred <- fitted(ipcw_fluc) %>% as.numeric()
+
       ### this is the mean of the second half of the EIF (for censoring bit...)
       ipc_eif_out <- mean((C - ipcw_fluc_pred) * (p / ipcw_fluc_pred))
-      #### sanity check: score of the fluctuation model
+
+      #### sanity check: score of the logistic regression fluctuation model
       ipc_check <- mean((C - ipcw_fluc_pred) * (p / pi_n))
+      stopifnot(ipc_check < eif_tol)
 
       ### so, now we need weights to feed back into the previous steps
       cens_weights_full <- (C / ipcw_fluc_pred)
 
-      tmle_eif_out2 <- tmle_eif(
+      # fit the step to compute the TML estimate and EIF values again
+      ### fits with NEW WEIGHTS but OLD SUBMODEL FLUCTUATION
+      tmle_eif_out <- tmle_eif_ipcw(
         fluc_fit_out = fitted_fluc_mod,
         Hn = Hn_estim,
         Y = data_internal$Y,
+        Delta = C,
         ipc_weights = cens_weights_full[C == 1],
         tol_eif = eif_tol
       )
@@ -220,7 +233,7 @@ tmle_txshift <- function(W,
       # compute updated mean of EIF
       eif_mean <- mean(tmle_eif_out$eif) - ipc_eif_out
       n_steps <- n_steps + 1
-      print(as_tibble(list(EIF_mean = eif_mean, step = n_steps)))
+      conv_res[n_steps] <- eif_mean
     }
   ##############################################################################
   # standard TMLE of the shift parameter / inefficient IPCW-TMLE
@@ -234,7 +247,7 @@ tmle_txshift <- function(W,
       ipc_weights = cens_weights,
       method = fluc_method
     )
-    # compute Targeted Maximum Likelihood estimate for treatment shift parameter
+    # compute TML estimate and EIF for the treatment shift parameter
     tmle_eif_out <- tmle_eif(
       fluc_fit_out = fitted_fluc_mod,
       Hn = Hn_estim,
@@ -248,6 +261,11 @@ tmle_txshift <- function(W,
   # create output object
   ##############################################################################
   txshift_out <- unlist(list(call = call, tmle_eif_out), recursive = FALSE)
+  if (!all(unique(C) == 1) & !is.null(V)) {
+    # return only the useful convergence results
+    conv_res_out <- conv_res[!is.na(conv_res)]
+    txshift_out <- unlist(list(txshift_out, conv_res_out), recursive = FALSE)
+  }
   class(txshift_out) <- "txshift"
   return(txshift_out)
 }
