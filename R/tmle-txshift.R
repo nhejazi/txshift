@@ -2,9 +2,11 @@
 #'
 #' description THIS IS A USER-FACING WRAPPER FUNCTION
 #'
-#' @param W ...
-#' @param A ...
-#' @param Y ...
+#' @param W A \code{matrix} or \code{data.frame} corresponding to a set of
+#'  baseline covariates.
+#' @param A A \code{numeric} vector corresponding to a treatment variable. The
+#'  parameter of interest is defined as a location shift of this quantity.
+#' @param Y A \code{numeric} vector corresponding to an outcome variable.
 #' @param C A \code{numeric} binary vector giving information on whether a given
 #'  observation was subject to censoring. This is used to compute an IPCW-TMLE
 #'  in cases where two-stage sampling is performed. The default assumes that no
@@ -53,7 +55,7 @@ tmle_txshift <- function(W,
                          delta = 0,
                          fluc_method = c("standard", "weighted"),
                          eif_tol = 1e-9,
-                         max_iter = 1e5,
+                         max_iter = 1e3,
                          mod_args = list(
                            ipcw_fit = list(
                              fit_type = c("glm", "sl"),
@@ -74,7 +76,7 @@ tmle_txshift <- function(W,
                              glm_formula = "Y ~ .",
                              sl_lrnrs = NULL
                            )
-                        )) {
+                         )) {
   ##############################################################################
   # TODO: check arguments and set up some objects for programmatic convenience
   ##############################################################################
@@ -91,8 +93,10 @@ tmle_txshift <- function(W,
   ##############################################################################
   if (!all(unique(C) == 1) & !is.null(V)) {
     V_in <- data.table::as.data.table(V)
-    ipcw_estim_in <- list(V = V_in, Delta = C,
-                          fit_type = mod_args$ipcw_fit$fit_type)
+    ipcw_estim_in <- list(
+      V = V_in, Delta = C,
+      fit_type = mod_args$ipcw_fit$fit_type
+    )
     # reshapes the list of args so that it can be passed to do.call
     ipcw_estim_args <- unlist(
       list(ipcw_estim_in, ipcw_fit_args),
@@ -167,77 +171,36 @@ tmle_txshift <- function(W,
     n_steps <- 0
     eif_mean <- Inf
     conv_res <- rep(NA, max_iter)
-    pi_n <- ipcw_out$pi_mech
-    cens_weights_full <- C / pi_n
+    cens_weights_full <- C / ipcw_out$pi_mech
+
     # iterate procedure until convergence conditions are satisfied
     while (abs(eif_mean) > eif_tol & n_steps < max_iter) {
-      # fit logistic regression to fluctuate along the sub-model
-      ### perform sub-model fluctuation with NEW WEIGHTS
-      fitted_fluc_mod <- fit_fluc(
-        Y = data_internal$Y,
-        Qn_scaled = Qn_estim,
-        Hn = Hn_estim,
-        ipc_weights = cens_weights_full[C == 1],
-        method = fluc_method
-      )
-
-      # compute TML estimate and EIF for the treatment shift parameter
-      ### compute using the NEW WEIGHTS and UPDATED SUB-MODEL FLUCTUATION
-      tmle_eif_out <- tmle_eif_ipcw(
-        fluc_fit_out = fitted_fluc_mod,
-        Hn = Hn_estim,
-        Y = data_internal$Y,
-        Delta = C,
-        ipc_weights = cens_weights_full[C == 1],
-        tol_eif = eif_tol
-      )
-
-      # WE'LL MOVE THIS TO A FUNCTION WHEN IT'S WORKING BUT SKETCHING FOR NOW
-      # the efficient influence function equation we're solving looks like
-      # pi_mech = missing-ness mechanism weights for ALL observations
-      # 0 = (C - pi_mech) * \E(f(eif ~ V, subset = (C = 1)) / pi_mech)
-      ### mod is merely f(eif ~ V | C = 1); could be fit with SL also...
-      mod <- stats::glm(tmle_eif_out$eif[C == 1] ~ .,
-                        data = subset(data_internal, select = names(V)))
-
-      ### invoking predict is equivalent to applying E[.]
-      p <- stats::predict(mod, newdata = data.table::as.data.table(V)) %>%
-        as.numeric()
-      ### this fits the logistic regression for sub-model fluctuation
-      ipcw_fluc <- stats::glm(C ~ -1 + stats::offset(stats::qlogis(pi_n)) +
-                              I(p / pi_n), family = "binomial")
-      ### now, we can obtain P_n^* from the sub-model fluctuation
-      ipcw_fluc_pred <- fitted(ipcw_fluc) %>% as.numeric()
-
-      ### this is the mean of the second half of the EIF (for censoring bit...)
-      ipc_eif_out <- mean((C - ipcw_fluc_pred) * (p / ipcw_fluc_pred))
-
-      #### sanity check: score of the logistic regression fluctuation model
-      ipc_check <- mean((C - ipcw_fluc_pred) * (p / pi_n))
-      stopifnot(ipc_check < eif_tol)
-
-      ### so, now we need weights to feed back into the previous steps
-      cens_weights_full <- (C / ipcw_fluc_pred)
-
-      # fit the step to compute the TML estimate and EIF values again
-      ### fits with NEW WEIGHTS but OLD SUBMODEL FLUCTUATION
-      tmle_eif_out <- tmle_eif_ipcw(
-        fluc_fit_out = fitted_fluc_mod,
-        Hn = Hn_estim,
-        Y = data_internal$Y,
-        Delta = C,
-        ipc_weights = cens_weights_full[C == 1],
-        tol_eif = eif_tol
-      )
-
-      # compute updated mean of EIF
-      eif_mean <- mean(tmle_eif_out$eif) - ipc_eif_out
+      # iterate counter
       n_steps <- n_steps + 1
+
+      # update sub-model fluctuation, re-compute EIF, and update EIF
+      ipcw_tmle_comp <- ipcw_tmle_proc(
+        data_in = data_internal,
+        C = C,
+        V = V,
+        ipcw_mech = ipcw_out$pi_mech,
+        ipc_weights_all = cens_weights_full,
+        Qn_estim = Qn_estim,
+        Hn_estim = Hn_estim,
+        fluc_method = fluc_method,
+        fit_type = mod_args$ipcw_fit$fit_type,
+        tol_eif = eif_tol,
+        sl_lrnrs = mod_args$ipcw_fit$sl_lrnrs
+      )
+
+      # compute updated mean of efficient influence function and save
+      cens_weights_full <- ipcw_tmle_comp$ipc_weights
+      eif_mean <- mean(ipcw_tmle_comp$tmle_eif$eif) - ipcw_tmle_comp$ipcw_eif
       conv_res[n_steps] <- eif_mean
     }
-  ##############################################################################
-  # standard TMLE of the shift parameter / inefficient IPCW-TMLE
-  ##############################################################################
+    ##############################################################################
+    # standard TMLE of the shift parameter / inefficient IPCW-TMLE
+    ##############################################################################
   } else {
     # fit logistic regression to fluctuate along the sub-model
     fitted_fluc_mod <- fit_fluc(
@@ -260,13 +223,20 @@ tmle_txshift <- function(W,
   ##############################################################################
   # create output object
   ##############################################################################
-  txshift_out <- unlist(list(call = call, tmle_eif_out), recursive = FALSE)
   if (!all(unique(C) == 1) & !is.null(V)) {
     # return only the useful convergence results
     conv_res_out <- conv_res[!is.na(conv_res)]
-    txshift_out <- unlist(list(txshift_out, conv_res_out), recursive = FALSE)
+    txshift_out <- unlist(
+      list(
+        call = call,
+        ipcw_tmle_comp$tmle_eif,
+        eif_conv = list(conv_res_out)
+      ),
+      recursive = FALSE
+    )
+  } else {
+    txshift_out <- unlist(list(call = call, tmle_eif_out), recursive = FALSE)
   }
   class(txshift_out) <- "txshift"
   return(txshift_out)
 }
-

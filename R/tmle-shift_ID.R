@@ -174,4 +174,3 @@ est_eqn <- function(eps, QnAW, Qn, H1, gn0d, EQnd, D2, prev_sum, Y, A, W,
     rowSums(D2 * exp(eps * D2 + prev_sum) * gn0d) /
       rowSums(exp(eps * D2 + prev_sum) * gn0d))
 }
-

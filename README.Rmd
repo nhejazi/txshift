@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 [![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
-> Targeted Learning of Continuous Interventions with Stochastic Treatment
+> Targeted Learning of Continuous Intervention Effects with Stochastic Treatment
 > Regimes
 
 __Authors:__ [Nima Hejazi](http://nimahejazi.org) and [David
@@ -50,7 +50,7 @@ Install the most recent _stable release_ from GitHub via
 [`devtools`](https://www.rstudio.com/products/rpackages/devtools/):
 
 ```{r gh-master-installation, eval = FALSE}
-devtools::install_github("nhejazi/txshift")
+devtools::install_github("nhejazi/txshift", build_vignettes = FALSE)
 ```
 
 ---
@@ -61,10 +61,10 @@ To illustrate how `txshift` may be used to ascertain the effect of a treatment,
 consider the following example:
 
 ```{r example}
-set.seed(429153)
 library(tidyverse)
 library(condensier)
 library(txshift)
+set.seed(429153)
 
 # simulate simple data for tmle-shift sketch
 n_obs <- 1000  # number of observations

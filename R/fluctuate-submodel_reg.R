@@ -6,7 +6,9 @@
 #' @param Qn_scaled ...
 #' @param Hn ...
 #' @param ipc_weights ...
-#' @param method ...
+#' @param method A \code{character} giving the type of regression to be used in
+#'  traversing the fluctuation submodel. Choices are "weighted" and "standard"
+#'  -- please consult the literature for details on the differences.
 #'
 #' @importFrom stats qlogis glm fitted predict offset
 #' @importFrom data.table as.data.table setnames
@@ -73,7 +75,7 @@ fit_fluc <- function(Y,
       newdata = Qn_shift_star_in,
       type = "response"
     ) %>%
-    as.numeric()
+      as.numeric()
   } else if (method == "weighted") {
     Qn_shift_star_in <- data.table::as.data.table(Qn_shift_logit)
     data.table::setnames(Qn_shift_star_in, "logit_Qn")
@@ -84,7 +86,7 @@ fit_fluc <- function(Y,
       newdata = Qn_shift_star_in,
       type = "response"
     ) %>%
-    as.numeric()
+      as.numeric()
   }
 
   Qn_shift_star <- bound_scaling(

@@ -12,7 +12,7 @@ vignette: >
 ---
 
 ```{r, echo=FALSE}
-options(scipen=999)
+options(scipen = 999)
 ```
 
 ## Introduction
@@ -36,8 +36,10 @@ TODO: ADD STUFF ON CENSORING
 ### Simulate Data
 
 ```{r}
-set.seed(429153)
 library(tidyverse)
+library(condensier)
+library(txshift)
+set.seed(429153)
 
 # simulate simple data for tmle-shift sketch
 n_obs <- 1000  # sample size
@@ -66,8 +68,6 @@ C <- rbinom(n_obs, 1, plogis(W))
 Comments about this estimation procedure...
 
 ```{r}
-library(condensier)
-library(txshift)
 tmle_glm_shift_1 <- tmle_txshift(W = W, A = A, Y = Y,
                                  C = C, V = list(W = W, Y = Y),
                                  delta = 0.5,

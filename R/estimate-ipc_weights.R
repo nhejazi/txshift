@@ -64,7 +64,7 @@ est_ipcw <- function(V,
       newdata = data_in,
       type = "response"
     ) %>%
-    as.numeric()
+      as.numeric()
   } else if (fit_type == "sl" & !is.null(sl_lrnrs)) {
     sl_fit <- sl_lrnrs$train(sl_task)
     ipcw_probs <- sl_fit$predict() %>%
@@ -76,4 +76,3 @@ est_ipcw <- function(V,
   ipc_weights_out <- ipc_weights[ipc_weights != 0]
   return(list(pi_mech = ipcw_probs, ipc_weights = ipc_weights_out))
 }
-

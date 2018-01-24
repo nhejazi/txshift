@@ -6,18 +6,20 @@
 \usage{
 tmle_txshift(W, A, Y, C = rep(1, length(Y)), V = NULL, delta = 0,
   fluc_method = c("standard", "weighted"), eif_tol = 1e-09,
-  max_iter = 1e+05, mod_args = list(ipcw_fit = list(fit_type = c("glm",
+  max_iter = 1000, mod_args = list(ipcw_fit = list(fit_type = c("glm",
   "sl"), glm_formula = "Delta ~ .", sl_lrnrs = NULL), g_fit = list(fit_type =
   c("glm", "sl"), nbins = 35, bin_method = "dhist", bin_estimator =
   condensier::speedglmR6$new(), parfit = FALSE, sl_lrnrs_dens = NULL), Q_fit =
   list(fit_type = c("glm", "sl"), glm_formula = "Y ~ .", sl_lrnrs = NULL)))
 }
 \arguments{
-\item{W}{...}
+\item{W}{A \code{matrix} or \code{data.frame} corresponding to a set of
+baseline covariates.}
 
-\item{A}{...}
+\item{A}{A \code{numeric} vector corresponding to a treatment variable. The
+parameter of interest is defined as a location shift of this quantity.}
 
-\item{Y}{...}
+\item{Y}{A \code{numeric} vector corresponding to an outcome variable.}
 
 \item{C}{A \code{numeric} binary vector giving information on whether a given
 observation was subject to censoring. This is used to compute an IPCW-TMLE

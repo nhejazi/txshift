@@ -16,7 +16,9 @@ fit_fluc(Y, Qn_scaled, Hn, ipc_weights = rep(1, length(Y)),
 
 \item{ipc_weights}{...}
 
-\item{method}{...}
+\item{method}{A \code{character} giving the type of regression to be used in
+traversing the fluctuation submodel. Choices are "weighted" and "standard"
+-- please consult the literature for details on the differences.}
 }
 \description{
 description

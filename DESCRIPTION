@@ -1,7 +1,7 @@
 Package: txshift
 Title: Targeted Maximum Likelihood Estimation of Continuous Treatment Effects
   from Stochastic Interventions
-Version: 0.0.9.2
+Version: 0.0.9.3
 Authors@R: c(
     person("Nima", "Hejazi", email = "nhejazi@berkeley.edu",
            role = c("aut", "cre", "cph"),
