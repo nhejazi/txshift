@@ -15,7 +15,7 @@ public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus
 [![MIT
 license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
-> Targeted Learning of Continuous Interventions with Stochastic
+> Targeted Learning of Continuous Intervention Effects with Stochastic
 > Treatment Regimes
 
 **Authors:** [Nima Hejazi](http://nimahejazi.org) and [David
@@ -46,7 +46,7 @@ Install the most recent *stable release* from GitHub via
 [`devtools`](https://www.rstudio.com/products/rpackages/devtools/):
 
 ``` r
-devtools::install_github("nhejazi/txshift")
+devtools::install_github("nhejazi/txshift", build_vignettes = FALSE)
 ```
 
 -----
@@ -57,12 +57,11 @@ To illustrate how `txshift` may be used to ascertain the effect of a
 treatment, consider the following example:
 
 ``` r
-set.seed(429153)
 library(tidyverse)
 #> ── Attaching packages ────────────────────────────────── tidyverse 1.2.1 ──
 #> ✔ ggplot2 2.2.1.9000     ✔ purrr   0.2.4     
-#> ✔ tibble  1.4.1          ✔ dplyr   0.7.4     
-#> ✔ tidyr   0.7.2.9000     ✔ stringr 1.3.0     
+#> ✔ tibble  1.4.2          ✔ dplyr   0.7.4     
+#> ✔ tidyr   0.7.2.9000     ✔ stringr 1.2.0.9000
 #> ✔ readr   1.1.1          ✔ forcats 0.2.0
 #> ── Conflicts ───────────────────────────────────── tidyverse_conflicts() ──
 #> ✖ dplyr::filter() masks stats::filter()
@@ -72,7 +71,8 @@ library(condensier)
 #> The condensier package is still in beta testing. Interpret results with caution.
 library(txshift)
 #> txshift: Targeted Learning with Stochastic Interventions
-#> Version: 0.0.9.2
+#> Version: 0.0.9.3
+set.seed(429153)
 
 # simulate simple data for tmle-shift sketch
 n_obs <- 1000  # number of observations
@@ -107,10 +107,10 @@ tmle_shift <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
 # examine the results
 tmle_shift
 #> $psi
-#> [1] 2.019263
+#> [1] 2.060616
 #> 
 #> $var
-#> [1] 0.004444922
+#> [1] 0.004902471
 #> 
 #> $msg
 #> [1] "EIF mean < 1e-09 (sufficiently low)."
@@ -118,7 +118,7 @@ tmle_shift
 # compute the confidence interval and view the results
 (ci_shift <- confint(tmle_shift))
 #>   lwr_CI      est   upr_CI 
-#> 1.888591 2.019263 2.149934
+#> 1.923384 2.060616 2.197849
 ```
 
 -----
