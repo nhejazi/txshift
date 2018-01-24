@@ -10,7 +10,7 @@
 #'  traversing the fluctuation submodel. Choices are "weighted" and "standard"
 #'  -- please consult the literature for details on the differences.
 #'
-#' @importFrom stats qlogis glm fitted predict offset
+#' @importFrom stats qlogis glm fitted predict as.formula
 #' @importFrom data.table as.data.table setnames
 #' @importFrom dplyr "%>%"
 #'
@@ -32,9 +32,10 @@ fit_fluc <- function(Y,
   if (method == "standard") {
     # note that \epsilon_n will be the coefficient of the covariate Hn
     suppressWarnings(
-      mod_fluc <- stats::glm(
-        y_star ~ -1 + stats::offset(logit_Qn) + Hn$noshift,
+      mod_fluc <- stats::glm(stats::as.formula(
+                   "y_star ~ -1 + offset(logit_Qn) + Hn"),
         weights = ipc_weights,
+        data = data.frame(y_star = y_star, logit_Qn = logit_Qn, Hn = Hn$noshift),
         family = "binomial"
       )
     )
@@ -42,7 +43,8 @@ fit_fluc <- function(Y,
     # note that \epsilon_n will be the intercept term here
     suppressWarnings(
       mod_fluc <- stats::glm(
-        y_star ~ stats::offset(logit_Qn),
+        stats::as.formula("y_star ~ offset(logit_Qn)"),
+        data = data.frame(y_star = y_star, logit_Qn = logit_Qn),
         weights = as.numeric(Hn$noshift * ipc_weights),
         family = "binomial"
       )
@@ -67,7 +69,7 @@ fit_fluc <- function(Y,
       Qn_shift_logit,
       Hn$shift
     ))
-    data.table::setnames(Qn_shift_star_in, c("logit_Qn", "Hn$noshift"))
+    data.table::setnames(Qn_shift_star_in, c("logit_Qn", "Hn"))
 
     # predict from fluctuation model on Q(d(A,W),W) and Hn(d(A,W))
     Qn_shift_star_pred <- stats::predict(
