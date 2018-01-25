@@ -46,7 +46,7 @@
 #'  provided by the \code{sl3} package. This is constructed externally from this
 #'  function and provided as input.
 #'
-#' @importFrom stats var glm offset qlogis fitted predict
+#' @importFrom stats var glm qlogis fitted predict as.formula
 #' @importFrom data.table as.data.table set copy
 #' @importFrom dplyr "%>%"
 #' @importFrom sl3 sl3_Task
@@ -124,8 +124,11 @@ ipcw_tmle_proc <- function(data_in, C, V,
   } else {
     # regression model for relationship between censoring variables and EIF
     eif_mod <- stats::glm(
-      tmle_eif_out$eif[C == 1] ~ .,
-      data = subset(data_in, select = names(V))
+      stats::as.formula("eif ~ ."),
+      data = data.table::as.data.table(list(
+        eif = tmle_eif_out$eif[C == 1],
+        subset(data_in, select = names(V))
+      ))
     )
 
     ### taking expectation by invoking predict
@@ -138,8 +141,17 @@ ipcw_tmle_proc <- function(data_in, C, V,
 
   ### this fits the logistic regression for sub-model fluctuation
   ### QUESTION: DO WE WANT TO USE UPDATED VALUES OF CENSORING MECHANISM?
-  ipcw_fluc <- stats::glm(C ~ -1 + stats::offset(stats::qlogis(ipcw_mech)) +
-    I(eif_pred / ipcw_mech), family = "binomial")
+  ipcw_fluc <- stats::glm(
+    stats::as.formula("delta ~ -1 + offset(logit_ipcw) + eif_by_ipcw"),
+    data = data.table::as.data.table(
+      list(
+        delta = C,
+        logit_ipcw = stats::qlogis(ipcw_mech),
+        eif_by_ipcw = I(eif_pred / ipcw_mech)
+      )
+    ),
+    family = "binomial"
+  )
 
   ### now, we can obtain P_n^* from the sub-model fluctuation
   ipcw_fluc_pred <- stats::fitted(ipcw_fluc) %>% as.numeric()

@@ -107,10 +107,10 @@ tmle_shift <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
 # examine the results
 tmle_shift
 #> $psi
-#> [1] 2.060616
+#> [1] 2.098018
 #> 
 #> $var
-#> [1] 0.004902471
+#> [1] 0.005119815
 #> 
 #> $msg
 #> [1] "EIF mean < 1e-09 (sufficiently low)."
@@ -118,7 +118,7 @@ tmle_shift
 # compute the confidence interval and view the results
 (ci_shift <- confint(tmle_shift))
 #>   lwr_CI      est   upr_CI 
-#> 1.923384 2.060616 2.197849
+#> 1.957777 2.098018 2.238259
 ```
 
 -----
