@@ -66,8 +66,7 @@ ipcw_tmle_proc <- function(data_in, C, V,
                            tol_eif = 1e-9,
                            sl_lrnrs = NULL) {
 
-  # fit logistic regression to fluctuate along the sub-model
-  ### perform sub-model fluctuation with NEW WEIGHTS
+  # fit logistic regression to fluctuate along the sub-model with NEW WEIGHTS
   fitted_fluc_mod <- fit_fluc(
     Y = data_in$Y,
     Qn_scaled = Qn_estim,
@@ -76,10 +75,11 @@ ipcw_tmle_proc <- function(data_in, C, V,
     method = fluc_method
   )
 
-  # TARGETING OF CENSORING MECHANISM ESTIMATE REQUIRED HERE...
+  # for efficiency, need targeting of the censoring mechnanism estimate
+  eps_n <- target_pi(Qn = fitted_fluc_mod$Qn_noshift_star,
+                     ipc_weights = ipc_weights_all)
 
-  # compute TML estimate and EIF for the treatment shift parameter
-  ### compute using the NEW WEIGHTS and UPDATED SUB-MODEL FLUCTUATION
+  # compute TMLE and EIF using NEW WEIGHTS and UPDATED SUB-MODEL FLUCTUATION
   tmle_eif_out <- tmle_eif_ipcw(
     fluc_fit_out = fitted_fluc_mod,
     Hn = Hn_estim,
@@ -92,7 +92,6 @@ ipcw_tmle_proc <- function(data_in, C, V,
   # the efficient influence function equation we're solving looks like
   # pi_mech = missing-ness mechanism weights for ALL observations
   # 0 = (C - pi_mech) * \E(f(eif ~ V, subset = (C = 1)) / pi_mech)
-  ### mod is merely f(eif ~ V | C = 1); could be fit with SL also...
   if (fit_type == "sl" & !is.null(sl_lrnrs)) {
     # organize EIF data as data.table
     eif_data <- data.table::copy(data_in) %>%
@@ -133,7 +132,7 @@ ipcw_tmle_proc <- function(data_in, C, V,
       ))
     )
 
-    ### taking expectation by invoking predict
+    # compute expectation by invoking the predict method
     eif_pred <- stats::predict(
       eif_mod,
       newdata = data.table::as.data.table(V)
@@ -141,8 +140,8 @@ ipcw_tmle_proc <- function(data_in, C, V,
       as.numeric()
   }
 
-  ### this fits the logistic regression for sub-model fluctuation
-  ### QUESTION: DO WE WANT TO USE UPDATED VALUES OF CENSORING MECHANISM?
+  # fit logistic regression to fluctuate along the sub-model wrt epsilon
+  # QUESTION: DO WE WANT TO USE UPDATED VALUES OF CENSORING MECHANISM?
   ipcw_fluc <- stats::glm(
     stats::as.formula("delta ~ -1 + offset(logit_ipcw) + eif_by_ipcw"),
     data = data.table::as.data.table(
@@ -155,21 +154,20 @@ ipcw_tmle_proc <- function(data_in, C, V,
     family = "binomial"
   )
 
-  ### now, we can obtain P_n^* from the sub-model fluctuation
+  # now, we can obtain P_n^* from the sub-model fluctuation
   ipcw_fluc_pred <- stats::fitted(ipcw_fluc) %>% as.numeric()
 
-  ### this is the mean of the second half of the EIF (for censoring bit...)
+  # this is the mean of the second half of the EIF (for censoring bit...)
   ipcw_eif_out <- mean((C - ipcw_fluc_pred) * (eif_pred / ipcw_fluc_pred))
 
-  #### sanity check: score of the logistic regression fluctuation model
+  # sanity check: score of the logistic regression fluctuation model
   ipc_check <- mean((C - ipcw_fluc_pred) * (eif_pred / ipcw_mech))
   stopifnot(ipc_check < tol_eif)
 
-  ### so, now we need weights to feed back into the previous steps
+  # so, now we need weights to feed back into the previous steps
   ipc_weights_all <- C / ipcw_fluc_pred
 
-  # fit the step to compute the TML estimate and EIF values again
-  ### fits with NEW WEIGHTS but OLD SUBMODEL FLUCTUATION
+  # as above, compute TMLE and EIF with NEW WEIGHTS but OLD SUBMODEL FLUCTUATION
   tmle_eif_out <- tmle_eif_ipcw(
     fluc_fit_out = fitted_fluc_mod,
     Hn = Hn_estim,
@@ -186,3 +184,4 @@ ipcw_tmle_proc <- function(data_in, C, V,
     ipcw_eif = ipcw_eif_out
   ))
 }
+

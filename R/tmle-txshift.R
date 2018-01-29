@@ -41,7 +41,6 @@
 #' @importFrom tibble as_tibble
 #' @importFrom stringr str_detect
 #' @importFrom dplyr filter select "%>%"
-#' @importFrom rootSolve uniroot.all
 #'
 #' @return S3 object of class \code{txshift} containing the results of the
 #'  procedure to compute a TML estimate of the treatment shift parameter.
