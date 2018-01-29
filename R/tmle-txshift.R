@@ -41,6 +41,7 @@
 #' @importFrom tibble as_tibble
 #' @importFrom stringr str_detect
 #' @importFrom dplyr filter select "%>%"
+#' @importFrom rootSolve uniroot.all
 #'
 #' @return S3 object of class \code{txshift} containing the results of the
 #'  procedure to compute a TML estimate of the treatment shift parameter.
@@ -55,27 +56,25 @@ tmle_txshift <- function(W,
                          delta = 0,
                          fluc_method = c("standard", "weighted"),
                          eif_tol = 1e-9,
-                         max_iter = 1e3,
-                         mod_args = list(
-                           ipcw_fit = list(
-                             fit_type = c("glm", "sl"),
-                             glm_formula = "Delta ~ .",
-                             sl_lrnrs = NULL
-                           ),
-                           g_fit = list(
-                             fit_type = c("glm", "sl"),
-                             nbins = 35,
-                             bin_method = "dhist",
-                             bin_estimator =
-                               condensier::speedglmR6$new(),
-                             parfit = FALSE,
-                             sl_lrnrs_dens = NULL
-                           ),
-                           Q_fit = list(
-                             fit_type = c("glm", "sl"),
-                             glm_formula = "Y ~ .",
-                             sl_lrnrs = NULL
-                           )
+                         max_iter = 1e4,
+                         ipcw_fit_args = list(
+                           fit_type = c("glm", "sl"),
+                           glm_formula = "Delta ~ .",
+                           sl_lrnrs = NULL
+                         ),
+                         g_fit_args = list(
+                           fit_type = c("glm", "sl"),
+                           nbins = 35,
+                           bin_method = "dhist",
+                           bin_estimator =
+                             condensier::speedglmR6$new(),
+                           parfit = FALSE,
+                           sl_lrnrs_dens = NULL
+                         ),
+                         Q_fit_args = list(
+                           fit_type = c("glm", "sl"),
+                           glm_formula = "Y ~ .",
+                           sl_lrnrs = NULL
                          )) {
   ##############################################################################
   # TODO: check arguments and set up some objects for programmatic convenience
@@ -83,19 +82,25 @@ tmle_txshift <- function(W,
   call <- match.call(expand.dots = TRUE)
   fluc_method <- match.arg(fluc_method)
 
-  # unpack the list of extra arguments for convenience
-  ipcw_fit_args <- mod_args$ipcw_fit[names(mod_args$ipcw_fit) != "fit_type"]
-  g_fit_args <- mod_args$g_fit[names(mod_args$g_fit) != "fit_type"]
-  Q_fit_args <- mod_args$Q_fit[names(mod_args$Q_fit) != "fit_type"]
+  # dissociate fit type from other arguments to simplify passing to do.call
+  ipcw_fit_type <- unlist(ipcw_fit_args[names(ipcw_fit_args) == "fit_type"],
+                          use.names = FALSE)
+  g_fit_type <- unlist(g_fit_args[names(g_fit_args) == "fit_type"],
+                       use.names = FALSE)
+  Q_fit_type <- unlist(Q_fit_args[names(Q_fit_args) == "fit_type"],
+                       use.names = FALSE)
+  ipcw_fit_args <- ipcw_fit_args[names(ipcw_fit_args) != "fit_type"]
+  g_fit_args <- g_fit_args[names(g_fit_args) != "fit_type"]
+  Q_fit_args <- Q_fit_args[names(Q_fit_args) != "fit_type"]
 
   ##############################################################################
   # perform sub-setting of data and implement IPC weighting if required
   ##############################################################################
-  if (!all(unique(C) == 1) & !is.null(V)) {
+  if (any(unique(C) == 1) & !is.null(V)) {
     V_in <- data.table::as.data.table(V)
     ipcw_estim_in <- list(
       V = V_in, Delta = C,
-      fit_type = mod_args$ipcw_fit$fit_type
+      fit_type = ipcw_fit_type
     )
     # reshapes the list of args so that it can be passed to do.call
     ipcw_estim_args <- unlist(
@@ -123,9 +128,9 @@ tmle_txshift <- function(W,
     W = data_internal$W,
     delta = delta,
     ipc_weights = cens_weights,
-    fit_type = mod_args$g_fit$fit_type
+    fit_type = g_fit_type
   )
-  if (mod_args$g_fit$fit_type == "glm") {
+  if (g_fit_type == "glm") {
     # since fitting a GLM, can safely remove all args related to SL
     g_fit_args <- g_fit_args[!stringr::str_detect(names(g_fit_args), "sl")]
     # reshape args to a list suitable to be passed to do.call
@@ -151,7 +156,7 @@ tmle_txshift <- function(W,
     W = data_internal$W,
     delta = delta,
     ipc_weights = cens_weights,
-    fit_type = mod_args$Q_fit$fit_type
+    fit_type = Q_fit_type
   )
   # reshape args to pass to the relevant function for the outcome regression
   Qn_estim_args <- unlist(list(Qn_estim_in, Q_fit_args), recursive = FALSE)
@@ -164,10 +169,10 @@ tmle_txshift <- function(W,
   Hn_estim <- est_Hn(gn = gn_estim)
 
   ##############################################################################
-  # invoke efficient IPCW-TMLE, per Rose & van der Laan (2009), if necessary
+  # invoke efficient IPCW-TMLE, per Rose & van der Laan (2011), if necessary
   ##############################################################################
-  if (!all(unique(C) == 1) & !is.null(V)) {
-    ## The efficient implementation of the IPCW-TMLE
+  if (any(unique(C) == 1) & !is.null(V)) {
+    # Efficient implementation of the IPCW-TMLE
     n_steps <- 0
     eif_mean <- Inf
     conv_res <- rep(NA, max_iter)
@@ -188,9 +193,9 @@ tmle_txshift <- function(W,
         Qn_estim = Qn_estim,
         Hn_estim = Hn_estim,
         fluc_method = fluc_method,
-        fit_type = mod_args$ipcw_fit$fit_type,
+        fit_type = ipcw_fit_type,
         tol_eif = eif_tol,
-        sl_lrnrs = mod_args$ipcw_fit$sl_lrnrs
+        sl_lrnrs = ipcw_fit_args$sl_lrnrs
       )
 
       # compute updated mean of efficient influence function and save
@@ -223,7 +228,7 @@ tmle_txshift <- function(W,
   ##############################################################################
   # create output object
   ##############################################################################
-  if (!all(unique(C) == 1) & !is.null(V)) {
+  if (any(unique(C) == 1) & !is.null(V)) {
     # return only the useful convergence results
     conv_res_out <- conv_res[!is.na(conv_res)]
     txshift_out <- unlist(
@@ -240,3 +245,4 @@ tmle_txshift <- function(W,
   class(txshift_out) <- "txshift"
   return(txshift_out)
 }
+

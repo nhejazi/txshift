@@ -76,6 +76,8 @@ ipcw_tmle_proc <- function(data_in, C, V,
     method = fluc_method
   )
 
+  # TARGETING OF CENSORING MECHANISM ESTIMATE REQUIRED HERE...
+
   # compute TML estimate and EIF for the treatment shift parameter
   ### compute using the NEW WEIGHTS and UPDATED SUB-MODEL FLUCTUATION
   tmle_eif_out <- tmle_eif_ipcw(

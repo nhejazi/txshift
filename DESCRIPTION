@@ -1,7 +1,7 @@
 Package: txshift
-Title: Targeted Maximum Likelihood Estimation of Continuous Treatment Effects
-  from Stochastic Interventions
-Version: 0.0.9.3
+Title: Targeted Maximum Likelihood Estimation of Causal Effects of Continuous
+  Interventions with Stochastic Treatment Regimes
+Version: 0.0.9.4
 Authors@R: c(
     person("Nima", "Hejazi", email = "nhejazi@berkeley.edu",
            role = c("aut", "cre", "cph"),
@@ -10,14 +10,17 @@ Authors@R: c(
            role = "aut",
            comment = c(ORCID = "0000-0002-1019-8343")),
     person("Iván", "Díaz", email = "ild2005@med.cornell.edu",
-           role = "ctb")
+           role = "ctb"),
+    person("Mark", "van der Laan", email = "laan@berkeley.edu",
+           role = "aut")
   )
 Maintainer: Nima Hejazi <nh@nimahejazi.org>
-Description: Facilitates computation of targeted maximum likelihood estimates of
-    population-level causal effects of additive interventions of stochastically
-    assigned exposures, based on a causal parameter defined in the context of
-    stochastic treatment regimes. Both iterative and one-step variations of the
-    TML estimator are implemented.
+Description: Facilities for computing targeted maximum likelihood estimates of
+    population-level causal effects of continuous-valued interventions defined
+    by stochastic assignment mechanisms. To handle applications with censored
+    data (i.e., two-stage designs), an inverse probability of censoring weighted
+    (IPCW) targeted maximum likelihood estimator for the stochastic treatment
+    shift parameter is implemented as well.
 Depends: R (>= 3.2.0)
 Imports:
     stats,
@@ -25,6 +28,7 @@ Imports:
     tibble,
     stringr,
     data.table,
+    rootSolve,
     condensier,
     sl3
 Suggests:

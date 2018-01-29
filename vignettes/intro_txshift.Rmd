@@ -77,15 +77,14 @@ library(condensier)
 library(txshift)
 tmle_glm_shift_1 <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
                                  fluc_method = "standard",
-                                 mod_args = list(
-                                   ipcw_fit = NULL,
-                                   g_fit = list(fit_type = "glm",
-                                     nbins = 20, bin_method = "dhist",
-                                     bin_estimator = speedglmR6$new(),
-                                     parfit = FALSE),
-                                   Q_fit = list(fit_type = "glm",
-                                                glm_formula = "Y ~ .")
-                                ))
+                                 ipcw_fit_args = NULL,
+                                 g_fit_args = list(fit_type = "glm", nbins = 20,
+                                                   bin_method = "dhist",
+                                                   bin_estimator = speedglmR6$new(),
+                                                   parfit = FALSE),
+                                 Q_fit_args = list(fit_type = "glm",
+                                                   glm_formula = "Y ~ .")
+                                )
 tmle_glm_shift_1
 ```
 
@@ -99,15 +98,14 @@ details on potential benefits this approach may have.
 ```{r}
 tmle_glm_shift_2 <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
                                  fluc_method = "weighted",
-                                 mod_args = list(
-                                   ipcw_fit = NULL,
-                                   g_fit = list(fit_type = "glm",
-                                     nbins = 20, bin_method = "dhist",
-                                     bin_estimator = speedglmR6$new(),
-                                     parfit = FALSE),
-                                   Q_fit = list(fit_type = "glm",
-                                                glm_formula = "Y ~ .")
-                                ))
+                                 ipcw_fit_args = NULL,
+                                 g_fit_args = list(fit_type = "glm", nbins = 20,
+                                                   bin_method = "dhist",
+                                                   bin_estimator = speedglmR6$new(),
+                                                   parfit = FALSE),
+                                 Q_fit_args = list(fit_type = "glm",
+                                                   glm_formula = "Y ~ .")
+                                )
 tmle_glm_shift_2
 ```
 
@@ -141,13 +139,12 @@ framework of the Super Learner algorithm of [INSERT REF].
 ```{r}
 tmle_sl_shift_1 <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
                                 fluc_method = "standard",
-                                mod_args = list(
-                                  ipcw_fit = NULL,
-                                  g_fit = list(fit_type = "sl",
-                                               sl_lrnrs = sl_lrn_dens),
-                                  Q_fit = list(fit_type = "sl",
-                                               sl_lrnrs = sl_lrn)
-                               ))
+                                ipcw_fit_args = NULL,
+                                g_fit_args = list(fit_type = "sl",
+                                                  sl_lrnrs = sl_lrn_dens),
+                                Q_fit_args = list(fit_type = "sl",
+                                                  sl_lrnrs = sl_lrn)
+                               )
 tmle_sl_shift_1
 ```
 
@@ -158,13 +155,12 @@ than using such an auxiliary covariate directly in the regression procedure:
 ```{r}
 tmle_sl_shift_2 <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
                                 fluc_method = "weighted",
-                                mod_args = list(
-                                  ipcw_fit = NULL,
-                                  g_fit = list(fit_type = "sl",
-                                               sl_lrnrs = sl_lrn_dens),
-                                  Q_fit = list(fit_type = "sl",
-                                               sl_lrnrs = sl_lrn)
-                               ))
+                                ipcw_fit_args = NULL,
+                                g_fit_args = list(fit_type = "sl",
+                                                  sl_lrnrs = sl_lrn_dens),
+                                Q_fit_args = list(fit_type = "sl",
+                                                  sl_lrnrs = sl_lrn)
+                               )
 tmle_sl_shift_2
 ```
 
