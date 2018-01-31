@@ -12,7 +12,10 @@ vignette: >
 ---
 
 ```{r, echo=FALSE}
-options(scipen=999)
+options(scipen = 999)
+# install.packages("~/Dropbox/R/txshift/", type = "source", repos = NULL)
+# devtools::install_github("nhejazi/condensier", ref = "weights")
+# devtools::install_github("jeremyrcoyle/sl3")
 ```
 
 ## Introduction
@@ -36,8 +39,10 @@ TODO: ADD STUFF ON CENSORING
 ### Simulate Data
 
 ```{r}
-set.seed(429153)
 library(tidyverse)
+library(condensier)
+library(txshift)
+set.seed(429153)
 
 # simulate simple data for tmle-shift sketch
 n_obs <- 1000  # sample size
@@ -66,22 +71,19 @@ C <- rbinom(n_obs, 1, plogis(W))
 Comments about this estimation procedure...
 
 ```{r}
-library(condensier)
-library(txshift)
 tmle_glm_shift_1 <- tmle_txshift(W = W, A = A, Y = Y,
                                  C = C, V = list(W = W, Y = Y),
                                  delta = 0.5,
                                  fluc_method = "standard",
-                                 mod_args = list(
-                                   ipcw_fit = list(fit_type = "glm",
-                                     glm_formula = "Delta ~ ."),
-                                   g_fit = list(fit_type = "glm",
-                                     nbins = 35, bin_method = "dhist",
-                                     bin_estimator = speedglmR6$new(),
-                                     parfit = FALSE),
-                                   Q_fit = list(fit_type = "glm",
-                                     glm_formula = "Y ~ .")
-                                ))
+                                 ipcw_fit_args = list(fit_type = "glm",
+                                                      glm_formula = "Delta ~ ."),
+                                 g_fit_args = list(fit_type = "glm", nbins = 35,
+                                                   bin_method = "dhist",
+                                                   bin_estimator = speedglmR6$new(),
+                                                   parfit = FALSE),
+                                 Q_fit_args = list(fit_type = "glm",
+                                                   glm_formula = "Y ~ .")
+                                )
 tmle_glm_shift_1
 ```
 
@@ -90,23 +92,22 @@ used in fitting the nuisance parameters; however, an even simpler variation is
 to fit the step for the fluctuation submodels with a _weighted_ method, simply
 weighting each observation by the so-called "clever" covariate rather than using
 such a covariate directly in the regression fit. Please consult [INSERT REF] for
-details on potential benefits this approach may have.
+details on the potential benefits this approach may confer.
 
 ```{r}
 tmle_glm_shift_2 <- tmle_txshift(W = W, A = A, Y = Y,
                                  C = C, V = list(W = W, Y = Y),
                                  delta = 0.5,
                                  fluc_method = "weighted",
-                                 mod_args = list(
-                                   ipcw_fit = list(fit_type = "glm",
-                                     glm_formula = "Delta ~ ."),
-                                   g_fit = list(fit_type = "glm",
-                                     nbins = 35, bin_method = "dhist",
-                                     bin_estimator = speedglmR6$new(),
-                                     parfit = FALSE),
-                                   Q_fit = list(fit_type = "glm",
-                                     glm_formula = "Y ~ .")
-                                ))
+                                 ipcw_fit_args = list(fit_type = "glm",
+                                                      glm_formula = "Delta ~ ."),
+                                 g_fit_args = list(fit_type = "glm", nbins = 35,
+                                                   bin_method = "dhist",
+                                                   bin_estimator = speedglmR6$new(),
+                                                   parfit = FALSE),
+                                 Q_fit_args = list(fit_type = "glm",
+                                                   glm_formula = "Y ~ .")
+                                )
 tmle_glm_shift_2
 ```
 
@@ -142,14 +143,13 @@ tmle_sl_shift_1 <- tmle_txshift(W = W, A = A, Y = Y,
                                 C = C, V = list(W = W, Y = Y),
                                 delta = 0.5,
                                 fluc_method = "standard",
-                                mod_args = list(
-                                  ipcw_fit = list(fit_type = "sl",
-                                    sl_lrnrs = sl_lrn),
-                                  g_fit = list(fit_type = "sl",
-                                    sl_lrnrs = sl_lrn_dens),
-                                  Q_fit = list(fit_type = "sl",
-                                    sl_lrnrs = sl_lrn)
-                               ))
+                                ipcw_fit_args = list(fit_type = "sl",
+                                                     sl_lrnrs = sl_lrn),
+                                g_fit_args = list(fit_type = "sl",
+                                                  sl_lrnrs = sl_lrn_dens),
+                                Q_fit_args = list(fit_type = "sl",
+                                                  sl_lrnrs = sl_lrn)
+                               )
 tmle_sl_shift_1
 ```
 
@@ -162,14 +162,13 @@ tmle_sl_shift_2 <- tmle_txshift(W = W, A = A, Y = Y,
                                 C = C, V = list(W = W, Y = Y),
                                 delta = 0.5,
                                 fluc_method = "weighted",
-                                mod_args = list(
-                                  ipcw_fit = list(fit_type = "sl",
-                                    sl_lrnrs = sl_lrn),
-                                  g_fit = list(fit_type = "sl",
-                                    sl_lrnrs = sl_lrn_dens),
-                                  Q_fit = list(fit_type = "sl",
-                                    sl_lrnrs = sl_lrn)
-                               ))
+                                ipcw_fit_args = list(fit_type = "sl",
+                                                     sl_lrnrs = sl_lrn),
+                                g_fit_args = list(fit_type = "sl",
+                                                  sl_lrnrs = sl_lrn_dens),
+                                Q_fit_args = list(fit_type = "sl",
+                                                  sl_lrnrs = sl_lrn)
+                               )
 tmle_sl_shift_2
 ```
 
