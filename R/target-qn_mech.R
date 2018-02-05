@@ -20,7 +20,7 @@
 target_qn <- function(Qn_shift, ipc_weights, data_in) {
     # compute qn as the scaled sum of similar observations times IPC weights
     ind_a_w <- data_in %>%
-      dplyr::add_count(W, round(A)) %>%
+      dplyr::add_count(W, round(A, 1)) %>%
       dplyr::select(n) %>%
       unlist() %>%
       as.numeric()
@@ -32,7 +32,7 @@ target_qn <- function(Qn_shift, ipc_weights, data_in) {
       as.numeric()
 
     # compute D^F_W part of the EIF
-    Dfw_eif <- Qn_shift - Qn_shift * qn_dens
+    Dfw_eif <- Qn_shift - sum(Qn_shift * qn_dens)
 
     # bookkeeping with zeros for both D^F_W and qn terms
     qn_with_zeros <- rep(0, length(ipc_weights))
@@ -41,13 +41,11 @@ target_qn <- function(Qn_shift, ipc_weights, data_in) {
     Dfw_with_zeros[ipc_weights != 0] <- Dfw_eif
 
     # solve for root of the score equation of epsilon
-    eps_score <- function(eps_in, Dfw, qn_term, ipc_weights) {
-      eps_vec <- rep(eps_in, length(ipc_weights))
-      mean(ipc_weights * ((Dfw * qn_term) / (1 + eps_vec * (Dfw * qn_term))))
+    eps_score <- function(eps_in, Dfw, ipc_weights) {
+      mean(ipc_weights * (Dfw  / (1 + eps_in * Dfw )))
     }
-    eps_n <- rootSolve::uniroot.all(eps_score, interval = c(-0.5, 0.5),
+    eps_n <- rootSolve::uniroot.all(eps_score, interval = c(-1000, 1000),
                                     Dfw = Dfw_with_zeros,
-                                    qn_term = qn_with_zeros,
                                     ipc_weights = ipc_weights)
     return(eps_n)
 }
