@@ -76,8 +76,9 @@ ipcw_tmle_proc <- function(data_in, C, V,
   )
 
   # for efficiency, need targeting of the censoring mechnanism estimate
-  eps_n <- target_pi(Qn = fitted_fluc_mod$Qn_noshift_star,
-                     ipc_weights = ipc_weights_all)
+  eps_n <- target_qn(Qn_shift = fitted_fluc_mod$Qn_shift_star,
+                     ipc_weights = ipc_weights_all,
+                     data_in = data_in)
 
   # compute TMLE and EIF using NEW WEIGHTS and UPDATED SUB-MODEL FLUCTUATION
   tmle_eif_out <- tmle_eif_ipcw(
