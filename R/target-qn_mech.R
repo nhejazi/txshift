@@ -8,7 +8,7 @@
 #'
 #' @importFrom dplyr add_count select filter "%>%"
 #' @importFrom tibble as_tibble
-#' @importFrom rootSolve uniroot.all
+#' @importFrom stats uniroot
 #'
 #' @keywords internal
 #'
@@ -20,7 +20,7 @@
 target_qn <- function(Qn_shift, ipc_weights, data_in) {
     # compute qn as the scaled sum of similar observations times IPC weights
     ind_a_w <- data_in %>%
-      dplyr::add_count(W, round(A, 1)) %>%
+      dplyr::add_count(W, A) %>%
       dplyr::select(n) %>%
       unlist() %>%
       as.numeric()
@@ -42,11 +42,15 @@ target_qn <- function(Qn_shift, ipc_weights, data_in) {
 
     # solve for root of the score equation of epsilon
     eps_score <- function(eps_in, Dfw, ipc_weights) {
-      mean(ipc_weights * (Dfw  / (1 + eps_in * Dfw )))
+      out <- mean(ipc_weights * (Dfw  / (1 + eps_in * Dfw )))
     }
-    eps_n <- rootSolve::uniroot.all(eps_score, interval = c(-1000, 1000),
-                                    Dfw = Dfw_with_zeros,
-                                    ipc_weights = ipc_weights)
-    return(eps_n)
+    # TODO: check that solution of epsilon is not on the boundary
+    eps_n <- stats::uniroot(eps_score, interval = c(-1000, 1000),
+                            Dfw = Dfw_with_zeros,
+                            ipc_weights = ipc_weights)
+
+    # update the estimated density qn based on epsilon
+    qn_update <- (1 + eps_n$root * Dfw_with_zeros) * qn_with_zeros
+    return(list(eps = eps_n$root, qn = qn_update))
 }
 

@@ -5,6 +5,8 @@
 #' %0=P_n(\Delta-\Pi_n^*(V)))\frac{\E(D^F(P^0_{X,n})\mid\Delta=1,V)}{\Pi^*_n(V)}
 #'
 #' @param fluc_fit_out ...
+#' @param eps_updated ...
+#' @param data_in ...
 #' @param Hn ...
 #' @param Y A \code{numeric} vector of observed outcomes.
 #' @param Delta ...
@@ -22,15 +24,49 @@
 #' @author David Benkeser
 #
 tmle_eif_ipcw <- function(fluc_fit_out,
+                          eps_updated,
+                          data_in,
                           Hn,
                           Y,
                           Delta,
                           ipc_weights = rep(1, length(Y)),
                           tol_eif = 1e-7) {
   # compute TMLE
-  param_obs_est <- rep(0, length(Delta))
+  dat <- data.table::as.data.table(cbind(data_in, fluc_fit_out$Qn_shift_star,
+                                         eps_updated$qn[eps_updated$qn != 0]))
+  data.table::setnames(dat, c("W", "A", "Y", "Qn", "qn"))
+  dat_eif <- dat %>%
+    dplyr::add_count(W, round(A, 2))
+
+  # find the contributions to Psi from the unique observations
+  psi_uniq <- dat %>%
+    dplyr::add_count(W, round(A, 2)) %>%
+    dplyr::filter(n == 1) %>%
+    dplyr::select(Qn, qn) %>%
+    dplyr::transmute(
+      psi_uniq_obs = Qn * qn
+    ) %>%
+    unlist() %>%
+    as.numeric()
+
+  # find the contributions to Psi from the non-unique observations
+  psi_nonuniq <- dat %>%
+    dplyr::add_count(W, round(A, 2)) %>%
+    dplyr::filter(n > 1) %>%
+    dplyr::select(Qn, qn, n) %>%
+    dplyr::transmute(
+      # let's divide by n here since, on average, this'll catch the contribution
+      # as though the observation were unique (???)
+      psi_nonuniq_obs = (Qn * qn) / n
+    ) %>%
+    unlist() %>%
+    as.numeric()
+  dat_eif$eif <- rep(NA, nrow(dat))
+  dat_eif[dat_eif$n == 1, ]$eif <- eif_uniq
+  dat_eif[dat_eif$n > 1, ]$eif <- eif_nonuniq
+
   param_obs_est[Delta == 1] <- ipc_weights * fluc_fit_out$Qn_shift_star
-  psi <- mean(param_obs_est)
+  psi <- sum(param_obs_est)
 
   # compute the efficient influence function (EIF) / canonical gradient (D*)
   eif <- rep(0, length(Delta))
