@@ -4,11 +4,15 @@
 \alias{tmle_eif_ipcw}
 \title{Compute IPCW Part of the Efficient Influence Function for IPCW-TMLE}
 \usage{
-tmle_eif_ipcw(fluc_fit_out, Hn, Y, Delta, ipc_weights = rep(1, length(Y)),
-  tol_eif = 1e-07)
+tmle_eif_ipcw(fluc_fit_out, eps_updated, data_in, Hn, Y, Delta,
+  ipc_weights = rep(1, length(Y)), tol_eif = 1e-07)
 }
 \arguments{
 \item{fluc_fit_out}{...}
+
+\item{eps_updated}{...}
+
+\item{data_in}{...}
 
 \item{Hn}{...}
 

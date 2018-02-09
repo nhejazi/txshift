@@ -14,7 +14,8 @@
 #' @param tol_eif ...
 #'
 #' @importFrom stats var
-#' @importFrom dplyr if_else
+#' @importFrom dplyr if_else add_count select mutate
+#' @importFrom data.table is.data.table as.data.table set
 #'
 #' @keywords internal
 #'
@@ -31,42 +32,27 @@ tmle_eif_ipcw <- function(fluc_fit_out,
                           Delta,
                           ipc_weights = rep(1, length(Y)),
                           tol_eif = 1e-7) {
-  # compute TMLE
-  dat <- data.table::as.data.table(cbind(data_in, fluc_fit_out$Qn_shift_star,
-                                         eps_updated$qn[eps_updated$qn != 0]))
-  data.table::setnames(dat, c("W", "A", "Y", "Qn", "qn"))
-  dat_eif <- dat %>%
-    dplyr::add_count(W, round(A, 2))
+  # create data set to facilitate computing the TMLE for Psi
+  if (!data.table::is.data.table(data_in)) {
+    data_in <- data.table::as.data.table(data_in)
+  }
+  data.table::set(data_in, j = "Qn", value = fluc_fit_out$Qn_shift_star)
+  data.table::set(data_in, j = "qn",
+                  value = eps_updated$qn[eps_updated$qn != 0])
 
   # find the contributions to Psi from the unique observations
-  psi_uniq <- dat %>%
+  dat_with_psi <- dat %>%
     dplyr::add_count(W, round(A, 2)) %>%
-    dplyr::filter(n == 1) %>%
-    dplyr::select(Qn, qn) %>%
-    dplyr::transmute(
-      psi_uniq_obs = Qn * qn
-    ) %>%
-    unlist() %>%
-    as.numeric()
-
-  # find the contributions to Psi from the non-unique observations
-  psi_nonuniq <- dat %>%
-    dplyr::add_count(W, round(A, 2)) %>%
-    dplyr::filter(n > 1) %>%
     dplyr::select(Qn, qn, n) %>%
-    dplyr::transmute(
+    dplyr::mutate(
       # let's divide by n here since, on average, this'll catch the contribution
-      # as though the observation were unique (???)
-      psi_nonuniq_obs = (Qn * qn) / n
-    ) %>%
-    unlist() %>%
-    as.numeric()
-  dat_eif$eif <- rep(NA, nrow(dat))
-  dat_eif[dat_eif$n == 1, ]$eif <- eif_uniq
-  dat_eif[dat_eif$n > 1, ]$eif <- eif_nonuniq
-
-  param_obs_est[Delta == 1] <- ipc_weights * fluc_fit_out$Qn_shift_star
-  psi <- sum(param_obs_est)
+      # as though the observation were unique (???).
+      # note: doesn't affect unique contributions because division by 1
+      psi_est = (Qn * qn) / n
+    )
+  # ...
+  psi_obs_est[Delta == 1] <- dat_with_psi$psi_est
+  psi <- sum(dat_with_psi$psi_est)
 
   # compute the efficient influence function (EIF) / canonical gradient (D*)
   eif <- rep(0, length(Delta))
