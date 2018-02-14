@@ -84,6 +84,7 @@ ipcw_tmle_proc <- function(data_in, C, V,
   tmle_eif_out <- tmle_eif_ipcw(
     fluc_fit_out = fitted_fluc_mod,
     eps_updated = eps_n,
+    data_in = data_in, 
     Hn = Hn_estim,
     Y = data_in$Y,
     Delta = C,
@@ -172,6 +173,7 @@ ipcw_tmle_proc <- function(data_in, C, V,
   # as above, compute TMLE and EIF with NEW WEIGHTS but OLD SUBMODEL FLUCTUATION
   tmle_eif_out <- tmle_eif_ipcw(
     fluc_fit_out = fitted_fluc_mod,
+    data_in = data_in, 
     Hn = Hn_estim,
     Y = data_in$Y,
     Delta = C,
