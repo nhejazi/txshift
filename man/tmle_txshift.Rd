@@ -50,12 +50,11 @@ estimator. This is the the maximum mean of the efficient influence function
 \item{max_iter}{A \code{numeric} integer giving the maximum number of steps
 to be taken in iterating to a solution of the efficient influence function.}
 
-\item{mod_args}{A nested \code{list} of \code{list}s that specifies arguments
-to be passed to the various internal functions for the estimation procedure.
-Each of sub-list corresponds to a single internal function. As such, for
-details on (1) \code{ipcw_fit}, see the documentation of \code{est_ipcw};
-(2) \code{g_fit}, see the documentation of \code{est_g}; (3) \code{Q_fit},
-see the documentation for \code{est_Q}.}
+\item{ipcw_fit_args}{...}
+
+\item{g_fit_args}{...}
+
+\item{Q_fit_args}{...}
 }
 \value{
 S3 object of class \code{txshift} containing the results of the

@@ -2,7 +2,7 @@
 % Please edit documentation in R/target-qn_mech.R
 \name{target_qn}
 \alias{target_qn}
-\title{Targeting of Weighted Censoring Distribution}
+\title{Targeting for Part of EIF Corresponding to Weighted Censoring Distribution}
 \usage{
 target_qn(Qn_shift, ipc_weights, data_in)
 }

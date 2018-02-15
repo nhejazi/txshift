@@ -13,7 +13,8 @@ vignette: >
 
 ```{r, echo=FALSE}
 options(scipen = 999)
-# install.packages("~/Dropbox/R/txshift/", type = "source", repos = NULL)
+# library(here)
+# install.packages(here(), type = "source", repos = NULL)
 # devtools::install_github("nhejazi/condensier", ref = "weights")
 # devtools::install_github("jeremyrcoyle/sl3")
 ```
@@ -80,6 +81,7 @@ tmle_glm_shift_1 <- tmle_txshift(W = W, A = A, Y = Y,
                                  C = C, V = list(W = W, Y = Y),
                                  delta = 0.5,
                                  fluc_method = "standard",
+                                 max_iter = 10,
                                  ipcw_fit_args = list(fit_type = "glm",
                                                       glm_formula = "Delta ~ ."),
                                  g_fit_args = list(fit_type = "glm", nbins = 35,
@@ -104,6 +106,7 @@ tmle_glm_shift_2 <- tmle_txshift(W = W, A = A, Y = Y,
                                  C = C, V = list(W = W, Y = Y),
                                  delta = 0.5,
                                  fluc_method = "weighted",
+                                 max_iter = 10,
                                  ipcw_fit_args = list(fit_type = "glm",
                                                       glm_formula = "Delta ~ ."),
                                  g_fit_args = list(fit_type = "glm", nbins = 35,
@@ -148,6 +151,7 @@ tmle_sl_shift_1 <- tmle_txshift(W = W, A = A, Y = Y,
                                 C = C, V = list(W = W, Y = Y),
                                 delta = 0.5,
                                 fluc_method = "standard",
+                                max_iter = 10,
                                 ipcw_fit_args = list(fit_type = "sl",
                                                      sl_lrnrs = sl_lrn),
                                 g_fit_args = list(fit_type = "sl",
@@ -167,6 +171,7 @@ tmle_sl_shift_2 <- tmle_txshift(W = W, A = A, Y = Y,
                                 C = C, V = list(W = W, Y = Y),
                                 delta = 0.5,
                                 fluc_method = "weighted",
+                                max_iter = 10,
                                 ipcw_fit_args = list(fit_type = "sl",
                                                      sl_lrnrs = sl_lrn),
                                 g_fit_args = list(fit_type = "sl",

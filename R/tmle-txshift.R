@@ -29,12 +29,9 @@
 #'  (EIF) to be used in declaring convergence (theoretically, should be zero).
 #' @param max_iter A \code{numeric} integer giving the maximum number of steps
 #'  to be taken in iterating to a solution of the efficient influence function.
-#' @param mod_args A nested \code{list} of \code{list}s that specifies arguments
-#'  to be passed to the various internal functions for the estimation procedure.
-#'  Each of sub-list corresponds to a single internal function. As such, for
-#'  details on (1) \code{ipcw_fit}, see the documentation of \code{est_ipcw};
-#'  (2) \code{g_fit}, see the documentation of \code{est_g}; (3) \code{Q_fit},
-#'  see the documentation for \code{est_Q}.
+#' @param ipcw_fit_args ...
+#' @param g_fit_args ...
+#' @param Q_fit_args ...
 #'
 #' @importFrom condensier speedglmR6
 #' @importFrom data.table as.data.table
