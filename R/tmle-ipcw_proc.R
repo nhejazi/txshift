@@ -1,6 +1,6 @@
 utils::globalVariables(c("."))
 
-#' Iterative Procedure to Compute an IPCW-TMLE
+#' Iterative Computation of an IPCW-TMLE
 #'
 #' An adaptation of the general IPCW-TMLE formulation of Rose & van der Laan as
 #' well as its associated algorithm. This may be used to iteratively construct
@@ -77,15 +77,9 @@ ipcw_tmle_proc <- function(data_in, C, V,
     method = fluc_method
   )
 
-  # for efficiency, need targeting of the censoring mechnanism estimate
-  eps_n <- target_qn(Qn_shift = fitted_fluc_mod$Qn_shift_star,
-                     ipc_weights = ipc_weights_all,
-                     data_in = data_in)
-
   # compute TMLE and EIF using NEW WEIGHTS and UPDATED SUB-MODEL FLUCTUATION
   tmle_eif_out <- tmle_eif_ipcw(
     fluc_fit_out = fitted_fluc_mod,
-    eps_updated = eps_n,
     data_in = data_in,
     Hn = Hn_estim,
     Y = data_in$Y,
@@ -170,12 +164,16 @@ ipcw_tmle_proc <- function(data_in, C, V,
   stopifnot(ipc_check < tol_eif)
 
   # so, now we need weights to feed back into the previous steps
-  ipc_weights_all <- C / ipcw_fluc_pred
+  #if (fit_type == "sl") {
+    #ipcw_fluc_pred_dens <- ipcw_fluc_pred / sum(ipcw_fluc_pred)
+    #ipc_weights_all <- C / ipcw_fluc_pred_dens
+  #} else {
+    ipc_weights_all <- C / ipcw_fluc_pred
+  #}
 
   # as above, compute TMLE and EIF with NEW WEIGHTS but OLD SUBMODEL FLUCTUATION
   tmle_eif_out <- tmle_eif_ipcw(
     fluc_fit_out = fitted_fluc_mod,
-    eps_updated = eps_n,
     data_in = data_in,
     Hn = Hn_estim,
     Y = data_in$Y,

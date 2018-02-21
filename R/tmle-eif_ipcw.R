@@ -1,13 +1,10 @@
-utils::globalVariables(c("key"))
-
-#' Compute IPCW Part of the Efficient Influence Function for IPCW-TMLE
+#' Compute IPC-Weighted Component of Efficient Influence Function
 #'
 #' Computes an additional component of the efficient influence function needed
 #' for efficient estimation of IPCW-TMLEs. This takes the form:
 #' %0=P_n(\Delta-\Pi_n^*(V)))\frac{\E(D^F(P^0_{X,n})\mid\Delta=1,V)}{\Pi^*_n(V)}
 #'
 #' @param fluc_fit_out ...
-#' @param eps_updated ...
 #' @param data_in ...
 #' @param Hn ...
 #' @param Y A \code{numeric} vector of observed outcomes.
@@ -17,7 +14,6 @@ utils::globalVariables(c("key"))
 #'
 #' @importFrom stats var
 #' @importFrom dplyr if_else add_count select mutate
-#' @importFrom data.table is.data.table as.data.table set
 #'
 #' @keywords internal
 #'
@@ -27,7 +23,6 @@ utils::globalVariables(c("key"))
 #' @author David Benkeser
 #
 tmle_eif_ipcw <- function(fluc_fit_out,
-                          eps_updated,
                           data_in,
                           Hn,
                           Y,
@@ -35,18 +30,10 @@ tmle_eif_ipcw <- function(fluc_fit_out,
                           ipc_weights = rep(1, length(Y)),
                           tol_eif = 1e-7) {
 
-  # find duplicated rows of data_in (removing "Y" column)
-  rm_col <- "Y"
-  dups <- duplicated(data_in[ , !rm_col, by = key(data_in), with = FALSE])
-  duplicated_idx <- which(dups)
-
-  # if no duplicates duplicated_idx == integer(0)
-  if (length(duplicated_idx) == 0) {
-    psi <- sum(fluc_fit_out$Qn_shift_star * eps_updated$qn[ipc_weights > 0])
-  } else {
-    psi <- sum(fluc_fit_out$Qn_shift_star[-duplicated_idx] *
-               eps_updated$qn[-duplicated_idx])
-  }
+  # compute TMLE of the treatment shift parameter
+  param_obs_est <- rep(0, length(Delta))
+  param_obs_est[Delta == 1] <- ipc_weights * fluc_fit_out$Qn_shift_star
+  psi <- mean(param_obs_est)
 
   # compute the efficient influence function (EIF) / canonical gradient (D*)
   eif <- rep(0, length(Delta))

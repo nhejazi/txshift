@@ -2,15 +2,13 @@
 % Please edit documentation in R/tmle-eif_ipcw.R
 \name{tmle_eif_ipcw}
 \alias{tmle_eif_ipcw}
-\title{Compute IPCW Part of the Efficient Influence Function for IPCW-TMLE}
+\title{Compute IPC-Weighted Component of Efficient Influence Function}
 \usage{
-tmle_eif_ipcw(fluc_fit_out, eps_updated, data_in, Hn, Y, Delta,
-  ipc_weights = rep(1, length(Y)), tol_eif = 1e-07)
+tmle_eif_ipcw(fluc_fit_out, data_in, Hn, Y, Delta, ipc_weights = rep(1,
+  length(Y)), tol_eif = 1e-07)
 }
 \arguments{
 \item{fluc_fit_out}{...}
-
-\item{eps_updated}{...}
 
 \item{data_in}{...}
 

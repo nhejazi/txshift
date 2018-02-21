@@ -2,7 +2,7 @@
 % Please edit documentation in R/tmle-ipcw_proc.R
 \name{ipcw_tmle_proc}
 \alias{ipcw_tmle_proc}
-\title{Iterative Procedure to Compute an IPCW-TMLE}
+\title{Iterative Computation of an IPCW-TMLE}
 \usage{
 ipcw_tmle_proc(data_in, C, V, Qn_estim, Hn_estim, ipcw_mech, ipc_weights_all,
   fluc_method = c("standard", "weighted"), fit_type = c("glm", "sl"),

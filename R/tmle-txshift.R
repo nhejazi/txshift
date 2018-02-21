@@ -172,7 +172,14 @@ tmle_txshift <- function(W,
     n_steps <- 0
     eif_mean <- Inf
     conv_res <- rep(NA, max_iter)
-    cens_weights_full <- C / ipcw_out$pi_mech
+
+    # normalize weights non-parametric fits of the censoring mechanism
+    if (ipcw_fit_type == "sl") {
+      pi_dens <- ipcw_out$pi_mech / sum(ipcw_out$pi_mech)
+      cens_weights_full <- C / pi_dens
+    } else {
+      cens_weights_full <- C / ipcw_out$pi_mech
+    }
 
     # iterate procedure until convergence conditions are satisfied
     while (abs(eif_mean) > eif_tol & n_steps < max_iter) {
@@ -199,9 +206,9 @@ tmle_txshift <- function(W,
       eif_mean <- mean(ipcw_tmle_comp$tmle_eif$eif) - ipcw_tmle_comp$ipcw_eif
       conv_res[n_steps] <- eif_mean
     }
-    ##############################################################################
-    # standard TMLE of the shift parameter / inefficient IPCW-TMLE
-    ##############################################################################
+  ##############################################################################
+  # standard TMLE of the shift parameter / inefficient IPCW-TMLE
+  ##############################################################################
   } else {
     # fit logistic regression to fluctuate along the sub-model
     fitted_fluc_mod <- fit_fluc(
