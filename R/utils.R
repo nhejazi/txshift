@@ -1,9 +1,9 @@
 #' Confidence Intervals for Shifted Treatment Parameters
 #'
-#' description
+#' Compute confidence intervals for estimates produced by \code{tmle_txshift}
 #'
-#' @param object An object of class \code{shifttx}, as produced by invoking
-#'  the function \code{tmle_shifttx}, for which a confidence interval is to be
+#' @param object An object of class \code{txshift}, as produced by invoking
+#'  the function \code{tmle_txshift}, for which a confidence interval is to be
 #'  computed.
 #' @param parm A \code{numeric} vector indicating indices of \code{object$est}
 #'  for which to return confidence intervals.
@@ -34,17 +34,52 @@ confint.txshift <- function(object,
 
   # set up output CI object
   ci_out <- c(ci_psi[1], object$psi, ci_psi[2])
-  names(ci_out) <- c("lwr_CI", "est", "upr_CI")
+  names(ci_out) <- c("lwr_ci", "est", "upr_ci")
   return(ci_out)
 }
 
 ################################################################################
 
-#' Print Method for shifttx Objects
+#' Summary for Shifted Treatment Parameter Objects
 #'
-#' The \code{print} method for objects of class \code{shifttx}.
+#' Print a convenient summary for objects computed using \code{tmle_txshift}.
 #'
-#' @param x An object of class \code{shifttx}.
+#' @param object An object of class \code{txshift}, as produced by invoking
+#'  the function \code{tmle_txshift}, for which a confidence interval is to be
+#'  computed.
+#' @param ... Other arguments. Not currently used.
+#' @param ci_level A \code{numeric} indicating the level of the confidence
+#'  interval to be computed.
+#'
+#' @importFrom stats confint
+#'
+#' @method summary txshift
+#'
+#' @export
+#
+summary.txshift <- function(object,
+                            ...,
+                            ci_level = 0.95) {
+
+  # compute confidence interval using the pre-defined method
+  ci <- stats::confint(object, level = ci_level)
+
+  # only print useful info about the mean of the efficient influence function
+  eif_mean <- format(mean(object$eif), scientific = TRUE)
+
+  # create output table from input object and confidence interval results
+  out <- c(round(c(ci, object$var), digits = 6), eif_mean)
+  names(out) <- c("lwr_ci", "param_est", "upr_ci", "param_var", "eif_mean")
+  print(noquote(out))
+}
+
+################################################################################
+
+#' Print Method for txshift Objects
+#'
+#' The \code{print} method for objects of class \code{txshift}.
+#'
+#' @param x An object of class \code{txshift}.
 #' @param ... Other options (not currently used).
 #'
 #' @export

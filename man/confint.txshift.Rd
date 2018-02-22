@@ -8,8 +8,8 @@
   ...)
 }
 \arguments{
-\item{object}{An object of class \code{shifttx}, as produced by invoking
-the function \code{tmle_shifttx}, for which a confidence interval is to be
+\item{object}{An object of class \code{txshift}, as produced by invoking
+the function \code{tmle_txshift}, for which a confidence interval is to be
 computed.}
 
 \item{parm}{A \code{numeric} vector indicating indices of \code{object$est}
@@ -21,5 +21,5 @@ to be computed.}
 \item{...}{Other arguments. Not currently used.}
 }
 \description{
-description
+Compute confidence intervals for estimates produced by \code{tmle_txshift}
 }
