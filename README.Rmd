@@ -107,11 +107,8 @@ tmle_shift <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
                                         glm_formula = "Y ~ .")
                           )
 
-# examine the results
-tmle_shift
-
-# compute the confidence interval and view the results
-(ci_shift <- confint(tmle_shift))
+# conveniently summarize the results
+summary(tmle_shift)
 ```
 
 ---
