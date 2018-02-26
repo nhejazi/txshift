@@ -4,23 +4,25 @@
 \alias{tmle_eif_ipcw}
 \title{Compute IPC-Weighted Component of Efficient Influence Function}
 \usage{
-tmle_eif_ipcw(fluc_fit_out, data_in, Hn, Y, Delta, ipc_weights = rep(1,
-  length(Y)), tol_eif = 1e-07)
+tmle_eif_ipcw(fluc_mod_out, data_in, Y_all, Hn, Delta, ipc_weights = rep(1,
+  nrow(data_in)), ipc_weights_norm = rep(1, nrow(data_in)), eif_tol = 1e-10)
 }
 \arguments{
-\item{fluc_fit_out}{...}
+\item{fluc_mod_out}{...}
 
 \item{data_in}{...}
 
-\item{Hn}{...}
+\item{Y_all}{...}
 
-\item{Y}{A \code{numeric} vector of observed outcomes.}
+\item{Hn}{...}
 
 \item{Delta}{...}
 
 \item{ipc_weights}{...}
 
-\item{tol_eif}{...}
+\item{ipc_weights_norm}{...}
+
+\item{eif_tol}{...}
 }
 \description{
 Computes an additional component of the efficient influence function needed

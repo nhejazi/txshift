@@ -4,13 +4,14 @@
 #' for efficient estimation of IPCW-TMLEs. This takes the form:
 #' %0=P_n(\Delta-\Pi_n^*(V)))\frac{\E(D^F(P^0_{X,n})\mid\Delta=1,V)}{\Pi^*_n(V)}
 #'
-#' @param fluc_fit_out ...
+#' @param fluc_mod_out ...
 #' @param data_in ...
+#' @param Y_all ...
 #' @param Hn ...
-#' @param Y A \code{numeric} vector of observed outcomes.
 #' @param Delta ...
 #' @param ipc_weights ...
-#' @param tol_eif ...
+#' @param ipc_weights_norm ...
+#' @param eif_tol ...
 #'
 #' @importFrom stats var
 #' @importFrom dplyr if_else add_count select mutate
@@ -22,30 +23,31 @@
 #' @author Nima Hejazi
 #' @author David Benkeser
 #
-tmle_eif_ipcw <- function(fluc_fit_out,
+tmle_eif_ipcw <- function(fluc_mod_out,
                           data_in,
+                          Y_all,
                           Hn,
-                          Y,
                           Delta,
-                          ipc_weights = rep(1, length(Y)),
-                          tol_eif = 1e-7) {
+                          ipc_weights = rep(1, nrow(data_in)),
+                          ipc_weights_norm = rep(1, nrow(data_in)),
+                          eif_tol = 1e-10) {
 
   # compute TMLE of the treatment shift parameter
   param_obs_est <- rep(0, length(Delta))
-  param_obs_est[Delta == 1] <- ipc_weights * fluc_fit_out$Qn_shift_star
+  param_obs_est[Delta == 1] <- ipc_weights_norm * fluc_mod_out$Qn_shift_star
   psi <- mean(param_obs_est)
 
   # compute the efficient influence function (EIF) / canonical gradient (D*)
   eif <- rep(0, length(Delta))
   eif[Delta == 1] <- ipc_weights * Hn$noshift *
-    (Y - fluc_fit_out$Qn_noshift_star) +
-    ipc_weights * (fluc_fit_out$Qn_shift_star - psi)
+    (Y_all - fluc_mod_out$Qn_noshift_star) +
+    ipc_weights * (fluc_mod_out$Qn_shift_star - psi)
 
   # sanity check on EIF
   # NOTE: EIF ~ N(0, V(D(P)(o))), so mean(EIF) ~= 0
   eif_msg <- dplyr::if_else(
-    abs(mean(eif)) < tol_eif,
-    paste("EIF mean <", tol_eif, "(sufficiently low)."),
+    abs(mean(eif)) < eif_tol,
+    paste("EIF mean <", eif_tol, "(sufficiently low)."),
     paste(
       "EIF mean =", mean(eif),
       "(higher than expected)."
