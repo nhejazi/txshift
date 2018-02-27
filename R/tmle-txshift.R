@@ -51,7 +51,7 @@ tmle_txshift <- function(W,
                          V = NULL,
                          delta = 0,
                          fluc_method = c("standard", "weighted"),
-                         eif_tol = 1e-9,
+                         eif_tol = 1/length(Y),
                          max_iter = 1e4,
                          ipcw_fit_args = list(
                            fit_type = c("glm", "sl"),
@@ -203,10 +203,13 @@ tmle_txshift <- function(W,
       )
 
       # overwrite/update quantities to be used in next iteration
+      # NOTE FOR NIMA: don't know if you have a function to do this 
+      # rescaling or not
+      ymin <- min(Y); ymax <- max(Y)
       Qn_estim_use <- data.table::as.data.table(
         list(
-          ipcw_tmle_comp$fluc_mod_out$Qn_noshift_star,
-          ipcw_tmle_comp$fluc_mod_out$Qn_shift_star
+          (ipcw_tmle_comp$fluc_mod_out$Qn_noshift_star - ymin)/(ymax - ymin),
+          (ipcw_tmle_comp$fluc_mod_out$Qn_shift_star - ymin)/(ymax - ymin)
         )
       )
       data.table::setnames(Qn_estim_use, names(Qn_estim))
