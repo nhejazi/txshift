@@ -13,7 +13,7 @@ vignette: >
 
 ```{r, echo=FALSE}
 options(scipen = 999)
-# install.packages("~/Dropbox/R/txshift/", type = "source", repos = NULL)
+install.packages("~/Dropbox/R/txshift/", type = "source", repos = NULL)
 # devtools::install_github("nhejazi/condensier", ref = "weights")
 # devtools::install_github("jeremyrcoyle/sl3")
 ```
