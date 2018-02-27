@@ -35,7 +35,7 @@ tmle_eif_ipcw <- function(fluc_mod_out,
   # compute TMLE of the treatment shift parameter
   param_obs_est <- rep(0, length(Delta))
   param_obs_est[Delta == 1] <- ipc_weights_norm * fluc_mod_out$Qn_shift_star
-  psi <- mean(param_obs_est)
+  psi <- sum(param_obs_est)
 
   # compute the efficient influence function (EIF) / canonical gradient (D*)
   eif <- rep(0, length(Delta))
