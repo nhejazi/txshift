@@ -42,7 +42,7 @@ est_g <- function(A,
   ##############################################################################
   data_in <- data.table::as.data.table(cbind(A, W))
   if (!is.matrix(W)) W <- as.matrix(W)
-  data.table::setnames(data_in, c("A", paste0("W", seq_len(ncol(W)))))
+  data.table::setnames(data_in, c("A", colnames(W)))
   data.table::set(data_in, j = "ipc_weights", value = ipc_weights)
 
   # need a data set with the treatment stochastically shifted DOWNWARDS...
@@ -65,7 +65,7 @@ est_g <- function(A,
     sl_task <- sl3::sl3_Task$new(
       data = data_in,
       outcome = "A",
-      covariates = paste0("W", seq_len(ncol(W))),
+      covariates = colnames(W),
       weights = "ipc_weights"
     )
 
@@ -73,7 +73,7 @@ est_g <- function(A,
     sl_task_downshifted <- sl3::sl3_Task$new(
       data = data_in_downshifted,
       outcome = "A",
-      covariates = paste0("W", seq_len(ncol(W))),
+      covariates = colnames(W),
       weights = "ipc_weights"
     )
 
@@ -81,7 +81,7 @@ est_g <- function(A,
     sl_task_upshifted <- sl3::sl3_Task$new(
       data = data_in_upshifted,
       outcome = "A",
-      covariates = paste0("W", seq_len(ncol(W))),
+      covariates = colnames(W),
       weights = "ipc_weights"
     )
   }
@@ -92,7 +92,7 @@ est_g <- function(A,
   if (fit_type == "glm" & is.null(sl_lrnrs_dens)) {
     fit_args <- unlist(
       list(
-        X = c(paste0("W", seq_len(ncol(W)))),
+        X = list(colnames(W)),
         Y = "A", weights = "ipc_weights", std_args
       ),
       recursive = FALSE
