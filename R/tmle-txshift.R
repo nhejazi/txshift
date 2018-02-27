@@ -92,6 +92,12 @@ tmle_txshift <- function(W,
   ##############################################################################
   # perform sub-setting of data and implement IPC weighting if required
   ##############################################################################
+  # if no names in W, assign
+  W_names <- colnames(W)
+  if(is.null(W_names)){
+    W_names <- paste0("W",seq_len(ncol(W)))
+    colnames(W) <- W_names
+  }
   if (any(unique(C) == 1) & !is.null(V)) {
     V_in <- data.table::as.data.table(V)
     ipcw_estim_in <- list(
@@ -106,14 +112,14 @@ tmle_txshift <- function(W,
     # compute the IPC weights by passing all args to the relevant function
     ipcw_out <- do.call(est_ipcw, ipcw_estim_args)
     cens_weights <- ipcw_out$ipc_weights  # TODO: normalize?
-    data_internal <- tibble::as_tibble(list(W = W, A = A, C = C, Y = Y)) %>%
+    data_internal <- tibble::as_tibble(list(W, A = A, C = C, Y = Y)) %>%
       dplyr::filter(C == 1) %>%
       dplyr::select(-C) %>%
       data.table::as.data.table()
   } else {
     # if no censoring, we can just use IPC weights that are identically 1
     cens_weights <- C
-    data_internal <- data.table::as.data.table(list(W = W, A = A, Y = Y))
+    data_internal <- data.table::as.data.table(list(W, A = A, Y = Y))
   }
 
   ##############################################################################
@@ -121,7 +127,7 @@ tmle_txshift <- function(W,
   ##############################################################################
   gn_estim_in <- list(
     A = data_internal$A,
-    W = data_internal$W,
+    W = data_internal[,..W_names],
     delta = delta,
     ipc_weights = cens_weights,
     fit_type = g_fit_type
@@ -149,7 +155,7 @@ tmle_txshift <- function(W,
   Qn_estim_in <- list(
     Y = data_internal$Y,
     A = data_internal$A,
-    W = data_internal$W,
+    W = data_internal[,..W_names],
     delta = delta,
     ipc_weights = cens_weights,
     fit_type = Q_fit_type
