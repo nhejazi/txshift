@@ -1,4 +1,6 @@
-#' Iterative Procedure to Compute an IPCW-TMLE
+utils::globalVariables(c("."))
+
+#' Iterative Computation of an IPCW-TMLE
 #'
 #' An adaptation of the general IPCW-TMLE formulation of Rose & van der Laan as
 #' well as its associated algorithm. This may be used to iteratively construct
@@ -17,21 +19,22 @@
 #'  given observation.
 #' @param V A \code{data.table} giving the values across all observations of all
 #'  variables that play a role in the censoring mechanism.
+#' @param ipc_mech A \code{numeric} vector containing values that describe the
+#'  censoring mechanism for all of the observations. Note that such values are
+#'  estimated by regressing the censoring covariates \code{V} on the observed
+#'  censoring \code{C} and thus correspond to predicted probabilities of being
+#'  censored for each observation.
+#' @param ipc_weights A \code{numeric} vector of inverse probability of
+#'  censoring weights. These are equivalent to \code{C / ipc_mech} in any
+#'  initial run of this function. Updated values of this vector are provided as
+#'  part of the output of this function, which may be used in subsequent calls
+#'  that allow convergence to a more efficient estimate.
+#' @param ipc_weights_norm ...
 #' @param Qn_estim A \code{data.table} corresponding to the outcome regression.
 #'  This is produced by invoking the internal function \code{est_Q}.
 #' @param Hn_estim A \code{data.table} corresponding to values produced in the
 #'  computation of the auxiliary ("clever") covariate. This is produced easily
 #'  by invoking the internal function \code{est_Hn}.
-#' @param ipcw_mech A \code{numeric} vector containing values that describe the
-#'  censoring mechanism for all of the observations. Note that such values are
-#'  estimated by regressing the censoring covariates \code{V} on the observed
-#'  censoring \code{C} and thus correspond to predicted probabilities of being
-#'  censored for each observation.
-#' @param ipc_weights_all A \code{numeric} vector of inverse probability of
-#'  censoring weights. These are equivalent to \code{C / ipcw_mech} in any
-#'  initial run of this function. Updated values of this vector are provided as
-#'  part of the output of this function, which may be used in subsequent calls
-#'  that allow convergence to a more efficient estimate.
 #' @param fluc_method A \code{character} giving the type of regression to be
 #'  used in traversing the fluctuation submodel. The choices are "weighted" and
 #'  "standard" -- please consult the literature for details on the differences.
@@ -40,7 +43,7 @@
 #'  mechanism and the efficient influence function. Choose "glm" for generalized
 #'  linear models or "sl" for use of the Super Learner algorithm. If selecting
 #'  the latter, the final argument \code{sl_lrnrs} must be provided.
-#' @param tol_eif A \code{numeric} providing the largest value to be tolerated
+#' @param eif_tol A \code{numeric} providing the largest value to be tolerated
 #'  as the mean of the efficient influence function.
 #' @param sl_lrnrs A \code{Lrnr_sl} object composed of a collection of learners
 #'  provided by the \code{sl3} package. This is constructed externally from this
@@ -58,12 +61,17 @@
 #' @author Nima Hejazi
 #' @author David Benkeser
 #
-ipcw_tmle_proc <- function(data_in, C, V,
-                           Qn_estim, Hn_estim,
-                           ipcw_mech, ipc_weights_all,
+ipcw_tmle_proc <- function(data_in,
+                           C,
+                           V,
+                           ipc_mech,
+                           ipc_weights,
+                           ipc_weights_norm,
+                           Qn_estim,
+                           Hn_estim,
                            fluc_method = c("standard", "weighted"),
                            fit_type = c("glm", "sl"),
-                           tol_eif = 1e-9,
+                           eif_tol = 1e-9,
                            sl_lrnrs = NULL) {
 
   # fit logistic regression to fluctuate along the sub-model with NEW WEIGHTS
@@ -71,25 +79,20 @@ ipcw_tmle_proc <- function(data_in, C, V,
     Y = data_in$Y,
     Qn_scaled = Qn_estim,
     Hn = Hn_estim,
-    ipc_weights = ipc_weights_all[C == 1],
+    ipc_weights = ipc_weights[C == 1],
     method = fluc_method
   )
 
-  # for efficiency, need targeting of the censoring mechnanism estimate
-  eps_n <- target_qn(Qn_shift = fitted_fluc_mod$Qn_shift_star,
-                     ipc_weights = ipc_weights_all,
-                     data_in = data_in)
-
   # compute TMLE and EIF using NEW WEIGHTS and UPDATED SUB-MODEL FLUCTUATION
   tmle_eif_out <- tmle_eif_ipcw(
-    fluc_fit_out = fitted_fluc_mod,
-    eps_updated = eps_n,
-    data_in = data_in, 
+    fluc_mod_out = fitted_fluc_mod,
+    data_in = data_in,
+    Y_all = data_in$Y,
     Hn = Hn_estim,
-    Y = data_in$Y,
     Delta = C,
-    ipc_weights = ipc_weights_all[C == 1],
-    tol_eif = tol_eif
+    ipc_weights = ipc_weights[C == 1],
+    ipc_weights_norm = ipc_weights_norm[C == 1],
+    eif_tol = eif_tol
   )
 
   # the efficient influence function equation we're solving looks like
@@ -144,14 +147,13 @@ ipcw_tmle_proc <- function(data_in, C, V,
   }
 
   # fit logistic regression to fluctuate along the sub-model wrt epsilon
-  # QUESTION: DO WE WANT TO USE UPDATED VALUES OF CENSORING MECHANISM?
   ipcw_fluc <- stats::glm(
     stats::as.formula("delta ~ -1 + offset(logit_ipcw) + eif_by_ipcw"),
     data = data.table::as.data.table(
       list(
         delta = C,
-        logit_ipcw = stats::qlogis(ipcw_mech),
-        eif_by_ipcw = I(eif_pred / ipcw_mech)
+        logit_ipcw = stats::qlogis(ipc_mech),
+        eif_by_ipcw = eif_pred / ipc_mech
       )
     ),
     family = "binomial"
@@ -164,26 +166,31 @@ ipcw_tmle_proc <- function(data_in, C, V,
   ipcw_eif_out <- mean((C - ipcw_fluc_pred) * (eif_pred / ipcw_fluc_pred))
 
   # sanity check: score of the logistic regression fluctuation model
-  ipc_check <- mean((C - ipcw_fluc_pred) * (eif_pred / ipcw_mech))
-  stopifnot(ipc_check < tol_eif)
+  ipc_check <- mean((C - ipcw_fluc_pred) * (eif_pred / ipc_mech))
+  stopifnot(ipc_check < eif_tol)
 
   # so, now we need weights to feed back into the previous steps
-  ipc_weights_all <- C / ipcw_fluc_pred
+  ipc_weights <- C / ipcw_fluc_pred
+  ipc_weights_norm <- ipc_weights / sum(ipc_weights)
 
-  # as above, compute TMLE and EIF with NEW WEIGHTS but OLD SUBMODEL FLUCTUATION
+  # as above, compute TMLE and EIF with NEW WEIGHTS and SUBMODEL FLUCTUATION
   tmle_eif_out <- tmle_eif_ipcw(
-    fluc_fit_out = fitted_fluc_mod,
-    data_in = data_in, 
+    fluc_mod_out = fitted_fluc_mod,
+    data_in = data_in,
+    Y_all = data_in$Y,
     Hn = Hn_estim,
-    Y = data_in$Y,
     Delta = C,
-    ipc_weights = ipc_weights_all[C == 1],
-    tol_eif = tol_eif
+    ipc_weights = ipc_weights[C == 1],
+    ipc_weights_norm = ipc_weights_norm[C == 1],
+    eif_tol = eif_tol
   )
 
   # need to return output such that we can loop over this function
   return(list(
-    ipc_weights = ipc_weights_all,
+    fluc_mod_out = fitted_fluc_mod,
+    pi_mech_star = ipcw_fluc_pred,
+    ipc_weights = ipc_weights,
+    ipc_weights_norm = ipc_weights_norm,
     tmle_eif = tmle_eif_out,
     ipcw_eif = ipcw_eif_out
   ))

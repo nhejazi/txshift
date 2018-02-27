@@ -2,23 +2,27 @@
 % Please edit documentation in R/tmle-eif_ipcw.R
 \name{tmle_eif_ipcw}
 \alias{tmle_eif_ipcw}
-\title{Compute IPCW Part of the Efficient Influence Function for IPCW-TMLE}
+\title{Compute IPC-Weighted Component of Efficient Influence Function}
 \usage{
-tmle_eif_ipcw(fluc_fit_out, Hn, Y, Delta, ipc_weights = rep(1, length(Y)),
-  tol_eif = 1e-07)
+tmle_eif_ipcw(fluc_mod_out, data_in, Y_all, Hn, Delta, ipc_weights = rep(1,
+  nrow(data_in)), ipc_weights_norm = rep(1, nrow(data_in)), eif_tol = 1e-10)
 }
 \arguments{
-\item{fluc_fit_out}{...}
+\item{fluc_mod_out}{...}
+
+\item{data_in}{...}
+
+\item{Y_all}{...}
 
 \item{Hn}{...}
-
-\item{Y}{A \code{numeric} vector of observed outcomes.}
 
 \item{Delta}{...}
 
 \item{ipc_weights}{...}
 
-\item{tol_eif}{...}
+\item{ipc_weights_norm}{...}
+
+\item{eif_tol}{...}
 }
 \description{
 Computes an additional component of the efficient influence function needed

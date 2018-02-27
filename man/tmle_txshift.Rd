@@ -6,11 +6,12 @@
 \usage{
 tmle_txshift(W, A, Y, C = rep(1, length(Y)), V = NULL, delta = 0,
   fluc_method = c("standard", "weighted"), eif_tol = 1e-09,
-  max_iter = 1000, mod_args = list(ipcw_fit = list(fit_type = c("glm",
-  "sl"), glm_formula = "Delta ~ .", sl_lrnrs = NULL), g_fit = list(fit_type =
+  max_iter = 10000, ipcw_fit_args = list(fit_type = c("glm", "sl"),
+  glm_formula = "Delta ~ .", sl_lrnrs = NULL), g_fit_args = list(fit_type =
   c("glm", "sl"), nbins = 35, bin_method = "dhist", bin_estimator =
-  condensier::speedglmR6$new(), parfit = FALSE, sl_lrnrs_dens = NULL), Q_fit =
-  list(fit_type = c("glm", "sl"), glm_formula = "Y ~ .", sl_lrnrs = NULL)))
+  condensier::speedglmR6$new(), parfit = FALSE, sl_lrnrs_dens = NULL),
+  Q_fit_args = list(fit_type = c("glm", "sl"), glm_formula = "Y ~ .", sl_lrnrs
+  = NULL))
 }
 \arguments{
 \item{W}{A \code{matrix} or \code{data.frame} corresponding to a set of
@@ -49,12 +50,11 @@ estimator. This is the the maximum mean of the efficient influence function
 \item{max_iter}{A \code{numeric} integer giving the maximum number of steps
 to be taken in iterating to a solution of the efficient influence function.}
 
-\item{mod_args}{A nested \code{list} of \code{list}s that specifies arguments
-to be passed to the various internal functions for the estimation procedure.
-Each of sub-list corresponds to a single internal function. As such, for
-details on (1) \code{ipcw_fit}, see the documentation of \code{est_ipcw};
-(2) \code{g_fit}, see the documentation of \code{est_g}; (3) \code{Q_fit},
-see the documentation for \code{est_Q}.}
+\item{ipcw_fit_args}{...}
+
+\item{g_fit_args}{...}
+
+\item{Q_fit_args}{...}
 }
 \value{
 S3 object of class \code{txshift} containing the results of the

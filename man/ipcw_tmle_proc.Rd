@@ -2,11 +2,11 @@
 % Please edit documentation in R/tmle-ipcw_proc.R
 \name{ipcw_tmle_proc}
 \alias{ipcw_tmle_proc}
-\title{Iterative Procedure to Compute an IPCW-TMLE}
+\title{Iterative Computation of an IPCW-TMLE}
 \usage{
-ipcw_tmle_proc(data_in, C, V, Qn_estim, Hn_estim, ipcw_mech, ipc_weights_all,
-  fluc_method = c("standard", "weighted"), fit_type = c("glm", "sl"),
-  tol_eif = 1e-09, sl_lrnrs = NULL)
+ipcw_tmle_proc(data_in, C, V, ipc_mech, ipc_weights, ipc_weights_norm, Qn_estim,
+  Hn_estim, fluc_method = c("standard", "weighted"), fit_type = c("glm",
+  "sl"), eif_tol = 1e-09, sl_lrnrs = NULL)
 }
 \arguments{
 \item{data_in}{A \code{data.table} containing variables and observations that
@@ -19,24 +19,26 @@ given observation.}
 \item{V}{A \code{data.table} giving the values across all observations of all
 variables that play a role in the censoring mechanism.}
 
+\item{ipc_mech}{A \code{numeric} vector containing values that describe the
+censoring mechanism for all of the observations. Note that such values are
+estimated by regressing the censoring covariates \code{V} on the observed
+censoring \code{C} and thus correspond to predicted probabilities of being
+censored for each observation.}
+
+\item{ipc_weights}{A \code{numeric} vector of inverse probability of
+censoring weights. These are equivalent to \code{C / ipc_mech} in any
+initial run of this function. Updated values of this vector are provided as
+part of the output of this function, which may be used in subsequent calls
+that allow convergence to a more efficient estimate.}
+
+\item{ipc_weights_norm}{...}
+
 \item{Qn_estim}{A \code{data.table} corresponding to the outcome regression.
 This is produced by invoking the internal function \code{est_Q}.}
 
 \item{Hn_estim}{A \code{data.table} corresponding to values produced in the
 computation of the auxiliary ("clever") covariate. This is produced easily
 by invoking the internal function \code{est_Hn}.}
-
-\item{ipcw_mech}{A \code{numeric} vector containing values that describe the
-censoring mechanism for all of the observations. Note that such values are
-estimated by regressing the censoring covariates \code{V} on the observed
-censoring \code{C} and thus correspond to predicted probabilities of being
-censored for each observation.}
-
-\item{ipc_weights_all}{A \code{numeric} vector of inverse probability of
-censoring weights. These are equivalent to \code{C / ipcw_mech} in any
-initial run of this function. Updated values of this vector are provided as
-part of the output of this function, which may be used in subsequent calls
-that allow convergence to a more efficient estimate.}
 
 \item{fluc_method}{A \code{character} giving the type of regression to be
 used in traversing the fluctuation submodel. The choices are "weighted" and
@@ -48,7 +50,7 @@ mechanism and the efficient influence function. Choose "glm" for generalized
 linear models or "sl" for use of the Super Learner algorithm. If selecting
 the latter, the final argument \code{sl_lrnrs} must be provided.}
 
-\item{tol_eif}{A \code{numeric} providing the largest value to be tolerated
+\item{eif_tol}{A \code{numeric} providing the largest value to be tolerated
 as the mean of the efficient influence function.}
 
 \item{sl_lrnrs}{A \code{Lrnr_sl} object composed of a collection of learners

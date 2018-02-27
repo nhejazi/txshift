@@ -1,20 +1,20 @@
-#' Compute IPCW Part of the Efficient Influence Function for IPCW-TMLE
+#' Compute IPC-Weighted Component of Efficient Influence Function
 #'
 #' Computes an additional component of the efficient influence function needed
 #' for efficient estimation of IPCW-TMLEs. This takes the form:
 #' %0=P_n(\Delta-\Pi_n^*(V)))\frac{\E(D^F(P^0_{X,n})\mid\Delta=1,V)}{\Pi^*_n(V)}
 #'
-#' @param fluc_fit_out ...
-#' @param eps_updated ...
+#' @param fluc_mod_out ...
 #' @param data_in ...
+#' @param Y_all ...
 #' @param Hn ...
-#' @param Y A \code{numeric} vector of observed outcomes.
 #' @param Delta ...
 #' @param ipc_weights ...
-#' @param tol_eif ...
+#' @param ipc_weights_norm ...
+#' @param eif_tol ...
 #'
 #' @importFrom stats var
-#' @importFrom dplyr if_else
+#' @importFrom dplyr if_else add_count select mutate
 #'
 #' @keywords internal
 #'
@@ -23,73 +23,31 @@
 #' @author Nima Hejazi
 #' @author David Benkeser
 #
-tmle_eif_ipcw <- function(fluc_fit_out,
-                          eps_updated,
+tmle_eif_ipcw <- function(fluc_mod_out,
                           data_in,
+                          Y_all,
                           Hn,
-                          Y,
                           Delta,
-                          ipc_weights = rep(1, length(Y)),
-                          tol_eif = 1e-7) {
-  # # compute TMLE
-  # dat <- data.table::as.data.table(cbind(data_in, fluc_fit_out$Qn_shift_star,
-  #                                        eps_updated$qn[eps_updated$qn != 0]))
-  # data.table::setnames(dat, c("W", "A", "Y", "Qn", "qn"))
-  # dat_eif <- dat %>%
-  #   dplyr::add_count(W, round(A, 2))
+                          ipc_weights = rep(1, nrow(data_in)),
+                          ipc_weights_norm = rep(1, nrow(data_in)),
+                          eif_tol = 1e-10) {
 
-  # # find the contributions to Psi from the unique observations
-  # psi_uniq <- dat %>%
-  #   dplyr::add_count(W, round(A, 2)) %>%
-  #   dplyr::filter(n == 1) %>%
-  #   dplyr::select(Qn, qn) %>%
-  #   dplyr::transmute(
-  #     psi_uniq_obs = Qn * qn
-  #   ) %>%
-  #   unlist() %>%
-  #   as.numeric()
-
-  # # find the contributions to Psi from the non-unique observations
-  # psi_nonuniq <- dat %>%
-  #   dplyr::add_count(W, round(A, 2)) %>%
-  #   dplyr::filter(n > 1) %>%
-  #   dplyr::select(Qn, qn, n) %>%
-  #   dplyr::transmute(
-  #     # let's divide by n here since, on average, this'll catch the contribution
-  #     # as though the observation were unique (???)
-  #     psi_nonuniq_obs = (Qn * qn) / n
-  #   ) %>%
-  #   unlist() %>%
-  #   as.numeric()
-  # dat_eif$eif <- rep(NA, nrow(dat))
-  # dat_eif[dat_eif$n == 1, ]$eif <- eif_uniq
-  # dat_eif[dat_eif$n > 1, ]$eif <- eif_nonuniq
-
-  # param_obs_est[Delta == 1] <- ipc_weights * fluc_fit_out$Qn_shift_star
-  # psi <- sum(param_obs_est)
-  # find duplicated rows of data_in (removing "Y" column)
-  rm_col <- "Y"
-  dups <- duplicated(data_in[ , !rm_col, by = key(data_in), with = FALSE])
-  duplicated_idx <- which(dups)
-
-  # if no duplicates duplicated_idx == integer(0)
-  if(length(duplicated_idx) == 0){
-    psi <- sum(fluc_fit_out$Qn_shift_star * eps_updated$qn[ipc_weights > 0])
-  }else{
-    psi <- sum(fluc_fit_out$Qn_shift_star[-duplicated_idx] * eps_updated$qn[-duplicated_idx])
-  }
+  # compute TMLE of the treatment shift parameter
+  param_obs_est <- rep(0, length(Delta))
+  param_obs_est[Delta == 1] <- ipc_weights_norm * fluc_mod_out$Qn_shift_star
+  psi <- mean(param_obs_est)
 
   # compute the efficient influence function (EIF) / canonical gradient (D*)
   eif <- rep(0, length(Delta))
   eif[Delta == 1] <- ipc_weights * Hn$noshift *
-    (Y - fluc_fit_out$Qn_noshift_star) +
-    ipc_weights * (fluc_fit_out$Qn_shift_star - psi)
+    (Y_all - fluc_mod_out$Qn_noshift_star) +
+    ipc_weights * (fluc_mod_out$Qn_shift_star - psi)
 
   # sanity check on EIF
   # NOTE: EIF ~ N(0, V(D(P)(o))), so mean(EIF) ~= 0
   eif_msg <- dplyr::if_else(
-    abs(mean(eif)) < tol_eif,
-    paste("EIF mean <", tol_eif, "(sufficiently low)."),
+    abs(mean(eif)) < eif_tol,
+    paste("EIF mean <", eif_tol, "(sufficiently low)."),
     paste(
       "EIF mean =", mean(eif),
       "(higher than expected)."

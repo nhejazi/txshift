@@ -29,15 +29,12 @@
 #'  (EIF) to be used in declaring convergence (theoretically, should be zero).
 #' @param max_iter A \code{numeric} integer giving the maximum number of steps
 #'  to be taken in iterating to a solution of the efficient influence function.
-#' @param mod_args A nested \code{list} of \code{list}s that specifies arguments
-#'  to be passed to the various internal functions for the estimation procedure.
-#'  Each of sub-list corresponds to a single internal function. As such, for
-#'  details on (1) \code{ipcw_fit}, see the documentation of \code{est_ipcw};
-#'  (2) \code{g_fit}, see the documentation of \code{est_g}; (3) \code{Q_fit},
-#'  see the documentation for \code{est_Q}.
+#' @param ipcw_fit_args ...
+#' @param g_fit_args ...
+#' @param Q_fit_args ...
 #'
 #' @importFrom condensier speedglmR6
-#' @importFrom data.table as.data.table
+#' @importFrom data.table as.data.table setnames
 #' @importFrom tibble as_tibble
 #' @importFrom stringr str_detect
 #' @importFrom dplyr filter select "%>%"
@@ -108,7 +105,7 @@ tmle_txshift <- function(W,
     )
     # compute the IPC weights by passing all args to the relevant function
     ipcw_out <- do.call(est_ipcw, ipcw_estim_args)
-    cens_weights <- ipcw_out$ipc_weights
+    cens_weights <- ipcw_out$ipc_weights  # TODO: normalize?
     data_internal <- tibble::as_tibble(list(W = W, A = A, C = C, Y = Y)) %>%
       dplyr::filter(C == 1) %>%
       dplyr::select(-C) %>%
@@ -175,7 +172,14 @@ tmle_txshift <- function(W,
     n_steps <- 0
     eif_mean <- Inf
     conv_res <- rep(NA, max_iter)
-    cens_weights_full <- C / ipcw_out$pi_mech
+
+    # normalize censoring mechanism weights (to be overwritten)
+    cens_weights <- C / ipcw_out$pi_mech
+    cens_weights_norm <- cens_weights / sum(cens_weights)
+
+    # quantities to be updated in iterative procedure (to be overwritten)
+    pi_mech_star <- ipcw_out$pi_mech
+    Qn_estim_use <- Qn_estim
 
     # iterate procedure until convergence conditions are satisfied
     while (abs(eif_mean) > eif_tol & n_steps < max_iter) {
@@ -187,24 +191,36 @@ tmle_txshift <- function(W,
         data_in = data_internal,
         C = C,
         V = V,
-        ipcw_mech = ipcw_out$pi_mech,
-        ipc_weights_all = cens_weights_full,
-        Qn_estim = Qn_estim,
+        ipc_mech = pi_mech_star,
+        ipc_weights = cens_weights,
+        ipc_weights_norm = cens_weights_norm,
+        Qn_estim = Qn_estim_use,
         Hn_estim = Hn_estim,
         fluc_method = fluc_method,
         fit_type = ipcw_fit_type,
-        tol_eif = eif_tol,
+        eif_tol = eif_tol,
         sl_lrnrs = ipcw_fit_args$sl_lrnrs
       )
 
+      # overwrite/update quantities to be used in next iteration
+      Qn_estim_use <- data.table::as.data.table(
+        list(
+          ipcw_tmle_comp$fluc_mod_out$Qn_noshift_star,
+          ipcw_tmle_comp$fluc_mod_out$Qn_shift_star
+        )
+      )
+      data.table::setnames(Qn_estim_use, names(Qn_estim))
+      cens_weights <- ipcw_tmle_comp$ipc_weights
+      cens_weights_norm <- ipcw_tmle_comp$ipc_weights_norm
+      pi_mech_star <- ipcw_tmle_comp$pi_mech_star
+
       # compute updated mean of efficient influence function and save
-      cens_weights_full <- ipcw_tmle_comp$ipc_weights
       eif_mean <- mean(ipcw_tmle_comp$tmle_eif$eif) - ipcw_tmle_comp$ipcw_eif
       conv_res[n_steps] <- eif_mean
     }
-    ##############################################################################
-    # standard TMLE of the shift parameter / inefficient IPCW-TMLE
-    ##############################################################################
+  ##############################################################################
+  # standard TMLE of the shift parameter / inefficient IPCW-TMLE
+  ##############################################################################
   } else {
     # fit logistic regression to fluctuate along the sub-model
     fitted_fluc_mod <- fit_fluc(
