@@ -178,7 +178,7 @@ tmle_txshift <- function(W,
     # Efficient implementation of the IPCW-TMLE
     n_steps <- 0
     eif_mean <- Inf
-    conv_res <- rep(NA, max_iter)
+    conv_res <- replicate(3, rep(NA, max_iter))
 
     # normalize censoring mechanism weights (to be overwritten)
     cens_weights <- C / ipcw_out$pi_mech
@@ -190,7 +190,7 @@ tmle_txshift <- function(W,
 
     # figure out columns of internal data structure used for censoring
     # this is a horribly ugly HACK that solves a naming problem...
-    V_cols <- matrix(NaN, nrow = ncol(V_in), ncol = ncol(data_internal))
+    V_cols <- matrix(NA, nrow = ncol(V_in), ncol = ncol(data_internal))
     for (i in seq_along(V_in)) {
       V_cols[i, ] <- stringr::str_detect(colnames(V_in)[i],
                                          colnames(data_internal))
@@ -225,7 +225,8 @@ tmle_txshift <- function(W,
       y_min <- min(Y); y_max <- max(Y)
       Qn_estim_use <- data.table::as.data.table(
         list(
-          (ipcw_tmle_comp$fluc_mod_out$Qn_noshift_star - y_min) / (y_max - y_min),
+          (ipcw_tmle_comp$fluc_mod_out$Qn_noshift_star - y_min) /
+            (y_max - y_min),
           (ipcw_tmle_comp$fluc_mod_out$Qn_shift_star - y_min) / (y_max - y_min)
         )
       )
@@ -236,8 +237,11 @@ tmle_txshift <- function(W,
 
       # compute updated mean of efficient influence function and save
       eif_mean <- mean(ipcw_tmle_comp$tmle_eif$eif) - ipcw_tmle_comp$ipcw_eif
-      conv_res[n_steps] <- eif_mean
+      conv_res[n_steps, ] <- c(ipcw_tmle_comp$tmle_eif$psi,
+                               ipcw_tmle_comp$tmle_eif$var, eif_mean)
     }
+    conv_results <- data.table::as.data.table(conv_res)
+    data.table::setnames(conv_results, c("psi", "var", "eif_mean"))
   ##############################################################################
   # standard TMLE of the shift parameter / inefficient IPCW-TMLE
   ##############################################################################
@@ -265,12 +269,12 @@ tmle_txshift <- function(W,
   ##############################################################################
   if (any(unique(C) == 1) & !is.null(V)) {
     # return only the useful convergence results
-    conv_res_out <- conv_res[!is.na(conv_res)]
+    conv_results_out <- conv_results[!is.na(rowSums(conv_results)), ]
     txshift_out <- unlist(
       list(
         call = call,
         ipcw_tmle_comp$tmle_eif,
-        eif_conv = list(conv_res_out)
+        iter_res = list(conv_results_out)
       ),
       recursive = FALSE
     )

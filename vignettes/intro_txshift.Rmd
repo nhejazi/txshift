@@ -89,7 +89,7 @@ tmle_glm_shift_1 <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
                                  Q_fit_args = list(fit_type = "glm",
                                                    glm_formula = "Y ~ .")
                                 )
-tmle_glm_shift_1
+summary(tmle_glm_shift_1)
 ```
 
 When computing any such TML estimator, we may, of course, vary the regressions
@@ -110,7 +110,7 @@ tmle_glm_shift_2 <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
                                  Q_fit_args = list(fit_type = "glm",
                                                    glm_formula = "Y ~ .")
                                 )
-tmle_glm_shift_2
+summary(tmle_glm_shift_2)
 ```
 
 ### Interlude: Constructing Super Learners with `sl3`
@@ -149,7 +149,7 @@ tmle_sl_shift_1 <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
                                 Q_fit_args = list(fit_type = "sl",
                                                   sl_lrnrs = sl_lrn)
                                )
-tmle_sl_shift_1
+summary(tmle_sl_shift_1)
 ```
 
 As before, we may vary the regression for the submodel fluctuation procedure by
@@ -165,7 +165,7 @@ tmle_sl_shift_2 <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
                                 Q_fit_args = list(fit_type = "sl",
                                                   sl_lrnrs = sl_lrn)
                                )
-tmle_sl_shift_2
+summary(tmle_sl_shift_2)
 ```
 
 ### Statistical Inference for Targeted Maximum Likelihood Estimates
