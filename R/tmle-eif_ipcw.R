@@ -6,7 +6,6 @@
 #'
 #' @param fluc_mod_out ...
 #' @param data_in ...
-#' @param Y_all ...
 #' @param Hn ...
 #' @param Delta ...
 #' @param ipc_weights ...
@@ -25,7 +24,6 @@
 #
 tmle_eif_ipcw <- function(fluc_mod_out,
                           data_in,
-                          Y_all,
                           Hn,
                           Delta,
                           ipc_weights = rep(1, nrow(data_in)),
@@ -40,7 +38,7 @@ tmle_eif_ipcw <- function(fluc_mod_out,
   # compute the efficient influence function (EIF) / canonical gradient (D*)
   eif <- rep(0, length(Delta))
   eif[Delta == 1] <- ipc_weights * Hn$noshift *
-    (Y_all - fluc_mod_out$Qn_noshift_star) +
+    (data_in$Y - fluc_mod_out$Qn_noshift_star) +
     ipc_weights * (fluc_mod_out$Qn_shift_star - psi)
 
   # sanity check on EIF

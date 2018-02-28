@@ -5,7 +5,7 @@
 \title{Compute Targeted Maximum Likelihood Estimate for Treatment Shift Parameter}
 \usage{
 tmle_txshift(W, A, Y, C = rep(1, length(Y)), V = NULL, delta = 0,
-  fluc_method = c("standard", "weighted"), eif_tol = 1e-09,
+  fluc_method = c("standard", "weighted"), eif_tol = 1/length(Y),
   max_iter = 10000, ipcw_fit_args = list(fit_type = c("glm", "sl"),
   glm_formula = "Delta ~ .", sl_lrnrs = NULL), g_fit_args = list(fit_type =
   c("glm", "sl"), nbins = 35, bin_method = "dhist", bin_estimator =

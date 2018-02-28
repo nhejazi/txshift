@@ -13,11 +13,6 @@ vignette: >
 
 ```{r, echo=FALSE}
 options(scipen = 999)
-install.packages("~/Dropbox/R/txshift/", type = "source", repos = NULL)
-# library(here)
-# install.packages(here(), type = "source", repos = NULL)
-# devtools::install_github("nhejazi/condensier", ref = "weights")
-# devtools::install_github("jeremyrcoyle/sl3")
 ```
 
 ## Introduction
@@ -66,11 +61,6 @@ Y <- A + W + rnorm(n_obs, mean = 0, sd = 1)
 
 # censoring based on covariates
 C <- rbinom(n_obs, 1, plogis(W))
-
-# introduce a couple duplicates to make sure it is working properly
-A[W == 0 & C == 1][2] <- A[W == 0 & C == 1][1]
-A[W == 0 & C == 1][3] <- A[W == 0 & C == 1][1]
-A[W == 1 & C == 1][2] <- A[W == 1 & C == 1][1]
 ```
 
 ---
@@ -83,11 +73,10 @@ Comments about this estimation procedure...
 
 ```{r}
 tmle_glm_shift_1 <- tmle_txshift(W = W, A = A, Y = Y,
-                                 C = C, V = list(W = W, Y = Y),
+                                 C = C, V = c("W", "Y"),
                                  delta = 0.5,
                                  fluc_method = "standard",
                                  max_iter = 10,
-                                 eif_tol = 1/length(Y),
                                  ipcw_fit_args = list(fit_type = "glm",
                                                       glm_formula = "Delta ~ ."),
                                  g_fit_args = list(fit_type = "glm", nbins = 35,
@@ -109,7 +98,7 @@ details on the potential benefits this approach may confer.
 
 ```{r}
 tmle_glm_shift_2 <- tmle_txshift(W = W, A = A, Y = Y,
-                                 C = C, V = list(W = W, Y = Y),
+                                 C = C, V = c("W", "Y"),
                                  delta = 0.5,
                                  fluc_method = "weighted",
                                  max_iter = 10,
@@ -154,7 +143,7 @@ framework of the Super Learner algorithm of [INSERT REF].
 
 ```{r}
 tmle_sl_shift_1 <- tmle_txshift(W = W, A = A, Y = Y,
-                                C = C, V = list(W = W, Y = Y),
+                                C = C, V = c("W", "Y"),
                                 delta = 0.5,
                                 fluc_method = "standard",
                                 max_iter = 10,
@@ -174,7 +163,7 @@ than using such an auxiliary covariate directly in the regression procedure:
 
 ```{r}
 tmle_sl_shift_2 <- tmle_txshift(W = W, A = A, Y = Y,
-                                C = C, V = list(W = W, Y = Y),
+                                C = C, V = c("W", "Y"),
                                 delta = 0.5,
                                 fluc_method = "weighted",
                                 max_iter = 10,

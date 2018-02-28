@@ -93,12 +93,8 @@ A <- as.numeric(rnorm(n_obs, mean = tx_mult * W, sd = 1))
 # create outcome as a linear function of A, W + white noise
 Y <- A + W + rnorm(n_obs, mean = 0, sd = 1)
 
-# induce censoring
-C <- rbinom(n_obs, 1, plogis(W))
-
 # fit the TMLE
 tmle_shift <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
-                           fluc_method = "standard",
                            g_fit = list(fit_type = "glm",
                                         nbins = 25,  bin_method = "dhist",
                                         bin_estimator = speedglmR6$new(),

@@ -35,7 +35,6 @@
 #'
 #' @importFrom condensier speedglmR6
 #' @importFrom data.table as.data.table setnames
-#' @importFrom tibble as_tibble
 #' @importFrom stringr str_detect
 #' @importFrom dplyr filter select "%>%"
 #'
@@ -51,7 +50,7 @@ tmle_txshift <- function(W,
                          V = NULL,
                          delta = 0,
                          fluc_method = c("standard", "weighted"),
-                         eif_tol = 1/length(Y),
+                         eif_tol = 1 / length(Y),
                          max_iter = 1e4,
                          ipcw_fit_args = list(
                            fit_type = c("glm", "sl"),
@@ -89,17 +88,19 @@ tmle_txshift <- function(W,
   g_fit_args <- g_fit_args[names(g_fit_args) != "fit_type"]
   Q_fit_args <- Q_fit_args[names(Q_fit_args) != "fit_type"]
 
+  # coerce W to matrix and, if no names in W, assign them generically
+  if (!is.matrix(W)) W <- as.matrix(W)
+  W_names <- colnames(W)
+  if (is.null(W_names)) {
+    W_names <- paste0("W", seq_len(ncol(W)))
+    colnames(W) <- W_names
+  }
+
   ##############################################################################
   # perform sub-setting of data and implement IPC weighting if required
   ##############################################################################
-  # if no names in W, assign
-  W_names <- colnames(W)
-  if(is.null(W_names)){
-    W_names <- paste0("W",seq_len(ncol(W)))
-    colnames(W) <- W_names
-  }
   if (any(unique(C) == 1) & !is.null(V)) {
-    V_in <- data.table::as.data.table(V)
+    V_in <- data.table::as.data.table(mget(V))
     ipcw_estim_in <- list(
       V = V_in, Delta = C,
       fit_type = ipcw_fit_type
@@ -111,8 +112,8 @@ tmle_txshift <- function(W,
     )
     # compute the IPC weights by passing all args to the relevant function
     ipcw_out <- do.call(est_ipcw, ipcw_estim_args)
-    cens_weights <- ipcw_out$ipc_weights  # TODO: normalize?
-    data_internal <- tibble::as_tibble(list(W, A = A, C = C, Y = Y)) %>%
+    cens_weights <- ipcw_out$ipc_weights
+    data_internal <- data.table::as.data.table(list(W, A = A, C = C, Y = Y)) %>%
       dplyr::filter(C == 1) %>%
       dplyr::select(-C) %>%
       data.table::as.data.table()
@@ -127,7 +128,7 @@ tmle_txshift <- function(W,
   ##############################################################################
   gn_estim_in <- list(
     A = data_internal$A,
-    W = data_internal[,..W_names],
+    W = data_internal[, W_names, with = FALSE],
     delta = delta,
     ipc_weights = cens_weights,
     fit_type = g_fit_type
@@ -155,7 +156,7 @@ tmle_txshift <- function(W,
   Qn_estim_in <- list(
     Y = data_internal$Y,
     A = data_internal$A,
-    W = data_internal[,..W_names],
+    W = data_internal[, W_names, with = FALSE],
     delta = delta,
     ipc_weights = cens_weights,
     fit_type = Q_fit_type
@@ -187,6 +188,16 @@ tmle_txshift <- function(W,
     pi_mech_star <- ipcw_out$pi_mech
     Qn_estim_use <- Qn_estim
 
+    # figure out columns of internal data structure used for censoring
+    # this is a horribly ugly HACK that solves a naming problem...
+    V_cols <- matrix(NaN, nrow = ncol(V_in), ncol = ncol(data_internal))
+    for (i in seq_along(V_in)) {
+      V_cols[i, ] <- stringr::str_detect(colnames(V_in)[i],
+                                         colnames(data_internal))
+    }
+    V_mask <- as.logical(colSums(V_cols))
+    colnames(V_in) <- colnames(data_internal[, which(V_mask), with = FALSE])
+
     # iterate procedure until convergence conditions are satisfied
     while (abs(eif_mean) > eif_tol & n_steps < max_iter) {
       # iterate counter
@@ -196,7 +207,7 @@ tmle_txshift <- function(W,
       ipcw_tmle_comp <- ipcw_tmle_proc(
         data_in = data_internal,
         C = C,
-        V = V,
+        V = V_in,
         ipc_mech = pi_mech_star,
         ipc_weights = cens_weights,
         ipc_weights_norm = cens_weights_norm,
@@ -210,12 +221,12 @@ tmle_txshift <- function(W,
 
       # overwrite/update quantities to be used in next iteration
       # NOTE FOR NIMA: don't know if you have a function to do this 
-      # rescaling or not
-      ymin <- min(Y); ymax <- max(Y)
+      # rescaling or not (hmm, there is but it's too dumb to handle this...)
+      y_min <- min(Y); y_max <- max(Y)
       Qn_estim_use <- data.table::as.data.table(
         list(
-          (ipcw_tmle_comp$fluc_mod_out$Qn_noshift_star - ymin)/(ymax - ymin),
-          (ipcw_tmle_comp$fluc_mod_out$Qn_shift_star - ymin)/(ymax - ymin)
+          (ipcw_tmle_comp$fluc_mod_out$Qn_noshift_star - y_min) / (y_max - y_min),
+          (ipcw_tmle_comp$fluc_mod_out$Qn_shift_star - y_min) / (y_max - y_min)
         )
       )
       data.table::setnames(Qn_estim_use, names(Qn_estim))
