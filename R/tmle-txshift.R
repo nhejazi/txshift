@@ -236,9 +236,10 @@ tmle_txshift <- function(W,
       pi_mech_star <- ipcw_tmle_comp$pi_mech_star
 
       # compute updated mean of efficient influence function and save
-      eif_mean <- mean(ipcw_tmle_comp$tmle_eif$eif) - ipcw_tmle_comp$ipcw_eif
+      eif_mean <- mean(ipcw_tmle_comp$tmle_eif$eif - ipcw_tmle_comp$ipcw_eif)
+      eif_var <- var(ipcw_tmle_comp$tmle_eif$eif - ipcw_tmle_comp$ipcw_eif) / length(C)
       conv_res[n_steps, ] <- c(ipcw_tmle_comp$tmle_eif$psi,
-                               ipcw_tmle_comp$tmle_eif$var, eif_mean)
+                               eif_var, eif_mean)
     }
     conv_results <- data.table::as.data.table(conv_res)
     data.table::setnames(conv_results, c("psi", "var", "eif_mean"))
@@ -257,6 +258,7 @@ tmle_txshift <- function(W,
     # compute TML estimate and EIF for the treatment shift parameter
     tmle_eif_out <- tmle_eif(
       fluc_fit_out = fitted_fluc_mod,
+      Delta = Delta,
       Hn = Hn_estim,
       Y = data_internal$Y,
       ipc_weights = cens_weights,
@@ -268,6 +270,8 @@ tmle_txshift <- function(W,
   # create output object
   ##############################################################################
   if (any(unique(C) == 1) & !is.null(V)) {
+    # replace variance in this object with the correct variance
+    ipcw_tmle_comp$tmle_eif$var <- eif_var
     # return only the useful convergence results
     conv_results_out <- conv_results[!is.na(rowSums(conv_results)), ]
     txshift_out <- unlist(
