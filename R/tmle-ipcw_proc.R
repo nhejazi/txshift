@@ -162,7 +162,7 @@ ipcw_tmle_proc <- function(data_in,
   ipcw_fluc_pred <- stats::fitted(ipcw_fluc) %>% as.numeric()
 
   # this is the mean of the second half of the EIF (for censoring bit...)
-  ipcw_eif_out <- mean((C - ipcw_fluc_pred) * (eif_pred / ipcw_fluc_pred))
+  ipcw_eif_out <- (C - ipcw_fluc_pred) * (eif_pred / ipcw_fluc_pred)
 
   # sanity check: score of the logistic regression fluctuation model
   ipc_check <- mean((C - ipcw_fluc_pred) * (eif_pred / ipc_mech))
