@@ -70,16 +70,16 @@ est_Q <- function(Y,
     # fit a logistic regression for the (scaled) outcome
     suppressWarnings(
       fit_Qn <- stats::glm(
-        stats::as.formula(glm_formula),
-        data = data_in,
+        formula = stats::as.formula(glm_formula),
         family = "binomial",
+        data = data_in,
         weights = ipc_weights
       )
     )
 
     # predict Qn for the un-shifted data (A = a)
     pred_star_Qn <- stats::predict(
-      fit_Qn,
+      object = fit_Qn,
       newdata = data_in,
       type = "response"
     ) %>%
@@ -87,7 +87,7 @@ est_Q <- function(Y,
 
     # predict Qn for the shifted data (A = a + delta)
     pred_star_Qn_shifted <- stats::predict(
-      fit_Qn,
+      object = fit_Qn,
       newdata = data_in_shifted,
       type = "response"
     ) %>%

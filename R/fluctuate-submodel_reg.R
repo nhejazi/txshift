@@ -35,7 +35,7 @@ fit_fluc <- function(Y,
     # note that \epsilon_n will be the coefficient of the covariate Hn
     suppressWarnings(
       mod_fluc <- stats::glm(
-        stats::as.formula(
+        formula = stats::as.formula(
           "y_star ~ -1 + offset(logit_Qn) + Hn"
         ),
         weights = ipc_weights,
@@ -51,7 +51,7 @@ fit_fluc <- function(Y,
     # note that \epsilon_n will be the intercept term here
     suppressWarnings(
       mod_fluc <- stats::glm(
-        stats::as.formula("y_star ~ offset(logit_Qn)"),
+        formula = stats::as.formula("y_star ~ offset(logit_Qn)"),
         data = data.table::as.data.table(list(
           y_star = y_star,
           logit_Qn = logit_Qn
@@ -76,11 +76,10 @@ fit_fluc <- function(Y,
 
   # get Qn_star for the SHIFTED data
   if (method == "standard") {
-    Qn_shift_star_in <- data.table::as.data.table(cbind(
-      Qn_shift_logit,
-      Hn$shift
+    Qn_shift_star_in <- data.table::as.data.table(list(
+      logit_Qn = Qn_shift_logit,
+      Hn = Hn$shift
     ))
-    data.table::setnames(Qn_shift_star_in, c("logit_Qn", "Hn"))
 
     # predict from fluctuation model on Q(d(A,W),W) and Hn(d(A,W))
     Qn_shift_star_pred <- stats::predict(
