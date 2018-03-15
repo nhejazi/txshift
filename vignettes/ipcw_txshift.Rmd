@@ -37,8 +37,8 @@ TODO: ADD STUFF ON CENSORING
 1. Start with a simple additive shift -- i.e., $d(a,w) = a + \delta$ if
    $a < u(w) - \delta$ or $d(a, w) = a$ if $a \geq u(w) - \delta$.
 
-2. The additive shift will have support everywhere -- i.e., $a < u(w)$ is true
-   everywhere.
+2. The additive shift will have support everywhere -- i.e.,
+   $a < u(w)$ is true everywhere.
 
 3. The data structure that we know and love $O = (W, A, Y)$.
 

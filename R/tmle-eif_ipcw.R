@@ -63,4 +63,3 @@ tmle_eif_ipcw <- function(fluc_mod_out,
   out <- list(psi = psi, var = var_eif, eif = eif, msg = eif_msg)
   return(out)
 }
-

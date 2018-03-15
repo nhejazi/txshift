@@ -117,7 +117,8 @@ ipcw_tmle_proc <- function(data_in,
     # create task of full data (censoring variables only) for prediction
     eif_pred_task <- sl3::sl3_Task$new(
       data = data.table::set(
-        data.table::as.data.table(V), j = "eif",
+        data.table::as.data.table(V),
+        j = "eif",
         value = rep(NaN, unique(lapply(V, length)))
       ),
       covariates = names(V),
@@ -166,7 +167,7 @@ ipcw_tmle_proc <- function(data_in,
 
   # sanity check: score of the logistic regression fluctuation model
   ipc_check <- mean((C - ipcw_fluc_pred) * (eif_pred / ipc_mech))
-  #stopifnot(ipc_check < eif_tol)
+  # stopifnot(ipc_check < eif_tol)
 
   # so, now we need weights to feed back into the previous steps
   ipc_weights <- C / ipcw_fluc_pred
@@ -193,4 +194,3 @@ ipcw_tmle_proc <- function(data_in,
     ipcw_eif = ipcw_eif_out
   ))
 }
-
