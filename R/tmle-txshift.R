@@ -99,7 +99,7 @@ tmle_txshift <- function(W,
   ##############################################################################
   # perform sub-setting of data and implement IPC weighting if required
   ##############################################################################
-  if (any(unique(C) == 1) & !is.null(V)) {
+  if (any(unique(C) != 1) & !is.null(V)) {
     V_in <- data.table::as.data.table(mget(V))
     ipcw_estim_in <- list(
       V = V_in, Delta = C,
@@ -174,7 +174,7 @@ tmle_txshift <- function(W,
   ##############################################################################
   # invoke efficient IPCW-TMLE, per Rose & van der Laan (2011), if necessary
   ##############################################################################
-  if (any(unique(C) == 1) & !is.null(V)) {
+  if (any(unique(C) != 1) & !is.null(V)) {
     # Efficient implementation of the IPCW-TMLE
     n_steps <- 0
     eif_mean <- Inf
@@ -237,9 +237,9 @@ tmle_txshift <- function(W,
 
       # compute updated mean of efficient influence function and save
       eif_mean <- mean(ipcw_tmle_comp$tmle_eif$eif - ipcw_tmle_comp$ipcw_eif)
-      eif_var <- var(ipcw_tmle_comp$tmle_eif$eif - ipcw_tmle_comp$ipcw_eif) / length(C)
-      conv_res[n_steps, ] <- c(ipcw_tmle_comp$tmle_eif$psi,
-                               eif_var, eif_mean)
+      eif_var <- var(ipcw_tmle_comp$tmle_eif$eif - ipcw_tmle_comp$ipcw_eif) /
+        length(C)
+      conv_res[n_steps, ] <- c(ipcw_tmle_comp$tmle_eif$psi, eif_var, eif_mean)
     }
     conv_results <- data.table::as.data.table(conv_res)
     data.table::setnames(conv_results, c("psi", "var", "eif_mean"))
@@ -257,8 +257,8 @@ tmle_txshift <- function(W,
     )
     # compute TML estimate and EIF for the treatment shift parameter
     tmle_eif_out <- tmle_eif(
-      fluc_fit_out = fitted_fluc_mod,
-      Delta = Delta,
+      fluc_mod_out = fitted_fluc_mod,
+      Delta = C,
       Hn = Hn_estim,
       Y = data_internal$Y,
       ipc_weights = cens_weights,
@@ -269,7 +269,7 @@ tmle_txshift <- function(W,
   ##############################################################################
   # create output object
   ##############################################################################
-  if (any(unique(C) == 1) & !is.null(V)) {
+  if (any(unique(C) != 1) & !is.null(V)) {
     # replace variance in this object with the correct variance
     ipcw_tmle_comp$tmle_eif$var <- eif_var
     # return only the useful convergence results
