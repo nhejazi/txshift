@@ -47,6 +47,15 @@
 #'  that argument for details on how to properly use this. In general, this
 #'  should only be used by advanced users familiar with both the underlying
 #'  theory and this software implementation of said theory.
+#' @param eif_reg_spec Whether a flexible function ought to be used in the
+#'  computation of a targeting step for the censored data case. By default, the
+#'  assumed regression is a simple linear model. If set to \code{TRUE}, then a
+#'  nonparametric regression based on the Highly Adaptive LASSO (from package
+#'  \code{hal9001}) is used instead. In this step, the efficient influence
+#'  function (EIF) is regressed against the covariates that contribute to the
+#'  censoring mechanism (i.e., EIF ~ V | C = 1). In general, this should only be
+#'  used by advanced users familiar with both the underlying theory and this
+#'  software implementation of said theory.
 #'
 #' @importFrom condensier speedglmR6
 #' @importFrom data.table as.data.table setnames
@@ -88,7 +97,8 @@ tmle_txshift <- function(W,
                          ),
                          ipcw_fit_spec = NULL,
                          gn_fit_spec = NULL,
-                         Qn_fit_spec = NULL) {
+                         Qn_fit_spec = NULL,
+                         eif_reg_spec = FALSE) {
   ##############################################################################
   # TODO: check arguments and set up some objects for programmatic convenience
   ##############################################################################
@@ -251,7 +261,8 @@ tmle_txshift <- function(W,
         fluc_method = fluc_method,
         fit_type = ipcw_fit_type,
         eif_tol = eif_tol,
-        sl_lrnrs = ipcw_fit_args$sl_lrnrs
+        sl_lrnrs = ipcw_fit_args$sl_lrnrs,
+        eif_reg_spec = eif_reg_spec
       )
 
       # overwrite/update quantities to be used in next iteration

@@ -232,27 +232,24 @@ the sequel
 
 ```{r}
 # compute treatment mechanism (propensity score) externally
-## first, initialize and produce the downshifted treatment data
-gn_downshift <- rep(NaN, length(A))
-gn_downshift[W == 1] <- dnorm(A[W == 1] - delta, mean = tx_mult, sd = 1)
-gn_downshift[W == 0] <- dnorm(A[W == 0] - delta, mean = 0, sd = 1)
-## next, initialize and produce the upshifted treatment data
-gn_upshift <- rep(NaN, length(A))
-gn_upshift[W == 1] <- dnorm(A[W == 1] + delta, mean = tx_mult, sd = 1)
-gn_upshift[W == 0] <- dnorm(A[W == 0] + delta, mean = 0, sd = 1)
-## then, initialize and produce the unshifted treatment data
-gn_noshift <- rep(NaN, length(A))
-gn_noshift[W == 1] <- dnorm(A[W == 1], mean = tx_mult, sd = 1)
-gn_noshift[W == 0] <- dnorm(A[W == 0], mean = 0, sd = 1)
-## finally, put it all together into an object like those prodcued internally
+## first, produce the down-shifted treatment data
+gn_downshift <- dnorm(A - delta, mean = tx_mult * W, sd = 1)
+## next, initialize and produce the up-shifted treatment data
+gn_upshift <- dnorm(A + delta, mean = tx_mult * W, sd = 1)
+## then, initialize and produce the un-shifted treatment data
+gn_noshift <- dnorm(A, mean = tx_mult * W, sd = 1)
+## finally, put it all together into an object like what's produced internally
 gn_out <- as.data.table(cbind(gn_downshift, gn_noshift, gn_upshift))
 setnames(gn_out, c("downshift", "noshift", "upshift"))
 
 # compute outcome regression externally
-Qn_noshift <- W + A
-Qn_upshift <- W + A + delta
-Qn_out <- bound_scaling(as.data.table(cbind(Qn_noshift, Qn_upshift)),
-                                      scale = "zero_one")
+Qn_noshift <- (W + A - min(Y)) / diff(range(Y))
+Qn_upshift <- (W + A + delta - min(Y)) / diff(range(Y))
+Qn_noshift[Qn_noshift < 0] <- .Machine$double.neg.eps
+Qn_noshift[Qn_noshift > 1] <- 1 - .Machine$double.neg.eps
+Qn_upshift[Qn_upshift < 0] <- .Machine$double.neg.eps
+Qn_upshift[Qn_upshift > 1] <- 1 - .Machine$double.neg.eps
+Qn_out <- as.data.table(cbind(Qn_noshift, Qn_upshift))
 setnames(Qn_out, c("noshift", "upshift"))
 
 # invoke the wrapper function only to apply the targeting step
@@ -263,7 +260,7 @@ tmle_shift_user <- tmle_txshift(W = W, A = A, Y = Y, delta = delta,
                                 Q_fit_args = list(fit_type = "glm"),
                                 gn_fit_spec = gn_out,
                                 Qn_fit_spec = Qn_out)
-
+summary(tmle_shift_user)
 ```
 
 ---

@@ -29,7 +29,8 @@ Imports:
     stringr,
     data.table,
     condensier,
-    sl3
+    sl3,
+    hal9001
 Suggests:
     testthat,
     knitr,
@@ -37,7 +38,8 @@ Suggests:
     tidyverse
 Remotes:
     github::osofr/condensier@weights,
-    github::jeremyrcoyle/sl3
+    github::jeremyrcoyle/sl3,
+    github::jeremyrcoyle/hal9001
 License: MIT + file LICENSE
 URL: https://github.com/nhejazi/txshift
 BugReports: https://github.com/nhejazi/txshift/issues
