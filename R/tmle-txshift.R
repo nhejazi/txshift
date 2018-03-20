@@ -32,6 +32,21 @@
 #' @param ipcw_fit_args ...
 #' @param g_fit_args ...
 #' @param Q_fit_args ...
+#' @param ipcw_fit_spec User-specified version of the argument above for fitting
+#'  the censoring mechanism (\code{ipcw_fit_args}). Consult the documentation
+#'  for that argument for details on how to properly use this. In general, this
+#'  should only be used by advanced users familiar with both the underlying
+#'  theory and this software implementation of said theory.
+#' @param gn_fit_spec User-specified version of the argument above for fitting
+#'  the censoring mechanism (\code{g_fit_args}). Consult the documentation for
+#'  that argument for details on how to properly use this. In general, this
+#'  should only be used by advanced users familiar with both the underlying
+#'  theory and this software implementation of said theory.
+#' @param Qn_fit_spec User-specified version of the argument above for fitting
+#'  the censoring mechanism (\code{Q_fit_args}). Consult the documentation for
+#'  that argument for details on how to properly use this. In general, this
+#'  should only be used by advanced users familiar with both the underlying
+#'  theory and this software implementation of said theory.
 #'
 #' @importFrom condensier speedglmR6
 #' @importFrom data.table as.data.table setnames
@@ -70,7 +85,10 @@ tmle_txshift <- function(W,
                            fit_type = c("glm", "sl"),
                            glm_formula = "Y ~ .",
                            sl_lrnrs = NULL
-                         )) {
+                         ),
+                         ipcw_fit_spec = NULL,
+                         gn_fit_spec = NULL,
+                         Qn_fit_spec = NULL) {
   ##############################################################################
   # TODO: check arguments and set up some objects for programmatic convenience
   ##############################################################################
@@ -114,7 +132,11 @@ tmle_txshift <- function(W,
       recursive = FALSE
     )
     # compute the IPC weights by passing all args to the relevant function
-    ipcw_out <- do.call(est_ipcw, ipcw_estim_args)
+    if (is.null(ipcw_fit_spec)) {
+      ipcw_out <- do.call(est_ipcw, ipcw_estim_args)
+    } else {
+      ipcw_out <- ipcw_fit_spec
+    }
     cens_weights <- ipcw_out$ipc_weights
     data_internal <- data.table::as.data.table(list(W, A = A, C = C, Y = Y)) %>%
       dplyr::filter(C == 1) %>%
@@ -129,45 +151,53 @@ tmle_txshift <- function(W,
   ##############################################################################
   # initial estimate of the treatment mechanism (propensity score)
   ##############################################################################
-  gn_estim_in <- list(
-    A = data_internal$A,
-    W = data_internal[, W_names, with = FALSE],
-    delta = delta,
-    ipc_weights = cens_weights,
-    fit_type = g_fit_type
-  )
-  if (g_fit_type == "glm") {
-    # since fitting a GLM, can safely remove all args related to SL
-    g_fit_args <- g_fit_args[!stringr::str_detect(names(g_fit_args), "sl")]
-    # reshape args to a list suitable to be passed to do.call
-    gn_estim_args <- unlist(
-      list(gn_estim_in, std_args = list(g_fit_args)),
-      recursive = FALSE
+  if (is.null(gn_fit_spec)) {
+    gn_estim_in <- list(
+      A = data_internal$A,
+      W = data_internal[, W_names, with = FALSE],
+      delta = delta,
+      ipc_weights = cens_weights,
+      fit_type = g_fit_type
     )
-  } else {
-    # if fitting SL, we can discard all the standard condensier-related args
-    g_fit_args <- g_fit_args[stringr::str_detect(names(g_fit_args), "sl")]
-    # reshapes list of args to make passing to do.call possible
-    gn_estim_args <- unlist(list(gn_estim_in, g_fit_args), recursive = FALSE)
-  }
+    if (g_fit_type == "glm") {
+      # since fitting a GLM, can safely remove all args related to SL
+      g_fit_args <- g_fit_args[!stringr::str_detect(names(g_fit_args), "sl")]
+      # reshape args to a list suitable to be passed to do.call
+      gn_estim_args <- unlist(
+        list(gn_estim_in, std_args = list(g_fit_args)),
+        recursive = FALSE
+      )
+    } else {
+      # if fitting SL, we can discard all the standard condensier-related args
+      g_fit_args <- g_fit_args[stringr::str_detect(names(g_fit_args), "sl")]
+      # reshapes list of args to make passing to do.call possible
+      gn_estim_args <- unlist(list(gn_estim_in, g_fit_args), recursive = FALSE)
+    }
   # pass the relevant args for computing the propensity score to do.call
-  gn_estim <- do.call(est_g, gn_estim_args)
+    gn_estim <- do.call(est_g, gn_estim_args)
+  } else {
+    gn_estim <- gn_fit_spec
+  }
 
   ##############################################################################
   # initial estimate of the outcome regression
   ##############################################################################
-  Qn_estim_in <- list(
-    Y = data_internal$Y,
-    A = data_internal$A,
-    W = data_internal[, W_names, with = FALSE],
-    delta = delta,
-    ipc_weights = cens_weights,
-    fit_type = Q_fit_type
-  )
-  # reshape args to pass to the relevant function for the outcome regression
-  Qn_estim_args <- unlist(list(Qn_estim_in, Q_fit_args), recursive = FALSE)
-  # invoke function to estimate outcome regression via do.call
-  Qn_estim <- do.call(est_Q, Qn_estim_args)
+  if (is.null(Qn_fit_spec)) {
+    Qn_estim_in <- list(
+      Y = data_internal$Y,
+      A = data_internal$A,
+      W = data_internal[, W_names, with = FALSE],
+      delta = delta,
+      ipc_weights = cens_weights,
+      fit_type = Q_fit_type
+    )
+    # reshape args to pass to the relevant function for the outcome regression
+    Qn_estim_args <- unlist(list(Qn_estim_in, Q_fit_args), recursive = FALSE)
+    # invoke function to estimate outcome regression via do.call
+    Qn_estim <- do.call(est_Q, Qn_estim_args)
+  } else {
+    Qn_estim <- Qn_fit_spec
+  }
 
   ##############################################################################
   # initial estimate of the auxiliary ("clever") covariate

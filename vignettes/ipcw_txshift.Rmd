@@ -23,7 +23,9 @@ To start, let's load the packages we'll use and set a seed for simulation:
 
 ```{r setup}
 library(tidyverse)
+library(data.table)
 library(condensier)
+library(sl3)
 library(txshift)
 set.seed(429153)
 ```
@@ -50,10 +52,10 @@ n_obs <- 1000  # sample size
 n_w <- 1  # just one baseline covariate for this example
 tx_mult <- 2  # multiplier for the effect of W = 1 on the treatment
 
-## baseline covariate -- simple, binary
+# baseline covariate -- simple, binary
 W <- as.numeric(replicate(n_w, rbinom(n_obs, 1, 0.5)))
 
-## set and organize treatment based on baseline W
+# set and organize treatment based on baseline W
 A <- as.numeric(rnorm(n_obs, mean = tx_mult * W, sd = 1))
 
 # create outcome as linear function of A, W + white noise
@@ -61,6 +63,9 @@ Y <- A + W + rnorm(n_obs, mean = 0, sd = 1)
 
 # censoring based on covariates
 C <- rbinom(n_obs, 1, plogis(W))
+
+# treatment shift parameter
+delta <- 0.5
 ```
 
 ---
@@ -74,7 +79,7 @@ Comments about this estimation procedure...
 ```{r}
 tmle_glm_shift_1 <- tmle_txshift(W = W, A = A, Y = Y,
                                  C = C, V = c("W", "Y"),
-                                 delta = 0.5,
+                                 delta = delta,
                                  fluc_method = "standard",
                                  max_iter = 10,
                                  ipcw_fit_args = list(fit_type = "glm",
@@ -99,7 +104,7 @@ details on the potential benefits this approach may confer.
 ```{r}
 tmle_glm_shift_2 <- tmle_txshift(W = W, A = A, Y = Y,
                                  C = C, V = c("W", "Y"),
-                                 delta = 0.5,
+                                 delta = delta,
                                  fluc_method = "weighted",
                                  max_iter = 10,
                                  ipcw_fit_args = list(fit_type = "glm",
@@ -117,21 +122,22 @@ summary(tmle_glm_shift_2)
 ### Interlude: Constructing Super Learners with `sl3`
 
 ```{r}
-library(sl3)
-
 # SL learners to be used for most fits (e.g., IPCW, outcome regression)
-lrn1 <- Lrnr_mean$new()
-lrn2 <- Lrnr_glm_fast$new()
-lrn3 <- Lrnr_randomForest$new()
-sl_lrn <- Lrnr_sl$new(learners = list(lrn1, lrn2, lrn3),
-                      metalearner = Lrnr_nnls$new())
+lrnr_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm_fast",
+                               "Lrnr_randomForest")
+sl_lrn <- Lrnr_sl$new(learners = lrnr_lib, metalearner = Lrnr_nnls$new())
 
 # SL learners for conditional densities to be used for the propensity score fit
-lrn1_dens <- Lrnr_condensier$new(nbins = 35, bin_estimator = lrn1,
-                                 bin_method = "equal.len")
-lrn2_dens <- Lrnr_condensier$new(nbins = 25, bin_estimator = lrn2,
-                                 bin_method = "equal.len")
-sl_lrn_dens <- Lrnr_sl$new(learners = list(lrn1_dens, lrn2_dens),
+lrnr_dens_lib <- make_learner_stack(list("Lrnr_condensier", nbins = 35,
+                                          bin_estimator = Lrnr_mean$new(),
+                                          bin_method = "equal.len",
+                                          pool = FALSE),
+                                    list("Lrnr_condensier", nbins = 25,
+                                          bin_estimator = Lrnr_glm_fast$new(),
+                                          bin_method = "equal.len",
+                                          pool = FALSE)
+                                   )
+sl_lrn_dens <- Lrnr_sl$new(learners = lrnr_dens_lib,
                            metalearner = Lrnr_solnp_density$new())
 ```
 
@@ -144,7 +150,7 @@ framework of the Super Learner algorithm of [INSERT REF].
 ```{r}
 tmle_sl_shift_1 <- tmle_txshift(W = W, A = A, Y = Y,
                                 C = C, V = c("W", "Y"),
-                                delta = 0.5,
+                                delta = delta,
                                 fluc_method = "standard",
                                 max_iter = 10,
                                 ipcw_fit_args = list(fit_type = "sl",
@@ -164,7 +170,7 @@ than using such an auxiliary covariate directly in the regression procedure:
 ```{r}
 tmle_sl_shift_2 <- tmle_txshift(W = W, A = A, Y = Y,
                                 C = C, V = c("W", "Y"),
-                                delta = 0.5,
+                                delta = delta,
                                 fluc_method = "weighted",
                                 max_iter = 10,
                                 ipcw_fit_args = list(fit_type = "sl",
@@ -186,6 +192,49 @@ the inferential procedure...
 
 ```{r}
 (ci_shift <- confint(tmle_sl_shift_1))
+```
+
+---
+
+## Advanced Usage: User-Specified Regressions
+
+In some special cases it may be useful for the experienced use to compute the
+treatment mechanism and outcome regressions separately (i.e., outside of the
+`tmle_txshift` wrapper function), instead applying this user-facing wrapper only
+to invoke the _targeting_ steps involved in computing the TML estimator for the
+treatment shift parameter. In such cases, the optional arguments `gn_fit_spec`
+and `Qn_fit_spec` may be utilized. We present a case of using these arguments in
+the sequel
+
+```{r}
+# compute the censoring mechanism and produce IPC weights externally
+ipcw_prob <- plogis(W)
+ipc_weights <- C / ipcw_prob
+ipcw_trim <- ipc_weights[ipc_weights != 0]
+ipcw_out <- list(pi_mech = ipcw_prob, ipc_weights = ipcw_trim)
+
+# compute treatment mechanism (propensity score) externally
+## first, initialize and produce the downshifted treatment data
+gn_downshift <- rep(NaN, length(A))
+gn_downshift[W == 1] <- dnorm(A[W == 1] - delta, mean = tx_mult, sd = 1)
+gn_downshift[W == 0] <- dnorm(A[W == 0] - delta, mean = 0, sd = 1)
+## next, initialize and produce the upshifted treatment data
+gn_upshift <- rep(NaN, length(A))
+gn_upshift[W == 1] <- dnorm(A[W == 1] + delta, mean = tx_mult, sd = 1)
+gn_upshift[W == 0] <- dnorm(A[W == 0] + delta, mean = 0, sd = 1)
+## then, initialize and produce the unshifted treatment data
+gn_noshift <- rep(NaN, length(A))
+gn_noshift[W == 1] <- dnorm(A[W == 1], mean = tx_mult, sd = 1)
+gn_noshift[W == 0] <- dnorm(A[W == 0], mean = 0, sd = 1)
+## finally, put it all together into an object like those prodcued internally
+gn_out <- as.data.table(cbind(gn_downshift, gn_noshift, gn_upshift))
+setnames(gn_out, c("downshift", "noshift", "upshift"))
+
+# compute outcome regression externally
+Qn_noshift <- W + A
+Qn_upshift <- W + A + delta
+Qn_out <- as.data.table(cbind(Qn_noshift, Qn_upshift))
+setnames(Qn_out, c("noshift", "upshift"))
 ```
 
 ---

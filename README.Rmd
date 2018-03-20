@@ -95,12 +95,16 @@ Y <- A + W + rnorm(n_obs, mean = 0, sd = 1)
 
 # fit the TMLE
 tmle_shift <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
-                           g_fit = list(fit_type = "glm",
-                                        nbins = 25,  bin_method = "dhist",
-                                        bin_estimator = speedglmR6$new(),
-                                        parfit = FALSE),
-                           Q_fit = list(fit_type = "glm",
-                                        glm_formula = "Y ~ .")
+                           #C = rbinom(n_obs, 1, plogis(W + Y)),
+                           #V = c("W", "Y"),
+                           #ipcw_fit_args = list(fit_type = "glm",
+                                                #glm_formula = "Delta ~ ."),
+                           g_fit_args = list(fit_type = "glm",
+                                             nbins = 25,  bin_method = "dhist",
+                                             bin_estimator = speedglmR6$new(),
+                                             parfit = FALSE),
+                           Q_fit_args = list(fit_type = "glm",
+                                             glm_formula = "Y ~ .")
                           )
 
 # conveniently summarize the results
