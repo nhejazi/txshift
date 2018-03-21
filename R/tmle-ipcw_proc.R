@@ -62,7 +62,7 @@ utils::globalVariables(c("."))
 #' @importFrom data.table as.data.table set copy
 #' @importFrom dplyr "%>%"
 #' @importFrom sl3 sl3_Task
-#' @importFrom hal9001
+#' @importFrom hal9001 fit_hal
 #'
 #' @keywords internal
 #'
@@ -141,18 +141,23 @@ ipcw_tmle_proc <- function(data_in,
     eif_pred <- fit_eif_sl$predict(eif_pred_task)
   } else {
     # regression model for relationship between censoring variables and EIF
-    eif_data <- data.table::as.data.table(list(eif = tmle_eif_out$eif[C == 1],
-                                               subset(data_in,
-                                                      select = names(V))))
+    eif_data <- data.table::as.data.table(list(
+      eif = tmle_eif_out$eif[C == 1],
+      subset(data_in,
+        select = names(V)
+      )
+    ))
     if (eif_reg_spec) {
       # if flexibility specified, just fit a HAL regression
       X_in <- as.matrix(eif_data[, names(V), with = FALSE])
       colnames(X_in) <- NULL
       # NOTE: need to specify further arguments for better performance
-      eif_mod <- hal9001::fit_hal(X = X_in,
-                                  Y = as.numeric(eif_data$eif),
-                                  #fit_type = "lassi",
-                                  yolo = FALSE)
+      eif_mod <- hal9001::fit_hal(
+        X = X_in,
+        Y = as.numeric(eif_data$eif),
+        # fit_type = "lassi",
+        yolo = FALSE
+      )
       # compute expectation by invoking the predict method
       V_pred_in <- as.matrix(V)
       colnames(V_pred_in) <- NULL

@@ -6,7 +6,7 @@
 \usage{
 ipcw_tmle_proc(data_in, C, V, ipc_mech, ipc_weights, ipc_weights_norm, Qn_estim,
   Hn_estim, fluc_method = c("standard", "weighted"), fit_type = c("glm",
-  "sl"), eif_tol = 1e-09, sl_lrnrs = NULL)
+  "sl"), eif_tol = 1e-09, sl_lrnrs = NULL, eif_reg_spec = FALSE)
 }
 \arguments{
 \item{data_in}{A \code{data.table} containing variables and observations that
@@ -56,6 +56,16 @@ as the mean of the efficient influence function.}
 \item{sl_lrnrs}{A \code{Lrnr_sl} object composed of a collection of learners
 provided by the \code{sl3} package. This is constructed externally from this
 function and provided as input.}
+
+\item{eif_reg_spec}{Whether a flexible function ought to be used in the
+computation of a targeting step for the censored data case. By default, the
+assumed regression is a simple linear model. If set to \code{TRUE}, then a
+nonparametric regression based on the Highly Adaptive LASSO (from package
+\code{hal9001}) is used instead. In this step, the efficient influence
+function (EIF) is regressed against the covariates that contribute to the
+censoring mechanism (i.e., EIF ~ V | C = 1). In general, this should only be
+used by advanced users familiar with both the underlying theory and this
+software implementation of said theory.}
 }
 \description{
 An adaptation of the general IPCW-TMLE formulation of Rose & van der Laan as

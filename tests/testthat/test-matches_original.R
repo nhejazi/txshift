@@ -101,14 +101,19 @@ tmle_shift_new <- tmle_shift(
 
 
 # run the new tmle_txshift formulation
-out <- tmle_txshift(Y = Y, A = A, W = W, delta = 2, max_iter = 5,
-                    g_fit = list(fit_type = "glm", nbins = 10,
-                                 bin_method = "dhist",
-                                 bin_estimator = speedglmR6$new(),
-                                 parfit = FALSE),
-                    Q_fit = list(fit_type = "glm",
-                                 glm_formula = "Y ~ .")
-                   )
+out <- tmle_txshift(
+  Y = Y, A = A, W = W, delta = 2, max_iter = 5,
+  g_fit = list(
+    fit_type = "glm", nbins = 10,
+    bin_method = "dhist",
+    bin_estimator = speedglmR6$new(),
+    parfit = FALSE
+  ),
+  Q_fit = list(
+    fit_type = "glm",
+    glm_formula = "Y ~ ."
+  )
+)
 
 # test for equality
 test_that("Revised tmle_shift procedure matches code from 2012 manuscript", {

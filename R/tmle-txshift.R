@@ -183,7 +183,7 @@ tmle_txshift <- function(W,
       # reshapes list of args to make passing to do.call possible
       gn_estim_args <- unlist(list(gn_estim_in, g_fit_args), recursive = FALSE)
     }
-  # pass the relevant args for computing the propensity score to do.call
+    # pass the relevant args for computing the propensity score to do.call
     gn_estim <- do.call(est_g, gn_estim_args)
   } else {
     gn_estim <- gn_fit_spec
