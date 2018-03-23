@@ -127,7 +127,8 @@ f_iter <- function(Qn, gn, gn0d = NULL, prev_sum = 0, first = FALSE, h_int,
 
   # equation (8)
   est_eqn_min <- stats::uniroot(
-    est_eqn, c(-1, 1), Y = Y, A = A, W = W,
+    est_eqn, c(-1, 1),
+    Y = Y, A = A, W = W,
     delta = delta, QnAW = QnAW, Qn = Qn, H1 = H1,
     gn0d = gn0d, EQnd = EQnd, D2 = D2,
     prev_sum = prev_sum

@@ -48,11 +48,21 @@ utils::globalVariables(c("."))
 #' @param sl_lrnrs A \code{Lrnr_sl} object composed of a collection of learners
 #'  provided by the \code{sl3} package. This is constructed externally from this
 #'  function and provided as input.
+#' @param eif_reg_spec Whether a flexible function ought to be used in the
+#'  computation of a targeting step for the censored data case. By default, the
+#'  assumed regression is a simple linear model. If set to \code{TRUE}, then a
+#'  nonparametric regression based on the Highly Adaptive LASSO (from package
+#'  \code{hal9001}) is used instead. In this step, the efficient influence
+#'  function (EIF) is regressed against the covariates that contribute to the
+#'  censoring mechanism (i.e., EIF ~ V | C = 1). In general, this should only be
+#'  used by advanced users familiar with both the underlying theory and this
+#'  software implementation of said theory.
 #'
 #' @importFrom stats var glm qlogis fitted predict as.formula
 #' @importFrom data.table as.data.table set copy
 #' @importFrom dplyr "%>%"
 #' @importFrom sl3 sl3_Task
+#' @importFrom hal9001 fit_hal
 #'
 #' @keywords internal
 #'
@@ -72,7 +82,8 @@ ipcw_tmle_proc <- function(data_in,
                            fluc_method = c("standard", "weighted"),
                            fit_type = c("glm", "sl"),
                            eif_tol = 1e-9,
-                           sl_lrnrs = NULL) {
+                           sl_lrnrs = NULL,
+                           eif_reg_spec = FALSE) {
 
   # fit logistic regression to fluctuate along the sub-model with NEW WEIGHTS
   fitted_fluc_mod <- fit_fluc(
@@ -117,7 +128,8 @@ ipcw_tmle_proc <- function(data_in,
     # create task of full data (censoring variables only) for prediction
     eif_pred_task <- sl3::sl3_Task$new(
       data = data.table::set(
-        data.table::as.data.table(V), j = "eif",
+        data.table::as.data.table(V),
+        j = "eif",
         value = rep(NaN, unique(lapply(V, length)))
       ),
       covariates = names(V),
@@ -129,20 +141,43 @@ ipcw_tmle_proc <- function(data_in,
     eif_pred <- fit_eif_sl$predict(eif_pred_task)
   } else {
     # regression model for relationship between censoring variables and EIF
-    eif_mod <- stats::glm(
-      stats::as.formula("eif ~ ."),
-      data = data.table::as.data.table(list(
-        eif = tmle_eif_out$eif[C == 1],
-        subset(data_in, select = names(V))
-      ))
-    )
-
-    # compute expectation by invoking the predict method
-    eif_pred <- stats::predict(
-      eif_mod,
-      newdata = data.table::as.data.table(V)
-    ) %>%
-      as.numeric()
+    eif_data <- data.table::as.data.table(list(
+      eif = tmle_eif_out$eif[C == 1],
+      subset(data_in,
+        select = names(V)
+      )
+    ))
+    if (eif_reg_spec) {
+      # if flexibility specified, just fit a HAL regression
+      X_in <- as.matrix(eif_data[, names(V), with = FALSE])
+      colnames(X_in) <- NULL
+      # NOTE: need to specify further arguments for better performance
+      eif_mod <- hal9001::fit_hal(
+        X = X_in,
+        Y = as.numeric(eif_data$eif),
+        # fit_type = "lassi",
+        yolo = FALSE
+      )
+      # compute expectation by invoking the predict method
+      V_pred_in <- as.matrix(V)
+      colnames(V_pred_in) <- NULL
+      eif_pred <- stats::predict(
+        eif_mod,
+        new_data = V_pred_in
+      ) %>%
+        as.numeric()
+    } else {
+      eif_mod <- stats::glm(
+        stats::as.formula("eif ~ ."),
+        data = eif_data
+      )
+      # compute expectation by invoking the predict method
+      eif_pred <- stats::predict(
+        eif_mod,
+        newdata = data.table::as.data.table(V)
+      ) %>%
+        as.numeric()
+    }
   }
 
   # fit logistic regression to fluctuate along the sub-model wrt epsilon
@@ -162,11 +197,11 @@ ipcw_tmle_proc <- function(data_in,
   ipcw_fluc_pred <- stats::fitted(ipcw_fluc) %>% as.numeric()
 
   # this is the mean of the second half of the EIF (for censoring bit...)
-  ipcw_eif_out <- mean((C - ipcw_fluc_pred) * (eif_pred / ipcw_fluc_pred))
+  ipcw_eif_out <- (C - ipcw_fluc_pred) * (eif_pred / ipcw_fluc_pred)
 
   # sanity check: score of the logistic regression fluctuation model
   ipc_check <- mean((C - ipcw_fluc_pred) * (eif_pred / ipc_mech))
-  #stopifnot(ipc_check < eif_tol)
+  # stopifnot(ipc_check < eif_tol)
 
   # so, now we need weights to feed back into the previous steps
   ipc_weights <- C / ipcw_fluc_pred
@@ -193,4 +228,3 @@ ipcw_tmle_proc <- function(data_in,
     ipcw_eif = ipcw_eif_out
   ))
 }
-

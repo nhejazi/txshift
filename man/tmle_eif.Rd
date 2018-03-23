@@ -4,11 +4,11 @@
 \alias{tmle_eif}
 \title{Compute the Shift Parameter Estimate and the Efficient Influence Function}
 \usage{
-tmle_eif(fluc_fit_out, Hn, Y, ipc_weights = rep(1, length(Y)),
+tmle_eif(fluc_mod_out, Hn, Y, ipc_weights = rep(1, length(Y)),
   tol_eif = 1e-07)
 }
 \arguments{
-\item{fluc_fit_out}{...}
+\item{fluc_mod_out}{...}
 
 \item{Hn}{...}
 

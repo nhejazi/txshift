@@ -32,7 +32,9 @@ To start, let's load the packages we'll use and set a seed for simulation:
 
 ```{r setup}
 library(tidyverse)
+library(data.table)
 library(condensier)
+library(sl3)
 library(txshift)
 set.seed(429153)
 ```
@@ -65,6 +67,9 @@ A <- as.numeric(rnorm(n_obs, mean = tx_mult * W, sd = 1))
 
 # create outcome as a linear function of A, W + white noise
 Y <- A + W + rnorm(n_obs, mean = 0, sd = 1)
+
+# shift parameter
+delta <- 0.5
 ```
 
 ---
@@ -79,7 +84,7 @@ the estimator with generalized linear models. To do this, one may merely call
 the `tmle_shifttx` function, providing the standard inputs listed below...
 
 ```{r}
-tmle_glm_shift_1 <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
+tmle_glm_shift_1 <- tmle_txshift(W = W, A = A, Y = Y, delta = delta,
                                  fluc_method = "standard",
                                  ipcw_fit_args = NULL,
                                  g_fit_args = list(fit_type = "glm", nbins = 20,
@@ -100,7 +105,7 @@ such a covariate directly in the regression fit. Please consult [INSERT REF] for
 details on potential benefits this approach may have.
 
 ```{r}
-tmle_glm_shift_2 <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
+tmle_glm_shift_2 <- tmle_txshift(W = W, A = A, Y = Y, delta = delta,
                                  fluc_method = "weighted",
                                  ipcw_fit_args = NULL,
                                  g_fit_args = list(fit_type = "glm", nbins = 20,
@@ -116,21 +121,22 @@ summary(tmle_glm_shift_2)
 ### Interlude: Constructing Super Learners with `sl3`
 
 ```{r}
-library(sl3)
-
 # SL learners to be used for most fits (e.g., IPCW, outcome regression)
-lrn1 <- Lrnr_mean$new()
-lrn2 <- Lrnr_glm_fast$new()
-lrn3 <- Lrnr_randomForest$new()
-sl_lrn <- Lrnr_sl$new(learners = list(lrn1, lrn2, lrn3),
-                      metalearner = Lrnr_nnls$new())
+lrnr_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm_fast",
+                               "Lrnr_randomForest")
+sl_lrn <- Lrnr_sl$new(learners = lrnr_lib, metalearner = Lrnr_nnls$new())
 
 # SL learners for conditional densities to be used for the propensity score fit
-lrn1_dens <- Lrnr_condensier$new(nbins = 35, bin_estimator = lrn1,
-                                 bin_method = "equal.len")
-lrn2_dens <- Lrnr_condensier$new(nbins = 25, bin_estimator = lrn2,
-                                 bin_method = "equal.len")
-sl_lrn_dens <- Lrnr_sl$new(learners = list(lrn1_dens, lrn2_dens),
+lrnr_dens_lib <- make_learner_stack(list("Lrnr_condensier", nbins = 35,
+                                          bin_estimator = Lrnr_mean$new(),
+                                          bin_method = "equal.len",
+                                          pool = FALSE),
+                                    list("Lrnr_condensier", nbins = 25,
+                                          bin_estimator = Lrnr_glm_fast$new(),
+                                          bin_method = "equal.len",
+                                          pool = FALSE)
+                                   )
+sl_lrn_dens <- Lrnr_sl$new(learners = lrnr_dens_lib,
                            metalearner = Lrnr_solnp_density$new())
 ```
 
@@ -141,7 +147,7 @@ the TML estimator may be fit with ensemble learning, using the cross-validation
 framework of the Super Learner algorithm of [INSERT REF].
 
 ```{r}
-tmle_sl_shift_1 <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
+tmle_sl_shift_1 <- tmle_txshift(W = W, A = A, Y = Y, delta = delta,
                                 fluc_method = "standard",
                                 ipcw_fit_args = NULL,
                                 g_fit_args = list(fit_type = "sl",
@@ -157,7 +163,7 @@ weighting each observation by the value of the so-called clever covariate rather
 than using such an auxiliary covariate directly in the regression procedure:
 
 ```{r}
-tmle_sl_shift_2 <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
+tmle_sl_shift_2 <- tmle_txshift(W = W, A = A, Y = Y, delta = delta,
                                 fluc_method = "weighted",
                                 ipcw_fit_args = NULL,
                                 g_fit_args = list(fit_type = "sl",
@@ -210,6 +216,51 @@ $$\sigma_n^2 = \frac{1}{n} \sum_{i = 1}^{n} D^2(\bar{Q}_n^*, g_n)(O_i)$$
 
 ```{r}
 (ci_shift <- confint(tmle_sl_shift_1))
+```
+
+---
+
+## Advanced Usage: User-Specified Regressions
+
+In some special cases it may be useful for the experienced use to compute the
+treatment mechanism and outcome regressions separately (i.e., outside of the
+`tmle_txshift` wrapper function), instead applying this user-facing wrapper only
+to invoke the _targeting_ steps involved in computing the TML estimator for the
+treatment shift parameter. In such cases, the optional arguments `gn_fit_spec`
+and `Qn_fit_spec` may be utilized. We present a case of using these arguments in
+the sequel
+
+```{r}
+# compute treatment mechanism (propensity score) externally
+## first, produce the down-shifted treatment data
+gn_downshift <- dnorm(A - delta, mean = tx_mult * W, sd = 1)
+## next, initialize and produce the up-shifted treatment data
+gn_upshift <- dnorm(A + delta, mean = tx_mult * W, sd = 1)
+## then, initialize and produce the un-shifted treatment data
+gn_noshift <- dnorm(A, mean = tx_mult * W, sd = 1)
+## finally, put it all together into an object like what's produced internally
+gn_out <- as.data.table(cbind(gn_downshift, gn_noshift, gn_upshift))
+setnames(gn_out, c("downshift", "noshift", "upshift"))
+
+# compute outcome regression externally
+Qn_noshift <- (W + A - min(Y)) / diff(range(Y))
+Qn_upshift <- (W + A + delta - min(Y)) / diff(range(Y))
+Qn_noshift[Qn_noshift < 0] <- .Machine$double.neg.eps
+Qn_noshift[Qn_noshift > 1] <- 1 - .Machine$double.neg.eps
+Qn_upshift[Qn_upshift < 0] <- .Machine$double.neg.eps
+Qn_upshift[Qn_upshift > 1] <- 1 - .Machine$double.neg.eps
+Qn_out <- as.data.table(cbind(Qn_noshift, Qn_upshift))
+setnames(Qn_out, c("noshift", "upshift"))
+
+# invoke the wrapper function only to apply the targeting step
+tmle_shift_user <- tmle_txshift(W = W, A = A, Y = Y, delta = delta,
+                                fluc_method = "standard",
+                                ipcw_fit_args = NULL,
+                                g_fit_args = list(fit_type = "glm"),
+                                Q_fit_args = list(fit_type = "glm"),
+                                gn_fit_spec = gn_out,
+                                Qn_fit_spec = Qn_out)
+summary(tmle_shift_user)
 ```
 
 ---

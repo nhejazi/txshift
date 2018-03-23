@@ -37,9 +37,9 @@ tmle_eif_ipcw <- function(fluc_mod_out,
 
   # compute the efficient influence function (EIF) / canonical gradient (D*)
   eif <- rep(0, length(Delta))
-  eif[Delta == 1] <- ipc_weights * Hn$noshift *
+  eif[Delta == 1] <- ipc_weights * (Hn$noshift *
     (data_in$Y - fluc_mod_out$Qn_noshift_star) +
-    ipc_weights * (fluc_mod_out$Qn_shift_star - psi)
+    (fluc_mod_out$Qn_shift_star - psi))
 
   # sanity check on EIF
   # NOTE: EIF ~ N(0, V(D(P)(o))), so mean(EIF) ~= 0
@@ -56,10 +56,10 @@ tmle_eif_ipcw <- function(fluc_mod_out,
   # NOTE: scale by length of observations to get on same scale as parameter
   # NOTE: var(eif) and mean(eif^2) are nearly equivalent
   # var_eif <- mean(eif^2) / length(Delta)  <= denom since we use full N
+  # this is not the full eif, just the ipcw full data eif
   var_eif <- stats::var(eif) / length(Delta)
 
   # return the variance and the EIF value at each observation
   out <- list(psi = psi, var = var_eif, eif = eif, msg = eif_msg)
   return(out)
 }
-

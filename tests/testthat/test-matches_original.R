@@ -61,14 +61,15 @@ tmle.shift <- function(Y, A, W, Qn, gn, delta, tol = 1e-5, iter.max = 5, Aval) {
 n <- 100
 W <- data.frame(W1 = runif(n), W2 = rbinom(n, 1, 0.7))
 A <- rpois(n, lambda = exp(3 + .3 * log(W$W1) - 0.2 * exp(W$W1) * W$W2))
-Y <- rbinom(n, 1, plogis(-1 + 0.05 * A - 0.02 * A * W$W2 + 0.2 * A * tan(W$W1 ^ 2)
+Y <- rbinom(n, 1, plogis(-1 + 0.05 * A - 0.02 * A * W$W2 + 0.2 * A * tan(W$W1^2)
   - 0.02 * W$W1 * W$W2 + 0.1 * A * W$W1 * W$W2))
 fitA.0 <- glm(
-  A ~ I(log(W1)) + I(exp(W1)):W2, family = poisson,
+  A ~ I(log(W1)) + I(exp(W1)):W2,
+  family = poisson,
   data = data.frame(A, W)
 )
 fitY.0 <- glm(
-  Y ~ A + A:W2 + A:I(tan(W1 ^ 2)) + W1:W2 + A:W1:W2,
+  Y ~ A + A:W2 + A:I(tan(W1^2)) + W1:W2 + A:W1:W2,
   family = binomial, data = data.frame(A, W)
 )
 
@@ -78,7 +79,8 @@ gn.0 <- function(A = A, W = W) {
 
 Qn.0 <- function(A = A, W = W) {
   predict(
-    fitY.0, newdata = data.frame(A, W, row.names = NULL),
+    fitY.0,
+    newdata = data.frame(A, W, row.names = NULL),
     type = "response"
   )
 }
@@ -97,6 +99,21 @@ tmle_shift_new <- tmle_shift(
   A_val = seq(1, 60, 1)
 )
 
+
+# run the new tmle_txshift formulation
+out <- tmle_txshift(
+  Y = Y, A = A, W = W, delta = 2, max_iter = 5,
+  g_fit = list(
+    fit_type = "glm", nbins = 10,
+    bin_method = "dhist",
+    bin_estimator = speedglmR6$new(),
+    parfit = FALSE
+  ),
+  Q_fit = list(
+    fit_type = "glm",
+    glm_formula = "Y ~ ."
+  )
+)
 
 # test for equality
 test_that("Revised tmle_shift procedure matches code from 2012 manuscript", {

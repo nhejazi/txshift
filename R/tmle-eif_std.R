@@ -5,7 +5,7 @@
 #' target parameter, which takes the following form:
 #' %D(P)(o) = H(a,w)(y - \bar{Q}(a,w)) + \bar{Q}(d(a,w)) - \psi(P)
 #'
-#' @param fluc_fit_out ...
+#' @param fluc_mod_out ...
 #' @param Hn ...
 #' @param Y A \code{numeric} vector of observed outcomes.
 #' @param ipc_weights ...
@@ -21,17 +21,17 @@
 #' @author Nima Hejazi
 #' @author David Benkeser
 #
-tmle_eif <- function(fluc_fit_out,
+tmle_eif <- function(fluc_mod_out,
                      Hn,
                      Y,
                      ipc_weights = rep(1, length(Y)),
                      tol_eif = 1e-7) {
-  # compute TMLE
-  psi <- mean(ipc_weights * fluc_fit_out$Qn_shift_star)
+  # compute TMLE of the treatment shift parameter
+  psi <- mean(ipc_weights * fluc_mod_out$Qn_shift_star)
 
   # compute the efficient influence function (EIF) / canonical gradient (D*)
-  eif <- ipc_weights * Hn$noshift * (Y - fluc_fit_out$Qn_noshift_star) +
-    ipc_weights * (fluc_fit_out$Qn_shift_star - psi)
+  eif <- ipc_weights * (Hn$noshift * (Y - fluc_mod_out$Qn_noshift_star) +
+    (fluc_mod_out$Qn_shift_star - psi))
 
   # sanity check on EIF
   # NOTE: EIF ~ N(0, V(D(P)(o))), so mean(EIF) ~= 0

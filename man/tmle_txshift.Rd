@@ -6,12 +6,12 @@
 \usage{
 tmle_txshift(W, A, Y, C = rep(1, length(Y)), V = NULL, delta = 0,
   fluc_method = c("standard", "weighted"), eif_tol = 1/length(Y),
-  max_iter = 10000, ipcw_fit_args = list(fit_type = c("glm", "sl"),
-  glm_formula = "Delta ~ .", sl_lrnrs = NULL), g_fit_args = list(fit_type =
-  c("glm", "sl"), nbins = 35, bin_method = "dhist", bin_estimator =
-  condensier::speedglmR6$new(), parfit = FALSE, sl_lrnrs_dens = NULL),
-  Q_fit_args = list(fit_type = c("glm", "sl"), glm_formula = "Y ~ .", sl_lrnrs
-  = NULL))
+  max_iter = 10000, ipcw_fit_args = list(fit_type = c("glm", "sl"), sl_lrnrs
+  = NULL), g_fit_args = list(fit_type = c("glm", "sl"), nbins = 35, bin_method
+  = "dhist", bin_estimator = condensier::speedglmR6$new(), parfit = FALSE,
+  sl_lrnrs_dens = NULL), Q_fit_args = list(fit_type = c("glm", "sl"),
+  glm_formula = "Y ~ .", sl_lrnrs = NULL), ipcw_fit_spec = NULL,
+  gn_fit_spec = NULL, Qn_fit_spec = NULL, eif_reg_spec = FALSE)
 }
 \arguments{
 \item{W}{A \code{matrix} or \code{data.frame} corresponding to a set of
@@ -55,6 +55,34 @@ to be taken in iterating to a solution of the efficient influence function.}
 \item{g_fit_args}{...}
 
 \item{Q_fit_args}{...}
+
+\item{ipcw_fit_spec}{User-specified version of the argument above for fitting
+the censoring mechanism (\code{ipcw_fit_args}). Consult the documentation
+for that argument for details on how to properly use this. In general, this
+should only be used by advanced users familiar with both the underlying
+theory and this software implementation of said theory.}
+
+\item{gn_fit_spec}{User-specified version of the argument above for fitting
+the censoring mechanism (\code{g_fit_args}). Consult the documentation for
+that argument for details on how to properly use this. In general, this
+should only be used by advanced users familiar with both the underlying
+theory and this software implementation of said theory.}
+
+\item{Qn_fit_spec}{User-specified version of the argument above for fitting
+the censoring mechanism (\code{Q_fit_args}). Consult the documentation for
+that argument for details on how to properly use this. In general, this
+should only be used by advanced users familiar with both the underlying
+theory and this software implementation of said theory.}
+
+\item{eif_reg_spec}{Whether a flexible function ought to be used in the
+computation of a targeting step for the censored data case. By default, the
+assumed regression is a simple linear model. If set to \code{TRUE}, then a
+nonparametric regression based on the Highly Adaptive LASSO (from package
+\code{hal9001}) is used instead. In this step, the efficient influence
+function (EIF) is regressed against the covariates that contribute to the
+censoring mechanism (i.e., EIF ~ V | C = 1). In general, this should only be
+used by advanced users familiar with both the underlying theory and this
+software implementation of said theory.}
 }
 \value{
 S3 object of class \code{txshift} containing the results of the

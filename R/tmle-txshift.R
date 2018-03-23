@@ -32,6 +32,30 @@
 #' @param ipcw_fit_args ...
 #' @param g_fit_args ...
 #' @param Q_fit_args ...
+#' @param ipcw_fit_spec User-specified version of the argument above for fitting
+#'  the censoring mechanism (\code{ipcw_fit_args}). Consult the documentation
+#'  for that argument for details on how to properly use this. In general, this
+#'  should only be used by advanced users familiar with both the underlying
+#'  theory and this software implementation of said theory.
+#' @param gn_fit_spec User-specified version of the argument above for fitting
+#'  the censoring mechanism (\code{g_fit_args}). Consult the documentation for
+#'  that argument for details on how to properly use this. In general, this
+#'  should only be used by advanced users familiar with both the underlying
+#'  theory and this software implementation of said theory.
+#' @param Qn_fit_spec User-specified version of the argument above for fitting
+#'  the censoring mechanism (\code{Q_fit_args}). Consult the documentation for
+#'  that argument for details on how to properly use this. In general, this
+#'  should only be used by advanced users familiar with both the underlying
+#'  theory and this software implementation of said theory.
+#' @param eif_reg_spec Whether a flexible function ought to be used in the
+#'  computation of a targeting step for the censored data case. By default, the
+#'  assumed regression is a simple linear model. If set to \code{TRUE}, then a
+#'  nonparametric regression based on the Highly Adaptive LASSO (from package
+#'  \code{hal9001}) is used instead. In this step, the efficient influence
+#'  function (EIF) is regressed against the covariates that contribute to the
+#'  censoring mechanism (i.e., EIF ~ V | C = 1). In general, this should only be
+#'  used by advanced users familiar with both the underlying theory and this
+#'  software implementation of said theory.
 #'
 #' @importFrom condensier speedglmR6
 #' @importFrom data.table as.data.table setnames
@@ -54,7 +78,6 @@ tmle_txshift <- function(W,
                          max_iter = 1e4,
                          ipcw_fit_args = list(
                            fit_type = c("glm", "sl"),
-                           glm_formula = "Delta ~ .",
                            sl_lrnrs = NULL
                          ),
                          g_fit_args = list(
@@ -70,7 +93,11 @@ tmle_txshift <- function(W,
                            fit_type = c("glm", "sl"),
                            glm_formula = "Y ~ .",
                            sl_lrnrs = NULL
-                         )) {
+                         ),
+                         ipcw_fit_spec = NULL,
+                         gn_fit_spec = NULL,
+                         Qn_fit_spec = NULL,
+                         eif_reg_spec = FALSE) {
   ##############################################################################
   # TODO: check arguments and set up some objects for programmatic convenience
   ##############################################################################
@@ -79,11 +106,14 @@ tmle_txshift <- function(W,
 
   # dissociate fit type from other arguments to simplify passing to do.call
   ipcw_fit_type <- unlist(ipcw_fit_args[names(ipcw_fit_args) == "fit_type"],
-                          use.names = FALSE)
+    use.names = FALSE
+  )
   g_fit_type <- unlist(g_fit_args[names(g_fit_args) == "fit_type"],
-                       use.names = FALSE)
+    use.names = FALSE
+  )
   Q_fit_type <- unlist(Q_fit_args[names(Q_fit_args) == "fit_type"],
-                       use.names = FALSE)
+    use.names = FALSE
+  )
   ipcw_fit_args <- ipcw_fit_args[names(ipcw_fit_args) != "fit_type"]
   g_fit_args <- g_fit_args[names(g_fit_args) != "fit_type"]
   Q_fit_args <- Q_fit_args[names(Q_fit_args) != "fit_type"]
@@ -99,7 +129,7 @@ tmle_txshift <- function(W,
   ##############################################################################
   # perform sub-setting of data and implement IPC weighting if required
   ##############################################################################
-  if (any(unique(C) == 1) & !is.null(V)) {
+  if (!all(C == 1) & !is.null(V)) {
     V_in <- data.table::as.data.table(mget(V))
     ipcw_estim_in <- list(
       V = V_in, Delta = C,
@@ -111,7 +141,11 @@ tmle_txshift <- function(W,
       recursive = FALSE
     )
     # compute the IPC weights by passing all args to the relevant function
-    ipcw_out <- do.call(est_ipcw, ipcw_estim_args)
+    if (is.null(ipcw_fit_spec)) {
+      ipcw_out <- do.call(est_ipcw, ipcw_estim_args)
+    } else {
+      ipcw_out <- ipcw_fit_spec
+    }
     cens_weights <- ipcw_out$ipc_weights
     data_internal <- data.table::as.data.table(list(W, A = A, C = C, Y = Y)) %>%
       dplyr::filter(C == 1) %>%
@@ -126,45 +160,53 @@ tmle_txshift <- function(W,
   ##############################################################################
   # initial estimate of the treatment mechanism (propensity score)
   ##############################################################################
-  gn_estim_in <- list(
-    A = data_internal$A,
-    W = data_internal[, W_names, with = FALSE],
-    delta = delta,
-    ipc_weights = cens_weights,
-    fit_type = g_fit_type
-  )
-  if (g_fit_type == "glm") {
-    # since fitting a GLM, can safely remove all args related to SL
-    g_fit_args <- g_fit_args[!stringr::str_detect(names(g_fit_args), "sl")]
-    # reshape args to a list suitable to be passed to do.call
-    gn_estim_args <- unlist(
-      list(gn_estim_in, std_args = list(g_fit_args)),
-      recursive = FALSE
+  if (is.null(gn_fit_spec)) {
+    gn_estim_in <- list(
+      A = data_internal$A,
+      W = data_internal[, W_names, with = FALSE],
+      delta = delta,
+      ipc_weights = cens_weights,
+      fit_type = g_fit_type
     )
+    if (g_fit_type == "glm") {
+      # since fitting a GLM, can safely remove all args related to SL
+      g_fit_args <- g_fit_args[!stringr::str_detect(names(g_fit_args), "sl")]
+      # reshape args to a list suitable to be passed to do.call
+      gn_estim_args <- unlist(
+        list(gn_estim_in, std_args = list(g_fit_args)),
+        recursive = FALSE
+      )
+    } else {
+      # if fitting SL, we can discard all the standard condensier-related args
+      g_fit_args <- g_fit_args[stringr::str_detect(names(g_fit_args), "sl")]
+      # reshapes list of args to make passing to do.call possible
+      gn_estim_args <- unlist(list(gn_estim_in, g_fit_args), recursive = FALSE)
+    }
+    # pass the relevant args for computing the propensity score to do.call
+    gn_estim <- do.call(est_g, gn_estim_args)
   } else {
-    # if fitting SL, we can discard all the standard condensier-related args
-    g_fit_args <- g_fit_args[stringr::str_detect(names(g_fit_args), "sl")]
-    # reshapes list of args to make passing to do.call possible
-    gn_estim_args <- unlist(list(gn_estim_in, g_fit_args), recursive = FALSE)
+    gn_estim <- gn_fit_spec
   }
-  # pass the relevant args for computing the propensity score to do.call
-  gn_estim <- do.call(est_g, gn_estim_args)
 
   ##############################################################################
   # initial estimate of the outcome regression
   ##############################################################################
-  Qn_estim_in <- list(
-    Y = data_internal$Y,
-    A = data_internal$A,
-    W = data_internal[, W_names, with = FALSE],
-    delta = delta,
-    ipc_weights = cens_weights,
-    fit_type = Q_fit_type
-  )
-  # reshape args to pass to the relevant function for the outcome regression
-  Qn_estim_args <- unlist(list(Qn_estim_in, Q_fit_args), recursive = FALSE)
-  # invoke function to estimate outcome regression via do.call
-  Qn_estim <- do.call(est_Q, Qn_estim_args)
+  if (is.null(Qn_fit_spec)) {
+    Qn_estim_in <- list(
+      Y = data_internal$Y,
+      A = data_internal$A,
+      W = data_internal[, W_names, with = FALSE],
+      delta = delta,
+      ipc_weights = cens_weights,
+      fit_type = Q_fit_type
+    )
+    # reshape args to pass to the relevant function for the outcome regression
+    Qn_estim_args <- unlist(list(Qn_estim_in, Q_fit_args), recursive = FALSE)
+    # invoke function to estimate outcome regression via do.call
+    Qn_estim <- do.call(est_Q, Qn_estim_args)
+  } else {
+    Qn_estim <- Qn_fit_spec
+  }
 
   ##############################################################################
   # initial estimate of the auxiliary ("clever") covariate
@@ -174,7 +216,7 @@ tmle_txshift <- function(W,
   ##############################################################################
   # invoke efficient IPCW-TMLE, per Rose & van der Laan (2011), if necessary
   ##############################################################################
-  if (any(unique(C) == 1) & !is.null(V)) {
+  if (!all(C == 1) & !is.null(V)) {
     # Efficient implementation of the IPCW-TMLE
     n_steps <- 0
     eif_mean <- Inf
@@ -192,8 +234,10 @@ tmle_txshift <- function(W,
     # this is a horribly ugly HACK that solves a naming problem...
     V_cols <- matrix(NA, nrow = ncol(V_in), ncol = ncol(data_internal))
     for (i in seq_along(V_in)) {
-      V_cols[i, ] <- stringr::str_detect(colnames(V_in)[i],
-                                         colnames(data_internal))
+      V_cols[i, ] <- stringr::str_detect(
+        colnames(V_in)[i],
+        colnames(data_internal)
+      )
     }
     V_mask <- as.logical(colSums(V_cols))
     colnames(V_in) <- colnames(data_internal[, which(V_mask), with = FALSE])
@@ -216,13 +260,15 @@ tmle_txshift <- function(W,
         fluc_method = fluc_method,
         fit_type = ipcw_fit_type,
         eif_tol = eif_tol,
-        sl_lrnrs = ipcw_fit_args$sl_lrnrs
+        sl_lrnrs = ipcw_fit_args$sl_lrnrs,
+        eif_reg_spec = eif_reg_spec
       )
 
       # overwrite/update quantities to be used in next iteration
-      # NOTE FOR NIMA: don't know if you have a function to do this 
+      # NOTE FOR NIMA: don't know if you have a function to do this
       # rescaling or not (hmm, there is but it's too dumb to handle this...)
-      y_min <- min(Y); y_max <- max(Y)
+      y_min <- min(Y)
+      y_max <- max(Y)
       Qn_estim_use <- data.table::as.data.table(
         list(
           (ipcw_tmle_comp$fluc_mod_out$Qn_noshift_star - y_min) /
@@ -236,15 +282,16 @@ tmle_txshift <- function(W,
       pi_mech_star <- ipcw_tmle_comp$pi_mech_star
 
       # compute updated mean of efficient influence function and save
-      eif_mean <- mean(ipcw_tmle_comp$tmle_eif$eif) - ipcw_tmle_comp$ipcw_eif
-      conv_res[n_steps, ] <- c(ipcw_tmle_comp$tmle_eif$psi,
-                               ipcw_tmle_comp$tmle_eif$var, eif_mean)
+      eif_mean <- mean(ipcw_tmle_comp$tmle_eif$eif - ipcw_tmle_comp$ipcw_eif)
+      eif_var <- var(ipcw_tmle_comp$tmle_eif$eif - ipcw_tmle_comp$ipcw_eif) /
+        length(C)
+      conv_res[n_steps, ] <- c(ipcw_tmle_comp$tmle_eif$psi, eif_var, eif_mean)
     }
     conv_results <- data.table::as.data.table(conv_res)
     data.table::setnames(conv_results, c("psi", "var", "eif_mean"))
-  ##############################################################################
-  # standard TMLE of the shift parameter / inefficient IPCW-TMLE
-  ##############################################################################
+    ##############################################################################
+    # standard TMLE of the shift parameter / inefficient IPCW-TMLE
+    ##############################################################################
   } else {
     # fit logistic regression to fluctuate along the sub-model
     fitted_fluc_mod <- fit_fluc(
@@ -256,7 +303,7 @@ tmle_txshift <- function(W,
     )
     # compute TML estimate and EIF for the treatment shift parameter
     tmle_eif_out <- tmle_eif(
-      fluc_fit_out = fitted_fluc_mod,
+      fluc_mod_out = fitted_fluc_mod,
       Hn = Hn_estim,
       Y = data_internal$Y,
       ipc_weights = cens_weights,
@@ -267,7 +314,9 @@ tmle_txshift <- function(W,
   ##############################################################################
   # create output object
   ##############################################################################
-  if (any(unique(C) == 1) & !is.null(V)) {
+  if (!all(C == 1) & !is.null(V)) {
+    # replace variance in this object with the correct variance
+    ipcw_tmle_comp$tmle_eif$var <- eif_var
     # return only the useful convergence results
     conv_results_out <- conv_results[!is.na(rowSums(conv_results)), ]
     txshift_out <- unlist(
@@ -284,4 +333,3 @@ tmle_txshift <- function(W,
   class(txshift_out) <- "txshift"
   return(txshift_out)
 }
-
