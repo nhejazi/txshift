@@ -7,7 +7,6 @@
 #' @param fit_type A \code{character} indicating whether to perform the fit
 #'  using GLMs or a Super Learner. If use of Super Learner is desired, then the
 #'  argument \code{sl_lrnrs} must be provided.
-#' @param glm_formula ...
 #' @param sl_lrnrs An \code{R6} object of class \code{Lrnr_sl}, a Super Learner
 #'  object created externally using the \code{sl3} package.
 #'
@@ -28,7 +27,6 @@
 est_ipcw <- function(V,
                      Delta,
                      fit_type = c("sl", "glm"),
-                     glm_formula = "Delta ~ .",
                      sl_lrnrs = NULL) {
   ##############################################################################
   # make data objects from inputs
@@ -55,7 +53,7 @@ est_ipcw <- function(V,
   ##############################################################################
   if (fit_type == "glm" & is.null(sl_lrnrs)) {
     ipcw_reg <- stats::glm(
-      as.formula(glm_formula),
+      as.formula("Delta ~ ."),
       family = stats::binomial(),
       data = data_in
     )

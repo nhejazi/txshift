@@ -78,7 +78,6 @@ tmle_txshift <- function(W,
                          max_iter = 1e4,
                          ipcw_fit_args = list(
                            fit_type = c("glm", "sl"),
-                           glm_formula = "Delta ~ .",
                            sl_lrnrs = NULL
                          ),
                          g_fit_args = list(
