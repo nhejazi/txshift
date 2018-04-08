@@ -72,10 +72,8 @@ To illustrate how `txshift` may be used to ascertain the effect of a treatment,
 consider the following example:
 
 ```{r example, message=FALSE}
-library(tidyverse)
-library(data.table)
-library(condensier)
 library(txshift)
+library(condensier)
 set.seed(429153)
 
 # simulate simple data for tmle-shift sketch
@@ -95,12 +93,8 @@ Y <- A + W + rnorm(n_obs, mean = 0, sd = 1)
 
 # fit the TMLE
 tmle_shift <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
-                           #C = rbinom(n_obs, 1, plogis(W + Y)),
-                           #V = c("W", "Y"),
-                           #ipcw_fit_args = list(fit_type = "glm",
-                                                #glm_formula = "Delta ~ ."),
-                           g_fit_args = list(fit_type = "glm",
-                                             nbins = 25,  bin_method = "dhist",
+                           g_fit_args = list(fit_type = "glm", nbins = 25,
+                                             bin_method = "dhist",
                                              bin_estimator = speedglmR6$new(),
                                              parfit = FALSE),
                            Q_fit_args = list(fit_type = "glm",
@@ -109,6 +103,23 @@ tmle_shift <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
 
 # conveniently summarize the results
 summary(tmle_shift)
+
+# under a censoring process (C), fit an IPCW-TMLE:
+ipcwtmle_shift <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
+                               C = rbinom(n_obs, 1, plogis(W + Y)),
+                               V = c("W", "Y"),
+                               ipcw_fit_args = list(fit_type = "glm"),
+                               g_fit_args = list(fit_type = "glm", nbins = 25,
+                                                 bin_method = "dhist",
+                                                 bin_estimator =
+                                                   speedglmR6$new(),
+                                                 parfit = FALSE),
+                               Q_fit_args = list(fit_type = "glm",
+                                                 glm_formula = "Y ~ .")
+                              )
+
+# conveniently summarize the results
+summary(ipcwtmle_shift)
 ```
 
 ---

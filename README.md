@@ -68,10 +68,8 @@ To illustrate how `txshift` may be used to ascertain the effect of a
 treatment, consider the following example:
 
 ``` r
-library(tidyverse)
-library(data.table)
-library(condensier)
 library(txshift)
+library(condensier)
 set.seed(429153)
 
 # simulate simple data for tmle-shift sketch
@@ -91,12 +89,8 @@ Y <- A + W + rnorm(n_obs, mean = 0, sd = 1)
 
 # fit the TMLE
 tmle_shift <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
-                           #C = rbinom(n_obs, 1, plogis(W + Y)),
-                           #V = c("W", "Y"),
-                           #ipcw_fit_args = list(fit_type = "glm",
-                                                #glm_formula = "Delta ~ ."),
-                           g_fit_args = list(fit_type = "glm",
-                                             nbins = 25,  bin_method = "dhist",
+                           g_fit_args = list(fit_type = "glm", nbins = 25,
+                                             bin_method = "dhist",
                                              bin_estimator = speedglmR6$new(),
                                              parfit = FALSE),
                            Q_fit_args = list(fit_type = "glm",
@@ -107,6 +101,26 @@ tmle_shift <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
 summary(tmle_shift)
 #>      lwr_ci   param_est      upr_ci   param_var    eif_mean 
 #>    1.957777    2.098018    2.238259     0.00512 3.96109e-12
+
+# under a censoring process (C), fit an IPCW-TMLE:
+ipcwtmle_shift <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
+                               C = rbinom(n_obs, 1, plogis(W + Y)),
+                               V = c("W", "Y"),
+                               ipcw_fit_args = list(fit_type = "glm"),
+                               g_fit_args = list(fit_type = "glm", nbins = 25,
+                                                 bin_method = "dhist",
+                                                 bin_estimator =
+                                                   speedglmR6$new(),
+                                                 parfit = FALSE),
+                               Q_fit_args = list(fit_type = "glm",
+                                                 glm_formula = "Y ~ .")
+                              )
+#> Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+# conveniently summarize the results
+summary(ipcwtmle_shift)
+#>        lwr_ci     param_est        upr_ci     param_var      eif_mean 
+#>      1.633732      2.107752      2.581773      0.058492 -5.763619e-05
 ```
 
 -----
