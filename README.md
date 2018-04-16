@@ -132,6 +132,37 @@ If you encounter any bugs or have any specific feature requests, please
 
 -----
 
+## Contributions
+
+Contributions are very welcome. Interested contributors should consult
+our [contribution
+guidelines](https://github.com/nhejazi/txshift/blob/master/CONTRIBUTING.md)
+prior to submitting a pull request.
+
+-----
+
+## Citation
+
+After using the `txshift` R package, please cite the following:
+
+``` 
+    @article{hejazi2018txshift,
+      doi = {},
+      url = {},
+      year  = {2018},
+      month = {},
+      publisher = {},
+      volume = {},
+      author = {Hejazi, Nima S and {van der Laan}, Mark J and Benkeser,
+        David C},
+      title = {txshift: {Targeted Learning} of stochastic intervention
+        effects with robust inference in {R}},
+      journal = {}
+    }
+```
+
+-----
+
 ## Funding
 
 The development of this software was supported in part through a grant
