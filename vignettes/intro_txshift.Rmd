@@ -222,13 +222,12 @@ $$\sigma_n^2 = \frac{1}{n} \sum_{i = 1}^{n} D^2(\bar{Q}_n^*, g_n)(O_i)$$
 
 ## Advanced Usage: User-Specified Regressions
 
-In some special cases it may be useful for the experienced use to compute the
+In some special cases it may be useful for the experienced user to compute the
 treatment mechanism and outcome regressions separately (i.e., outside of the
 `tmle_txshift` wrapper function), instead applying this user-facing wrapper only
 to invoke the _targeting_ steps involved in computing the TML estimator for the
 treatment shift parameter. In such cases, the optional arguments `gn_fit_spec`
-and `Qn_fit_spec` may be utilized. We present a case of using these arguments in
-the sequel
+and `Qn_fit_spec` may be utilized. We present a case of using these here:
 
 ```{r}
 # compute treatment mechanism (propensity score) externally
