@@ -125,13 +125,13 @@ summary(tmle_glm_shift_2)
 
 ```{r}
 # SL learners to be used for most fits (e.g., IPCW, outcome regression)
-lrnr_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm_fast",
-                               "Lrnr_randomForest")
+lrnr_lib <- make_learner_stack("Lrnr_glm_fast", "Lrnr_randomForest",
+                               "Lrnr_mean")
 sl_lrn <- Lrnr_sl$new(learners = lrnr_lib, metalearner = Lrnr_nnls$new())
 
 # SL learners for conditional densities to be used for the propensity score fit
 lrnr_dens_lib <- make_learner_stack(list("Lrnr_condensier", nbins = 35,
-                                          bin_estimator = Lrnr_mean$new(),
+                                          bin_estimator = Lrnr_glm_fast$new(),
                                           bin_method = "equal.len",
                                           pool = FALSE),
                                     list("Lrnr_condensier", nbins = 25,
@@ -236,17 +236,17 @@ Qn_out <- as.data.table(cbind(Qn_noshift, Qn_upshift))[C == 1, ]
 setnames(Qn_out, c("noshift", "upshift"))
 
 # invoke the wrapper function only to apply the targeting step
-tmle_shift_user <- tmle_txshift(W = W, A = A, Y = Y, delta = delta,
+tmle_shift_spec <- tmle_txshift(W = W, A = A, Y = Y, delta = delta,
                                 C = C, V = c("W", "Y"),
                                 fluc_method = "standard",
-                                ipcw_fit_args = list(fit_type = "glm"),
-                                g_fit_args = list(fit_type = "glm"),
-                                Q_fit_args = list(fit_type = "glm"),
+                                ipcw_fit_args = list(fit_type = "fit_spec"),
+                                g_fit_args = list(fit_type = "fit_spec"),
+                                Q_fit_args = list(fit_type = "fit_spec"),
                                 ipcw_fit_spec = ipcw_out,
                                 gn_fit_spec = gn_out,
                                 Qn_fit_spec = Qn_out,
                                 eif_reg_spec = TRUE)
-summary(tmle_shift_user)
+summary(tmle_shift_spec)
 ```
 
 ---

@@ -84,7 +84,7 @@ ipcw_tmle_proc <- function(data_in,
                            eif_reg_spec = FALSE) {
   # check arguments with options
   fluc_method <- match.arg(fluc_method)
-  fit_type  <- match.arg(fit_type)
+  fit_type <- match.arg(fit_type)
 
   # fit logistic regression to fluctuate along the sub-model with NEW WEIGHTS
   fitted_fluc_mod <- fit_fluc(
@@ -111,10 +111,11 @@ ipcw_tmle_proc <- function(data_in,
   # 0 = (C - pi_mech) * \E(f(eif ~ V, subset = (C = 1)) / pi_mech)
   if (fit_type == "sl" & !is.null(sl_lrnrs)) {
     # organize EIF data as data.table
-    eif_data <- data.table::copy(data_in) %>%
+    eif_data <- data_in %>%
+      data.table::copy() %>%
       dplyr::select(names(V)) %>%
       data.table::as.data.table() %>%
-      data.table::set(eif_data, j = "eif", value = tmle_eif_out$eif[C == 1])
+      data.table::set(j = "eif", value = tmle_eif_out$eif[C == 1])
 
     # make sl3 task from new data.table
     eif_task <- sl3::sl3_Task$new(
@@ -143,21 +144,30 @@ ipcw_tmle_proc <- function(data_in,
     eif_pred <- fit_eif_sl$predict(eif_pred_task)
   } else {
     # regression model for relationship between censoring variables and EIF
-    eif_data <- data.table::as.data.table(list(
-      eif = tmle_eif_out$eif[C == 1],
-      subset(data_in,
-        select = names(V)
-      )
-    ))
+    eif_data <- data_in %>%
+      data.table::copy() %>%
+      dplyr::select(names(V)) %>%
+      dplyr::mutate(
+        eif = tmle_eif_out$eif[C == 1]
+      ) %>%
+      data.table::as.data.table()
+
+    # estimate the EIF nuisance regression using HAL
     if (eif_reg_spec) {
       # if flexibility specified, just fit a HAL regression
-      X_in <- as.matrix(eif_data[, names(V), with = FALSE])
+      X_in <- eif_data %>%
+        data.table::copy() %>%
+        dplyr::select(names(V)) %>%
+        as.matrix()
       colnames(X_in) <- NULL
-      # NOTE: need to specify further arguments for better performance
+
+      # fit HAL with custom arguments to get results similar to halplus
       eif_mod <- hal9001::fit_hal(
         X = X_in,
         Y = as.numeric(eif_data$eif),
-        # fit_type = "lassi",
+        standardize = FALSE,
+        fit_type = "glmnet", # "lassi",
+        lambda = exp(seq(3, -50, length = 2000)),
         yolo = FALSE
       )
       # compute expectation by invoking the predict method
@@ -176,7 +186,7 @@ ipcw_tmle_proc <- function(data_in,
       # compute expectation by invoking the predict method
       eif_pred <- stats::predict(
         eif_mod,
-        newdata = data.table::as.data.table(V)
+        newdata = V
       ) %>%
         as.numeric()
     }

@@ -25,9 +25,11 @@ fit_fluc <- function(Y,
                      method = c("standard", "weighted")) {
 
   # scale the outcome for the logit transform
-  y_star <- bound_scaling(Y = Y,
-                          scale_target = Y,
-                          scale_type = "bound_in_01")
+  y_star <- bound_scaling(
+    Y = Y,
+    scale_target = Y,
+    scale_type = "bound_in_01"
+  )
 
   # extract Q and obtain logit transform
   logit_Qn <- stats::qlogis(Qn_scaled$noshift)

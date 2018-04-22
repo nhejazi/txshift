@@ -287,17 +287,21 @@ tmle_txshift <- function(W,
       # overwrite and update quantities to be used in the next iteration
       Qn_estim_use <- data.table::as.data.table(
         list(
-        # NOTE: need to re-scale estimated outcomes values within bounds of Y
-          bound_scaling(Y = Y,
-                        pred_vals = ipcw_tmle_comp$fluc_mod_out$Qn_noshift_star,
-                        scale_target =
-                          ipcw_tmle_comp$fluc_mod_out$Qn_noshift_star,
-                        scale_type = "bound_in_01"),
-          bound_scaling(Y = Y,
-                        pred_vals = ipcw_tmle_comp$fluc_mod_out$Qn_shift_star,
-                        scale_target =
-                          ipcw_tmle_comp$fluc_mod_out$Qn_shift_star,
-                        scale_type = "bound_in_01")
+          # NOTE: need to re-scale estimated outcomes values within bounds of Y
+          bound_scaling(
+            Y = Y,
+            pred_vals = ipcw_tmle_comp$fluc_mod_out$Qn_noshift_star,
+            scale_target =
+              ipcw_tmle_comp$fluc_mod_out$Qn_noshift_star,
+            scale_type = "bound_in_01"
+          ),
+          bound_scaling(
+            Y = Y,
+            pred_vals = ipcw_tmle_comp$fluc_mod_out$Qn_shift_star,
+            scale_target =
+              ipcw_tmle_comp$fluc_mod_out$Qn_shift_star,
+            scale_type = "bound_in_01"
+          )
         )
       )
       data.table::setnames(Qn_estim_use, names(Qn_estim))
