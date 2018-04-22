@@ -15,4 +15,7 @@ wrap_in_try(fun, ...)
 Function factory that generates versions of functions wrapped in \code{try}.
 Originally fround in and borrowed from package \code{origami}.
 }
+\author{
+Jeremy Coyle
+}
 \keyword{internal}

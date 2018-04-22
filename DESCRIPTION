@@ -1,7 +1,7 @@
 Package: txshift
-Title: Targeted Maximum Likelihood Estimation of Causal Effects of Continuous
-  Interventions with Stochastic Treatment Regimes
-Version: 0.1.3
+Title: Targeted Minimum Loss-Based Estimation of the Causal Effect of Stochastic
+  Interventions and Variable Importance Analysis
+Version: 0.1.4
 Authors@R: c(
     person("Nima", "Hejazi", email = "nhejazi@berkeley.edu",
            role = c("aut", "cre", "cph"),
@@ -10,6 +10,8 @@ Authors@R: c(
            role = "aut",
            comment = c(ORCID = "0000-0002-1019-8343")),
     person("Iván", "Díaz", email = "ild2005@med.cornell.edu",
+           role = "ctb"),
+    person("Jeremy", "Coyle", email = "jeremy.coyle@gmail.com",
            role = "ctb"),
     person("Mark", "van der Laan", email = "laan@berkeley.edu",
            role = c("aut", "ths"))

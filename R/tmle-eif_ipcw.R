@@ -52,11 +52,8 @@ tmle_eif_ipcw <- function(fluc_mod_out,
     )
   )
 
-  # compute the variance based on the EIF
-  # NOTE: scale by length of observations to get on same scale as parameter
-  # NOTE: var(eif) and mean(eif^2) are nearly equivalent
+  # compute the variance based on the EIF and scale by number of observations
   # var_eif <- mean(eif^2) / length(Delta)  <= denom since we use full N
-  # this is not the full eif, just the ipcw full data eif
   var_eif <- stats::var(eif) / length(Delta)
 
   # return the variance and the EIF value at each observation

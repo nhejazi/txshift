@@ -1,4 +1,4 @@
-#' Compute Targeted Maximum Likelihood Estimate for Treatment Shift Parameter
+#' Compute Targeted Minimum Loss-Based Estimate of Shifted Treatment Parameter
 #'
 #' description THIS IS A USER-FACING WRAPPER FUNCTION
 #'
@@ -29,9 +29,29 @@
 #'  (EIF) to be used in declaring convergence (theoretically, should be zero).
 #' @param max_iter A \code{numeric} integer giving the maximum number of steps
 #'  to be taken in iterating to a solution of the efficient influence function.
-#' @param ipcw_fit_args ...
-#' @param g_fit_args ...
-#' @param Q_fit_args ...
+#' @param ipcw_fit_args A \code{list} of arguments, all but one of which are
+#'  passed to \code{est_ipcw}. For details, please consult the documentation for
+#'  \code{est_ipcw}. The first element of this (i.e., \code{fit_type}) is used
+#'  to determine how this regression is fit: "glm" for generalized linear model,
+#'  "sl" for a Super Learner, and "fit_spec" a user-specified input of the form
+#'  produced by \code{est_ipcw}. NOTE THAT this first argument is not passed to
+#'  \code{est_ipcw}.
+#' @param g_fit_args A \code{list} of arguments, all but one of which are passed
+#'  to \code{est_g}. For further details, please consult the documentation for
+#'  \code{est_g}. The first element of this (i.e., \code{fit_type}) is used to
+#'  determine how this regression is fit: "glm" for a generalized linear model
+#'  for fitting densities via the \code{condensier} package, "sl" for \code{sl3}
+#'  learners used to fit Super Learner to densities via \code{Lrnr_condensier},
+#'  and "fit_spec" to user-specified input of the form produced by \code{est_g}.
+#'  NOTE THAT this first argument is not passed to \code{est_g}.
+#' @param Q_fit_args A \code{list} of arguments, all but one of which are passed
+#'  to \code{est_Q}. For further details, please consult the documentation for
+#'  \code{est_Q}. The first element of this (i.e., \code{fit_type}) is used to
+#'  determine how this regression is fit: "glm" for a generalized linear model
+#'  for the outcome regression, "sl" for \code{sl3} learners used to fit a Super
+#'  Learner for the outcome regression, and "fit_spec" to user-specified input
+#'  of the form produced by \code{est_Q}. NOTE THAT this first argument is not
+#'  passed to \code{est_g}.
 #' @param ipcw_fit_spec User-specified version of the argument above for fitting
 #'  the censoring mechanism (\code{ipcw_fit_args}). Consult the documentation
 #'  for that argument for details on how to properly use this. In general, this
@@ -55,7 +75,7 @@
 #'  function (EIF) is regressed against the covariates that contribute to the
 #'  censoring mechanism (i.e., EIF ~ V | C = 1). In general, this should only be
 #'  used by advanced users familiar with both the underlying theory and this
-#'  software implementation of said theory.
+#'  particular implementation of that theory.
 #'
 #' @importFrom condensier speedglmR6
 #' @importFrom data.table as.data.table setnames
@@ -77,11 +97,11 @@ tmle_txshift <- function(W,
                          eif_tol = 1 / length(Y),
                          max_iter = 1e4,
                          ipcw_fit_args = list(
-                           fit_type = c("glm", "sl"),
+                           fit_type = c("glm", "sl", "fit_spec"),
                            sl_lrnrs = NULL
                          ),
                          g_fit_args = list(
-                           fit_type = c("glm", "sl"),
+                           fit_type = c("glm", "sl", "fit_spec"),
                            nbins = 35,
                            bin_method = "dhist",
                            bin_estimator =
@@ -90,7 +110,7 @@ tmle_txshift <- function(W,
                            sl_lrnrs_dens = NULL
                          ),
                          Q_fit_args = list(
-                           fit_type = c("glm", "sl"),
+                           fit_type = c("glm", "sl", "fit_spec"),
                            glm_formula = "Y ~ .",
                            sl_lrnrs = NULL
                          ),
@@ -141,10 +161,10 @@ tmle_txshift <- function(W,
       recursive = FALSE
     )
     # compute the IPC weights by passing all args to the relevant function
-    if (is.null(ipcw_fit_spec)) {
-      ipcw_out <- do.call(est_ipcw, ipcw_estim_args)
-    } else {
+    if (!is.null(ipcw_fit_spec) & ipcw_fit_type == "fit_spec") {
       ipcw_out <- ipcw_fit_spec
+    } else {
+      ipcw_out <- do.call(est_ipcw, ipcw_estim_args)
     }
     cens_weights <- ipcw_out$ipc_weights
     data_internal <- data.table::as.data.table(list(W, A = A, C = C, Y = Y)) %>%
@@ -160,7 +180,9 @@ tmle_txshift <- function(W,
   ##############################################################################
   # initial estimate of the treatment mechanism (propensity score)
   ##############################################################################
-  if (is.null(gn_fit_spec)) {
+  if (!is.null(gn_fit_spec) & g_fit_type == "fit_spec") {
+    gn_estim <- gn_fit_spec
+  } else {
     gn_estim_in <- list(
       A = data_internal$A,
       W = data_internal[, W_names, with = FALSE],
@@ -176,7 +198,7 @@ tmle_txshift <- function(W,
         list(gn_estim_in, std_args = list(g_fit_args)),
         recursive = FALSE
       )
-    } else {
+    } else if (g_fit_type == "sl") {
       # if fitting SL, we can discard all the standard condensier-related args
       g_fit_args <- g_fit_args[stringr::str_detect(names(g_fit_args), "sl")]
       # reshapes list of args to make passing to do.call possible
@@ -184,14 +206,14 @@ tmle_txshift <- function(W,
     }
     # pass the relevant args for computing the propensity score to do.call
     gn_estim <- do.call(est_g, gn_estim_args)
-  } else {
-    gn_estim <- gn_fit_spec
   }
 
   ##############################################################################
   # initial estimate of the outcome regression
   ##############################################################################
-  if (is.null(Qn_fit_spec)) {
+  if (!is.null(Qn_fit_spec) & Q_fit_type == "fit_spec") {
+    Qn_estim <- Qn_fit_spec
+  } else {
     Qn_estim_in <- list(
       Y = data_internal$Y,
       A = data_internal$A,
@@ -204,8 +226,6 @@ tmle_txshift <- function(W,
     Qn_estim_args <- unlist(list(Qn_estim_in, Q_fit_args), recursive = FALSE)
     # invoke function to estimate outcome regression via do.call
     Qn_estim <- do.call(est_Q, Qn_estim_args)
-  } else {
-    Qn_estim <- Qn_fit_spec
   }
 
   ##############################################################################
@@ -231,7 +251,7 @@ tmle_txshift <- function(W,
     Qn_estim_use <- Qn_estim
 
     # figure out columns of internal data structure used for censoring
-    # this is a horribly ugly HACK that solves a naming problem...
+    # TODO: FIX -- this is a horribly UGLY HACK that solves a naming problem...
     V_cols <- matrix(NA, nrow = ncol(V_in), ncol = ncol(data_internal))
     for (i in seq_along(V_in)) {
       V_cols[i, ] <- stringr::str_detect(
@@ -264,16 +284,20 @@ tmle_txshift <- function(W,
         eif_reg_spec = eif_reg_spec
       )
 
-      # overwrite/update quantities to be used in next iteration
-      # NOTE FOR NIMA: don't know if you have a function to do this
-      # rescaling or not (hmm, there is but it's too dumb to handle this...)
-      y_min <- min(Y)
-      y_max <- max(Y)
+      # overwrite and update quantities to be used in the next iteration
       Qn_estim_use <- data.table::as.data.table(
         list(
-          (ipcw_tmle_comp$fluc_mod_out$Qn_noshift_star - y_min) /
-            (y_max - y_min),
-          (ipcw_tmle_comp$fluc_mod_out$Qn_shift_star - y_min) / (y_max - y_min)
+        # NOTE: need to re-scale estimated outcomes values within bounds of Y
+          bound_scaling(Y = Y,
+                        pred_vals = ipcw_tmle_comp$fluc_mod_out$Qn_noshift_star,
+                        scale_target =
+                          ipcw_tmle_comp$fluc_mod_out$Qn_noshift_star,
+                        scale_type = "bound_in_01"),
+          bound_scaling(Y = Y,
+                        pred_vals = ipcw_tmle_comp$fluc_mod_out$Qn_shift_star,
+                        scale_target =
+                          ipcw_tmle_comp$fluc_mod_out$Qn_shift_star,
+                        scale_type = "bound_in_01")
         )
       )
       data.table::setnames(Qn_estim_use, names(Qn_estim))

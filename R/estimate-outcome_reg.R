@@ -31,7 +31,6 @@
 #' @keywords internal
 #'
 #' @export
-#'
 #
 est_Q <- function(Y,
                   A,
@@ -45,7 +44,8 @@ est_Q <- function(Y,
   # make data objects from inputs but using the outcome y_star instead of y
   ##############################################################################
   # scale the outcome for the logit transform
-  y_star <- bound_scaling(Y = Y, scale = "zero_one")
+  y_star <- bound_scaling(Y = Y, scale_type = "bound_in_01")
+
   # generate the data objects for fitting the outcome regression
   data_in <- data.table::as.data.table(cbind(y_star, A, W))
   if (!is.matrix(W)) W <- as.matrix(W)

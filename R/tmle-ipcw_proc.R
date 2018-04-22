@@ -1,6 +1,4 @@
-utils::globalVariables(c("."))
-
-#' Iterative Computation of an IPCW-TMLE
+#' Iterative Computation of IPCW-TMLE
 #'
 #' An adaptation of the general IPCW-TMLE formulation of Rose & van der Laan as
 #' well as its associated algorithm. This may be used to iteratively construct
@@ -60,7 +58,7 @@ utils::globalVariables(c("."))
 #'
 #' @importFrom stats var glm qlogis fitted predict as.formula
 #' @importFrom data.table as.data.table set copy
-#' @importFrom dplyr "%>%"
+#' @importFrom dplyr "%>%" select
 #' @importFrom sl3 sl3_Task
 #' @importFrom hal9001 fit_hal
 #'
@@ -80,10 +78,13 @@ ipcw_tmle_proc <- function(data_in,
                            Qn_estim,
                            Hn_estim,
                            fluc_method = c("standard", "weighted"),
-                           fit_type = c("glm", "sl"),
+                           fit_type = c("glm", "sl", "fit_spec"),
                            eif_tol = 1e-9,
                            sl_lrnrs = NULL,
                            eif_reg_spec = FALSE) {
+  # check arguments with options
+  fluc_method <- match.arg(fluc_method)
+  fit_type  <- match.arg(fit_type)
 
   # fit logistic regression to fluctuate along the sub-model with NEW WEIGHTS
   fitted_fluc_mod <- fit_fluc(
@@ -111,8 +112,9 @@ ipcw_tmle_proc <- function(data_in,
   if (fit_type == "sl" & !is.null(sl_lrnrs)) {
     # organize EIF data as data.table
     eif_data <- data.table::copy(data_in) %>%
-      subset(., select = names(V))
-    data.table::set(eif_data, j = "eif", value = tmle_eif_out$eif[C == 1])
+      dplyr::select(names(V)) %>%
+      data.table::as.data.table() %>%
+      data.table::set(eif_data, j = "eif", value = tmle_eif_out$eif[C == 1])
 
     # make sl3 task from new data.table
     eif_task <- sl3::sl3_Task$new(
@@ -201,7 +203,7 @@ ipcw_tmle_proc <- function(data_in,
 
   # sanity check: score of the logistic regression fluctuation model
   ipc_check <- mean((C - ipcw_fluc_pred) * (eif_pred / ipc_mech))
-  # stopifnot(ipc_check < eif_tol)
+  stopifnot(ipc_check < eif_tol)
 
   # so, now we need weights to feed back into the previous steps
   ipc_weights <- C / ipcw_fluc_pred

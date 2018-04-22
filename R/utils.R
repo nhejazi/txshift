@@ -112,28 +112,41 @@ bound_precision <- function(vals) {
 
 ################################################################################
 
-#' Induce Scaling
+#' Scaling by Inducing Boundedness
 #'
 #' description
 #'
-#' @param Y ...
-#' @param preds_scaled ...
-#' @param scale ...
+#' @param Y A \code{numeric} vector corresponding to the observed values of the
+#'  outcome variable of interest.
+#' @param pred_vals A \code{numeric} vector corresponding to predicted values of
+#'  the outcome of interest (i.e., Qn in the Targeted Learning notation).
+#' @param scale_target A \code{numeric} vector specifying the quantity that is
+#'  to be re-scaled in the way specified below in \code{scale_type}.
+#' @param scale_type An atomic \code{character} vector specifying the type of
+#'  scaling to be performed. Use "bound_in_01" to force \code{scale_target}
+#'  above to be bounded in the interval (0, 1) with respect to the outcome
+#'  \code{Y}. The other option, "observed_vals", re-scales \code{scale_target}
+#'  to be on the same scale as the input \code{Y}.
 #'
 #' @keywords internal
 #
 bound_scaling <- function(Y,
-                          preds_scaled = NULL,
-                          scale = c("zero_one", "original")) {
+                          pred_vals = NULL,
+                          scale_target = Y,
+                          scale_type = c("bound_in_01", "observed_vals")) {
+  # check arguments
+  scale_type <- match.arg(scale_type)
+
+  # compute minimum and maximum of Y
   y_min <- min(Y)
   y_max <- max(Y)
 
-  if (scale == "zero_one") {
-    y_star <- (Y - y_min) / (y_max - y_min)
-    return(y_star)
-  } else if (scale == "original" & !is.null(preds_scaled)) {
-    preds_original <- (y_max - y_min) * preds_scaled + y_min
-    return(preds_original)
+  if (scale_type == "bound_in_01") {
+    out_star <- (scale_target - y_min) / (y_max - y_min)
+    return(out_star)
+  } else if (scale_type == "observed_vals") {
+    out_observed_scale <- (y_max - y_min) * scale_target + y_min
+    return(out_observed_scale)
   }
 }
 
@@ -148,6 +161,8 @@ bound_scaling <- function(Y,
 #' @param ... Additional arguments passed to the previous argument \code{fun}.
 #'
 #' @keywords internal
+#'
+#' @author Jeremy Coyle
 #
 wrap_in_try <- function(fun, ...) {
   wrapped <- function(...)
