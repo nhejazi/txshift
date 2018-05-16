@@ -112,6 +112,7 @@ C <- rbinom(n_obs, 1, plogis(W + Y))
 # fit an IPCW-TMLE to account for this censoring process:
 ipcwtmle_shift <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
                                C = C, V = c("W", "Y"),
+                               max_iter = 5,  # limit iterations for speed
                                ipcw_fit_args = list(fit_type = "glm"),
                                g_fit_args = list(fit_type = "glm",
                                                  nbins = 25,
