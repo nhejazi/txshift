@@ -11,8 +11,8 @@ tmle_txshift(W, A, Y, C = rep(1, length(Y)), V = NULL, delta = 0,
   "fit_spec"), nbins = 35, bin_method = "dhist", bin_estimator =
   condensier::speedglmR6$new(), parfit = FALSE, sl_lrnrs_dens = NULL),
   Q_fit_args = list(fit_type = c("glm", "sl", "fit_spec"), glm_formula =
-  "Y ~ .", sl_lrnrs = NULL), ipcw_fit_spec = NULL, gn_fit_spec = NULL,
-  Qn_fit_spec = NULL, eif_reg_spec = FALSE)
+  "Y ~ .", sl_lrnrs = NULL), eif_reg_spec = TRUE, ipcw_efficiency = TRUE,
+  ipcw_fit_spec = NULL, gn_fit_spec = NULL, Qn_fit_spec = NULL)
 }
 \arguments{
 \item{W}{A \code{matrix} or \code{data.frame} corresponding to a set of
@@ -77,6 +77,19 @@ Learner for the outcome regression, and "fit_spec" to user-specified input
 of the form produced by \code{est_Q}. NOTE THAT this first argument is not
 passed to \code{est_g}.}
 
+\item{eif_reg_spec}{Whether a flexible function ought to be used in the
+computation of a targeting step for the censored data case. By default, the
+method used is a nonparametric regression based on the Highly Adaptive LASSO
+(from package \code{hal9001}) is used. If set to \code{FALSE}, then a simple
+linear regression model is assumed. In this step, the efficient influence
+function (EIF) is regressed against the covariates that contribute to the
+censoring mechanism (i.e., EIF ~ V | C = 1).}
+
+\item{ipcw_efficiency}{Whether to invoke an augmentation of the IPCW-TMLE
+procedure that performs an iterative process to ensure efficiency of the
+resulting estimate. The default is \code{TRUE}; only set to \code{FALSE} if
+possible inefficiency of the IPCW-TMLE is not a concern.}
+
 \item{ipcw_fit_spec}{User-specified version of the argument above for fitting
 the censoring mechanism (\code{ipcw_fit_args}). Consult the documentation
 for that argument for details on how to properly use this. In general, this
@@ -94,16 +107,6 @@ the censoring mechanism (\code{Q_fit_args}). Consult the documentation for
 that argument for details on how to properly use this. In general, this
 should only be used by advanced users familiar with both the underlying
 theory and this software implementation of said theory.}
-
-\item{eif_reg_spec}{Whether a flexible function ought to be used in the
-computation of a targeting step for the censored data case. By default, the
-assumed regression is a simple linear model. If set to \code{TRUE}, then a
-nonparametric regression based on the Highly Adaptive LASSO (from package
-\code{hal9001}) is used instead. In this step, the efficient influence
-function (EIF) is regressed against the covariates that contribute to the
-censoring mechanism (i.e., EIF ~ V | C = 1). In general, this should only be
-used by advanced users familiar with both the underlying theory and this
-particular implementation of that theory.}
 }
 \value{
 S3 object of class \code{txshift} containing the results of the

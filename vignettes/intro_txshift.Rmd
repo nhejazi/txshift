@@ -86,10 +86,11 @@ the `tmle_shifttx` function, providing the standard inputs listed below...
 ```{r}
 tmle_glm_shift_1 <- tmle_txshift(W = W, A = A, Y = Y, delta = delta,
                                  fluc_method = "standard",
-                                 ipcw_fit_args = NULL,
-                                 g_fit_args = list(fit_type = "glm", nbins = 20,
+                                 g_fit_args = list(fit_type = "glm",
+                                                   nbins = 20,
                                                    bin_method = "dhist",
-                                                   bin_estimator = speedglmR6$new(),
+                                                   bin_estimator =
+                                                     speedglmR6$new(),
                                                    parfit = FALSE),
                                  Q_fit_args = list(fit_type = "glm",
                                                    glm_formula = "Y ~ .")
@@ -107,10 +108,11 @@ details on potential benefits this approach may have.
 ```{r}
 tmle_glm_shift_2 <- tmle_txshift(W = W, A = A, Y = Y, delta = delta,
                                  fluc_method = "weighted",
-                                 ipcw_fit_args = NULL,
-                                 g_fit_args = list(fit_type = "glm", nbins = 20,
+                                 g_fit_args = list(fit_type = "glm",
+                                                   nbins = 20,
                                                    bin_method = "dhist",
-                                                   bin_estimator = speedglmR6$new(),
+                                                   bin_estimator =
+                                                     speedglmR6$new(),
                                                    parfit = FALSE),
                                  Q_fit_args = list(fit_type = "glm",
                                                    glm_formula = "Y ~ .")
@@ -118,21 +120,24 @@ tmle_glm_shift_2 <- tmle_txshift(W = W, A = A, Y = Y, delta = delta,
 summary(tmle_glm_shift_2)
 ```
 
-### Interlude: Constructing Super Learners with `sl3`
+### Interlude: Constructing Optimal Stacked Regressions with `sl3`
 
 ```{r}
 # SL learners to be used for most fits (e.g., IPCW, outcome regression)
-lrnr_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm_fast",
-                               "Lrnr_randomForest")
+lrnr_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm_fast", "Lrnr_ranger")
 sl_lrn <- Lrnr_sl$new(learners = lrnr_lib, metalearner = Lrnr_nnls$new())
 
 # SL learners for conditional densities to be used for the propensity score fit
 lrnr_dens_lib <- make_learner_stack(list("Lrnr_condensier", nbins = 35,
-                                          bin_estimator = Lrnr_mean$new(),
+                                          bin_estimator = Lrnr_glm_fast$new(),
+                                          bin_method = "equal.len",
+                                          pool = FALSE),
+                                    list("Lrnr_condensier", nbins = 30,
+                                          bin_estimator = Lrnr_ranger$new(),
                                           bin_method = "equal.len",
                                           pool = FALSE),
                                     list("Lrnr_condensier", nbins = 25,
-                                          bin_estimator = Lrnr_glm_fast$new(),
+                                          bin_estimator = Lrnr_ranger$new(),
                                           bin_method = "equal.len",
                                           pool = FALSE)
                                    )
@@ -140,7 +145,7 @@ sl_lrn_dens <- Lrnr_sl$new(learners = lrnr_dens_lib,
                            metalearner = Lrnr_solnp_density$new())
 ```
 
-### Estimating Stochastic Interventions Effects with Super Learners
+### Estimating Stochastic Interventions Effects with Optimal Stacked Regressions
 
 Using the framework provided by the `sl3` package, the nuisance parameters of
 the TML estimator may be fit with ensemble learning, using the cross-validation
@@ -149,7 +154,6 @@ framework of the Super Learner algorithm of [INSERT REF].
 ```{r}
 tmle_sl_shift_1 <- tmle_txshift(W = W, A = A, Y = Y, delta = delta,
                                 fluc_method = "standard",
-                                ipcw_fit_args = NULL,
                                 g_fit_args = list(fit_type = "sl",
                                                   sl_lrnrs = sl_lrn_dens),
                                 Q_fit_args = list(fit_type = "sl",
@@ -165,7 +169,6 @@ than using such an auxiliary covariate directly in the regression procedure:
 ```{r}
 tmle_sl_shift_2 <- tmle_txshift(W = W, A = A, Y = Y, delta = delta,
                                 fluc_method = "weighted",
-                                ipcw_fit_args = NULL,
                                 g_fit_args = list(fit_type = "sl",
                                                   sl_lrnrs = sl_lrn_dens),
                                 Q_fit_args = list(fit_type = "sl",
@@ -220,7 +223,7 @@ $$\sigma_n^2 = \frac{1}{n} \sum_{i = 1}^{n} D^2(\bar{Q}_n^*, g_n)(O_i)$$
 
 ---
 
-## Advanced Usage: User-Specified Regressions
+## _Advanced Usage:_ User-Specified Regressions
 
 In some special cases it may be useful for the experienced user to compute the
 treatment mechanism and outcome regressions separately (i.e., outside of the

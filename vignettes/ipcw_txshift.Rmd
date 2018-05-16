@@ -34,7 +34,7 @@ set.seed(429153)
 
 ## Data and Notation
 
-TODO: ADD STUFF ON CENSORING
+**TODO:** ADD STUFF ON CENSORING
 
 1. Start with a simple additive shift -- i.e., $d(a,w) = a + \delta$ if
    $a < u(w) - \delta$ or $d(a, w) = a$ if $a \geq u(w) - \delta$.
@@ -121,12 +121,11 @@ tmle_glm_shift_2 <- tmle_txshift(W = W, A = A, Y = Y,
 summary(tmle_glm_shift_2)
 ```
 
-### Interlude: Constructing Super Learners with `sl3`
+### Interlude: Constructing Optimal Stacked Regressions with `sl3`
 
 ```{r}
 # SL learners to be used for most fits (e.g., IPCW, outcome regression)
-lrnr_lib <- make_learner_stack("Lrnr_glm_fast", "Lrnr_randomForest",
-                               "Lrnr_mean")
+lrnr_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm_fast", "Lrnr_ranger")
 sl_lrn <- Lrnr_sl$new(learners = lrnr_lib, metalearner = Lrnr_nnls$new())
 
 # SL learners for conditional densities to be used for the propensity score fit
@@ -134,8 +133,12 @@ lrnr_dens_lib <- make_learner_stack(list("Lrnr_condensier", nbins = 35,
                                           bin_estimator = Lrnr_glm_fast$new(),
                                           bin_method = "equal.len",
                                           pool = FALSE),
+                                    list("Lrnr_condensier", nbins = 30,
+                                          bin_estimator = Lrnr_ranger$new(),
+                                          bin_method = "equal.len",
+                                          pool = FALSE),
                                     list("Lrnr_condensier", nbins = 25,
-                                          bin_estimator = Lrnr_glm_fast$new(),
+                                          bin_estimator = Lrnr_ranger$new(),
                                           bin_method = "equal.len",
                                           pool = FALSE)
                                    )
@@ -143,7 +146,7 @@ sl_lrn_dens <- Lrnr_sl$new(learners = lrnr_dens_lib,
                            metalearner = Lrnr_solnp_density$new())
 ```
 
-### Estimating Stochastic Interventions Effects with Super Learners
+### Estimating the IPCW-TMLE with Optimal Stacked Regressions
 
 Using the framework provided by the `sl3` package, the nuisance parameters of
 the TML estimator may be fit with ensemble learning, using the cross-validation
@@ -185,6 +188,38 @@ tmle_sl_shift_2 <- tmle_txshift(W = W, A = A, Y = Y,
 summary(tmle_sl_shift_2)
 ```
 
+### Estimating _Inefficient_ IPCW-TMLEs with Optimal Stacked Regressions
+
+Utilizing the `sl3` R package in exactly the same manner, it is also possible to
+estimate _inefficient_ IPCW-TML estimators with `txshift`. The inefficient
+IPCW-TMLE performs nearly all of the same computations as the efficient version
+of the estimator, eschewing only the iterative targeting procedure performed
+over a more complex efficient influence function; the interested reader is
+referred to @rose2011targeted2sd for further details on the differences between
+the efficient and inefficient IPCW-TMLEs. By default, an efficient IPCW-TMLE is
+computed when censoring is detected; however, this may be disable by setting
+the `ipcw_efficiency` argument to `FALSE` like so
+
+```{r}
+tmle_sl_ineffic <- tmle_txshift(W = W, A = A, Y = Y,
+                                C = C, V = c("W", "Y"),
+                                delta = delta,
+                                fluc_method = "standard",
+                                ipcw_fit_args = list(fit_type = "sl",
+                                                     sl_lrnrs = sl_lrn),
+                                g_fit_args = list(fit_type = "sl",
+                                                  sl_lrnrs = sl_lrn_dens),
+                                Q_fit_args = list(fit_type = "sl",
+                                                  sl_lrnrs = sl_lrn),
+                                ipcw_efficiency = FALSE
+                               )
+summary(tmle_sl_ineffic)
+```
+
+Please note that in such cases, the value of `n_iter` in the resulting output
+should be **_exactly zero_**, as this indicates that the iterative procedure
+that is used to achieve efficiency has been skipped.
+
 ### Statistical Inference for Targeted Maximum Likelihood Estimates
 
 For a discussion of the procedure for obtaining statistical inference for TML
@@ -198,7 +233,7 @@ the inferential procedure...
 
 ---
 
-## Advanced Usage: User-Specified Regressions
+## _Advanced Usage:_ User-Specified Regressions
 
 In some special cases it may be useful for the experienced user to compute the
 censoring mechanism, treatment mechanism, and outcome mechanism regressions

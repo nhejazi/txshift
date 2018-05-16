@@ -6,6 +6,7 @@ init:
         $ErrorActionPreference = "Stop"
         Invoke-WebRequest http://raw.github.com/krlmlr/r-appveyor/master/scripts/appveyor-tool.ps1 -OutFile "..\appveyor-tool.ps1"
         Import-Module '..\appveyor-tool.ps1'
+
 install:
   ps: Bootstrap
 
@@ -16,7 +17,7 @@ cache:
 branches:
   only:
     - master
-    - develop
+    - devel
 
 environment:
   global:
@@ -29,7 +30,11 @@ environment:
 
 build_script:
   - travis-tool.sh install_deps
+  - travis-tool.sh install_github r-lib/devtools
   - travis-tool.sh install_github jimhester/covr
+  - travis-tool.sh install_github osofr/condensier
+  - travis-tool.sh install_github jeremyrcoyle/hal9001
+  - travis-tool.sh install_github tlverse/sl3
 
 test_script:
   - travis-tool.sh run_tests
@@ -39,7 +44,7 @@ on_failure:
   - appveyor PushArtifact failure.zip
 
 on_success:
-  - Rscript -e "covr::codecov()"
+  - Rscript -e "covr::codecov(line_exclusions = list('R/plots.R', 'R/utils.R'))"
 
 artifacts:
   - path: '*.Rcheck\**\*.log'

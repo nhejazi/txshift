@@ -52,6 +52,17 @@
 #'  Learner for the outcome regression, and "fit_spec" to user-specified input
 #'  of the form produced by \code{est_Q}. NOTE THAT this first argument is not
 #'  passed to \code{est_g}.
+#' @param eif_reg_spec Whether a flexible function ought to be used in the
+#'  computation of a targeting step for the censored data case. By default, the
+#'  method used is a nonparametric regression based on the Highly Adaptive LASSO
+#'  (from package \code{hal9001}) is used. If set to \code{FALSE}, then a simple
+#'  linear regression model is assumed. In this step, the efficient influence
+#'  function (EIF) is regressed against the covariates that contribute to the
+#'  censoring mechanism (i.e., EIF ~ V | C = 1).
+#' @param ipcw_efficiency Whether to invoke an augmentation of the IPCW-TMLE
+#'  procedure that performs an iterative process to ensure efficiency of the
+#'  resulting estimate. The default is \code{TRUE}; only set to \code{FALSE} if
+#'  possible inefficiency of the IPCW-TMLE is not a concern.
 #' @param ipcw_fit_spec User-specified version of the argument above for fitting
 #'  the censoring mechanism (\code{ipcw_fit_args}). Consult the documentation
 #'  for that argument for details on how to properly use this. In general, this
@@ -67,15 +78,6 @@
 #'  that argument for details on how to properly use this. In general, this
 #'  should only be used by advanced users familiar with both the underlying
 #'  theory and this software implementation of said theory.
-#' @param eif_reg_spec Whether a flexible function ought to be used in the
-#'  computation of a targeting step for the censored data case. By default, the
-#'  assumed regression is a simple linear model. If set to \code{TRUE}, then a
-#'  nonparametric regression based on the Highly Adaptive LASSO (from package
-#'  \code{hal9001}) is used instead. In this step, the efficient influence
-#'  function (EIF) is regressed against the covariates that contribute to the
-#'  censoring mechanism (i.e., EIF ~ V | C = 1). In general, this should only be
-#'  used by advanced users familiar with both the underlying theory and this
-#'  particular implementation of that theory.
 #'
 #' @importFrom condensier speedglmR6
 #' @importFrom data.table as.data.table setnames
@@ -114,10 +116,11 @@ tmle_txshift <- function(W,
                            glm_formula = "Y ~ .",
                            sl_lrnrs = NULL
                          ),
+                         eif_reg_spec = TRUE,
+                         ipcw_efficiency = TRUE,
                          ipcw_fit_spec = NULL,
                          gn_fit_spec = NULL,
-                         Qn_fit_spec = NULL,
-                         eif_reg_spec = FALSE) {
+                         Qn_fit_spec = NULL) {
   ##############################################################################
   # TODO: check arguments and set up some objects for programmatic convenience
   ##############################################################################
@@ -236,9 +239,9 @@ tmle_txshift <- function(W,
   ##############################################################################
   # invoke efficient IPCW-TMLE, per Rose & van der Laan (2011), if necessary
   ##############################################################################
-  if (!all(C == 1) & !is.null(V)) {
+  n_steps <- 0  # define iteration outside to easily return in output object
+  if (ipcw_efficiency & !all(C == 1) & !is.null(V)) {
     # Efficient implementation of the IPCW-TMLE
-    n_steps <- 0
     eif_mean <- Inf
     conv_res <- replicate(3, rep(NA, max_iter))
 
@@ -342,22 +345,38 @@ tmle_txshift <- function(W,
   ##############################################################################
   # create output object
   ##############################################################################
-  if (!all(C == 1) & !is.null(V)) {
-    # replace variance in this object with the correct variance
-    ipcw_tmle_comp$tmle_eif$var <- eif_var
+  if (ipcw_efficiency & !all(C == 1) & !is.null(V)) {
+ 
+    # replace variance in this object with the updated variance if iterative
+    if (exists("eif_var")) {
+      ipcw_tmle_comp$tmle_eif$var <- eif_var
+    }
+
     # return only the useful convergence results
     conv_results_out <- conv_results[!is.na(rowSums(conv_results)), ]
+
+    # create output object
     txshift_out <- unlist(
       list(
         call = call,
         ipcw_tmle_comp$tmle_eif,
-        iter_res = list(conv_results_out)
+        iter_res = list(conv_results_out),
+        n_iter = n_steps
       ),
       recursive = FALSE
     )
   } else {
-    txshift_out <- unlist(list(call = call, tmle_eif_out), recursive = FALSE)
+    # create output object
+    txshift_out <- unlist(
+      list(
+        call = call,
+        tmle_eif_out,
+        n_iter = n_steps
+      ),
+      recursive = FALSE
+    )
   }
+  # S3-ify and return output object
   class(txshift_out) <- "txshift"
   return(txshift_out)
 }
