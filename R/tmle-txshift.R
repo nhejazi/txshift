@@ -170,6 +170,7 @@ tmle_txshift <- function(W,
       ipcw_out <- do.call(est_ipcw, ipcw_estim_args)
     }
     cens_weights <- ipcw_out$ipc_weights
+    cens_weights_norm <- cens_weights / sum(cens_weights)
     data_internal <- data.table::as.data.table(list(W, A = A, C = C, Y = Y)) %>%
       dplyr::filter(C == 1) %>%
       dplyr::select(-C) %>%
@@ -337,7 +338,9 @@ tmle_txshift <- function(W,
       fluc_mod_out = fitted_fluc_mod,
       Hn = Hn_estim,
       Y = data_internal$Y,
+      Delta = C, 
       ipc_weights = cens_weights,
+      ipc_weights_norm = cens_weights_norm,
       tol_eif = eif_tol
     )
   }

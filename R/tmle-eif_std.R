@@ -24,14 +24,19 @@
 tmle_eif <- function(fluc_mod_out,
                      Hn,
                      Y,
+                     Delta = C,
                      ipc_weights = rep(1, length(Y)),
+                     ipc_weights_norm = rep(1, length(Y)),
                      tol_eif = 1e-7) {
   # compute TMLE of the treatment shift parameter
-  psi <- mean(ipc_weights * fluc_mod_out$Qn_shift_star)
+  param_obs_est <- rep(0, length(Delta))
+  param_obs_est[Delta == 1] <- ipc_weights_norm * fluc_mod_out$Qn_shift_star
+  psi <- sum(param_obs_est)
 
   # compute the efficient influence function (EIF) / canonical gradient (D*)
-  eif <- ipc_weights * (Hn$noshift * (Y - fluc_mod_out$Qn_noshift_star) +
-    (fluc_mod_out$Qn_shift_star - psi))
+  eif <- rep(0, length(Delta))
+  eif[Delta == 1] <- ipc_weights * (Hn$noshift *
+    (Y - fluc_mod_out$Qn_noshift_star) +(fluc_mod_out$Qn_shift_star - psi))
 
   # sanity check on EIF
   # NOTE: EIF ~ N(0, V(D(P)(o))), so mean(EIF) ~= 0
