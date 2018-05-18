@@ -8,6 +8,8 @@
 #' @param fluc_mod_out ...
 #' @param Hn ...
 #' @param Y A \code{numeric} vector of observed outcomes.
+#' @param Delta Indicator for missingness. Used for compatibility with the
+#'  routine to compute IPCW-TML estimates.
 #' @param ipc_weights ...
 #' @param tol_eif ...
 #'
@@ -24,7 +26,7 @@
 tmle_eif <- function(fluc_mod_out,
                      Hn,
                      Y,
-                     Delta = C,
+                     Delta = rep(1, length(Y)),
                      ipc_weights = rep(1, length(Y)),
                      ipc_weights_norm = rep(1, length(Y)),
                      tol_eif = 1e-7) {
@@ -36,7 +38,7 @@ tmle_eif <- function(fluc_mod_out,
   # compute the efficient influence function (EIF) / canonical gradient (D*)
   eif <- rep(0, length(Delta))
   eif[Delta == 1] <- ipc_weights * (Hn$noshift *
-    (Y - fluc_mod_out$Qn_noshift_star) +(fluc_mod_out$Qn_shift_star - psi))
+    (Y - fluc_mod_out$Qn_noshift_star) + (fluc_mod_out$Qn_shift_star - psi))
 
   # sanity check on EIF
   # NOTE: EIF ~ N(0, V(D(P)(o))), so mean(EIF) ~= 0

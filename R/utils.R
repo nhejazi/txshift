@@ -69,8 +69,10 @@ summary.txshift <- function(object,
 
   # create output table from input object and confidence interval results
   out <- c(round(c(ci, object$var), digits = 6), eif_mean, object$n_iter)
-  names(out) <- c("lwr_ci", "param_est", "upr_ci", "param_var",
-                  "eif_mean", "n_iter")
+  names(out) <- c(
+    "lwr_ci", "param_est", "upr_ci", "param_var",
+    "eif_mean", "n_iter"
+  )
   print(noquote(out))
 }
 

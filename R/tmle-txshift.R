@@ -158,19 +158,25 @@ tmle_txshift <- function(W,
       V = V_in, Delta = C,
       fit_type = ipcw_fit_type
     )
+
     # reshapes the list of args so that it can be passed to do.call
     ipcw_estim_args <- unlist(
       list(ipcw_estim_in, ipcw_fit_args),
       recursive = FALSE
     )
+
     # compute the IPC weights by passing all args to the relevant function
     if (!is.null(ipcw_fit_spec) & ipcw_fit_type == "fit_spec") {
       ipcw_out <- ipcw_fit_spec
     } else {
       ipcw_out <- do.call(est_ipcw, ipcw_estim_args)
     }
+
+    # extract IPC weights for censoring case and normalize weights
     cens_weights <- ipcw_out$ipc_weights
     cens_weights_norm <- cens_weights / sum(cens_weights)
+
+    # remove column corresponding to indicator for censoring
     data_internal <- data.table::as.data.table(list(W, A = A, C = C, Y = Y)) %>%
       dplyr::filter(C == 1) %>%
       dplyr::select(-C) %>%
@@ -178,6 +184,7 @@ tmle_txshift <- function(W,
   } else {
     # if no censoring, we can just use IPC weights that are identically 1
     cens_weights <- C
+    cens_weights_norm <- cens_weights / sum(cens_weights)
     data_internal <- data.table::as.data.table(list(W, A = A, Y = Y))
   }
 
@@ -338,7 +345,7 @@ tmle_txshift <- function(W,
       fluc_mod_out = fitted_fluc_mod,
       Hn = Hn_estim,
       Y = data_internal$Y,
-      Delta = C, 
+      Delta = C,
       ipc_weights = cens_weights,
       ipc_weights_norm = cens_weights_norm,
       tol_eif = eif_tol
@@ -349,7 +356,7 @@ tmle_txshift <- function(W,
   # create output object
   ##############################################################################
   if (ipcw_efficiency & !all(C == 1) & !is.null(V)) {
- 
+
     # replace variance in this object with the updated variance if iterative
     if (exists("eif_var")) {
       ipcw_tmle_comp$tmle_eif$var <- eif_var

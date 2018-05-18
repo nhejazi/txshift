@@ -4,7 +4,8 @@
 \alias{tmle_eif}
 \title{Compute the Shift Parameter Estimate and the Efficient Influence Function}
 \usage{
-tmle_eif(fluc_mod_out, Hn, Y, ipc_weights = rep(1, length(Y)),
+tmle_eif(fluc_mod_out, Hn, Y, Delta = rep(1, length(Y)),
+  ipc_weights = rep(1, length(Y)), ipc_weights_norm = rep(1, length(Y)),
   tol_eif = 1e-07)
 }
 \arguments{
@@ -13,6 +14,9 @@ tmle_eif(fluc_mod_out, Hn, Y, ipc_weights = rep(1, length(Y)),
 \item{Hn}{...}
 
 \item{Y}{A \code{numeric} vector of observed outcomes.}
+
+\item{Delta}{Indicator for missingness. Used for compatibility with the
+routine to compute IPCW-TML estimates.}
 
 \item{ipc_weights}{...}
 

@@ -89,9 +89,11 @@ Y <- A + W + rnorm(n_obs, mean = 0, sd = 1)
 
 # fit the TMLE
 tmle_shift <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
-                           g_fit_args = list(fit_type = "glm", nbins = 25,
+                           g_fit_args = list(fit_type = "glm",
+                                             nbins = 25,
                                              bin_method = "dhist",
-                                             bin_estimator = speedglmR6$new(),
+                                             bin_estimator =
+                                               speedglmR6$new(),
                                              parfit = FALSE),
                            Q_fit_args = list(fit_type = "glm",
                                              glm_formula = "Y ~ .")
@@ -99,28 +101,36 @@ tmle_shift <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
 
 # conveniently summarize the results
 summary(tmle_shift)
-#>      lwr_ci   param_est      upr_ci   param_var    eif_mean 
-#>    1.957777    2.098018    2.238259     0.00512 3.96109e-12
+#>       lwr_ci    param_est       upr_ci    param_var     eif_mean 
+#>     1.957777     2.098018     2.238259      0.00512 3.961091e-12 
+#>       n_iter 
+#>            0
 
-# under a censoring process (C), fit an IPCW-TMLE:
+# now, let's introduce a censoring process (for two-stage sampling)
+C <- rbinom(n_obs, 1, plogis(W + Y))
+
+# fit an IPCW-TMLE to account for this censoring process:
 ipcwtmle_shift <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
-                               C = rbinom(n_obs, 1, plogis(W + Y)),
-                               V = c("W", "Y"),
+                               C = C, V = c("W", "Y"),
+                               max_iter = 10,  # limit iterations for speed
                                ipcw_fit_args = list(fit_type = "glm"),
-                               g_fit_args = list(fit_type = "glm", nbins = 25,
+                               g_fit_args = list(fit_type = "glm",
+                                                 nbins = 25,
                                                  bin_method = "dhist",
                                                  bin_estimator =
                                                    speedglmR6$new(),
                                                  parfit = FALSE),
                                Q_fit_args = list(fit_type = "glm",
-                                                 glm_formula = "Y ~ .")
+                                                 glm_formula = "Y ~ ."),
+                               eif_reg_spec = FALSE  # fit EIF with a GLM
                               )
-#> Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
 
 # conveniently summarize the results
 summary(ipcwtmle_shift)
-#>        lwr_ci     param_est        upr_ci     param_var      eif_mean 
-#>      1.633732      2.107752      2.581773      0.058492 -5.763619e-05
+#>       lwr_ci    param_est       upr_ci    param_var     eif_mean 
+#>     1.693336     2.121628     2.549921     0.047751 2.161841e-08 
+#>       n_iter 
+#>           10
 ```
 
 -----
@@ -146,18 +156,14 @@ prior to submitting a pull request.
 After using the `txshift` R package, please cite the following:
 
 ``` 
-    @article{hejazi2018txshift,
-      doi = {},
-      url = {},
-      year  = {2018},
-      month = {},
-      publisher = {},
-      volume = {},
+    @manual{hejazi2018txshift,
       author = {Hejazi, Nima S and {van der Laan}, Mark J and Benkeser,
         David C},
       title = {txshift: {Targeted Learning} of stochastic intervention
         effects with robust inference in {R}},
-      journal = {}
+      year  = {2018},
+      url = {https://github.com/nhejazi/txshift},
+      note = {R package version 0.2.0}
     }
 ```
 
@@ -219,7 +225,7 @@ Media.
 
 Muñoz, Iván Díaz, and Mark J van der Laan. 2012. “Population
 Intervention Causal Effects Based on Stochastic Interventions.”
-*Biometrics* 68 (2). Wiley Online Library:541–49.
+*Biometrics* 68 (2). Wiley Online Library: 541–49.
 
 </div>
 
@@ -227,7 +233,7 @@ Intervention Causal Effects Based on Stochastic Interventions.”
 
 Rose, Sherri, and Mark J van der Laan. 2011. “A Targeted Maximum
 Likelihood Estimator for Two-Stage Designs.” *The International Journal
-of Biostatistics* 7 (1):1–21.
+of Biostatistics* 7 (1): 1–21.
 
 </div>
 
