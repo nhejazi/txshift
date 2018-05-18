@@ -17,7 +17,18 @@ options(scipen = 999)
 
 ## Introduction
 
-...
+For a more general introduction to the targeted maximum likelihood estimator
+introduced in @diaz2018stochastic and the corresponding software implementation
+found in this package, a better resource to consult is the introductory
+vignette. This document builds on that work, describing an inverse probability
+of censoring weighted TML estimator (IPCW-TMLE) for the same target parameter
+when a censoring process is introduced into the observed data structure. In this
+case the observed data structure may be denoted $O = (W, \Delta A, Y)$, where
+$W$ is a set of baseline covariates, $A$ is a continuous-valued treatment or
+intervention, $Y$ is an outcome of interest, and $\Delta$ is an indicator of
+missingness ($1$ corresponding to being observed, $0$ to being missing). Perhaps
+the best way to appreciate the utilities provided for computing IPCW-TMLEs in
+this R package is to work through examples, so let's simply jump to that.
 
 To start, let's load the packages we'll use and set a seed for simulation:
 
@@ -34,15 +45,18 @@ set.seed(429153)
 
 ## Data and Notation
 
-**TODO:** ADD STUFF ON CENSORING
-
 1. Start with a simple additive shift -- i.e., $d(a,w) = a + \delta$ if
    $a < u(w) - \delta$ or $d(a, w) = a$ if $a \geq u(w) - \delta$.
 
 2. The additive shift will have support everywhere -- i.e.,
    $a < u(w)$ is true everywhere.
 
-3. The data structure that we know and love $O = (W, A, Y)$.
+3. Consider the case in which some observations are missing --- for now, let us
+   consider a simple case-control sampling case wherein the treatment is
+   partially censored. Let us denote the sampling/censoring mechanism $\Delta$,
+   and let $1$ correspond to being observed and $0$ to being missing.
+
+4. The data structure that we now observe is $O = (W, \Delta A, Y)$.
 
 ### Simulate Data
 
@@ -74,8 +88,6 @@ delta <- 0.5
 
 ### Inverse Probability Weighting with Targeted Maximum Likelihood Estimation
 
-Comments about this estimation procedure...
-
 ```{r}
 tmle_glm_shift_1 <- tmle_txshift(W = W, A = A, Y = Y,
                                  C = C, V = c("W", "Y"),
@@ -98,9 +110,11 @@ summary(tmle_glm_shift_1)
 When computing any such TML estimator, we may, of course, vary the regressions
 used in fitting the nuisance parameters; however, an even simpler variation is
 to fit the step for the fluctuation submodels with a _weighted_ method, simply
-weighting each observation by the so-called "clever" covariate rather than using
-such a covariate directly in the regression fit. Please consult [INSERT REF] for
-details on the potential benefits this approach may confer.
+weighting each observation by an auxiliary covariate (often denoted $H_n$, and
+sometimes called the "clever covariate" in the literature) rather than using
+such a covariate directly in the submodel regression fit.
+
+<!--Please consult [INSERT REF] for details on potential benefits this approach may have.-->
 
 ```{r}
 tmle_glm_shift_2 <- tmle_txshift(W = W, A = A, Y = Y,
@@ -122,6 +136,12 @@ summary(tmle_glm_shift_2)
 ```
 
 ### Interlude: Constructing Optimal Stacked Regressions with `sl3`
+
+To easily incorporate ensemble machine learning into the estimation procedure,
+we rely on the facilities provided in the [`sl3` R
+package](https://sl3.tlverse.org). For a complete guide on using the `sl3` R
+package, consider consulting https://sl3.tlverse.org, or https://tlverse.org for
+the `tlverse` ecosystem, of which `sl3` is a major part.
 
 ```{r}
 # SL learners to be used for most fits (e.g., IPCW, outcome regression)
@@ -148,9 +168,10 @@ sl_lrn_dens <- Lrnr_sl$new(learners = lrnr_dens_lib,
 
 ### Estimating the IPCW-TMLE with Optimal Stacked Regressions
 
-Using the framework provided by the `sl3` package, the nuisance parameters of
-the TML estimator may be fit with ensemble learning, using the cross-validation
-framework of the Super Learner algorithm of [INSERT REF].
+Using the framework provided by the [`sl3` package](https://sl3.tlverse.org),
+the nuisance parameters of the TML estimator may be fit with ensemble learning,
+using the cross-validation framework of the Super Learner algorithm of
+@vdl2007super.
 
 ```{r}
 tmle_sl_shift_1 <- tmle_txshift(W = W, A = A, Y = Y,

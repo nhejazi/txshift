@@ -23,10 +23,10 @@ the effects induced by the counterfactual shifting of the observed values of a
 treatment of interest. Here, we present an implementation of a new algorithm for
 computing targeted minimum loss-based estimates of treatment shift parameters
 defined based on a shifting function $d(A,W)$. For a technical presentation of
-the algorithm, the interested reader is invited to consult @diaz2017stochastic.
+the algorithm, the interested reader is invited to consult @diaz2018stochastic.
 For additional background on Targeted Learning and previous work on stochastic
 treatment regimes, please consider consulting @vdl2011targeted,
-@vdl2017targeted, and @munoz2012population.
+@vdl2018targeted, and @munoz2012population.
 
 To start, let's load the packages we'll use and set a seed for simulation:
 
@@ -49,7 +49,7 @@ set.seed(429153)
 2. The additive shift will have support everywhere (i.e.,
    $a < u(w)$ is true everywhere).
 
-3. The data structure that we know and love $O = (W, A, Y)$.
+3. The data structure that we now observe is $O = (W, A, Y)$.
 
 ### Simulate Data
 
@@ -81,7 +81,7 @@ delta <- 0.5
 The simplest way to compute the TML estimator for the stochastic treatment
 regime is to fit each of the major constituent parts (nuisance parameters) of
 the estimator with generalized linear models. To do this, one may merely call
-the `tmle_shifttx` function, providing the standard inputs listed below...
+the `tmle_shifttx` function, providing the standard inputs listed below.
 
 ```{r}
 tmle_glm_shift_1 <- tmle_txshift(W = W, A = A, Y = Y, delta = delta,
@@ -101,9 +101,11 @@ summary(tmle_glm_shift_1)
 When computing any such TML estimator, we may, of course, vary the regressions
 used in fitting the nuisance parameters; however, an even simpler variation is
 to fit the step for the fluctuation submodels with a _weighted_ method, simply
-weighting each observation by the so-called "clever" covariate rather than using
-such a covariate directly in the regression fit. Please consult [INSERT REF] for
-details on potential benefits this approach may have.
+weighting each observation by an auxiliary covariate (often denoted $H_n$, and
+sometimes called the "clever covariate" in the literature) rather than using
+such a covariate directly in the submodel regression fit.
+
+<!--Please consult [INSERT REF] for details on potential benefits this approach may have.-->
 
 ```{r}
 tmle_glm_shift_2 <- tmle_txshift(W = W, A = A, Y = Y, delta = delta,
@@ -121,6 +123,12 @@ summary(tmle_glm_shift_2)
 ```
 
 ### Interlude: Constructing Optimal Stacked Regressions with `sl3`
+
+To easily incorporate ensemble machine learning into the estimation procedure,
+we rely on the facilities provided in the [`sl3` R
+package](https://sl3.tlverse.org). For a complete guide on using the `sl3` R
+package, consider consulting https://sl3.tlverse.org, or https://tlverse.org for
+the `tlverse` ecosystem, of which `sl3` is a major part.
 
 ```{r}
 # SL learners to be used for most fits (e.g., IPCW, outcome regression)
@@ -147,9 +155,10 @@ sl_lrn_dens <- Lrnr_sl$new(learners = lrnr_dens_lib,
 
 ### Estimating Stochastic Interventions Effects with Optimal Stacked Regressions
 
-Using the framework provided by the `sl3` package, the nuisance parameters of
-the TML estimator may be fit with ensemble learning, using the cross-validation
-framework of the Super Learner algorithm of [INSERT REF].
+Using the framework provided by the [`sl3` package](https://sl3.tlverse.org),
+the nuisance parameters of the TML estimator may be fit with ensemble learning,
+using the cross-validation framework of the Super Learner algorithm of
+@vdl2007super.
 
 ```{r}
 tmle_sl_shift_1 <- tmle_txshift(W = W, A = A, Y = Y, delta = delta,
@@ -189,7 +198,6 @@ which, provided the following two conditions:
    and $g_n$ is bounded (technically, $\exists \mathcal{F}$ st
    $D(\bar{Q}_n^*, g_n) \in \mathcal{F}$ *__whp__*, where $\mathcal{F}$ is a
    Donsker class),
-
 readily admits the conclusion that
 $\psi_n - \psi_0 = (P_n - P_0) \cdot D(P_0) + R(\hat{P}^*, P_0)$.
 
@@ -201,7 +209,6 @@ which, by a central limit theorem, establishes a Gaussian limiting distribution
 for the estimator:
 
 $$\sqrt{n}(\psi_n - \psi) \to N(0, V(D(P_0))),$$
-
 where $V(D(P_0))$ is the variance of the efficient influence curve (canonical
 gradient) when $\psi$ admits an asymptotically linear representation.
 
@@ -211,7 +218,6 @@ efficient. This allows us to build Wald-type confidence intervals in a
 straightforward manner:
 
 $$\psi_n \pm z_{\alpha} \cdot \frac{\sigma_n}{\sqrt{n}},$$
-
 where $\sigma_n^2$ is an estimator of $V(D(P_0))$. The estimator $\sigma_n^2$
 may be obtained using the bootstrap or computed directly via the following
 
