@@ -1,22 +1,20 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-<!-- [![Coverage Status](https://img.shields.io/codecov/c/github/nhejazi/txshift/master.svg)](https://codecov.io/github/nhejazi/txshift?branch=master) -->
-
 # R/`txshift`
 
 [![Travis-CI Build
 Status](https://travis-ci.org/nhejazi/txshift.svg?branch=master)](https://travis-ci.org/nhejazi/txshift)
 [![AppVeyor Build
 Status](https://ci.appveyor.com/api/projects/status/github/nhejazi/txshift?branch=master&svg=true)](https://ci.appveyor.com/project/nhejazi/txshift)
-[![Project Status: WIP - Initial development is in progress, but there
-has not yet been a stable, usable release suitable for the
-public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
+<!-- [![Coverage Status](https://img.shields.io/codecov/c/github/nhejazi/txshift/master.svg)](https://codecov.io/github/nhejazi/txshift?branch=master) -->
+[![Project Status: Active – The project has reached a stable, usable
+state and is being actively
+developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![MIT
 license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
-> Targeted Learning of Continuous Intervention Effects with Stochastic
-> Treatment Regimes
+> Targeted Learning of Causal Effects under Stochastic Treatment Regimes
 
 **Authors:** [Nima Hejazi](https://nimahejazi.org) and [David
 Benkeser](https://www.benkeserstatistics.com/)
@@ -159,8 +157,8 @@ After using the `txshift` R package, please cite the following:
     @manual{hejazi2018txshift,
       author = {Hejazi, Nima S and {van der Laan}, Mark J and Benkeser,
         David C},
-      title = {txshift: {Targeted Learning} of stochastic intervention
-        effects with robust inference in {R}},
+      title = {txshift: {Targeted Learning} of causal effects under
+        stochastic treatment regimes in {R}},
       year  = {2018},
       url = {https://github.com/nhejazi/txshift},
       note = {R package version 0.2.0}
