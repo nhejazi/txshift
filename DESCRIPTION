@@ -38,7 +38,8 @@ Suggests:
     testthat,
     knitr,
     rmarkdown,
-    tidyverse
+    tidyverse,
+    ranger
 Remotes:
     github::tlverse/sl3@devel,
     github::osofr/condensier@master,

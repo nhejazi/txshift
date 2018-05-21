@@ -16,6 +16,8 @@
 #'
 #' @importFrom stats var
 #'
+#' @keywords internal
+#'
 #' @export
 #'
 #' @author Iván Díaz
@@ -110,6 +112,8 @@ tmle_shift <- function(Y, A, W,
 #'
 #' @author Iván Díaz
 #' @author Nima Hejazi
+#'
+#' @keywords internal
 #
 f_iter <- function(Qn, gn, gn0d = NULL, prev_sum = 0, first = FALSE, h_int,
                    Y, A, W, delta, A_val) {
@@ -168,6 +172,8 @@ f_iter <- function(Qn, gn, gn0d = NULL, prev_sum = 0, first = FALSE, h_int,
 #'
 #' @author Iván Díaz
 #' @author Nima Hejazi
+#'
+#' @keywords internal
 #
 est_eqn <- function(eps, QnAW, Qn, H1, gn0d, EQnd, D2, prev_sum, Y, A, W,
                     delta) {
