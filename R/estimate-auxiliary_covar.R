@@ -1,19 +1,17 @@
 #' Estimate the Auxiliary ("Clever") Covariate
 #'
-#' description
-#'
-#' @param gn ...
-#' @param a ...
-#' @param w ...
+#' @param gn An estimate of the treatment probability (propensity score), using
+#'  the output provided by internal function \code{estimate-propensity_score}.
+#' @param a A \code{numeric} vector of the observed values of the treatment.
+#' @param w A \code{numeric}, \code{matrix}, \code{data.frame} or similar object
+#'  that contains the observed values of the baseline covariates.
 #'
 #' @importFrom data.table as.data.table setnames
 #'
 #' @keywords internal
 #
 est_Hn <- function(gn, a = NULL, w = NULL) {
-  # compute upper and lower limits for treatment
-  # ...
-  # ...
+  # TODO: compute upper and lower limits for treatment
 
   # compute the ratio of the propensity scores for Hn(A,W)
   ratio_g_noshift <- gn$downshift / gn$noshift

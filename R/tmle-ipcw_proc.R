@@ -27,7 +27,8 @@
 #'  initial run of this function. Updated values of this vector are provided as
 #'  part of the output of this function, which may be used in subsequent calls
 #'  that allow convergence to a more efficient estimate.
-#' @param ipc_weights_norm ...
+#' @param ipc_weights_norm A \code{numeric} vector of the same weights described
+#'  in the previous argument, except normalized in this case.
 #' @param Qn_estim A \code{data.table} corresponding to the outcome regression.
 #'  This is produced by invoking the internal function \code{est_Q}.
 #' @param Hn_estim A \code{data.table} corresponding to values produced in the

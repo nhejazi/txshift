@@ -10,7 +10,9 @@
 #' @param delta A \code{numeric} indicating the magnitude of the shift to be
 #'  computed for the treatment \code{A}. This is passed directly to the internal
 #'  function \code{tx_shift} and is currently limited to additive shifts.
-#' @param ipc_weights ...
+#' @param ipc_weights A \code{numeric} vector of observation-level weights, as
+#'  produced by the internal procedure to estimate the censoring mechanism
+#'  \code{estimate-ipc_weights}.
 #' @param fit_type A \code{character} indicating whether to use GLMs or Super
 #'  Learner to fit the outcome regression. If the option "glm" is selected, the
 #'  argument \code{glm_formula} must NOT be \code{NULL}, instead containing a
@@ -19,8 +21,10 @@
 #'  \code{NULL}, instead being a pre-defined object of class \code{Lrnr_sl},
 #'  specifying learners and a metalearner for the Super Learner fit. Consult the
 #'  documentation of the \code{sl3} package for details on Super Learner fits.
-#' @param glm_formula ...
-#' @param sl_lrnrs ...
+#' @param glm_formula A \code{character} corresponding to a \code{formula} to be
+#'  used in fitting a generalized linear model via \code{stats::glm}.
+#' @param sl_lrnrs An object containing a set of instantiated learners from the
+#'  \code{sl3} package, to be used in fitting an ensemble model.
 #'
 #' @importFrom stats glm as.formula predict
 #' @importFrom data.table as.data.table setnames copy set

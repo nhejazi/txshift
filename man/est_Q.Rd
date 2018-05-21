@@ -18,7 +18,9 @@ est_Q(Y, A, W, delta = 0, ipc_weights = rep(1, length(Y)),
 computed for the treatment \code{A}. This is passed directly to the internal
 function \code{tx_shift} and is currently limited to additive shifts.}
 
-\item{ipc_weights}{...}
+\item{ipc_weights}{A \code{numeric} vector of observation-level weights, as
+produced by the internal procedure to estimate the censoring mechanism
+\code{estimate-ipc_weights}.}
 
 \item{fit_type}{A \code{character} indicating whether to use GLMs or Super
 Learner to fit the outcome regression. If the option "glm" is selected, the
@@ -29,9 +31,11 @@ the option "sl" is selected, the argument \code{sl_lrnrs} must NOT be
 specifying learners and a metalearner for the Super Learner fit. Consult the
 documentation of the \code{sl3} package for details on Super Learner fits.}
 
-\item{glm_formula}{...}
+\item{glm_formula}{A \code{character} corresponding to a \code{formula} to be
+used in fitting a generalized linear model via \code{stats::glm}.}
 
-\item{sl_lrnrs}{...}
+\item{sl_lrnrs}{An object containing a set of instantiated learners from the
+\code{sl3} package, to be used in fitting an ensemble model.}
 }
 \description{
 Compute the outcome regression for the observed data, including with the

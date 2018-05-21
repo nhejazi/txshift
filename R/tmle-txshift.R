@@ -1,9 +1,12 @@
 #' Compute Targeted Minimum Loss-Based Estimate of Shifted Treatment Parameter
 #'
-#' description THIS IS A USER-FACING WRAPPER FUNCTION
+#' This is the primary user-facing wrapper function to be used in invoking the
+#' procedure to obtain targeted maximum likelihood / targeted minimum loss-based
+#' estimates (TMLE) of the causal parameter discussed in Díaz and van der Laan
+#' (2013) and Díaz and van der Laan (2018).
 #'
-#' @param W A \code{matrix} or \code{data.frame} corresponding to a set of
-#'  baseline covariates.
+#' @param W A \code{matrix}, \code{data.frame}, or similar corresponding to a
+#'  set of baseline covariates.
 #' @param A A \code{numeric} vector corresponding to a treatment variable. The
 #'  parameter of interest is defined as a location shift of this quantity.
 #' @param Y A \code{numeric} vector corresponding to an outcome variable.

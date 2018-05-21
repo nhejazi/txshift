@@ -7,13 +7,15 @@
 est_Hn(gn, a = NULL, w = NULL)
 }
 \arguments{
-\item{gn}{...}
+\item{gn}{An estimate of the treatment probability (propensity score), using
+the output provided by internal function \code{estimate-propensity_score}.}
 
-\item{a}{...}
+\item{a}{A \code{numeric} vector of the observed values of the treatment.}
 
-\item{w}{...}
+\item{w}{A \code{numeric}, \code{matrix}, \code{data.frame} or similar object
+that contains the observed values of the baseline covariates.}
 }
 \description{
-description
+Estimate the Auxiliary ("Clever") Covariate
 }
 \keyword{internal}

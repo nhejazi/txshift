@@ -15,8 +15,8 @@ tmle_txshift(W, A, Y, C = rep(1, length(Y)), V = NULL, delta = 0,
   ipcw_fit_spec = NULL, gn_fit_spec = NULL, Qn_fit_spec = NULL)
 }
 \arguments{
-\item{W}{A \code{matrix} or \code{data.frame} corresponding to a set of
-baseline covariates.}
+\item{W}{A \code{matrix}, \code{data.frame}, or similar corresponding to a
+set of baseline covariates.}
 
 \item{A}{A \code{numeric} vector corresponding to a treatment variable. The
 parameter of interest is defined as a location shift of this quantity.}
@@ -113,5 +113,8 @@ S3 object of class \code{txshift} containing the results of the
  procedure to compute a TML estimate of the treatment shift parameter.
 }
 \description{
-description THIS IS A USER-FACING WRAPPER FUNCTION
+This is the primary user-facing wrapper function to be used in invoking the
+procedure to obtain targeted maximum likelihood / targeted minimum loss-based
+estimates (TMLE) of the causal parameter discussed in Díaz and van der Laan
+(2013) and Díaz and van der Laan (2018).
 }

@@ -6,8 +6,11 @@
 #'
 #' @param A A \code{numeric} vector of observed treatment values.
 #' @param W A \code{numeric} matrix of observed baseline covariate values.
-#' @param delta A \code{numeric} ...
-#' @param ipc_weights ...
+#' @param delta A \code{numeric} value identifying a shift in the observed value
+#'  of the treatment under which observations are to be evaluated.
+#' @param ipc_weights A \code{numeric} vector of observation-level weights, as
+#'  produced by the internal procedure to estimate the censoring mechanism
+#'  \code{estimate-ipc_weights}.
 #' @param fit_type A \code{character} specifying whether to use Super Learner to
 #'  fit the density estimation.
 #' @param std_args A \code{list} of arguments to be passed to \code{fit_density}

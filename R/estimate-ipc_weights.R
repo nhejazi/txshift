@@ -1,9 +1,10 @@
 #' Estimate Inverse Probability of Censoring Weights
 #'
-#' description
-#'
-#' @param V ...
-#' @param Delta ...
+#' @param V A \code{numeric} vector, \code{matrix}, \code{data.frame} or similar
+#'  object giving the observed values of the covariates known to potentially
+#'  inform the censoring mechanism.
+#' @param Delta A \code{numeric} vector giving observed values of the indicator
+#'  function corresponding to the censoring mechanism.
 #' @param fit_type A \code{character} indicating whether to perform the fit
 #'  using GLMs or a Super Learner. If use of Super Learner is desired, then the
 #'  argument \code{sl_lrnrs} must be provided.

@@ -2,22 +2,27 @@
 % Please edit documentation in R/shift_treatment.R
 \name{tx_shift}
 \alias{tx_shift}
-\title{Shift Treatments}
+\title{Treatment Shifting}
 \usage{
-tx_shift(A, W = NULL, delta, type = "additive", direc = c("down", "up"))
+tx_shift(A, W = NULL, delta, type = c("additive"), direc = c("down",
+  "up"))
 }
 \arguments{
-\item{A}{...}
+\item{A}{A \code{numeric} vector of observed treatment values.}
 
-\item{W}{...}
+\item{W}{A \code{numeric} matrix of observed baseline covariate values.}
 
-\item{delta}{...}
+\item{delta}{A \code{numeric} indicating the magnitude of the shift to be
+computed for the treatment \code{A}.}
 
-\item{type}{...}
+\item{type}{A \code{character} vector describing the type of shift to be
+performed on the treatment. Currently, this is limited only to "additive",
+though the relevant theory supports other forms of shifting as well.}
 
-\item{direc}{...}
+\item{direc}{A \code{character} vector describing the direction in which to
+shift the treatment --- currently, only "up" and "down" are supported.}
 }
 \description{
-description
+Treatment Shifting
 }
 \keyword{internal}

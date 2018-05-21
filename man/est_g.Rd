@@ -13,9 +13,12 @@ est_g(A, W, delta = 0, ipc_weights = rep(1, length(A)), fit_type = c("sl",
 
 \item{W}{A \code{numeric} matrix of observed baseline covariate values.}
 
-\item{delta}{A \code{numeric} ...}
+\item{delta}{A \code{numeric} value identifying a shift in the observed value
+of the treatment under which observations are to be evaluated.}
 
-\item{ipc_weights}{...}
+\item{ipc_weights}{A \code{numeric} vector of observation-level weights, as
+produced by the internal procedure to estimate the censoring mechanism
+\code{estimate-ipc_weights}.}
 
 \item{fit_type}{A \code{character} specifying whether to use Super Learner to
 fit the density estimation.}

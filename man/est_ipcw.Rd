@@ -7,9 +7,12 @@
 est_ipcw(V, Delta, fit_type = c("sl", "glm"), sl_lrnrs = NULL)
 }
 \arguments{
-\item{V}{...}
+\item{V}{A \code{numeric} vector, \code{matrix}, \code{data.frame} or similar
+object giving the observed values of the covariates known to potentially
+inform the censoring mechanism.}
 
-\item{Delta}{...}
+\item{Delta}{A \code{numeric} vector giving observed values of the indicator
+function corresponding to the censoring mechanism.}
 
 \item{fit_type}{A \code{character} indicating whether to perform the fit
 using GLMs or a Super Learner. If use of Super Learner is desired, then the
@@ -27,5 +30,5 @@ A \code{list} containing a \code{numeric} vector corresponding to the
  class as computed using standard logistic regression.
 }
 \description{
-description
+Estimate Inverse Probability of Censoring Weights
 }
