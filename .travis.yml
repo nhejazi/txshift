@@ -27,6 +27,7 @@ r_packages:
   - devtools
   - covr
   - nnls
+  - truncnorm
   - Rsolnp
 
 r_github_packages:
