@@ -26,6 +26,8 @@ before_install:
 r_packages:
   - devtools
   - covr
+  - nnls
+  - Rsolnp
 
 r_github_packages:
   - r-lib/devtools
