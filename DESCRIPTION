@@ -39,8 +39,9 @@ Suggests:
     knitr,
     rmarkdown,
     tidyverse,
-    ranger,
-    nnls
+    Rsolnp,
+    nnls,
+    ranger
 Remotes:
     github::jeremyrcoyle/hal9001@master,
     github::osofr/condensier@master,
