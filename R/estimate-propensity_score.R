@@ -13,6 +13,8 @@
 #'  \code{estimate-ipc_weights}.
 #' @param fit_type A \code{character} specifying whether to use Super Learner to
 #'  fit the density estimation.
+#' @param sl_lrnrs_dens An object containing a set of instantiated learners from
+#'  the \code{sl3} package, to be used in fitting an ensemble model.
 #' @param std_args A \code{list} of arguments to be passed to \code{fit_density}
 #'  from the \code{condensier} package when the argument \code{fit_type} is set
 #'  to "glm" (not invoking Super Learner).
@@ -21,12 +23,8 @@
 #' @importFrom condensier fit_density predict_probability speedglmR6
 #' @importFrom sl3 sl3_Task
 #'
-#' @keywords internal
-#'
 #' @export
 #'
-#' @author Nima Hejazi
-#' @author David Benkeser
 #
 est_g <- function(A,
                   W,

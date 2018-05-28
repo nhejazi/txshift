@@ -18,4 +18,3 @@ that contains the observed values of the baseline covariates.}
 \description{
 Estimate the Auxiliary ("Clever") Covariate
 }
-\keyword{internal}

@@ -42,4 +42,3 @@ Compute the outcome regression for the observed data, including with the
 shift imposed by the intervention. This returns the propensity score for the
 observed data (at A_i) and the shift of interest (at A_i - delta).
 }
-\keyword{internal}

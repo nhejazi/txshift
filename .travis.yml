@@ -12,10 +12,11 @@ sudo: required
 cache: packages
 
 warnings_are_errors: true
-r_build_args: '--no-build-vignettes --no-manual'
+r_build_args: '--no-manual'
 r_check_args: '--no-vignettes --no-manual'
 
 r:
+  - oldrel
   - release
   - devel
 
@@ -25,9 +26,6 @@ before_install:
 r_packages:
   - devtools
   - covr
-  - nnls
-  - truncnorm
-  - Rsolnp
 
 r_github_packages:
   - r-lib/devtools

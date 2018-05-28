@@ -19,7 +19,7 @@
 #' @importFrom data.table as.data.table setnames
 #' @importFrom dplyr "%>%"
 #'
-#' @keywords internal
+#' @export
 #
 fit_fluc <- function(Y,
                      Qn_scaled,

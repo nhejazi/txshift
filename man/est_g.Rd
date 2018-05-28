@@ -23,6 +23,9 @@ produced by the internal procedure to estimate the censoring mechanism
 \item{fit_type}{A \code{character} specifying whether to use Super Learner to
 fit the density estimation.}
 
+\item{sl_lrnrs_dens}{An object containing a set of instantiated learners from
+the \code{sl3} package, to be used in fitting an ensemble model.}
+
 \item{std_args}{A \code{list} of arguments to be passed to \code{fit_density}
 from the \code{condensier} package when the argument \code{fit_type} is set
 to "glm" (not invoking Super Learner).}
@@ -32,9 +35,3 @@ Compute the propensity score (treatment mechanism) for the observed data,
 including the shift. This returns the propensity score for the observed data
 (at A_i) and the shift of interest (at A_i - delta).
 }
-\author{
-Nima Hejazi
-
-David Benkeser
-}
-\keyword{internal}
