@@ -32,8 +32,6 @@
 #' @importFrom dplyr "%>%"
 #' @importFrom sl3 sl3_Task
 #'
-#' @keywords internal
-#'
 #' @export
 #
 est_Q <- function(Y,

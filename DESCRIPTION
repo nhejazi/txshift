@@ -28,7 +28,6 @@ Depends: R (>= 3.2.0)
 Imports:
     stats,
     dplyr,
-    tibble,
     stringr,
     data.table,
     condensier,
@@ -39,11 +38,13 @@ Suggests:
     knitr,
     rmarkdown,
     tidyverse,
+    Rsolnp,
+    nnls,
     ranger
 Remotes:
-    github::tlverse/sl3@devel,
+    github::jeremyrcoyle/hal9001@master,
     github::osofr/condensier@master,
-    github::jeremyrcoyle/hal9001@master
+    github::tlverse/sl3@devel
 License: MIT + file LICENSE
 URL: https://github.com/nhejazi/txshift
 BugReports: https://github.com/nhejazi/txshift/issues

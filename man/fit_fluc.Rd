@@ -30,4 +30,3 @@ Please consult the literature for details on the differences.}
 \description{
 Fit Logistic Regression to Traverse the Fluctuation Submodel
 }
-\keyword{internal}

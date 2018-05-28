@@ -8,7 +8,7 @@
 #'
 #' @importFrom data.table as.data.table setnames
 #'
-#' @keywords internal
+#' @export
 #
 est_Hn <- function(gn, a = NULL, w = NULL) {
   # TODO: compute upper and lower limits for treatment
