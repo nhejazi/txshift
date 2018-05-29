@@ -87,7 +87,7 @@
 <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://www.benkeserstatistics.com/">David Benkeser</a>
 </h4>
             
-            <h4 class="date">2018-05-21</h4>
+            <h4 class="date">2018-05-28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nhejazi/txshift/blob/master/vignettes/ipcw_txshift.Rmd"><code>vignettes/ipcw_txshift.Rmd</code></a></small>
       <div class="hidden name"><code>ipcw_txshift.Rmd</code></div>
@@ -165,6 +165,7 @@
 <div id="methodology" class="section level2">
 <h2 class="hasAnchor">
 <a href="#methodology" class="anchor"></a>Methodology</h2>
+<p><strong>Note:</strong> In all examples below, the argument <code>eif_reg_spec</code> is set to <code>FALSE</code> (whereas the default is <code>TRUE</code>) when invoking an IPCW-TMLE. This is done in an effort to speed along the computation process, as this argument controls the manner in which a nuisance regression associated with the efficient influence function of the IPCW-TMLE is fit. As stated in the documentation, setting this argument to <code>FALSE</code> fits this EIF nuisance regression with a generalized linear model (GLM; an assumption-laden parametric form) while the default value of <code>TRUE</code> fits the nuisance regression with the highly adaptive lasso (HAL; a recently developed nonparametric estimator) via the <a href="https://github.com/jeremyrcoyle/hal9001"><code>hal9001</code> R package</a>. In practice, we recommend leaving this argument to the default and fitting the EIF nuisance regression with HAL; however, this is significantly slower than simple using a GLM.</p>
 <div id="inverse-probability-weighting-with-targeted-maximum-likelihood-estimation" class="section level3">
 <h3 class="hasAnchor">
 <a href="#inverse-probability-weighting-with-targeted-maximum-likelihood-estimation" class="anchor"></a>Inverse Probability Weighting with Targeted Maximum Likelihood Estimation</h3>
@@ -172,7 +173,7 @@
 <a class="sourceLine" id="cb16-2" data-line-number="2">                                 <span class="dt">C =</span> C, <span class="dt">V =</span> <span class="kw">c</span>(<span class="st">"W"</span>, <span class="st">"Y"</span>),</a>
 <a class="sourceLine" id="cb16-3" data-line-number="3">                                 <span class="dt">delta =</span> delta,</a>
 <a class="sourceLine" id="cb16-4" data-line-number="4">                                 <span class="dt">fluc_method =</span> <span class="st">"standard"</span>,</a>
-<a class="sourceLine" id="cb16-5" data-line-number="5">                                 <span class="dt">max_iter =</span> <span class="dv">10</span>,</a>
+<a class="sourceLine" id="cb16-5" data-line-number="5">                                 <span class="dt">max_iter =</span> <span class="dv">2</span>,</a>
 <a class="sourceLine" id="cb16-6" data-line-number="6">                                 <span class="dt">ipcw_fit_args =</span> <span class="kw">list</span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>),</a>
 <a class="sourceLine" id="cb16-7" data-line-number="7">                                 <span class="dt">g_fit_args =</span> <span class="kw">list</span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>,</a>
 <a class="sourceLine" id="cb16-8" data-line-number="8">                                                   <span class="dt">nbins =</span> <span class="dv">35</span>,</a>
@@ -181,20 +182,21 @@
 <a class="sourceLine" id="cb16-11" data-line-number="11">                                                     speedglmR6<span class="op">$</span><span class="kw">new</span>(),</a>
 <a class="sourceLine" id="cb16-12" data-line-number="12">                                                   <span class="dt">parfit =</span> <span class="ot">FALSE</span>),</a>
 <a class="sourceLine" id="cb16-13" data-line-number="13">                                 <span class="dt">Q_fit_args =</span> <span class="kw">list</span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>,</a>
-<a class="sourceLine" id="cb16-14" data-line-number="14">                                                   <span class="dt">glm_formula =</span> <span class="st">"Y ~ ."</span>)</a>
-<a class="sourceLine" id="cb16-15" data-line-number="15">                                )</a>
-<a class="sourceLine" id="cb16-16" data-line-number="16"><span class="kw">summary</span>(tmle_glm_shift_<span class="dv">1</span>)</a></code></pre></div>
-<pre><code>##        lwr_ci     param_est        upr_ci     param_var      eif_mean 
-##      1.754276      1.975229      2.196181      0.012709 -8.746324e-04 
-##        n_iter 
-##             5</code></pre>
+<a class="sourceLine" id="cb16-14" data-line-number="14">                                                   <span class="dt">glm_formula =</span> <span class="st">"Y ~ ."</span>),</a>
+<a class="sourceLine" id="cb16-15" data-line-number="15">                                 <span class="dt">eif_reg_spec =</span> <span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb16-16" data-line-number="16">                                )</a>
+<a class="sourceLine" id="cb16-17" data-line-number="17"><span class="kw">summary</span>(tmle_glm_shift_<span class="dv">1</span>)</a></code></pre></div>
+<pre><code>##       lwr_ci    param_est       upr_ci    param_var     eif_mean 
+##     1.793288     1.974095     2.154902      0.00851 2.798111e-04 
+##       n_iter 
+##            2</code></pre>
 <p>When computing any such TML estimator, we may, of course, vary the regressions used in fitting the nuisance parameters; however, an even simpler variation is to fit the step for the fluctuation submodels with a <em>weighted</em> method, simply weighting each observation by an auxiliary covariate (often denoted <span class="math inline">\(H_n\)</span>, and sometimes called the “clever covariate” in the literature) rather than using such a covariate directly in the submodel regression fit.</p>
 <!--Please consult [INSERT REF] for details on potential benefits this approach may have.-->
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">tmle_glm_shift_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw"><a href="../reference/tmle_txshift.html">tmle_txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y,</a>
 <a class="sourceLine" id="cb18-2" data-line-number="2">                                 <span class="dt">C =</span> C, <span class="dt">V =</span> <span class="kw">c</span>(<span class="st">"W"</span>, <span class="st">"Y"</span>),</a>
 <a class="sourceLine" id="cb18-3" data-line-number="3">                                 <span class="dt">delta =</span> delta,</a>
 <a class="sourceLine" id="cb18-4" data-line-number="4">                                 <span class="dt">fluc_method =</span> <span class="st">"weighted"</span>,</a>
-<a class="sourceLine" id="cb18-5" data-line-number="5">                                 <span class="dt">max_iter =</span> <span class="dv">10</span>,</a>
+<a class="sourceLine" id="cb18-5" data-line-number="5">                                 <span class="dt">max_iter =</span> <span class="dv">2</span>,</a>
 <a class="sourceLine" id="cb18-6" data-line-number="6">                                 <span class="dt">ipcw_fit_args =</span> <span class="kw">list</span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>),</a>
 <a class="sourceLine" id="cb18-7" data-line-number="7">                                 <span class="dt">g_fit_args =</span> <span class="kw">list</span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>,</a>
 <a class="sourceLine" id="cb18-8" data-line-number="8">                                                   <span class="dt">nbins =</span> <span class="dv">35</span>,</a>
@@ -203,13 +205,14 @@
 <a class="sourceLine" id="cb18-11" data-line-number="11">                                                     speedglmR6<span class="op">$</span><span class="kw">new</span>(),</a>
 <a class="sourceLine" id="cb18-12" data-line-number="12">                                                   <span class="dt">parfit =</span> <span class="ot">FALSE</span>),</a>
 <a class="sourceLine" id="cb18-13" data-line-number="13">                                 <span class="dt">Q_fit_args =</span> <span class="kw">list</span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>,</a>
-<a class="sourceLine" id="cb18-14" data-line-number="14">                                                   <span class="dt">glm_formula =</span> <span class="st">"Y ~ ."</span>)</a>
-<a class="sourceLine" id="cb18-15" data-line-number="15">                                )</a>
-<a class="sourceLine" id="cb18-16" data-line-number="16"><span class="kw">summary</span>(tmle_glm_shift_<span class="dv">2</span>)</a></code></pre></div>
-<pre><code>##       lwr_ci    param_est       upr_ci    param_var     eif_mean 
-##     1.917766     2.085511     2.253256     0.007325 2.147839e-04 
-##       n_iter 
-##            2</code></pre>
+<a class="sourceLine" id="cb18-14" data-line-number="14">                                                   <span class="dt">glm_formula =</span> <span class="st">"Y ~ ."</span>),</a>
+<a class="sourceLine" id="cb18-15" data-line-number="15">                                 <span class="dt">eif_reg_spec =</span> <span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb18-16" data-line-number="16">                                )</a>
+<a class="sourceLine" id="cb18-17" data-line-number="17"><span class="kw">summary</span>(tmle_glm_shift_<span class="dv">2</span>)</a></code></pre></div>
+<pre><code>##        lwr_ci     param_est        upr_ci     param_var      eif_mean 
+##      1.939069      2.101966      2.264862      0.006908 -9.772964e-04 
+##        n_iter 
+##             1</code></pre>
 </div>
 <div id="interlude-constructing-optimal-stacked-regressions-with-sl3" class="section level3">
 <h3 class="hasAnchor">
@@ -245,59 +248,61 @@
 <a class="sourceLine" id="cb21-2" data-line-number="2">                                <span class="dt">C =</span> C, <span class="dt">V =</span> <span class="kw">c</span>(<span class="st">"W"</span>, <span class="st">"Y"</span>),</a>
 <a class="sourceLine" id="cb21-3" data-line-number="3">                                <span class="dt">delta =</span> delta,</a>
 <a class="sourceLine" id="cb21-4" data-line-number="4">                                <span class="dt">fluc_method =</span> <span class="st">"standard"</span>,</a>
-<a class="sourceLine" id="cb21-5" data-line-number="5">                                <span class="dt">max_iter =</span> <span class="dv">10</span>,</a>
+<a class="sourceLine" id="cb21-5" data-line-number="5">                                <span class="dt">max_iter =</span> <span class="dv">2</span>,</a>
 <a class="sourceLine" id="cb21-6" data-line-number="6">                                <span class="dt">ipcw_fit_args =</span> <span class="kw">list</span>(<span class="dt">fit_type =</span> <span class="st">"sl"</span>,</a>
 <a class="sourceLine" id="cb21-7" data-line-number="7">                                                     <span class="dt">sl_lrnrs =</span> sl_lrn),</a>
 <a class="sourceLine" id="cb21-8" data-line-number="8">                                <span class="dt">g_fit_args =</span> <span class="kw">list</span>(<span class="dt">fit_type =</span> <span class="st">"sl"</span>,</a>
 <a class="sourceLine" id="cb21-9" data-line-number="9">                                                  <span class="dt">sl_lrnrs =</span> sl_lrn_dens),</a>
 <a class="sourceLine" id="cb21-10" data-line-number="10">                                <span class="dt">Q_fit_args =</span> <span class="kw">list</span>(<span class="dt">fit_type =</span> <span class="st">"sl"</span>,</a>
-<a class="sourceLine" id="cb21-11" data-line-number="11">                                                  <span class="dt">sl_lrnrs =</span> sl_lrn)</a>
-<a class="sourceLine" id="cb21-12" data-line-number="12">                               )</a></code></pre></div>
+<a class="sourceLine" id="cb21-11" data-line-number="11">                                                  <span class="dt">sl_lrnrs =</span> sl_lrn),</a>
+<a class="sourceLine" id="cb21-12" data-line-number="12">                                 <span class="dt">eif_reg_spec =</span> <span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb21-13" data-line-number="13">                               )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 2012.3916     Pars:  0.69093 0.10370 0.20537
-## Iter: 2 fn: 2012.3916     Pars:  0.69096 0.10367 0.20537
+## Iter: 1 fn: 2097.6933     Pars:  0.855817 0.007623 0.136561
+## Iter: 2 fn: 2097.6933     Pars:  0.855823 0.007599 0.136578
 ## solnp--&gt; Completed in 2 iterations
 ## 
 ## density meta-learner fit:
 ## Lrnr_condensier_equal.len_35_20_FALSE_NA_FALSE_NULL 
-##                                           0.6909617 
+##                                         0.855823143 
 ## Lrnr_condensier_equal.len_30_20_FALSE_NA_FALSE_NULL 
-##                                           0.1036722 
+##                                         0.007599074 
 ## Lrnr_condensier_equal.len_25_20_FALSE_NA_FALSE_NULL 
-##                                           0.2053661</code></pre>
+##                                         0.136577783</code></pre>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="kw">summary</span>(tmle_sl_shift_<span class="dv">1</span>)</a></code></pre></div>
-<pre><code>##       lwr_ci    param_est       upr_ci    param_var     eif_mean 
-##     1.983599     2.133624      2.28365     0.005859 2.988455e-07 
-##       n_iter 
-##            2</code></pre>
+<pre><code>##        lwr_ci     param_est        upr_ci     param_var      eif_mean 
+##      1.986746      2.137215      2.287684      0.005894 -4.956365e-05 
+##        n_iter 
+##             2</code></pre>
 <p>As before, we may vary the regression for the submodel fluctuation procedure by weighting each observation by the value of the so-called clever covariate rather than using such an auxiliary covariate directly in the regression procedure:</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1">tmle_sl_shift_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw"><a href="../reference/tmle_txshift.html">tmle_txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y,</a>
 <a class="sourceLine" id="cb25-2" data-line-number="2">                                <span class="dt">C =</span> C, <span class="dt">V =</span> <span class="kw">c</span>(<span class="st">"W"</span>, <span class="st">"Y"</span>),</a>
 <a class="sourceLine" id="cb25-3" data-line-number="3">                                <span class="dt">delta =</span> delta,</a>
 <a class="sourceLine" id="cb25-4" data-line-number="4">                                <span class="dt">fluc_method =</span> <span class="st">"weighted"</span>,</a>
-<a class="sourceLine" id="cb25-5" data-line-number="5">                                <span class="dt">max_iter =</span> <span class="dv">10</span>,</a>
+<a class="sourceLine" id="cb25-5" data-line-number="5">                                <span class="dt">max_iter =</span> <span class="dv">2</span>,</a>
 <a class="sourceLine" id="cb25-6" data-line-number="6">                                <span class="dt">ipcw_fit_args =</span> <span class="kw">list</span>(<span class="dt">fit_type =</span> <span class="st">"sl"</span>,</a>
 <a class="sourceLine" id="cb25-7" data-line-number="7">                                                     <span class="dt">sl_lrnrs =</span> sl_lrn),</a>
 <a class="sourceLine" id="cb25-8" data-line-number="8">                                <span class="dt">g_fit_args =</span> <span class="kw">list</span>(<span class="dt">fit_type =</span> <span class="st">"sl"</span>,</a>
 <a class="sourceLine" id="cb25-9" data-line-number="9">                                                  <span class="dt">sl_lrnrs =</span> sl_lrn_dens),</a>
 <a class="sourceLine" id="cb25-10" data-line-number="10">                                <span class="dt">Q_fit_args =</span> <span class="kw">list</span>(<span class="dt">fit_type =</span> <span class="st">"sl"</span>,</a>
-<a class="sourceLine" id="cb25-11" data-line-number="11">                                                  <span class="dt">sl_lrnrs =</span> sl_lrn)</a>
-<a class="sourceLine" id="cb25-12" data-line-number="12">                               )</a></code></pre></div>
+<a class="sourceLine" id="cb25-11" data-line-number="11">                                                  <span class="dt">sl_lrnrs =</span> sl_lrn),</a>
+<a class="sourceLine" id="cb25-12" data-line-number="12">                                 <span class="dt">eif_reg_spec =</span> <span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb25-13" data-line-number="13">                               )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 2079.9522     Pars:  0.74200 0.08612 0.17188
-## Iter: 2 fn: 2079.9522     Pars:  0.74200 0.08612 0.17188
+## Iter: 1 fn: 1976.6008     Pars:  0.85889910 0.00001331 0.14108760
+## Iter: 2 fn: 1976.6007     Pars:  0.858900966 0.000007882 0.141091152
 ## solnp--&gt; Completed in 2 iterations
 ## 
 ## density meta-learner fit:
 ## Lrnr_condensier_equal.len_35_20_FALSE_NA_FALSE_NULL 
-##                                          0.74199910 
+##                                      0.858900965565 
 ## Lrnr_condensier_equal.len_30_20_FALSE_NA_FALSE_NULL 
-##                                          0.08611847 
+##                                      0.000007882285 
 ## Lrnr_condensier_equal.len_25_20_FALSE_NA_FALSE_NULL 
-##                                          0.17188243</code></pre>
+##                                      0.141091152149</code></pre>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1"><span class="kw">summary</span>(tmle_sl_shift_<span class="dv">2</span>)</a></code></pre></div>
 <pre><code>##       lwr_ci    param_est       upr_ci    param_var     eif_mean 
-##     1.941646     2.097022     2.252399     0.006285 3.912669e-05 
+##     1.955711     2.110369     2.265027     0.006227 5.697143e-05 
 ##       n_iter 
 ##            2</code></pre>
 </div>
@@ -318,20 +323,20 @@
 <a class="sourceLine" id="cb29-11" data-line-number="11">                                <span class="dt">ipcw_efficiency =</span> <span class="ot">FALSE</span></a>
 <a class="sourceLine" id="cb29-12" data-line-number="12">                               )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 2183.7026     Pars:  0.68757 0.03083 0.28160
-## Iter: 2 fn: 2183.7026     Pars:  0.68758 0.03080 0.28162
+## Iter: 1 fn: 2277.2833     Pars:  0.69022 0.17302 0.13676
+## Iter: 2 fn: 2277.2832     Pars:  0.69019 0.17306 0.13674
 ## solnp--&gt; Completed in 2 iterations
 ## 
 ## density meta-learner fit:
 ## Lrnr_condensier_equal.len_35_20_FALSE_NA_FALSE_NULL 
-##                                          0.68757569 
+##                                           0.6901912 
 ## Lrnr_condensier_equal.len_30_20_FALSE_NA_FALSE_NULL 
-##                                          0.03080377 
+##                                           0.1730647 
 ## Lrnr_condensier_equal.len_25_20_FALSE_NA_FALSE_NULL 
-##                                          0.28162054</code></pre>
+##                                           0.1367442</code></pre>
 <div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" data-line-number="1"><span class="kw">summary</span>(tmle_sl_ineffic)</a></code></pre></div>
 <pre><code>##       lwr_ci    param_est       upr_ci    param_var     eif_mean 
-##     1.880142     2.091333     2.302524     0.011611 2.435849e-11 
+##     1.880114     2.091183     2.302253     0.011597 3.216651e-11 
 ##       n_iter 
 ##            0</code></pre>
 <p>Please note that in such cases, the value of <code>n_iter</code> in the resulting output should be <strong><em>exactly zero</em></strong>, as this indicates that the iterative procedure that is used to achieve efficiency has been skipped.</p>
@@ -342,7 +347,7 @@
 <p>For a discussion of the procedure for obtaining statistical inference for TML estimators, the interested reader is referred to the introductory vignette of this package. Here, we focus on addressing the issue of how censoring impacts the inferential procedure…</p>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" data-line-number="1">(ci_shift &lt;-<span class="st"> </span><span class="kw">confint</span>(tmle_sl_shift_<span class="dv">1</span>))</a></code></pre></div>
 <pre><code>##   lwr_ci      est   upr_ci 
-## 1.983599 2.133624 2.283650</code></pre>
+## 1.986746 2.137215 2.287684</code></pre>
 <hr>
 </div>
 </div>
@@ -389,9 +394,9 @@
 <a class="sourceLine" id="cb35-37" data-line-number="37">                                <span class="dt">eif_reg_spec =</span> <span class="ot">TRUE</span>)</a>
 <a class="sourceLine" id="cb35-38" data-line-number="38"><span class="kw">summary</span>(tmle_shift_spec)</a></code></pre></div>
 <pre><code>##        lwr_ci     param_est        upr_ci     param_var      eif_mean 
-##      1.915152      2.086482      2.257813      0.007641 -5.711511e-04 
+##      1.916552      2.089992      2.263432      0.007831 -7.819876e-04 
 ##        n_iter 
-##             2</code></pre>
+##             3</code></pre>
 <hr>
 </div>
 <div id="references" class="section level2 unnumbered">
