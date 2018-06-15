@@ -1,7 +1,10 @@
 pandoc: 2.2.1
-pkgdown: 1.0.0
+pkgdown: 1.1.0
 pkgdown_sha: ~
 articles:
   intro_txshift: intro_txshift.html
   ipcw_txshift: ipcw_txshift.html
+urls:
+  reference: https://code.nimahejazi.org/txshift/reference
+  article: https://code.nimahejazi.org/txshift/articles
 
