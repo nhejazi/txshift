@@ -130,9 +130,10 @@ including the shift. This returns the propensity score for the observed data
     
     </div>
 
-    <pre class="usage"><span class='fu'>est_g</span>(<span class='no'>A</span>, <span class='no'>W</span>, <span class='kw'>delta</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>ipc_weights</span> <span class='kw'>=</span> <span class='fu'>rep</span>(<span class='fl'>1</span>, <span class='fu'>length</span>(<span class='no'>A</span>)), <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"sl"</span>,
-  <span class='st'>"glm"</span>), <span class='kw'>sl_lrnrs_dens</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>std_args</span> <span class='kw'>=</span> <span class='fu'>list</span>(<span class='kw'>nbins</span> <span class='kw'>=</span> <span class='fl'>25</span>, <span class='kw'>bin_method</span> <span class='kw'>=</span>
-  <span class='st'>"dhist"</span>, <span class='kw'>bin_estimator</span> <span class='kw'>=</span> <span class='kw pkg'>condensier</span><span class='kw ns'>::</span><span class='no'><a href='http://www.rdocumentation.org/packages/condensier/topics/speedglmR6'>speedglmR6</a></span>$<span class='fu'>new</span>(), <span class='kw'>parfit</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>))</pre>
+    <pre class="usage"><span class='fu'>est_g</span>(<span class='no'>A</span>, <span class='no'>W</span>, <span class='kw'>delta</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>ipc_weights</span> <span class='kw'>=</span> <span class='fu'>rep</span>(<span class='fl'>1</span>, <span class='fu'>length</span>(<span class='no'>A</span>)),
+  <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"sl"</span>, <span class='st'>"glm"</span>), <span class='kw'>sl_lrnrs_dens</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>std_args</span> <span class='kw'>=</span> <span class='fu'>list</span>(<span class='kw'>nbins</span> <span class='kw'>=</span> <span class='fl'>25</span>, <span class='kw'>bin_method</span> <span class='kw'>=</span> <span class='st'>"dhist"</span>, <span class='kw'>bin_estimator</span> <span class='kw'>=</span>
+  <span class='kw pkg'>condensier</span><span class='kw ns'>::</span><span class='no'><a href='http://www.rdocumentation.org/packages/condensier/topics/speedglmR6'>speedglmR6</a></span>$<span class='fu'>new</span>(), <span class='kw'>parfit</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>))</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">

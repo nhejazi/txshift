@@ -1,6 +1,5 @@
 Package: txshift
-Title: Targeted Minimum Loss-Based Estimation of the Causal Effect of Stochastic
-  Interventions and Variable Importance Analysis
+Title: Targeted Learning of the Causal Effects of Stochastic Interventions
 Version: 0.2.0
 Authors@R: c(
     person("Nima", "Hejazi", email = "nhejazi@berkeley.edu",
@@ -51,4 +50,4 @@ BugReports: https://github.com/nhejazi/txshift/issues
 Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr
-RoxygenNote: 6.0.1.9000
+RoxygenNote: 6.1.0.9000

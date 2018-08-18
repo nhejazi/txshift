@@ -4,8 +4,8 @@
 \alias{confint.txshift}
 \title{Confidence Intervals for Shifted Treatment Parameters}
 \usage{
-\method{confint}{txshift}(object, parm = seq_len(object$psi), level = 0.95,
-  ...)
+\method{confint}{txshift}(object, parm = seq_len(object$psi),
+  level = 0.95, ...)
 }
 \arguments{
 \item{object}{An object of class \code{txshift}, as produced by invoking

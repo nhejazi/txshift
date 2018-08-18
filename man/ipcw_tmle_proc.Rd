@@ -4,10 +4,10 @@
 \alias{ipcw_tmle_proc}
 \title{Iterative Computation of IPCW-TMLE}
 \usage{
-ipcw_tmle_proc(data_in, C, V, ipc_mech, ipc_weights, ipc_weights_norm, Qn_estim,
-  Hn_estim, fluc_method = c("standard", "weighted"), fit_type = c("glm",
-  "sl", "fit_spec"), eif_tol = 1e-09, sl_lrnrs = NULL,
-  eif_reg_spec = FALSE)
+ipcw_tmle_proc(data_in, C, V, ipc_mech, ipc_weights, ipc_weights_norm,
+  Qn_estim, Hn_estim, fluc_method = c("standard", "weighted"),
+  fit_type = c("glm", "sl", "fit_spec"), eif_tol = 1e-09,
+  sl_lrnrs = NULL, eif_reg_spec = FALSE)
 }
 \arguments{
 \item{data_in}{A \code{data.table} containing variables and observations that

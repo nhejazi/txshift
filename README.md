@@ -15,7 +15,7 @@ developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repo
 [![MIT
 license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
-> Targeted Learning of Causal Effects under Stochastic Treatment Regimes
+> Targeted Learning of the Causal Effects of Stochastic Interventions
 
 **Authors:** [Nima Hejazi](https://nimahejazi.org) and [David
 Benkeser](https://www.benkeserstatistics.com/)
@@ -27,7 +27,7 @@ Benkeser](https://www.benkeserstatistics.com/)
 The `txshift` R package is designed to provide facilities to compute
 targeted maximum likelihood estimates (TMLE) of the population-level
 causal effect of interventions based on stochastic mechanisms for
-treatment assignment (Muñoz and van der Laan (2012)). As opposed to the
+treatment assignment (Díaz and van der Laan (2012)). As opposed to the
 original algorithm given for computing such a TMLE, `txshift` implements
 and builds upon subsequent work by Díaz and van der Laan (2018), who
 reveal a simplified algorithm for computing the TML estimator of the
@@ -101,7 +101,7 @@ tmle_shift <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
 # conveniently summarize the results
 summary(tmle_shift)
 #>       lwr_ci    param_est       upr_ci    param_var     eif_mean 
-#>     1.957777     2.098018     2.238259      0.00512 3.961091e-12 
+#>     1.957777     2.098018     2.238259      0.00512 3.961214e-12 
 #>       n_iter 
 #>            0
 
@@ -223,20 +223,19 @@ See below for details:
 
 <div id="refs" class="references">
 
-<div id="ref-diaz2018stochastic">
+<div id="ref-diaz2012population">
 
-Díaz, Iván, and Mark J van der Laan. 2018. “Stochastic Treatment
-Regimes.” In *Targeted Learning in Data Science: Causal Inference for
-Complex Longitudinal Studies*, 167–80. Springer Science & Business
-Media.
+Díaz, Iván, and Mark J van der Laan. 2012. “Population Intervention
+Causal Effects Based on Stochastic Interventions.” *Biometrics* 68 (2).
+Wiley Online Library: 541–49.
 
 </div>
 
-<div id="ref-munoz2012population">
+<div id="ref-diaz2018stochastic">
 
-Muñoz, Iván Díaz, and Mark J van der Laan. 2012. “Population
-Intervention Causal Effects Based on Stochastic Interventions.”
-*Biometrics* 68 (2). Wiley Online Library: 541–49.
+———. 2018. “Stochastic Treatment Regimes.” In *Targeted Learning in Data
+Science: Causal Inference for Complex Longitudinal Studies*, 167–80.
+Springer Science & Business Media.
 
 </div>
 

@@ -5,7 +5,8 @@
 \title{Compute IPC-Weighted Component of Efficient Influence Function}
 \usage{
 tmle_eif_ipcw(fluc_mod_out, data_in, Hn, Delta, ipc_weights = rep(1,
-  nrow(data_in)), ipc_weights_norm = rep(1, nrow(data_in)), eif_tol = 1e-10)
+  nrow(data_in)), ipc_weights_norm = rep(1, nrow(data_in)),
+  eif_tol = 1e-10)
 }
 \arguments{
 \item{fluc_mod_out}{An object giving values of the logistic regression fit to

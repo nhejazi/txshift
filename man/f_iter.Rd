@@ -4,8 +4,8 @@
 \alias{f_iter}
 \title{Iterative Fluctuation}
 \usage{
-f_iter(Qn, gn, gn0d = NULL, prev_sum = 0, first = FALSE, h_int, Y, A, W,
-  delta, A_val)
+f_iter(Qn, gn, gn0d = NULL, prev_sum = 0, first = FALSE, h_int, Y, A,
+  W, delta, A_val)
 }
 \arguments{
 \item{Qn}{Function to compute the outcome regression: Q(A, W) = E(Y | A, W).}

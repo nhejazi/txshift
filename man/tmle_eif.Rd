@@ -5,8 +5,8 @@
 \title{Compute the Shift Parameter Estimate and the Efficient Influence Function}
 \usage{
 tmle_eif(fluc_mod_out, Hn, Y, Delta = rep(1, length(Y)),
-  ipc_weights = rep(1, length(Y)), ipc_weights_norm = rep(1, length(Y)),
-  tol_eif = 1e-07)
+  ipc_weights = rep(1, length(Y)), ipc_weights_norm = rep(1,
+  length(Y)), tol_eif = 1e-07)
 }
 \arguments{
 \item{fluc_mod_out}{An object giving values of the logistic regression fit to

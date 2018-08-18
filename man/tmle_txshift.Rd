@@ -7,12 +7,13 @@
 tmle_txshift(W, A, Y, C = rep(1, length(Y)), V = NULL, delta = 0,
   fluc_method = c("standard", "weighted"), eif_tol = 1/length(Y),
   max_iter = 10000, ipcw_fit_args = list(fit_type = c("glm", "sl",
-  "fit_spec"), sl_lrnrs = NULL), g_fit_args = list(fit_type = c("glm", "sl",
-  "fit_spec"), nbins = 35, bin_method = "dhist", bin_estimator =
+  "fit_spec"), sl_lrnrs = NULL), g_fit_args = list(fit_type = c("glm",
+  "sl", "fit_spec"), nbins = 35, bin_method = "dhist", bin_estimator =
   condensier::speedglmR6$new(), parfit = FALSE, sl_lrnrs_dens = NULL),
   Q_fit_args = list(fit_type = c("glm", "sl", "fit_spec"), glm_formula =
-  "Y ~ .", sl_lrnrs = NULL), eif_reg_spec = TRUE, ipcw_efficiency = TRUE,
-  ipcw_fit_spec = NULL, gn_fit_spec = NULL, Qn_fit_spec = NULL)
+  "Y ~ .", sl_lrnrs = NULL), eif_reg_spec = TRUE,
+  ipcw_efficiency = TRUE, ipcw_fit_spec = NULL, gn_fit_spec = NULL,
+  Qn_fit_spec = NULL)
 }
 \arguments{
 \item{W}{A \code{matrix}, \code{data.frame}, or similar corresponding to a
