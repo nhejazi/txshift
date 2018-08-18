@@ -154,8 +154,8 @@ After using the `txshift` R package, please cite the following:
         @manual{hejazi2018txshift,
           author = {Hejazi, Nima S and {van der Laan}, Mark J and Benkeser,
             David C},
-          title = {txshift: {Targeted Learning} of causal effects under
-            stochastic treatment regimes in {R}},
+          title = {txshift: {Targeted Learning} of the Causal Effects of
+            Stochastic Interventions in {R}},
           year  = {2018},
           url = {https://github.com/nhejazi/txshift},
           note = {R package version 0.2.0}
