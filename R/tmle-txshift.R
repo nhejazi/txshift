@@ -250,7 +250,7 @@ tmle_txshift <- function(W,
   ##############################################################################
   # invoke efficient IPCW-TMLE, per Rose & van der Laan (2011), if necessary
   ##############################################################################
-  n_steps <- 0  # define iteration outside to easily return in output object
+  n_steps <- 0 # define iteration outside to easily return in output object
   if (ipcw_efficiency & !all(C == 1) & !is.null(V)) {
     # Efficient implementation of the IPCW-TMLE
     eif_mean <- Inf
