@@ -31,9 +31,10 @@ r_github_packages:
   - r-lib/sessioninfo
   - Rdatatable/data.table
   - jimhester/covr
-  - jeremyrcoyle/hal9001
+  - osofr/simcausal
   - osofr/condensier
-  - tlverse/sl3@devel
+  - tlverse/hal9001
+  - tlverse/sl3
 
 after_success:
   ## coverage

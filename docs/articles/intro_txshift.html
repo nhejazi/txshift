@@ -87,7 +87,7 @@
 <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://www.benkeserstatistics.com/">David Benkeser</a>
 </h4>
             
-            <h4 class="date">2018-08-18</h4>
+            <h4 class="date">2018-10-26</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nhejazi/txshift/blob/master/vignettes/intro_txshift.Rmd"><code>vignettes/intro_txshift.Rmd</code></a></small>
       <div class="hidden name"><code>intro_txshift.Rmd</code></div>
@@ -103,8 +103,8 @@
 <p>To start, let’s load the packages we’ll use and set a seed for simulation:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(tidyverse)</a></code></pre></div>
 <pre><code>## ── Attaching packages ────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
-<pre><code>## ✔ ggplot2 3.0.0     ✔ purrr   0.2.5
-## ✔ tibble  1.4.2     ✔ dplyr   0.7.6
+<pre><code>## ✔ ggplot2 3.1.0     ✔ purrr   0.2.5
+## ✔ tibble  1.4.2     ✔ dplyr   0.7.7
 ## ✔ tidyr   0.8.1     ✔ stringr 1.3.1
 ## ✔ readr   1.1.1     ✔ forcats 0.3.0</code></pre>
 <pre><code>## ── Conflicts ───────────────────────────────────── tidyverse_conflicts() ──
@@ -124,7 +124,7 @@
 <pre><code>## The condensier package is still in beta testing. Interpret results with caution.</code></pre>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw">library</span>(sl3)</a>
 <a class="sourceLine" id="cb12-2" data-line-number="2"><span class="kw">library</span>(txshift)</a></code></pre></div>
-<pre><code>## txshift v0.2.0: Targeted Learning with Stochastic Interventions</code></pre>
+<pre><code>## txshift v0.2.0: Targeted Learning of the Causal Effects of Stochastic Interventions</code></pre>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">429153</span>)</a></code></pre></div>
 <hr>
 </div>
@@ -206,11 +206,11 @@
 </h3>
 <p>To easily incorporate ensemble machine learning into the estimation procedure, we rely on the facilities provided in the <a href="https://sl3.tlverse.org"><code>sl3</code> R package</a>. For a complete guide on using the <code>sl3</code> R package, consider consulting <a href="https://sl3.tlverse.org" class="uri">https://sl3.tlverse.org</a>, or <a href="https://tlverse.org" class="uri">https://tlverse.org</a> for the <code>tlverse</code> ecosystem, of which <code>sl3</code> is a major part.</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="co"># SL learners to be used for most fits (e.g., IPCW, outcome regression)</span></a>
-<a class="sourceLine" id="cb20-2" data-line-number="2">lrnr_lib &lt;-<span class="st"> </span><span class="kw"><a href="http://sl3.tlverse.org/reference/make_learner_stack.html">make_learner_stack</a></span>(<span class="st">"Lrnr_mean"</span>, <span class="st">"Lrnr_glm_fast"</span>, <span class="st">"Lrnr_ranger"</span>)</a>
+<a class="sourceLine" id="cb20-2" data-line-number="2">lrnr_lib &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/sl3/topics/make_learner_stack">make_learner_stack</a></span>(<span class="st">"Lrnr_mean"</span>, <span class="st">"Lrnr_glm_fast"</span>, <span class="st">"Lrnr_ranger"</span>)</a>
 <a class="sourceLine" id="cb20-3" data-line-number="3">sl_lrn &lt;-<span class="st"> </span>Lrnr_sl<span class="op">$</span><span class="kw">new</span>(<span class="dt">learners =</span> lrnr_lib, <span class="dt">metalearner =</span> Lrnr_nnls<span class="op">$</span><span class="kw">new</span>())</a>
 <a class="sourceLine" id="cb20-4" data-line-number="4"></a>
 <a class="sourceLine" id="cb20-5" data-line-number="5"><span class="co"># SL learners for conditional densities to be used for the propensity score fit</span></a>
-<a class="sourceLine" id="cb20-6" data-line-number="6">lrnr_dens_lib &lt;-<span class="st"> </span><span class="kw"><a href="http://sl3.tlverse.org/reference/make_learner_stack.html">make_learner_stack</a></span>(<span class="kw">list</span>(<span class="st">"Lrnr_condensier"</span>, <span class="dt">nbins =</span> <span class="dv">35</span>,</a>
+<a class="sourceLine" id="cb20-6" data-line-number="6">lrnr_dens_lib &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/sl3/topics/make_learner_stack">make_learner_stack</a></span>(<span class="kw">list</span>(<span class="st">"Lrnr_condensier"</span>, <span class="dt">nbins =</span> <span class="dv">35</span>,</a>
 <a class="sourceLine" id="cb20-7" data-line-number="7">                                          <span class="dt">bin_estimator =</span> Lrnr_glm_fast<span class="op">$</span><span class="kw">new</span>(),</a>
 <a class="sourceLine" id="cb20-8" data-line-number="8">                                          <span class="dt">bin_method =</span> <span class="st">"equal.len"</span>,</a>
 <a class="sourceLine" id="cb20-9" data-line-number="9">                                          <span class="dt">pool =</span> <span class="ot">FALSE</span>),</a>
@@ -238,20 +238,14 @@
 <a class="sourceLine" id="cb21-6" data-line-number="6">                                                  <span class="dt">sl_lrnrs =</span> sl_lrn)</a>
 <a class="sourceLine" id="cb21-7" data-line-number="7">                               )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 3281.6737     Pars:  0.7360055660 0.0000006191 0.2639938150
-## Iter: 2 fn: 3281.6737     Pars:  0.7360056986 0.0000003724 0.2639939290
-## solnp--&gt; Completed in 2 iterations
-## 
-## density meta-learner fit:
-## Lrnr_condensier_equal.len_35_20_FALSE_NA_FALSE_NULL 
-##                                     0.7360056986331 
-## Lrnr_condensier_equal.len_30_20_FALSE_NA_FALSE_NULL 
-##                                     0.0000003724111 
-## Lrnr_condensier_equal.len_25_20_FALSE_NA_FALSE_NULL 
-##                                     0.2639939289558</code></pre>
+## Iter: 1 fn: 3281.8770     Pars:  0.7357915457 0.0000006017 0.2642078527
+## Iter: 2 fn: 3281.8770     Pars:  0.7357916699 0.0000003619 0.2642079682
+## solnp--&gt; Completed in 2 iterations</code></pre>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="kw">summary</span>(tmle_sl_shift_<span class="dv">1</span>)</a></code></pre></div>
-<pre><code>##      lwr_ci   param_est      upr_ci   param_var    eif_mean      n_iter 
-##    1.912698    2.041184     2.16967    0.004298 1.59659e-10           0</code></pre>
+<pre><code>##       lwr_ci    param_est       upr_ci    param_var     eif_mean 
+##     1.912519     2.040987     2.169456     0.004296 1.600248e-10 
+##       n_iter 
+##            0</code></pre>
 <p>As before, we may vary the regression for the submodel fluctuation procedure by weighting each observation by the value of the so-called clever covariate rather than using such an auxiliary covariate directly in the regression procedure:</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1">tmle_sl_shift_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw"><a href="../reference/tmle_txshift.html">tmle_txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y, <span class="dt">delta =</span> delta,</a>
 <a class="sourceLine" id="cb25-2" data-line-number="2">                                <span class="dt">fluc_method =</span> <span class="st">"weighted"</span>,</a>
@@ -261,22 +255,12 @@
 <a class="sourceLine" id="cb25-6" data-line-number="6">                                                  <span class="dt">sl_lrnrs =</span> sl_lrn)</a>
 <a class="sourceLine" id="cb25-7" data-line-number="7">                               )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 3882.4349     Pars:  0.7364101501 0.0000007987 0.2635890499
-## Iter: 2 fn: 3882.4348     Pars:  0.7364142428 0.0000004949 0.2635852623
-## solnp--&gt; Completed in 2 iterations
-## 
-## density meta-learner fit:
-## Lrnr_condensier_equal.len_35_20_FALSE_NA_FALSE_NULL 
-##                                     0.7364142427691 
-## Lrnr_condensier_equal.len_30_20_FALSE_NA_FALSE_NULL 
-##                                     0.0000004949172 
-## Lrnr_condensier_equal.len_25_20_FALSE_NA_FALSE_NULL 
-##                                     0.2635852623137</code></pre>
+## Iter: 1 fn: 3884.0419     Pars:  0.7365980401 0.0000002285 0.2634017301
+## Iter: 2 fn: 3884.0419     Pars:  0.7365980800 0.0000001467 0.2634017733
+## solnp--&gt; Completed in 2 iterations</code></pre>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1"><span class="kw">summary</span>(tmle_sl_shift_<span class="dv">2</span>)</a></code></pre></div>
-<pre><code>##       lwr_ci    param_est       upr_ci    param_var     eif_mean 
-##     1.922095     2.050549     2.179003     0.004295 9.891658e-14 
-##       n_iter 
-##            0</code></pre>
+<pre><code>##      lwr_ci   param_est      upr_ci   param_var    eif_mean      n_iter 
+##    1.922003    2.050474    2.178945    0.004296 9.81329e-14           0</code></pre>
 </div>
 <div id="statistical-inference-for-targeted-maximum-likelihood-estimates" class="section level3">
 <h3 class="hasAnchor">
@@ -294,7 +278,7 @@
 <p><span class="math display">\[\sigma_n^2 = \frac{1}{n} \sum_{i = 1}^{n} D^2(\bar{Q}_n^*, g_n)(O_i)\]</span></p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1">(ci_shift &lt;-<span class="st"> </span><span class="kw">confint</span>(tmle_sl_shift_<span class="dv">1</span>))</a></code></pre></div>
 <pre><code>##   lwr_ci      est   upr_ci 
-## 1.912698 2.041184 2.169670</code></pre>
+## 1.912519 2.040987 2.169456</code></pre>
 <hr>
 </div>
 </div>
