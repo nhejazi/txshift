@@ -27,7 +27,6 @@ r_packages:
   - covr
 
 r_github_packages:
-  - r-lib/devtools
   - r-lib/sessioninfo
   - Rdatatable/data.table
   - jimhester/covr
