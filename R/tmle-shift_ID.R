@@ -46,7 +46,7 @@
 #'     type = "response"
 #'   )
 #' }
-#' tmle00 <- tmle_shift(
+#' tmle00 <- tmle_shift_orig(
 #'   Y = Y, A = A, W = W, Qn = Qn.0, gn = gn.0, delta = 2,
 #'   tol = 1e-4, iter_max = 5, A_val = seq(1, 60, 1)
 #' )
