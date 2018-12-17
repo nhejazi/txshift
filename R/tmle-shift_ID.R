@@ -28,25 +28,32 @@
 #' W <- data.frame(W1 = runif(n), W2 = rbinom(n, 1, 0.7))
 #' A <- rpois(n, lambda = exp(3 + 0.3 * log(W$W1) - 0.2 * exp(W$W1) * W$W2))
 #' Y <- rbinom(n, 1, plogis(-1 + 0.05 * A - 0.02 * A * W$W2 +
-#'                          0.2 * A * tan(W$W1^2) - 0.02 * W$W1 * W$W2 +
-#'                          0.1 * A * W$W1 * W$W2))
-#' fitA.0 <- glm(A ~ I(log(W1)) + I(exp(W1)):W2, family = poisson,
-#'               data = data.frame(A, W))
+#'   0.2 * A * tan(W$W1^2) - 0.02 * W$W1 * W$W2 +
+#'   0.1 * A * W$W1 * W$W2))
+#' fitA.0 <- glm(A ~ I(log(W1)) + I(exp(W1)):W2,
+#'   family = poisson,
+#'   data = data.frame(A, W)
+#' )
 #' fitY.0 <- glm(Y ~ A + A:W2 + A:I(tan(W1^2)) + W1:W2 + A:W1:W2,
-#'               family = binomial, data = data.frame(A, W))
-#' gn.0  <- function(A = A, W = W) {
+#'   family = binomial, data = data.frame(A, W)
+#' )
+#' gn.0 <- function(A = A, W = W) {
 #'   dpois(A, lambda = predict(fitA.0, newdata = W, type = "response"))
 #' }
 #' Qn.0 <- function(A = A, W = W) {
-#'   predict(fitY.0, newdata = data.frame(A, W, row.names = NULL),
-#'           type = "response")
+#'   predict(fitY.0,
+#'     newdata = data.frame(A, W, row.names = NULL),
+#'     type = "response"
+#'   )
 #' }
-#' tmle00 <- tmle_shift(Y = Y, A = A, W = W, Qn = Qn.0, gn = gn.0, delta = 2,
-#'                      tol = 1e-4, iter_max = 5, A_val = seq(1, 60, 1))
-#
-tmle_shift <- function(Y, A, W,
-                       Qn, gn,
-                       delta, tol = 1e-5, iter_max = 5, A_val) {
+#' tmle00 <- tmle_shift(
+#'   Y = Y, A = A, W = W, Qn = Qn.0, gn = gn.0, delta = 2,
+#'   tol = 1e-4, iter_max = 5, A_val = seq(1, 60, 1)
+#' )
+#' #
+tmle_shift_orig <- function(Y, A, W,
+                            Qn, gn,
+                            delta, tol = 1e-5, iter_max = 5, A_val) {
 
   # interval partition length, A_val assumed equally spaced
   h_int <- A_val[3] - A_val[2]

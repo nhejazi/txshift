@@ -53,4 +53,4 @@ BugReports: https://github.com/nhejazi/txshift/issues
 Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr
-RoxygenNote: 6.1.0.9000
+RoxygenNote: 6.1.1
