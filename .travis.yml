@@ -1,7 +1,6 @@
 branches:
   only:
   - master
-  - devel
 
 env:
   global:
@@ -13,7 +12,7 @@ cache: packages
 
 warnings_are_errors: true
 r_build_args: '--no-manual'
-r_check_args: '--no-vignettes --no-manual'
+r_check_args: '--no-build-vignettes --no-manual'
 
 r:
   - release
@@ -37,7 +36,7 @@ r_github_packages:
 
 after_success:
   ## coverage
-  - travis_wait 30 Rscript -e "covr::codecov(line_exclusions = list('R/plots.R', 'R/utils.R'))"
+  - travis_wait 80 Rscript -e "covr::codecov(line_exclusions = list('R/plots.R', 'R/utils.R'))"
 
 on_failure:
   - "./travis-tool.sh dump_logs"

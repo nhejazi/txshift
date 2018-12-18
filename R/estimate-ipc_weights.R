@@ -32,6 +32,7 @@ est_ipcw <- function(V,
   ##############################################################################
   # make data objects from inputs
   ##############################################################################
+  fit_type <- match.arg(fit_type)
   data_in <- data.table::as.data.table(cbind(Delta, V))
   if (!is.matrix(V)) V <- as.matrix(V)
   names_V <- paste0("V", seq_len(ncol(V)))
