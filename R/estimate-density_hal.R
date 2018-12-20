@@ -10,12 +10,27 @@
 #'
 #' @export
 #
-cv_haldensify <- function(fold, long_data, ...) {
+cv_haldensify <- function(fold, long_data, lambda_seq) {
   # make training and validation folds
   train_set <- origami::training(long_data)
   valid_set <- origami::validation(long_data)
 
   # do stuff with HAL
+  hal_lambda_seq <- hal9001::fit_hal(X = as.matrix(train_set[, -1]),
+                                     Y = as.matrix(train_set[, 1]),
+                                     #weights = ...,
+                                     family = "binomial",
+                                     fit_type = "glmnet",
+                                     lambda = lambda_seq,
+                                     use_min = TRUE,
+                                     return_lasso = TRUE,
+                                     yolo = FALSE)
+
+  # get predictions on validation set to evaluate loss properly
+  preds_hal_long <- predict(hal_lambda_seq,
+                            new_data = as.matrix(valid_set[, -1]))
+
+
 }
 
 #' NAME
