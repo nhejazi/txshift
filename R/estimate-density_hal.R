@@ -105,6 +105,8 @@ cv_haldensify <- function(fold, long_data, wts = rep(1, nrow(long_data)),
 #'
 #' @importFrom origami make_folds cross_validate
 #' @importFrom hal9001 fit_hal
+#'
+#' @export
 #
 haldensify <- function(A, W, wts = rep(1, length(A)),
                        grid_type = c("equal_range", "equal_mass",
@@ -181,8 +183,6 @@ haldensify <- function(A, W, wts = rep(1, length(A)),
 #' @importFrom data.table as.data.table rbindlist setnames
 #' @importFrom ggplot2 cut_interval cut_number cut_width
 #' @importFrom assertthat assert_that
-#'
-#' @export
 #
 format_long_hazards <- function(A, W, wts = rep(1, length(A)),
                                 type = c("equal_range", "equal_mass",
