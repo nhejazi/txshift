@@ -4,33 +4,97 @@
 #'
 #' @param fold ...
 #' @param long_data ...
-#' @param ... ...
+#' @param wts ...
+#' @param lambda_seq ...
 #'
-#' @importFrom origami training validation
+#' @importFrom stats aggregate plogis
+#' @importFrom origami training validation fold_index
+#' @importFrom hal9001 fit_hal make_design_matrix apply_copy_map
+#' @importFrom assertthat assert_that
 #'
 #' @export
 #
-cv_haldensify <- function(fold, long_data, lambda_seq) {
+cv_haldensify <- function(fold, long_data, wts = rep(1, nrow(long_data)),
+                          lambda_seq = exp(seq(-1, -13, length = 1000))) {
   # make training and validation folds
   train_set <- origami::training(long_data)
   valid_set <- origami::validation(long_data)
 
-  # do stuff with HAL
-  hal_lambda_seq <- hal9001::fit_hal(X = as.matrix(train_set[, -1]),
-                                     Y = as.matrix(train_set[, 1]),
-                                     #weights = ...,
-                                     family = "binomial",
-                                     fit_type = "glmnet",
-                                     lambda = lambda_seq,
-                                     use_min = TRUE,
-                                     return_lasso = TRUE,
-                                     yolo = FALSE)
+  # subset observation-level weights to the correct size
+  wts_train <- wts[fold$training_set]
+  wts_valid <- wts[fold$validation_set]
 
-  # get predictions on validation set to evaluate loss properly
-  preds_hal_long <- predict(hal_lambda_seq,
-                            new_data = as.matrix(valid_set[, -1]))
+  # fit a HAL regression on the training set
+  hal_fit_train <- hal9001::fit_hal(X = as.matrix(train_set[, -c(1, 2)]),
+                                    Y = as.numeric(train_set$in_bin),
+                                    fit_type = "glmnet",
+                                    use_min = TRUE,
+                                    family = "binomial",
+                                    return_lasso = TRUE,
+                                    lambda = lambda_seq,
+                                    fit_glmnet = TRUE,
+                                    standardize = FALSE,   # pass to glmnet
+                                    weights = wts_train,   # pass to glmnet
+                                    yolo = FALSE)
 
+  # get intercept and coefficient fits for this value of lambda from glmnet
+  alpha_hat <- hal_fit_train$glmnet_lasso$a0
+  betas_hat <- hal_fit_train$glmnet_lasso$beta
+  coefs_hat <- rbind(alpha_hat, betas_hat)
 
+  # make design matrix for validation set manually
+  pred_x_basis <- hal9001:::make_design_matrix(as.matrix(valid_set),
+                                               hal_fit_train$basis_list)
+  pred_x_basis <- hal9001:::apply_copy_map(pred_x_basis,
+                                           hal_fit_train$copy_map)
+  pred_x_basis <- cbind(rep(1, nrow(valid_set)), pred_x_basis)
+
+  # manually predict along sequence of lambdas
+  preds_logit <- pred_x_basis %*% coefs_hat
+  preds <- stats::plogis(as.matrix(preds_logit))
+
+  # initialize lists to store predictions and loss across individuals
+  hazards_pred_list <- vector("list", length(unique(valid_set$obs_id)))
+
+  # compute hazard for a given observation by looping over individuals
+  for (id in unique(valid_set$obs_id)) {
+    # get predictions for the current observation only
+    idx_this_obs <- which(unique(valid_set$obs_id) %in% id)
+    preds_this_obs <- matrix(preds[which(valid_set$obs_id == id), ],
+                             ncol = ncol(preds))
+    n_records_this_obs <- nrow(preds_this_obs)
+
+    # NOTE: pred_hazard = (1 - pred) if 0 in this bin * pred if 1 in this bin
+    if (no_records_this_obs > 1) {
+      hazard_prefailure <- (1 - preds_this_obs[-n_records_this_obs, ])
+      hazard_failure <- preds_this_obs[n_records_this_obs, ]
+      hazards_pred <- rbind(hazard_prefailure, hazard_failure)
+    } else {
+      hazards_pred <- preds_this_obs
+    }
+
+    # check dimensions
+    assertthat::assert_that(all(dim(preds_this_obs) == dim(hazards_pred)))
+
+    # multiply hazards across rows to construct the individual-level hazard
+    hazards_pred <- matrix(apply(hazards_pred, 2, prod), nrow = 1)
+    hazards_pred_list[[idx_this_obs]] <- hazards_pred
+  }
+
+  # aggregate predictions across observations
+  hazards_pred <- do.call(rbind, hazards_pred_list)
+
+  # collapse weights to the observation level
+  wts_valid_reduced <- stats::aggregate(wts_valid, list(valid_set$obs_id),
+                                        unique)
+  colnames(wts_valid_reduced) <- c("id", "weight")
+
+  # construct output
+  out <- list(preds = hazards_pred,
+              ids = wts_valid_reduced$id,
+              wts = wts_valid_reduced$weight,
+              fold = origami::fold_index())
+  return(out)
 }
 
 #' NAME
@@ -39,28 +103,78 @@ cv_haldensify <- function(fold, long_data, lambda_seq) {
 #'
 #' @param A ...
 #' @param W ...
-#' @param ... ...
+#' @param wts ...
+#' @param grid_type ...
+#' @param n_bins ...
+#' @param width ...
+#' @param lambda_seq ...
 #'
 #' @importFrom origami make_folds cross_validate
+#' @importFrom hal9001 fit_hal
 #'
 #' @export
 #
-haldensify <- function(A, W, ...) {
+haldensify <- function(A, W, wts = rep(1, length(A)),
+                       grid_type = c("equal_range", "equal_mass",
+                                     "equal_width"),
+                       n_bins = 10, width = NULL,
+                       lambda_seq = exp(seq(-1, -13, length = 1000))
+                      ) {
   # re-format input data into long hazards structure
-  long_data <- format_long_hazards(A = A, W = W, n_bins = 10)
+  long_data <- format_long_hazards(A = A, W = W, wts = wts, type = grid_type,
+                                   n_bins = n_bins, width = width)
 
-  # extract observation-level IDs and drop column
-  obs_ids <- long_data$obs_id
-  long_data[, obs_id := NULL]
+  # extract wieghts from long format data structure
+  wts_long <- long_data$wts
+  long_data[, wts := NULL]
 
   # make folds with origami
-  folds <- origami::make_folds(long_data, cluster_ids = obs_ids)
+  folds <- origami::make_folds(long_data, cluster_ids = long_data$obs_id)
 
   # call cross_validate on cv_density function...
-  cv_haldensity <- origami::cross_validate(cv_fun = cv_haldensify,
-                                           folds = folds,
-                                           long_data = long_data,
-                                           ...)
+  haldensity <- origami::cross_validate(cv_fun = cv_haldensify,
+                                        folds = folds,
+                                        long_data = long_data,
+                                        wts = wts_long,
+                                        lambda_seq = lambda_seq,
+                                        use_future = FALSE,
+                                        .combine = FALSE
+                                       )
+
+  # re-organize output from origami::cross_validate
+  hazards_pred <- do.call(rbind, haldensity$preds)
+  obs_ids <- do.call(c, haldensity$ids)
+  obs_wts <- do.call(c, haldensity$wts)
+
+  # compute loss for the given individual
+  hazards_loss <- apply(hazards_pred, 2, function(x) {
+                          pred_weighted <- x * obs_wts
+                          loss_weighted <- -log(pred_weighted)
+                          return(loss_weighted)
+                       })
+
+  # take column means to have average loss across sequence of lambdas
+  loss_mean <- colMeans(hazards_loss)
+  lambda_loss_min <- lambda_seq[which.min(loss_mean)]
+
+  # fit a HAL regression on the full data set with the CV-selected lambda
+  # NOTE: How should the data structure for this regression be formatted?
+  hal_fit <- hal9001::fit_hal(X = as.matrix(long_data[, -c(1, 2)]),
+                              Y = as.numeric(long_data$in_bin),
+                              fit_type = "glmnet",
+                              use_min = TRUE,
+                              family = "binomial",
+                              return_lasso = TRUE,
+                              lambda = lambda_loss_min,
+                              fit_glmnet = TRUE,
+                              standardize = FALSE,   # pass to glmnet
+                              weights = wts_long,    # pass to glmnet
+                              yolo = FALSE)
+
+  # predict conditional density estimate from HAL fit on full data
+  density_pred <- predict(hal_fit, new_data = long_data)
+
+  # TODO: construct output
 }
 
 #' Generate long format hazards data for conditional density estimation
@@ -69,6 +183,7 @@ haldensify <- function(A, W, ...) {
 #'
 #' @param A ...
 #' @param W ...
+#' @param wts ...
 #' @param type ...
 #' @param n_bins ...
 #' @param width ...
@@ -79,15 +194,12 @@ haldensify <- function(A, W, ...) {
 #'
 #' @export
 #
-format_long_hazards <- function(A, W,
+format_long_hazards <- function(A, W, wts = rep(1, length(A)),
                                 type = c("equal_range", "equal_mass",
                                          "equal_width"),
                                 n_bins = 10, width = NULL) {
   # clean up arguments
   type <- match.arg(type)
-
-  # get lower and upper limits of A
-  bounds <- range(A)
 
   # set grid along A and find interval membership of observations along grid
   if (type == "equal_range") {
@@ -102,7 +214,10 @@ format_long_hazards <- function(A, W,
     bin_id <- as.numeric(bins)
   }
 
+  # create list to capture data tables for each observation
   df_all_obs <- vector("list", length(A))
+
+  # loop over observations to create expanded set of records for each
   for (i in seq_along(A)) {
     # create repeating bin IDs for this subject (these map to intervals)
     all_bins <- matrix(seq_along(levels(bins)), ncol = 1)
@@ -130,15 +245,24 @@ format_long_hazards <- function(A, W,
       }
     }
 
+    # get correct value of weights and repeat along intervals
+    # NOTE: the weights are always a vector
+    obs_wts <- rep(wts[i], nrow(all_bins))
+
     # create data table with membership indicator and interval limits
     suppressWarnings(
       hazards_df <- data.table::as.data.table(cbind(id, bin_indicator,
-                                                    all_bins, obs_w))
+                                                    all_bins, obs_w,
+                                                    obs_wts))
     )
 
+    # trim records to simply end at the failure time for a given observation
+    hazards_df_reduced <- hazards_df[seq_len(bin_id[i]), ]
+
     # give explicit names and add to appropriate position in list
-    data.table::setnames(hazards_df, c("obs_id", "in_bin", "bin_id", names_w))
-    df_all_obs[[i]] <- hazards_df
+    data.table::setnames(hazards_df_reduced,
+                         c("obs_id", "in_bin", "bin_id", names_w, "wts"))
+    df_all_obs[[i]] <- hazards_df_reduced
   }
 
   # combine observation-level hazards data into larger structure
