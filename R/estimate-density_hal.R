@@ -1,6 +1,4 @@
-#' NAME
-#'
-#' description
+#' Conditional density estimation with HAL in a single cross-validation fold
 #'
 #' @param fold ...
 #' @param long_data ...
@@ -9,10 +7,8 @@
 #'
 #' @importFrom stats aggregate plogis
 #' @importFrom origami training validation fold_index
-#' @importFrom hal9001 fit_hal make_design_matrix apply_copy_map
+#' @importFrom hal9001 fit_hal
 #' @importFrom assertthat assert_that
-#'
-#' @export
 #
 cv_haldensify <- function(fold, long_data, wts = rep(1, nrow(long_data)),
                           lambda_seq = exp(seq(-1, -13, length = 1000))) {
@@ -97,9 +93,7 @@ cv_haldensify <- function(fold, long_data, wts = rep(1, nrow(long_data)),
   return(out)
 }
 
-#' NAME
-#'
-#' description
+#' Cross-validated conditional density estimation with HAL
 #'
 #' @param A ...
 #' @param W ...
@@ -111,8 +105,6 @@ cv_haldensify <- function(fold, long_data, wts = rep(1, nrow(long_data)),
 #'
 #' @importFrom origami make_folds cross_validate
 #' @importFrom hal9001 fit_hal
-#'
-#' @export
 #
 haldensify <- function(A, W, wts = rep(1, length(A)),
                        grid_type = c("equal_range", "equal_mass",
@@ -178,8 +170,6 @@ haldensify <- function(A, W, wts = rep(1, length(A)),
 }
 
 #' Generate long format hazards data for conditional density estimation
-#'
-#' description forthcoming
 #'
 #' @param A ...
 #' @param W ...

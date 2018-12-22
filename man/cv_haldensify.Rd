@@ -2,13 +2,20 @@
 % Please edit documentation in R/estimate-density_hal.R
 \name{cv_haldensify}
 \alias{cv_haldensify}
-\title{NAME}
+\title{Conditional density estimation with HAL in a single cross-validation fold}
 \usage{
-cv_haldensify(fold, long_hazard_data, ...)
+cv_haldensify(fold, long_data, wts = rep(1, nrow(long_data)),
+  lambda_seq = exp(seq(-1, -13, length = 1000)))
 }
 \arguments{
-\item{args...}{}
+\item{fold}{...}
+
+\item{long_data}{...}
+
+\item{wts}{...}
+
+\item{lambda_seq}{...}
 }
 \description{
-description
+Conditional density estimation with HAL in a single cross-validation fold
 }

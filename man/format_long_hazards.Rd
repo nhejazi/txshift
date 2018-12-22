@@ -4,15 +4,23 @@
 \alias{format_long_hazards}
 \title{Generate long format hazards data for conditional density estimation}
 \usage{
-format_long_hazards(A, W, n_bins = 10)
+format_long_hazards(A, W, wts = rep(1, length(A)),
+  type = c("equal_range", "equal_mass", "equal_width"), n_bins = 10,
+  width = NULL)
 }
 \arguments{
 \item{A}{...}
 
 \item{W}{...}
 
+\item{wts}{...}
+
+\item{type}{...}
+
 \item{n_bins}{...}
+
+\item{width}{...}
 }
 \description{
-description forthcoming
+Generate long format hazards data for conditional density estimation
 }

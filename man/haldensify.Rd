@@ -2,13 +2,27 @@
 % Please edit documentation in R/estimate-density_hal.R
 \name{haldensify}
 \alias{haldensify}
-\title{NAME}
+\title{Cross-validated conditional density estimation with HAL}
 \usage{
-haldensify(long_hazard_data)
+haldensify(A, W, wts = rep(1, length(A)), grid_type = c("equal_range",
+  "equal_mass", "equal_width"), n_bins = 10, width = NULL,
+  lambda_seq = exp(seq(-1, -13, length = 1000)))
 }
 \arguments{
-\item{args...}{}
+\item{A}{...}
+
+\item{W}{...}
+
+\item{wts}{...}
+
+\item{grid_type}{...}
+
+\item{n_bins}{...}
+
+\item{width}{...}
+
+\item{lambda_seq}{...}
 }
 \description{
-description
+Cross-validated conditional density estimation with HAL
 }
