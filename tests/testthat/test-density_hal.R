@@ -32,7 +32,7 @@ predictions_W0 <- trained_lrn$predict(task_W0)
 hist_W0 <- as.data.table(list(A = A_supp, predictions_W0)) %>%
   ggplot(aes(x = A, y = likelihood)) +
   geom_smooth(method = "loess", se = FALSE)
-  ggtitle("Conditional density p(A | W = 0)")
+ggtitle("Conditional density p(A | W = 0)")
 
 W1 <- rep(1, n_samp)
 data_W1 <- as.data.table(cbind(A_supp, W1))
@@ -44,4 +44,3 @@ hist_W1 <- as.data.table(list(A = A_supp, predictions_W1)) %>%
   ggplot(aes(x = A, y = likelihood)) +
   geom_smooth(method = "loess", se = FALSE) +
   ggtitle("Conditional density p(A | W = 1)")
-
