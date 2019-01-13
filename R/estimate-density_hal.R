@@ -14,6 +14,7 @@ utils::globalVariables(c(":=", "no_records_this_obs"))
 #' @param lambda_seq A \code{numeric} sequence of values of the lambda tuning
 #'  parameter of the Lasso L1 regression, to be passed to \code{glmnet::glmnet}
 #'  through a call to \code{hal9001::fit_hal}.
+#'
 #' @importFrom stats aggregate plogis
 #' @importFrom origami training validation fold_index
 #' @importFrom future.apply future_lapply
@@ -31,6 +32,7 @@ cv_haldensify <- function(fold, long_data, wts = rep(1, nrow(long_data)),
   wts_valid <- wts[fold$validation_set]
 
   # fit a HAL regression on the training set
+  # NOTE: pass IDs to glmnet?
   hal_fit_train <- hal9001::fit_hal(
     X = as.matrix(train_set[, -c(1, 2)]),
     Y = as.numeric(train_set$in_bin),
@@ -52,7 +54,7 @@ cv_haldensify <- function(fold, long_data, wts = rep(1, nrow(long_data)),
 
   # make design matrix for validation set manually
   pred_x_basis <- hal9001:::make_design_matrix(
-    as.matrix(valid_set),
+    as.matrix(valid_set[, -c(1, 2)]),
     hal_fit_train$basis_list
   )
   pred_x_basis <- hal9001:::apply_copy_map(
@@ -69,17 +71,16 @@ cv_haldensify <- function(fold, long_data, wts = rep(1, nrow(long_data)),
   hazards_pred_each_obs <-
     future.apply::future_lapply(unique(valid_set$obs_id), function(id) {
       # get predictions for the current observation only
-      idx_this_obs <- which(unique(valid_set$obs_id) %in% id)
-      preds_this_obs <- matrix(preds[which(valid_set$obs_id == id), ],
-        ncol = ncol(preds)
+      preds_this_obs <- matrix(preds[valid_set$obs_id == id, ],
+        ncol = length(lambda_seq)
       )
       n_records_this_obs <- nrow(preds_this_obs)
 
       # NOTE: pred_hazard = (1 - pred) if 0 in this bin * pred if 1 in this bin
-      if (no_records_this_obs > 1) {
+      if (n_records_this_obs > 1) {
         hazard_prefailure <- (1 - preds_this_obs[-n_records_this_obs, ])
-        hazard_failure <- preds_this_obs[n_records_this_obs, ]
-        hazards_pred <- rbind(hazard_prefailure, hazard_failure)
+        hazard_at_failure <- preds_this_obs[n_records_this_obs, ]
+        hazards_pred <- rbind(hazard_prefailure, hazard_at_failure)
       } else {
         hazards_pred <- preds_this_obs
       }
@@ -90,7 +91,7 @@ cv_haldensify <- function(fold, long_data, wts = rep(1, nrow(long_data)),
       # multiply hazards across rows to construct the individual-level hazard
       hazards_pred <- matrix(apply(hazards_pred, 2, prod), nrow = 1)
       return(hazards_pred)
-    })
+  })
 
   # aggregate predictions across observations
   hazards_pred <- do.call(rbind, hazards_pred_each_obs)
@@ -152,14 +153,15 @@ haldensify <- function(A, W, wts = rep(1, length(A)),
                        ),
                        n_bins = 10, width = NULL,
                        lambda_seq = exp(seq(-1, -13, length = 1000))) {
-  # re-format input data into long hazards structure
-  formatting_args <- list(
-    A = A, W = W, wts = wts, type = grid_type,
-    n_bins = n_bins, width = width
-  )
-  long_data <- do.call(format_long_hazards, formatting_args)
+  # catch input
+  call <- match.call(expand.dots = TRUE)
 
-  # extract wieghts from long format data structure
+  # re-format input data into long hazards structure
+  long_data <- format_long_hazards(A = A, W = W, wts = wts,
+                                   type = grid_type, n_bins = n_bins,
+                                   width = width)
+
+  # extract weights from long format data structure
   wts_long <- long_data$wts
   long_data[, wts := NULL]
 
@@ -194,7 +196,6 @@ haldensify <- function(A, W, wts = rep(1, length(A)),
   lambda_loss_min <- lambda_seq[which.min(loss_mean)]
 
   # fit a HAL regression on the full data set with the CV-selected lambda
-  # NOTE: How should the data structure for this regression be formatted?
   hal_fit <- hal9001::fit_hal(
     X = as.matrix(long_data[, -c(1, 2)]),
     Y = as.numeric(long_data$in_bin),
@@ -205,17 +206,14 @@ haldensify <- function(A, W, wts = rep(1, length(A)),
     lambda = lambda_loss_min,
     fit_glmnet = TRUE,
     standardize = FALSE, # pass to glmnet
-    weights = wts_long, # pass to glmnet
+    weights = wts_long,  # pass to glmnet
     yolo = FALSE
   )
 
-  # predict conditional density estimate from HAL fit on full data
-  density_pred <- predict(hal_fit, new_data = long_data)
-
-  # TODO: construct output
+  # construct output
   out <- list(
     hal_fit = hal_fit,
-    formatting_args = formatting_args[4:6]
+    call = call
   )
   class(out) <- "haldensify"
   return(out)
@@ -223,15 +221,48 @@ haldensify <- function(A, W, wts = rep(1, length(A)),
 
 ################################################################################
 
-# Prediction for HAL density estimation
+#' Prediction method for HAL-based conditional density estimation
+#'
+#' @param object An object of class \code{haldensify}, containing the results of
+#'  fitting the highly adaptive lasso for conditional density estimation, as
+#'  produced by a call to \code{haldensify}.
+#' @param ... Additional arguments passed to \code{predict} as necessary.
+#' @param new_A The \code{numeric} vector or similar of the observed values of
+#'  an intervention for a group of observational units of interest.
+#' @param new_W A \code{data.frame}, \code{matrix}, or similar giving the values
+#'  of baseline covariates (potential confounders) for the observed units whose
+#'  observed intervention values are provided in the previous argument.
+#' @param wts A \code{numeric} vector of observation-level weights. The default
+#'  is to weight all observations equally.
+#'
+#' @importFrom stats aggregate
+#'
+#' @export
 #
-#
-#
-#
-#
-# predict.haldensify <- function() {
-# ...
-# }
+predict.haldensify <- function(object, ..., new_A, new_W,
+                               wts = rep(1, length(new_A))) {
+  # make long format data structure with new input data
+  long_format_args <- list(A = new_A,
+                           W = new_W,
+                           wts = wts,
+                           type = object$call$grid_type,
+                           n_bins = object$call$n_bins,
+                           width = object$call$n_bins)
+  long_data <- do.call(format_long_hazards, long_format_args)
+
+  # predict conditional density estimate from HAL fit on new long format data
+  density_pred <- predict(object$hal_fit, new_data = long_data)
+
+  # NOTE: something seems missing here?
+  density_pred_reduced <- stats::aggregate(
+    density_pred, list(long_data$obs_id),
+    prod
+  )
+  colnames(density_pred_reduced) <- c("id", "density")
+
+  # output
+  return(density_pred_reduced$density)
+}
 
 ################################################################################
 
@@ -340,3 +371,4 @@ format_long_hazards <- function(A, W, wts = rep(1, length(A)),
   out <- do.call(rbind, reformat_each_obs)
   return(out)
 }
+
