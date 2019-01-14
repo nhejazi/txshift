@@ -403,10 +403,11 @@ map_hazard_to_density <- function(hazard_pred_single_obs) {
 
   # sanity check of dimensions
   assertthat::assert_that(all(dim(hazard_pred_single_obs) ==
-                              dim(hazard_predicted)))
+    dim(hazard_predicted)))
 
   # multiply hazards across rows to construct the individual-level hazard
   density_pred_from_hazards <- matrix(apply(hazard_predicted, 2, prod),
-                                      nrow = 1)
+    nrow = 1
+  )
   return(density_pred_from_hazards)
 }
