@@ -21,11 +21,13 @@ sim_data_set <- function(n_obs = 1000, w_prob = 0.5, shift_delta = 0.5) {
 data_in <- sim_data_set()
 
 # learn relationship A|W using HAL-based density estimation procedure
-dens_lrn <- haldensify(A = data_in$A, W = data_in$W,
-                       #wts = data_in$Weights,
-                       grid_type = "equal_range",
-                       n_bins = 10, 
-                       lambda_seq = exp(seq(-1, -13, length = 1000)))
+dens_lrn <- haldensify(
+  A = data_in$A, W = data_in$W,
+  # wts = data_in$Weights,
+  grid_type = "equal_range",
+  n_bins = 10,
+  lambda_seq = exp(seq(-1, -13, length = 1000))
+)
 
 # predictions to recover conditional density of A, given W = 0 or W = 1
 n_samp <- 5000
@@ -49,4 +51,3 @@ hist_W1 <- as.data.table(list(A = A_supp, likelihood = predictions_W1)) %>%
   ggtitle("Conditional density p(A | W = 1)") +
   theme_bw()
 hist_W1
-

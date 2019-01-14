@@ -1,4 +1,4 @@
-utils::globalVariables(c(":=", "no_records_this_obs"))
+utils::globalVariables(c(":="))
 ################################################################################
 
 #' Conditional density estimation with HAL in a single cross-validation fold
@@ -91,7 +91,7 @@ cv_haldensify <- function(fold, long_data, wts = rep(1, nrow(long_data)),
       # multiply hazards across rows to construct the individual-level hazard
       hazards_pred <- matrix(apply(hazards_pred, 2, prod), nrow = 1)
       return(hazards_pred)
-  })
+    })
 
   # aggregate predictions across observations
   hazards_pred <- do.call(rbind, hazards_pred_each_obs)
@@ -157,9 +157,11 @@ haldensify <- function(A, W, wts = rep(1, length(A)),
   call <- match.call(expand.dots = TRUE)
 
   # re-format input data into long hazards structure
-  long_data <- format_long_hazards(A = A, W = W, wts = wts,
-                                   type = grid_type, n_bins = n_bins,
-                                   width = width)
+  long_data <- format_long_hazards(
+    A = A, W = W, wts = wts,
+    type = grid_type, n_bins = n_bins,
+    width = width
+  )
 
   # extract weights from long format data structure
   wts_long <- long_data$wts
@@ -206,7 +208,7 @@ haldensify <- function(A, W, wts = rep(1, length(A)),
     lambda = lambda_loss_min,
     fit_glmnet = TRUE,
     standardize = FALSE, # pass to glmnet
-    weights = wts_long,  # pass to glmnet
+    weights = wts_long, # pass to glmnet
     yolo = FALSE
   )
 
@@ -242,12 +244,14 @@ haldensify <- function(A, W, wts = rep(1, length(A)),
 predict.haldensify <- function(object, ..., new_A, new_W,
                                wts = rep(1, length(new_A))) {
   # make long format data structure with new input data
-  long_format_args <- list(A = new_A,
-                           W = new_W,
-                           wts = wts,
-                           type = object$call$grid_type,
-                           n_bins = object$call$n_bins,
-                           width = object$call$n_bins)
+  long_format_args <- list(
+    A = new_A,
+    W = new_W,
+    wts = wts,
+    type = object$call$grid_type,
+    n_bins = object$call$n_bins,
+    width = object$call$width
+  )
   long_data <- do.call(format_long_hazards, long_format_args)
 
   # predict conditional density estimate from HAL fit on new long format data
@@ -371,4 +375,3 @@ format_long_hazards <- function(A, W, wts = rep(1, length(A)),
   out <- do.call(rbind, reformat_each_obs)
   return(out)
 }
-
