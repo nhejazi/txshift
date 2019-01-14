@@ -4,8 +4,7 @@
 \alias{predict.haldensify}
 \title{Prediction method for HAL-based conditional density estimation}
 \usage{
-\method{predict}{haldensify}(object, ..., new_A, new_W, wts = rep(1,
-  length(new_A)))
+\method{predict}{haldensify}(object, ..., new_A, new_W)
 }
 \arguments{
 \item{object}{An object of class \code{haldensify}, containing the results of
@@ -20,9 +19,6 @@ an intervention for a group of observational units of interest.}
 \item{new_W}{A \code{data.frame}, \code{matrix}, or similar giving the values
 of baseline covariates (potential confounders) for the observed units whose
 observed intervention values are provided in the previous argument.}
-
-\item{wts}{A \code{numeric} vector of observation-level weights. The default
-is to weight all observations equally.}
 }
 \description{
 Prediction method for HAL-based conditional density estimation

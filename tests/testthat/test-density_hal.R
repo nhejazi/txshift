@@ -1,9 +1,7 @@
 library(data.table)
 library(ggplot2)
 library(dplyr)
-library(condensier)
 library(hal9001)
-library(sl3)
 
 # data simulation
 sim_data_set <- function(n_obs = 1000, w_prob = 0.5, shift_delta = 0.5) {

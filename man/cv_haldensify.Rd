@@ -12,7 +12,7 @@ cv_haldensify(fold, long_data, wts = rep(1, nrow(long_data)),
 to \code{origami::make_folds}.}
 
 \item{long_data}{A \code{data.table} or \code{data.frame} object containing
-the data in the long format discussed in Diaz & van der Laan (2011, IJB),
+the data in long format, as discussed in \insertRef{diaz2011super}{txshift},
 as produced by \code{\link{format_long_hazards}}.}
 
 \item{wts}{A \code{numeric} vector of observation-level weights, matching in
