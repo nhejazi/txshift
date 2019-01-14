@@ -9,6 +9,9 @@ Status](https://travis-ci.org/nhejazi/txshift.svg?branch=master)](https://travis
 Status](https://ci.appveyor.com/api/projects/status/github/nhejazi/txshift?branch=master&svg=true)](https://ci.appveyor.com/project/nhejazi/txshift)
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/nhejazi/txshift/master.svg)](https://codecov.io/github/nhejazi/txshift?branch=master)
+[![CRAN](http://www.r-pkg.org/badges/version/survsl3)](http://www.r-pkg.org/pkg/survsl3)
+[![CRAN
+downloads](https://cranlogs.r-pkg.org/badges/survsl3)](https://CRAN.R-project.org/package=survsl3)
 [![Project Status: Active – The project has reached a stable, usable
 state and is being actively
 developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
@@ -43,10 +46,6 @@ inverse probability of censoring weights (IPCW), which leads to an
 IPCW-TMLE, originally proposed by Rose and van der Laan (2011).
 `txshift` extends the approach of computing IPCW-TMLEs to the shift
 intervention causal effect parameter.
-
-For background on the Targeted Learning methodology, as well as recent
-advances, the canonical references are van der Laan and Rose (2011) and
-van der Laan and Rose (2018).
 
 -----
 
@@ -178,6 +177,18 @@ After using the `txshift` R package, please cite the following:
     [`tmle3`](https://github.com/tlverse/tmle3) engine of the [`tlverse`
     ecosystem](https://github.com/tlverse).
 
+  - [R/`condensier`](https://github.com/osofr/condensier) - Estimation
+    of the treatment mechanism component of this parameter requires
+    conditional density estimation, which is implemented rather
+    generally (for a variety of hazard regression strategies and
+    regression functions) in this package.
+
+  - [R/`haldensify`](https://github.com/nhejazi/haldensify) - A minimal
+    package for estimating the conditional density treatment mechanism
+    component of this parameter based on using the [highly adaptive
+    lasso](https://github.com/tlverse/hal9001) for the required pooled
+    hazard regression.
+
 -----
 
 ## Funding
@@ -190,14 +201,14 @@ LM012417-02](https://projectreporter.nih.gov/project_info_description.cfm?aid=92
 
 ## License
 
-© 2017-2018 [Nima S. Hejazi](https://nimahejazi.org)
+© 2017-2019 [Nima S. Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the MIT license.
 See below for details:
 
     MIT License
     
-    Copyright (c) 2017-2018 Nima S. Hejazi
+    Copyright (c) 2017-2019 Nima S. Hejazi
     
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -244,21 +255,6 @@ Springer Science & Business Media.
 Rose, Sherri, and Mark J van der Laan. 2011. “A Targeted Maximum
 Likelihood Estimator for Two-Stage Designs.” *The International Journal
 of Biostatistics* 7 (1): 1–21.
-
-</div>
-
-<div id="ref-vdl2011targeted">
-
-van der Laan, Mark J, and Sherri Rose. 2011. *Targeted Learning: Causal
-Inference for Observational and Experimental Data*. Springer Science &
-Business Media.
-
-</div>
-
-<div id="ref-vdl2018targeted">
-
-———. 2018. *Targeted Learning in Data Science: Causal Inference for
-Complex Longitudinal Studies*. Springer Science & Business Media.
 
 </div>
 

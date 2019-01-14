@@ -13,9 +13,6 @@
     <loc>https://code.nimahejazi.org/txshift/reference/confint.txshift.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/txshift/reference/cv_haldensify.html</loc>
-  </url>
-  <url>
     <loc>https://code.nimahejazi.org/txshift/reference/est_Hn.html</loc>
   </url>
   <url>
@@ -37,19 +34,7 @@
     <loc>https://code.nimahejazi.org/txshift/reference/fit_fluc.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/txshift/reference/format_long_hazards.html</loc>
-  </url>
-  <url>
-    <loc>https://code.nimahejazi.org/txshift/reference/haldensify.html</loc>
-  </url>
-  <url>
     <loc>https://code.nimahejazi.org/txshift/reference/ipcw_tmle_proc.html</loc>
-  </url>
-  <url>
-    <loc>https://code.nimahejazi.org/txshift/reference/map_hazard_to_density.html</loc>
-  </url>
-  <url>
-    <loc>https://code.nimahejazi.org/txshift/reference/predict.haldensify.html</loc>
   </url>
   <url>
     <loc>https://code.nimahejazi.org/txshift/reference/print.txshift.html</loc>
