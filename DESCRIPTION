@@ -1,6 +1,6 @@
 Package: txshift
 Title: Targeted Learning of the Causal Effects of Stochastic Interventions
-Version: 0.2.0
+Version: 0.2.1
 Authors@R: c(
     person("Nima", "Hejazi", email = "nhejazi@berkeley.edu",
            role = c("aut", "cre", "cph"),
@@ -18,25 +18,35 @@ Authors@R: c(
            comment = c(ORCID = "0000-0003-1432-5511"))
   )
 Maintainer: Nima Hejazi <nh@nimahejazi.org>
-Description: Facilities for computing targeted maximum likelihood estimates of
-    population-level causal effects of continuous-valued interventions defined
-    by stochastic assignment mechanisms. To handle applications with censored
-    data (i.e., two-stage designs), an inverse probability of censoring weighted
-    (IPCW) targeted maximum likelihood estimator for the stochastic treatment
-    shift parameter is implemented as well.
+Description: Computation of targeted maximum likelihood (TML) estimates of the
+    population-level causal effect of a continuous-valued intervention based on
+    a simple stochastic assignment mechanism, defined as the counterfactual mean
+    of the outcome of interest under a location shift of the observed (natural)
+    value of the intervention. To accommodate applications in which two-phase
+    sampling is employed, an inverse probability of censoring weighted (IPCW)
+    TML estimator for the counterfactual mean under the stochastic intervention
+    is made available, alongside procedures allowing the robust estimation of
+    nuisance parameters in a manner that ensures full nonparametric efficiency
+    of the resultant IPCW-TML estimator of the causal parameter.
 Depends: R (>= 3.2.0)
 Imports:
     stats,
     dplyr,
     stringr,
+    ggplot2,
     data.table,
+    future.apply,
+    assertthat,
     condensier,
+    origami,
     sl3,
-    hal9001
+    hal9001,
+    Rdpack
 Suggests:
     testthat,
     knitr,
     rmarkdown,
+    future,
     tidyverse,
     Rsolnp,
     nnls,
@@ -45,8 +55,9 @@ Suggests:
 Remotes:
     github::osofr/simcausal@master,
     github::osofr/condensier@master,
-    github::tlverse/hal9001@master,
-    github::tlverse/sl3@master
+    github::tlverse/origami@master,
+    github::tlverse/sl3@master,
+    github::tlverse/hal9001@haldensify
 License: MIT + file LICENSE
 URL: https://github.com/nhejazi/txshift
 BugReports: https://github.com/nhejazi/txshift/issues
@@ -54,3 +65,4 @@ Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr
 RoxygenNote: 6.1.1
+RdMacros: Rdpack

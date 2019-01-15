@@ -86,6 +86,7 @@
 #' @importFrom data.table as.data.table setnames
 #' @importFrom stringr str_detect
 #' @importFrom dplyr filter select "%>%"
+#' @importFrom Rdpack reprompt
 #'
 #' @return S3 object of class \code{txshift} containing the results of the
 #'  procedure to compute a TML estimate of the treatment shift parameter.

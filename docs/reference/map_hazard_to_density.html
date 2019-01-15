@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Estimate the Outcome Regression — est_Q • txshift</title>
+<title>Map a predicted hazard to a predicted density for a single observation — map_hazard_to_density • txshift</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,11 +30,10 @@
 
 
 
-<meta property="og:title" content="Estimate the Outcome Regression — est_Q" />
+<meta property="og:title" content="Map a predicted hazard to a predicted density for a single observation — map_hazard_to_density" />
 
-<meta property="og:description" content="Compute the outcome regression for the observed data, including with the
-shift imposed by the intervention. This returns the propensity score for the
-observed data (at A_i) and the shift of interest (at A_i - delta)." />
+<meta property="og:description" content="For a single observation, map a predicted hazard of failure (occurrence in a
+particular bin, under a given partitioning of the support) to a density." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -119,69 +118,38 @@ observed data (at A_i) and the shift of interest (at A_i - delta)." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Estimate the Outcome Regression</h1>
-    <small class="dont-index">Source: <a href='https://github.com/nhejazi/txshift/blob/master/R/estimate-outcome_reg.R'><code>R/estimate-outcome_reg.R</code></a></small>
-    <div class="hidden name"><code>est_Q.Rd</code></div>
+    <h1>Map a predicted hazard to a predicted density for a single observation</h1>
+    <small class="dont-index">Source: <a href='https://github.com/nhejazi/txshift/blob/master/R/estimate-density_hal.R'><code>R/estimate-density_hal.R</code></a></small>
+    <div class="hidden name"><code>map_hazard_to_density.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Compute the outcome regression for the observed data, including with the
-shift imposed by the intervention. This returns the propensity score for the
-observed data (at A_i) and the shift of interest (at A_i - delta).</p>
+    <p>For a single observation, map a predicted hazard of failure (occurrence in a
+particular bin, under a given partitioning of the support) to a density.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>est_Q</span>(<span class='no'>Y</span>, <span class='no'>A</span>, <span class='no'>W</span>, <span class='kw'>delta</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>ipc_weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/length'>length</a></span>(<span class='no'>Y</span>)),
-  <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"sl"</span>, <span class='st'>"glm"</span>), <span class='kw'>glm_formula</span> <span class='kw'>=</span> <span class='st'>"Y ~ ."</span>, <span class='kw'>sl_lrnrs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>map_hazard_to_density</span>(<span class='no'>hazard_pred_single_obs</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>Y</th>
-      <td><p>A <code>numeric</code> vector of observed outcomes.</p></td>
-    </tr>
-    <tr>
-      <th>A</th>
-      <td><p>A <code>numeric</code> vector of observed treatment values.</p></td>
-    </tr>
-    <tr>
-      <th>W</th>
-      <td><p>A <code>numeric</code> matrix of observed baseline covariate values.</p></td>
-    </tr>
-    <tr>
-      <th>delta</th>
-      <td><p>A <code>numeric</code> indicating the magnitude of the shift to be
-computed for the treatment <code>A</code>. This is passed directly to the internal
-function <code>tx_shift</code> and is currently limited to additive shifts.</p></td>
-    </tr>
-    <tr>
-      <th>ipc_weights</th>
-      <td><p>A <code>numeric</code> vector of observation-level weights, as
-produced by the internal procedure to estimate the censoring mechanism
-<code>estimate-ipc_weights</code>.</p></td>
-    </tr>
-    <tr>
-      <th>fit_type</th>
-      <td><p>A <code>character</code> indicating whether to use GLMs or Super
-Learner to fit the outcome regression. If the option "glm" is selected, the
-argument <code>glm_formula</code> must NOT be <code>NULL</code>, instead containing a
-model formula (in the style of <code><a href='https://www.rdocumentation.org/packages/stats/topics/glm'>stats::glm</a></code>) as a <code>character</code>. If
-the option "sl" is selected, the argument <code>sl_lrnrs</code> must NOT be
-<code>NULL</code>, instead being a pre-defined object of class <code>Lrnr_sl</code>,
-specifying learners and a metalearner for the Super Learner fit. Consult the
-documentation of the <code>sl3</code> package for details on Super Learner fits.</p></td>
-    </tr>
-    <tr>
-      <th>glm_formula</th>
-      <td><p>A <code>character</code> corresponding to a <code>formula</code> to be
-used in fitting a generalized linear model via <code><a href='https://www.rdocumentation.org/packages/stats/topics/glm'>stats::glm</a></code>.</p></td>
-    </tr>
-    <tr>
-      <th>sl_lrnrs</th>
-      <td><p>An object containing a set of instantiated learners from the
-<code>sl3</code> package, to be used in fitting an ensemble model.</p></td>
+      <th>hazard_pred_single_obs</th>
+      <td><p>A <code>numeric</code> vector of the predicted hazard
+of failure in a given bin (under a given partitioning of the support) for a
+single observational unit based on a long format data structure (as produced
+by <code><a href='format_long_hazards.html'>format_long_hazards</a></code>). This is simply the probability that
+the observed value falls in a corresponding bin, given that it has not yet
+failed (fallen in a previous bin), as given in
+Díaz I, van
+der
+Laan MJ (2011).
+&#8220;Super learner based conditional density estimation with application to
+    marginal structural models.&#8221;
+<em>The International Journal of Biostatistics</em>, <b>7</b>(1), 1--20.
+.</p></td>
     </tr>
     </table>
     

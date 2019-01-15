@@ -23,7 +23,7 @@ tmle.shift <- function(Y, A, W, Qn, gn, delta, tol = 1e-5, iter.max = 5, Aval) {
     est.equation <- function(eps) {
       sum((Y - (QnAW + eps * H1)) * H1 + (Qn(A + delta, W) - EQnd) -
         rowSums(D2 * exp(eps * D2 + prev.sum) * gn0d) /
-        rowSums(exp(eps * D2 + prev.sum) * gn0d))
+          rowSums(exp(eps * D2 + prev.sum) * gn0d))
     }
     eps <- uniroot(est.equation, c(-1, 1))$root
     # updated values

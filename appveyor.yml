@@ -73,7 +73,6 @@ notifications:
  - provider: Email
    to:
      - nh@nimahejazi.org
-     - benkeser@emory.edu
    subject: 'r-appveyor build {{status}}'
    message: "https://ci.appveyor.com/project/nhejazi/txshift"
    on_build_success: true
