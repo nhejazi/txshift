@@ -88,7 +88,7 @@
 <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://www.benkeserstatistics.com/">David Benkeser</a>
 </h4>
             
-            <h4 class="date">2019-01-14</h4>
+            <h4 class="date">2019-02-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nhejazi/txshift/blob/master/vignettes/ipcw_txshift.Rmd"><code>vignettes/ipcw_txshift.Rmd</code></a></small>
       <div class="hidden name"><code>ipcw_txshift.Rmd</code></div>
@@ -104,8 +104,8 @@
 <p>To start, let’s load the packages we’ll use and set a seed for simulation:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tidyverse)</a></code></pre></div>
 <pre><code>## ── Attaching packages ────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
-<pre><code>## ✔ ggplot2 3.1.0     ✔ purrr   0.2.5
-## ✔ tibble  2.0.0     ✔ dplyr   0.7.8
+<pre><code>## ✔ ggplot2 3.1.0     ✔ purrr   0.3.0
+## ✔ tibble  2.0.1     ✔ dplyr   0.7.8
 ## ✔ tidyr   0.8.2     ✔ stringr 1.3.1
 ## ✔ readr   1.3.1     ✔ forcats 0.3.0</code></pre>
 <pre><code>## ── Conflicts ───────────────────────────────────── tidyverse_conflicts() ──
@@ -125,7 +125,7 @@
 <pre><code>## The condensier package is still in beta testing. Interpret results with caution.</code></pre>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(sl3)</a>
 <a class="sourceLine" id="cb12-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(txshift)</a></code></pre></div>
-<pre><code>## txshift v0.2.0: Targeted Learning of the Causal Effects of Stochastic Interventions</code></pre>
+<pre><code>## txshift v0.2.1: Targeted Learning of the Causal Effects of Stochastic Interventions</code></pre>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Random">set.seed</a></span>(<span class="dv">429153</span>)</a></code></pre></div>
 <hr>
 </div>
@@ -259,12 +259,12 @@
 <a class="sourceLine" id="cb21-12" data-line-number="12">                                 <span class="dt">eif_reg_spec =</span> <span class="ot">FALSE</span></a>
 <a class="sourceLine" id="cb21-13" data-line-number="13">                               )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 2097.8925     Pars:  0.857739 0.007385 0.134876
-## Iter: 2 fn: 2097.8925     Pars:  0.857782 0.007282 0.134935
+## Iter: 1 fn: 2097.9051     Pars:  0.859270278 0.000009888 0.140719833
+## Iter: 2 fn: 2097.9051     Pars:  0.8592728982 0.0000006548 0.1407264470
 ## solnp--&gt; Completed in 2 iterations</code></pre>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle_sl_shift_<span class="dv">1</span>)</a></code></pre></div>
 <pre><code>##        lwr_ci     param_est        upr_ci     param_var      eif_mean 
-##       1.98727      2.137835      2.288401      0.005901 -7.943479e-05 
+##      1.987294      2.137702      2.288109      0.005889 -2.949345e-05 
 ##        n_iter 
 ##             2</code></pre>
 <p>As before, we may vary the regression for the submodel fluctuation procedure by weighting each observation by the value of the so-called clever covariate rather than using such an auxiliary covariate directly in the regression procedure:</p>
@@ -282,14 +282,12 @@
 <a class="sourceLine" id="cb25-12" data-line-number="12">                                 <span class="dt">eif_reg_spec =</span> <span class="ot">FALSE</span></a>
 <a class="sourceLine" id="cb25-13" data-line-number="13">                               )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 1976.8682     Pars:  0.85991888 0.00002987 0.14005125
-## Iter: 2 fn: 1976.8682     Pars:  0.859927621 0.000002311 0.140070068
+## Iter: 1 fn: 1976.8774     Pars:  0.859987494 0.000002762 0.140009745
+## Iter: 2 fn: 1976.8774     Pars:  0.8599883149 0.0000003146 0.1400113704
 ## solnp--&gt; Completed in 2 iterations</code></pre>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle_sl_shift_<span class="dv">2</span>)</a></code></pre></div>
-<pre><code>##       lwr_ci    param_est       upr_ci    param_var     eif_mean 
-##     1.955853     2.110425     2.264996      0.00622 3.664258e-05 
-##       n_iter 
-##            2</code></pre>
+<pre><code>##      lwr_ci   param_est      upr_ci   param_var    eif_mean      n_iter 
+##    1.955561    2.110277    2.264993    0.006231 5.17941e-05           2</code></pre>
 </div>
 <div id="estimating-inefficient-ipcw-tmles-with-optimal-stacked-regressions" class="section level3">
 <h3 class="hasAnchor">
@@ -308,12 +306,14 @@
 <a class="sourceLine" id="cb29-11" data-line-number="11">                                <span class="dt">ipcw_efficiency =</span> <span class="ot">FALSE</span></a>
 <a class="sourceLine" id="cb29-12" data-line-number="12">                               )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 2277.1687     Pars:  0.69305 0.15728 0.14967
-## Iter: 2 fn: 2277.1687     Pars:  0.69305 0.15728 0.14967
+## Iter: 1 fn: 2277.3607     Pars:  0.69434 0.13183 0.17382
+## Iter: 2 fn: 2277.3607     Pars:  0.69435 0.13184 0.17382
 ## solnp--&gt; Completed in 2 iterations</code></pre>
 <div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle_sl_ineffic)</a></code></pre></div>
-<pre><code>##      lwr_ci   param_est      upr_ci   param_var    eif_mean      n_iter 
-##    1.880292    2.091313    2.302334    0.011592 3.07054e-11           0</code></pre>
+<pre><code>##       lwr_ci    param_est       upr_ci    param_var     eif_mean 
+##     1.880913     2.091981     2.303049     0.011597 2.879664e-11 
+##       n_iter 
+##            0</code></pre>
 <p>Please note that in such cases, the value of <code>n_iter</code> in the resulting output should be <strong><em>exactly zero</em></strong>, as this indicates that the iterative procedure that is used to achieve efficiency has been skipped.</p>
 </div>
 <div id="statistical-inference-for-targeted-maximum-likelihood-estimates" class="section level3">
@@ -322,7 +322,7 @@
 <p>For a discussion of the procedure for obtaining statistical inference for TML estimators, the interested reader is referred to the introductory vignette of this package. Here, we focus on addressing the issue of how censoring impacts the inferential procedure…</p>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" data-line-number="1">(ci_shift &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/confint">confint</a></span>(tmle_sl_shift_<span class="dv">1</span>))</a></code></pre></div>
 <pre><code>##   lwr_ci      est   upr_ci 
-## 1.987270 2.137835 2.288401</code></pre>
+## 1.987294 2.137702 2.288109</code></pre>
 <hr>
 </div>
 </div>

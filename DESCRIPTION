@@ -2,14 +2,15 @@ Package: txshift
 Title: Targeted Learning of the Causal Effects of Stochastic Interventions
 Version: 0.2.1
 Authors@R: c(
-    person("Nima", "Hejazi", email = "nhejazi@berkeley.edu",
+    person("Nima", "Hejazi", email = "nh@nimahejazi.org",
            role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0000-0002-7127-2789")),
     person("David", "Benkeser", email = "benkeser@emory.edu",
            role = "aut",
            comment = c(ORCID = "0000-0002-1019-8343")),
     person("Iván", "Díaz", email = "ild2005@med.cornell.edu",
-           role = "ctb"),
+           role = "ctb",
+           comment = c(ORCID = "0000-0001-9056-2047")),
     person("Jeremy", "Coyle", email = "jeremy.coyle@gmail.com",
            role = "ctb",
            comment = c(ORCID = "0000-0002-9874-6649")),
@@ -20,14 +21,14 @@ Authors@R: c(
 Maintainer: Nima Hejazi <nh@nimahejazi.org>
 Description: Computation of targeted maximum likelihood (TML) estimates of the
     population-level causal effect of a continuous-valued intervention based on
-    a simple stochastic assignment mechanism, defined as the counterfactual mean
-    of the outcome of interest under a location shift of the observed (natural)
-    value of the intervention. To accommodate applications in which two-phase
-    sampling is employed, an inverse probability of censoring weighted (IPCW)
-    TML estimator for the counterfactual mean under the stochastic intervention
-    is made available, alongside procedures allowing the robust estimation of
-    nuisance parameters in a manner that ensures full nonparametric efficiency
-    of the resultant IPCW-TML estimator of the causal parameter.
+    a simple stochastic treatment assignment mechanism, defined as the
+    counterfactual mean of the outcome of interest under an additive shift of
+    the observed (natural) value of the intervention. To accommodate settings in
+    which two-phase sampling is employed, an inverse probability of censoring
+    weighted (IPCW) TML estimator for the counterfactual mean under the
+    stochastic intervention is available, alongside procedures facilitating
+    robust estimation of nuisance parameters in a manner ensuring nonparametric
+    efficiency of the IPCW-TML estimator of the causal parameter.
 Depends: R (>= 3.2.0)
 Imports:
     stats,
