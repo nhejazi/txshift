@@ -7,7 +7,7 @@
 ipcw_tmle_proc(data_in, C, V, ipc_mech, ipc_weights, ipc_weights_norm,
   Qn_estim, Hn_estim, fluc_method = c("standard", "weighted"),
   fit_type = c("glm", "sl", "fit_spec"), eif_tol = 1e-09,
-  sl_lrnrs = NULL, eif_reg_spec = FALSE)
+  sl_lrnrs = NULL, eif_reg_type = c("hal", "glm"))
 }
 \arguments{
 \item{data_in}{A \code{data.table} containing variables and observations that
@@ -59,15 +59,13 @@ as the mean of the efficient influence function.}
 provided by the \code{sl3} package. This is constructed externally from this
 function and provided as input.}
 
-\item{eif_reg_spec}{Whether a flexible function ought to be used in the
-computation of a targeting step for the censored data case. By default, the
-assumed regression is a simple linear model. If set to \code{TRUE}, then a
-nonparametric regression based on the Highly Adaptive LASSO (from package
-\code{hal9001}) is used instead. In this step, the efficient influence
-function (EIF) is regressed against the covariates that contribute to the
-censoring mechanism (i.e., EIF ~ V | C = 1). In general, this should only be
-used by advanced users familiar with both the underlying theory and this
-software implementation of said theory.}
+\item{eif_reg_type}{Whether a flexible nonparametric function ought to be
+used in the dimension-reduced nuisance regression of the targeting step for
+the censored data case. By default, the method used is a nonparametric
+regression based on the Highly Adaptive Lasso (from package \code{hal9001}).
+Set this to \code{"glm"} to instead use a simple linear regression model.
+In this step, the efficient influence function (EIF) is regressed against
+covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).}
 }
 \description{
 An adaptation of the general IPCW-TMLE formulation of Rose & van der Laan as

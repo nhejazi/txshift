@@ -47,18 +47,17 @@
 #' @param sl_lrnrs A \code{Lrnr_sl} object composed of a collection of learners
 #'  provided by the \code{sl3} package. This is constructed externally from this
 #'  function and provided as input.
-#' @param eif_reg_spec Whether a flexible function ought to be used in the
-#'  computation of a targeting step for the censored data case. By default, the
-#'  assumed regression is a simple linear model. If set to \code{TRUE}, then a
-#'  nonparametric regression based on the Highly Adaptive LASSO (from package
-#'  \code{hal9001}) is used instead. In this step, the efficient influence
-#'  function (EIF) is regressed against the covariates that contribute to the
-#'  censoring mechanism (i.e., EIF ~ V | C = 1). In general, this should only be
-#'  used by advanced users familiar with both the underlying theory and this
-#'  software implementation of said theory.
+#' @param eif_reg_type Whether a flexible nonparametric function ought to be
+#'  used in the dimension-reduced nuisance regression of the targeting step for
+#'  the censored data case. By default, the method used is a nonparametric
+#'  regression based on the Highly Adaptive Lasso (from package \code{hal9001}).
+#'  Set this to \code{"glm"} to instead use a simple linear regression model.
+#'  In this step, the efficient influence function (EIF) is regressed against
+#'  covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).
 #'
 #' @importFrom stats var glm qlogis fitted predict as.formula
 #' @importFrom data.table as.data.table set copy
+#' @importFrom assertthat assert_that
 #' @importFrom dplyr "%>%" select
 #' @importFrom sl3 sl3_Task
 #' @importFrom hal9001 fit_hal
@@ -82,10 +81,11 @@ ipcw_tmle_proc <- function(data_in,
                            fit_type = c("glm", "sl", "fit_spec"),
                            eif_tol = 1e-9,
                            sl_lrnrs = NULL,
-                           eif_reg_spec = FALSE) {
+                           eif_reg_type = c("hal", "glm")) {
   # check arguments with options
   fluc_method <- match.arg(fluc_method)
   fit_type <- match.arg(fit_type)
+  eif_reg_type <- match.arg(eif_reg_type)
 
   # fit logistic regression to fluctuate along the sub-model with NEW WEIGHTS
   fitted_fluc_mod <- fit_fluc(
@@ -143,6 +143,7 @@ ipcw_tmle_proc <- function(data_in,
 
     # predict from Super Learner on full data
     eif_pred <- fit_eif_sl$predict(eif_pred_task)
+
   } else {
     # regression model for relationship between censoring variables and EIF
     eif_data <- data_in %>%
@@ -154,7 +155,7 @@ ipcw_tmle_proc <- function(data_in,
       data.table::as.data.table()
 
     # estimate the EIF nuisance regression using HAL
-    if (eif_reg_spec) {
+    if (eif_reg_type == "hal") {
       # if flexibility specified, just fit a HAL regression
       X_in <- eif_data %>%
         data.table::copy() %>%
@@ -179,7 +180,7 @@ ipcw_tmle_proc <- function(data_in,
         new_data = V_pred_in
       ) %>%
         as.numeric()
-    } else {
+    } else if (eif_reg_type == "glm") {
       eif_mod <- stats::glm(
         stats::as.formula("eif ~ ."),
         data = eif_data
@@ -199,22 +200,23 @@ ipcw_tmle_proc <- function(data_in,
     data = data.table::as.data.table(
       list(
         delta = C,
-        logit_ipcw = stats::qlogis(ipc_mech),
-        eif_by_ipcw = eif_pred / ipc_mech
+        logit_ipcw = stats::qlogis(bound_precision(ipc_mech)),
+        eif_by_ipcw = eif_pred / bound_precision(ipc_mech)
       )
     ),
     family = "binomial"
   )
 
-  # now, we can obtain P_n^* from the sub-model fluctuation
-  ipcw_fluc_pred <- stats::fitted(ipcw_fluc) %>% as.numeric()
+  # now, we can obtain Pn* from the sub-model fluctuation
+  ipcw_fluc_pred <- stats::fitted(ipcw_fluc) %>%
+    as.numeric()
 
   # this is the mean of the second half of the EIF (for censoring bit...)
   ipcw_eif_out <- (C - ipcw_fluc_pred) * (eif_pred / ipcw_fluc_pred)
 
   # sanity check: score of the logistic regression fluctuation model
-  ipc_check <- mean((C - ipcw_fluc_pred) * (eif_pred / ipc_mech))
-  # stopifnot(ipc_check < eif_tol)
+  ipcw_eif_check <- mean((C - ipcw_fluc_pred) * (eif_pred / ipc_mech))
+  #assertthat::assert_that(abs(ipcw_eif_check) < 1e-5)
 
   # so, now we need weights to feed back into the previous steps
   ipc_weights <- C / ipcw_fluc_pred
@@ -232,12 +234,13 @@ ipcw_tmle_proc <- function(data_in,
   )
 
   # need to return output such that we can loop over this function
-  return(list(
+  out <- list(
     fluc_mod_out = fitted_fluc_mod,
     pi_mech_star = ipcw_fluc_pred,
     ipc_weights = ipc_weights,
     ipc_weights_norm = ipc_weights_norm,
     tmle_eif = tmle_eif_out,
     ipcw_eif = ipcw_eif_out
-  ))
+  )
+  return(out)
 }

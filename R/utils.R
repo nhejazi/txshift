@@ -100,14 +100,17 @@ print.txshift <- function(x, ...) {
 #'
 #' description
 #'
-#' @param vals ...
+#' @param vals \code{numeric} vector of values in the interval [0, 1] to be
+#'  bounded within arbitrary machine precision. The most common use of this
+#'  functionality is to avoid indeterminate or non-finite values after the
+#'  application \code{stats::qlogis}.
+#'
+#' @importFrom assertthat assert_that
 #'
 #' @keywords internal
 #
 bound_precision <- function(vals) {
-  if (max(vals) > 1 | min(vals) < 0) {
-    stop("Scaled values are not in the interval [0, 1].")
-  }
+  assertthat::assert_that(!(max(vals) > 1 | min(vals) < 0))
   vals[vals == 0] <- .Machine$double.neg.eps
   vals[vals == 1] <- 1 - .Machine$double.neg.eps
   return(vals)
@@ -153,24 +156,3 @@ bound_scaling <- function(Y,
   }
 }
 
-################################################################################
-
-#' Wrap a Function in a Try Statement
-#'
-#' Function factory that generates versions of functions wrapped in \code{try}.
-#' Originally fround in and borrowed from package \code{origami}.
-#'
-#' @param fun A \code{function} to be wrapped in a \code{try} statement.
-#' @param ... Additional arguments passed to the previous argument \code{fun}.
-#'
-#' @keywords internal
-#'
-#' @author Jeremy Coyle
-#
-wrap_in_try <- function(fun, ...) {
-  wrapped <- function(...)
-    try({
-      fun(...)
-    }, silent = TRUE)
-  return(wrapped)
-}

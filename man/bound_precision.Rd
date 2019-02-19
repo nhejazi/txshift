@@ -7,7 +7,10 @@
 bound_precision(vals)
 }
 \arguments{
-\item{vals}{...}
+\item{vals}{\code{numeric} vector of values in the interval [0, 1] to be
+bounded within arbitrary machine precision. The most common use of this
+functionality is to avoid indeterminate or non-finite values after the
+application \code{stats::qlogis}.}
 }
 \description{
 description

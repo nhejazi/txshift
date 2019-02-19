@@ -11,7 +11,7 @@ tmle_txshift(W, A, Y, C = rep(1, length(Y)), V = NULL, delta = 0,
   "sl", "fit_spec"), nbins = 35, bin_method = "dhist", bin_estimator =
   condensier::speedglmR6$new(), parfit = FALSE, sl_lrnrs_dens = NULL),
   Q_fit_args = list(fit_type = c("glm", "sl", "fit_spec"), glm_formula =
-  "Y ~ .", sl_lrnrs = NULL), eif_reg_spec = TRUE,
+  "Y ~ .", sl_lrnrs = NULL), eif_reg_type = c("hal", "glm"),
   ipcw_efficiency = TRUE, ipcw_fit_spec = NULL, gn_fit_spec = NULL,
   Qn_fit_spec = NULL)
 }
@@ -78,13 +78,13 @@ Learner for the outcome regression, and "fit_spec" to user-specified input
 of the form produced by \code{est_Q}. NOTE THAT this first argument is not
 passed to \code{est_g}.}
 
-\item{eif_reg_spec}{Whether a flexible function ought to be used in the
-computation of a targeting step for the censored data case. By default, the
-method used is a nonparametric regression based on the Highly Adaptive LASSO
-(from package \code{hal9001}) is used. If set to \code{FALSE}, then a simple
-linear regression model is assumed. In this step, the efficient influence
-function (EIF) is regressed against the covariates that contribute to the
-censoring mechanism (i.e., EIF ~ V | C = 1).}
+\item{eif_reg_type}{Whether a flexible nonparametric function ought to be
+used in the dimension-reduced nuisance regression of the targeting step for
+the censored data case. By default, the method used is a nonparametric
+regression based on the Highly Adaptive Lasso (from package \code{hal9001}).
+Set this to \code{"glm"} to instead use a simple linear regression model.
+In this step, the efficient influence function (EIF) is regressed against
+covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).}
 
 \item{ipcw_efficiency}{Whether to invoke an augmentation of the IPCW-TMLE
 procedure that performs an iterative process to ensure efficiency of the

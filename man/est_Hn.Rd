@@ -2,7 +2,7 @@
 % Please edit documentation in R/estimate-auxiliary_covar.R
 \name{est_Hn}
 \alias{est_Hn}
-\title{Estimate the Auxiliary ("Clever") Covariate}
+\title{Estimate Auxiliary Covariate from Efficient Influence Function}
 \usage{
 est_Hn(gn, a = NULL, w = NULL)
 }
@@ -16,5 +16,5 @@ the output provided by internal function \code{estimate-propensity_score}.}
 that contains the observed values of the baseline covariates.}
 }
 \description{
-Estimate the Auxiliary ("Clever") Covariate
+Estimate Auxiliary Covariate from Efficient Influence Function
 }
