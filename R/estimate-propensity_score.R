@@ -60,7 +60,7 @@ est_g <- function(A,
 
   # need a data set with the treatment stochastically shifted UPWARDS A+2delta
   data_in_upupshifted <- data.table::copy(data_in)
-  data.table::set(data_in_upshifted, j = "A", value = tx_shift(
+  data.table::set(data_in_upupshifted, j = "A", value = tx_shift(
     A = data_in$A, delta = 2 * delta, type = "additive", direc = "up"
   ))
 
