@@ -194,15 +194,17 @@ ipcw_tmle_proc <- function(data_in,
   }
 
   # fit logistic regression to fluctuate along the sub-model wrt epsilon
-  ipcw_fluc <- stats::glm(
-    stats::as.formula("delta ~ -1 + offset(logit_ipcw) + eif_by_ipcw"),
-    data = data.table::as.data.table(
+  ipcw_fluc_reg_data <-
+    data.table::as.data.table(
       list(
         delta = C,
         logit_ipcw = stats::qlogis(bound_precision(ipc_mech)),
-        eif_by_ipcw = eif_pred / bound_precision(ipc_mech)
+        eif_by_ipcw = (eif_pred / bound_precision(ipc_mech))
       )
-    ),
+    )
+  ipcw_fluc <- stats::glm(
+    stats::as.formula("delta ~ -1 + offset(logit_ipcw) + eif_by_ipcw"),
+    data = ipcw_fluc_reg_data,
     family = "binomial"
   )
 

@@ -119,7 +119,7 @@ ipcwtmle_shift <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
                                                  parfit = FALSE),
                                Q_fit_args = list(fit_type = "glm",
                                                  glm_formula = "Y ~ ."),
-                               eif_reg_spec = FALSE  # fit EIF with a GLM
+                               eif_reg_type = "glm"
                               )
 
 # conveniently summarize the results

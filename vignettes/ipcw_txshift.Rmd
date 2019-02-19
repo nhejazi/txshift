@@ -86,16 +86,16 @@ delta <- 0.5
 
 ## Methodology
 
-__Note:__ In all examples below, the argument `eif_reg_spec` is set to `FALSE`
-(whereas the default is `TRUE`) when invoking an IPCW-TMLE. This is done in an
+__Note:__ In all examples below, the argument `eif_reg_type` is set to `"glm"`
+(whereas the default is `"hal"`) when invoking an IPCW-TMLE. This is done in an
 effort to speed along the computation process, as this argument controls the
 manner in which a nuisance regression associated with the efficient influence
 function of the IPCW-TMLE is fit. As stated in the documentation, setting this
-argument to `FALSE` fits this EIF nuisance regression with a generalized linear
+argument to `"glm"` fits this EIF nuisance regression with a generalized linear
 model (GLM; an assumption-laden parametric form) while the default value of
-`TRUE` fits the nuisance regression with the highly adaptive lasso (HAL; a
+`"hal"` fits the nuisance regression with the highly adaptive lasso (HAL; a
 recently developed nonparametric estimator) via the [`hal9001` R
-package](https://github.com/jeremyrcoyle/hal9001). In practice, we recommend
+package](https://github.com/tlverse/hal9001). In practice, we recommend
 leaving this argument to the default and fitting the EIF nuisance regression
 with HAL; however, this is significantly slower than simple using a GLM.
 
@@ -116,7 +116,7 @@ tmle_glm_shift_1 <- tmle_txshift(W = W, A = A, Y = Y,
                                                    parfit = FALSE),
                                  Q_fit_args = list(fit_type = "glm",
                                                    glm_formula = "Y ~ ."),
-                                 eif_reg_spec = FALSE
+                                 eif_reg_type = "glm"
                                 )
 summary(tmle_glm_shift_1)
 ```
@@ -145,7 +145,7 @@ tmle_glm_shift_2 <- tmle_txshift(W = W, A = A, Y = Y,
                                                    parfit = FALSE),
                                  Q_fit_args = list(fit_type = "glm",
                                                    glm_formula = "Y ~ ."),
-                                 eif_reg_spec = FALSE
+                                 eif_reg_type = "glm"
                                 )
 summary(tmle_glm_shift_2)
 ```
@@ -200,7 +200,7 @@ tmle_sl_shift_1 <- tmle_txshift(W = W, A = A, Y = Y,
                                                   sl_lrnrs = sl_lrn_dens),
                                 Q_fit_args = list(fit_type = "sl",
                                                   sl_lrnrs = sl_lrn),
-                                 eif_reg_spec = FALSE
+                                 eif_reg_type = "glm"
                                )
 summary(tmle_sl_shift_1)
 ```
@@ -221,7 +221,7 @@ tmle_sl_shift_2 <- tmle_txshift(W = W, A = A, Y = Y,
                                                   sl_lrnrs = sl_lrn_dens),
                                 Q_fit_args = list(fit_type = "sl",
                                                   sl_lrnrs = sl_lrn),
-                                 eif_reg_spec = FALSE
+                                 eif_reg_type = "glm"
                                )
 summary(tmle_sl_shift_2)
 ```
@@ -318,7 +318,7 @@ tmle_shift_spec <- tmle_txshift(W = W, A = A, Y = Y, delta = delta,
                                 ipcw_fit_spec = ipcw_out,
                                 gn_fit_spec = gn_out,
                                 Qn_fit_spec = Qn_out,
-                                eif_reg_spec = TRUE)
+                                eif_reg_type = "hal")
 summary(tmle_shift_spec)
 ```
 
