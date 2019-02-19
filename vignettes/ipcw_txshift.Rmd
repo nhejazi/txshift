@@ -318,7 +318,7 @@ tmle_shift_spec <- tmle_txshift(W = W, A = A, Y = Y, delta = delta,
                                 ipcw_fit_spec = ipcw_out,
                                 gn_fit_spec = gn_out,
                                 Qn_fit_spec = Qn_out,
-                                eif_reg_type = "hal")
+                                eif_reg_type = "glm")
 summary(tmle_shift_spec)
 ```
 
