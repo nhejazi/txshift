@@ -155,4 +155,3 @@ bound_scaling <- function(Y,
     return(out_observed_scale)
   }
 }
-

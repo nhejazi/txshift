@@ -158,17 +158,17 @@ tmle_txshift <- function(W,
   # perform sub-setting of data and implement IPC weighting if required
   ##############################################################################
   if (!all(C == 1) & !is.null(V)) {
-    # combine censoring node information 
+    # combine censoring node information
     V_in <- data.table::as.data.table(mget(V))
     # NOTE: resolves downstream naming error
     V_names <- lapply(seq_along(V), function(j) {
-                        node <- mget(V[j], inherits = TRUE)[[1]]
-                        if (!is.null(dim(node))) {
-                          colnames(node)
-                        } else {
-                          V[j]
-                        }
-                     })
+      node <- mget(V[j], inherits = TRUE)[[1]]
+      if (!is.null(dim(node))) {
+        colnames(node)
+      } else {
+        V[j]
+      }
+    })
     colnames(V_in) <- do.call(c, V_names)
 
     ipcw_estim_in <- list(

@@ -13,12 +13,12 @@
 est_Hn <- function(gn, a = NULL, w = NULL) {
   # compute the ratio of the propensity scores for Hn(A,W)
   ratio_g_noshift <- gn$downshift / gn$noshift
-  ratio_g_noshift[ratio_g_noshift == Inf] <- 0
+  ratio_g_noshift[abs(ratio_g_noshift) == Inf] <- 0
   ratio_g_noshift[is.na(ratio_g_noshift)] <- 0
 
   # compute the ratio of the propensity scores for Hn(d(A,W),W)
   ratio_g_shift <- gn$noshift / gn$upshift
-  ratio_g_shift[ratio_g_shift == Inf] <- 0
+  ratio_g_shift[abs(ratio_g_shift) == Inf] <- 0
   ratio_g_shift[is.na(ratio_g_shift)] <- 0
 
   # TODO: consider case where there is not support everywhere

@@ -45,11 +45,10 @@ case that the observed data structure is generated under a two-phase sampling
 mechanism (i.e., a two-stage design). In such cases, TML estimators must be
 augmented to exhibit efficiency in spite of the challenges induced by the
 censoring process. An appropriate augmentation procedure was first proposed by
-@rose2011targeted2sd, who explore the use of inverse probability of censoring
-weights (IPCW) and alterations to the relevant efficient influence function.
-`txshift` extends the approach of computing IPCW-TML estimators to the
-counterfactual mean under a stochastic intervention and related causal
-quantities.
+@rose2011targeted2sd, who proposed the use of inverse probability of censoring
+weights (IPCW) alongside an augmentation of the relevant efficient influence
+function. `txshift` extends this approach to computing one-step and IPCW-TML
+estimators of the counterfactual mean under a stochastic treatment regime.
 
 ---
 
@@ -169,16 +168,23 @@ After using the `txshift` R package, please cite the following:
   [`tmle3`](https://github.com/tlverse/tmle3) engine of the [`tlverse`
   ecosystem](https://github.com/tlverse).
 
+* [R/`medshift`](https://github.com/nhejazi/medshift) - An R package providing
+  facilities to estimate the causal effect of stochastic treatment regimes in
+  the mediation setting, including classical (IPW) and augmented double robust
+  (one-step) estimators. This is an implementation of the methodology explored
+  in @diaz2019causal.
+
 * [R/`condensier`](https://github.com/osofr/condensier) - Estimation of the
   treatment mechanism component of this parameter requires conditional density
   estimation, which is implemented rather generally (for a variety of hazard
-  regression strategies and regression functions) in this package.
+  regression strategies and regression functions) in this package. This package
+  implements a variant of the methodology proposed in @diaz2011super.
 
 * [R/`haldensify`](https://github.com/nhejazi/haldensify) - A minimal package
   for estimating the conditional density treatment mechanism component of this
   parameter based on using the [highly adaptive
   lasso](https://github.com/tlverse/hal9001) for the required pooled hazard
-  regression.
+  regression. This package implements the methdology proposed in @diaz2011super.
 
 ---
 

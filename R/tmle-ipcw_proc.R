@@ -143,7 +143,6 @@ ipcw_tmle_proc <- function(data_in,
 
     # predict from Super Learner on full data
     eif_pred <- fit_eif_sl$predict(eif_pred_task)
-
   } else {
     # regression model for relationship between censoring variables and EIF
     eif_data <- data_in %>%
@@ -216,7 +215,7 @@ ipcw_tmle_proc <- function(data_in,
 
   # sanity check: score of the logistic regression fluctuation model
   ipcw_eif_check <- mean((C - ipcw_fluc_pred) * (eif_pred / ipc_mech))
-  #assertthat::assert_that(abs(ipcw_eif_check) < 1e-5)
+  # assertthat::assert_that(abs(ipcw_eif_check) < 1e-5)
 
   # so, now we need weights to feed back into the previous steps
   ipc_weights <- C / ipcw_fluc_pred
