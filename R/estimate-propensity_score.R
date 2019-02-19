@@ -46,16 +46,22 @@ est_g <- function(A,
   data.table::setnames(data_in, c("A", colnames(W)))
   data.table::set(data_in, j = "ipc_weights", value = ipc_weights)
 
-  # need a data set with the treatment stochastically shifted DOWNWARDS...
+  # need a data set with the treatment stochastically shifted DOWNWARDS A-delta
   data_in_downshifted <- data.table::copy(data_in)
   data.table::set(data_in_downshifted, j = "A", value = tx_shift(
     A = data_in$A, delta = delta, type = "additive", direc = "down"
   ))
 
-  # need a data set with the treatment stochastically shifted UPWARDS...
+  # need a data set with the treatment stochastically shifted UPWARDS A+delta
   data_in_upshifted <- data.table::copy(data_in)
   data.table::set(data_in_upshifted, j = "A", value = tx_shift(
     A = data_in$A, delta = delta, type = "additive", direc = "up"
+  ))
+
+  # need a data set with the treatment stochastically shifted UPWARDS A+2delta
+  data_in_upupshifted <- data.table::copy(data_in)
+  data.table::set(data_in_upshifted, j = "A", value = tx_shift(
+    A = data_in$A, delta = 2 * delta, type = "additive", direc = "up"
   ))
 
   ##############################################################################
@@ -70,7 +76,7 @@ est_g <- function(A,
       weights = "ipc_weights"
     )
 
-    # sl3 task for data with treatment shifted DOWNWARDS
+    # sl3 task for data with treatment shifted DOWNWARDS A-delta
     sl_task_downshifted <- sl3::sl3_Task$new(
       data = data_in_downshifted,
       outcome = "A",
@@ -78,9 +84,17 @@ est_g <- function(A,
       weights = "ipc_weights"
     )
 
-    # sl3 task for data with treatment shifted UPWARDS
+    # sl3 task for data with treatment shifted UPWARDS A+delta
     sl_task_upshifted <- sl3::sl3_Task$new(
       data = data_in_upshifted,
+      outcome = "A",
+      covariates = colnames(W),
+      weights = "ipc_weights"
+    )
+
+    # sl3 task for data with treatment shifted UPWARDS A+2delta
+    sl_task_upupshifted <- sl3::sl3_Task$new(
+      data = data_in_upupshifted,
       outcome = "A",
       covariates = colnames(W),
       weights = "ipc_weights"
@@ -152,13 +166,29 @@ est_g <- function(A,
   }
 
   ##############################################################################
-  # create output data.tables: (1) A = a, (2) A = a - delta, (3) A = a + delta
+  # predict probabilities for the UPSHIFTED data (A = a + 2*delta)
+  ##############################################################################
+  if (fit_type == "glm" & is.null(sl_lrnrs_dens)) {
+    pred_g_A_upupshifted <-
+      condensier::predict_probability(
+        model_fit = fit_g_dens_glm,
+        newdata = data_in_upupshifted
+      )
+  } else if (fit_type == "sl" & !is.null(sl_lrnrs_dens)) {
+    suppressMessages(
+      pred_g_A_upupshifted <- fit_g_dens_sl$predict(sl_task_upupshifted)
+    )
+  }
+
+  ##############################################################################
+  # create output data.tables
   ##############################################################################
   out <- data.table::as.data.table(cbind(
     pred_g_A_downshifted,
     pred_g_A_noshift,
-    pred_g_A_upshifted
+    pred_g_A_upshifted,
+    pred_g_A_upupshifted
   ))
-  data.table::setnames(out, c("downshift", "noshift", "upshift"))
+  data.table::setnames(out, c("downshift", "noshift", "upshift", "upupshift"))
   return(out)
 }
