@@ -30,7 +30,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.2</span>
       </span>
     </div>
 
@@ -88,7 +88,7 @@
 <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://www.benkeserstatistics.com/">David Benkeser</a>
 </h4>
             
-            <h4 class="date">2019-02-05</h4>
+            <h4 class="date">2019-02-18</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nhejazi/txshift/blob/master/vignettes/ipcw_txshift.Rmd"><code>vignettes/ipcw_txshift.Rmd</code></a></small>
       <div class="hidden name"><code>ipcw_txshift.Rmd</code></div>
@@ -106,7 +106,7 @@
 <pre><code>## ── Attaching packages ────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
 <pre><code>## ✔ ggplot2 3.1.0     ✔ purrr   0.3.0
 ## ✔ tibble  2.0.1     ✔ dplyr   0.7.8
-## ✔ tidyr   0.8.2     ✔ stringr 1.3.1
+## ✔ tidyr   0.8.2     ✔ stringr 1.4.0
 ## ✔ readr   1.3.1     ✔ forcats 0.3.0</code></pre>
 <pre><code>## ── Conflicts ───────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
@@ -125,7 +125,7 @@
 <pre><code>## The condensier package is still in beta testing. Interpret results with caution.</code></pre>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(sl3)</a>
 <a class="sourceLine" id="cb12-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(txshift)</a></code></pre></div>
-<pre><code>## txshift v0.2.1: Targeted Learning of the Causal Effects of Stochastic Interventions</code></pre>
+<pre><code>## txshift v0.2.2: Targeted Learning of the Causal Effects of Stochastic Interventions</code></pre>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Random">set.seed</a></span>(<span class="dv">429153</span>)</a></code></pre></div>
 <hr>
 </div>
@@ -166,7 +166,7 @@
 <div id="methodology" class="section level2">
 <h2 class="hasAnchor">
 <a href="#methodology" class="anchor"></a>Methodology</h2>
-<p><strong>Note:</strong> In all examples below, the argument <code>eif_reg_spec</code> is set to <code>FALSE</code> (whereas the default is <code>TRUE</code>) when invoking an IPCW-TMLE. This is done in an effort to speed along the computation process, as this argument controls the manner in which a nuisance regression associated with the efficient influence function of the IPCW-TMLE is fit. As stated in the documentation, setting this argument to <code>FALSE</code> fits this EIF nuisance regression with a generalized linear model (GLM; an assumption-laden parametric form) while the default value of <code>TRUE</code> fits the nuisance regression with the highly adaptive lasso (HAL; a recently developed nonparametric estimator) via the <a href="https://github.com/jeremyrcoyle/hal9001"><code>hal9001</code> R package</a>. In practice, we recommend leaving this argument to the default and fitting the EIF nuisance regression with HAL; however, this is significantly slower than simple using a GLM.</p>
+<p><strong>Note:</strong> In all examples below, the argument <code>eif_reg_type</code> is set to <code>"glm"</code> (whereas the default is <code>"hal"</code>) when invoking an IPCW-TMLE. This is done in an effort to speed along the computation process, as this argument controls the manner in which a nuisance regression associated with the efficient influence function of the IPCW-TMLE is fit. As stated in the documentation, setting this argument to <code>"glm"</code> fits this EIF nuisance regression with a generalized linear model (GLM; an assumption-laden parametric form) while the default value of <code>"hal"</code> fits the nuisance regression with the highly adaptive lasso (HAL; a recently developed nonparametric estimator) via the <a href="https://github.com/tlverse/hal9001"><code>hal9001</code> R package</a>. In practice, we recommend leaving this argument to the default and fitting the EIF nuisance regression with HAL; however, this is significantly slower than simple using a GLM.</p>
 <div id="inverse-probability-weighting-with-targeted-maximum-likelihood-estimation" class="section level3">
 <h3 class="hasAnchor">
 <a href="#inverse-probability-weighting-with-targeted-maximum-likelihood-estimation" class="anchor"></a>Inverse Probability Weighting with Targeted Maximum Likelihood Estimation</h3>
@@ -184,7 +184,7 @@
 <a class="sourceLine" id="cb16-12" data-line-number="12">                                                   <span class="dt">parfit =</span> <span class="ot">FALSE</span>),</a>
 <a class="sourceLine" id="cb16-13" data-line-number="13">                                 <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>,</a>
 <a class="sourceLine" id="cb16-14" data-line-number="14">                                                   <span class="dt">glm_formula =</span> <span class="st">"Y ~ ."</span>),</a>
-<a class="sourceLine" id="cb16-15" data-line-number="15">                                 <span class="dt">eif_reg_spec =</span> <span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb16-15" data-line-number="15">                                 <span class="dt">eif_reg_type =</span> <span class="st">"glm"</span></a>
 <a class="sourceLine" id="cb16-16" data-line-number="16">                                )</a>
 <a class="sourceLine" id="cb16-17" data-line-number="17"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle_glm_shift_<span class="dv">1</span>)</a></code></pre></div>
 <pre><code>##       lwr_ci    param_est       upr_ci    param_var     eif_mean 
@@ -207,7 +207,7 @@
 <a class="sourceLine" id="cb18-12" data-line-number="12">                                                   <span class="dt">parfit =</span> <span class="ot">FALSE</span>),</a>
 <a class="sourceLine" id="cb18-13" data-line-number="13">                                 <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>,</a>
 <a class="sourceLine" id="cb18-14" data-line-number="14">                                                   <span class="dt">glm_formula =</span> <span class="st">"Y ~ ."</span>),</a>
-<a class="sourceLine" id="cb18-15" data-line-number="15">                                 <span class="dt">eif_reg_spec =</span> <span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb18-15" data-line-number="15">                                 <span class="dt">eif_reg_type =</span> <span class="st">"glm"</span></a>
 <a class="sourceLine" id="cb18-16" data-line-number="16">                                )</a>
 <a class="sourceLine" id="cb18-17" data-line-number="17"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle_glm_shift_<span class="dv">2</span>)</a></code></pre></div>
 <pre><code>##        lwr_ci     param_est        upr_ci     param_var      eif_mean 
@@ -221,11 +221,11 @@
 </h3>
 <p>To easily incorporate ensemble machine learning into the estimation procedure, we rely on the facilities provided in the <a href="https://sl3.tlverse.org"><code>sl3</code> R package</a>. For a complete guide on using the <code>sl3</code> R package, consider consulting <a href="https://sl3.tlverse.org" class="uri">https://sl3.tlverse.org</a>, or <a href="https://tlverse.org" class="uri">https://tlverse.org</a> for the <code>tlverse</code> ecosystem, of which <code>sl3</code> is a major part.</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="co"># SL learners to be used for most fits (e.g., IPCW, outcome regression)</span></a>
-<a class="sourceLine" id="cb20-2" data-line-number="2">lrnr_lib &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/sl3/topics/make_learner_stack">make_learner_stack</a></span>(<span class="st">"Lrnr_mean"</span>, <span class="st">"Lrnr_glm_fast"</span>, <span class="st">"Lrnr_ranger"</span>)</a>
+<a class="sourceLine" id="cb20-2" data-line-number="2">lrnr_lib &lt;-<span class="st"> </span><span class="kw"><a href="https://tlverse.org/sl3/reference/make_learner_stack.html">make_learner_stack</a></span>(<span class="st">"Lrnr_mean"</span>, <span class="st">"Lrnr_glm_fast"</span>, <span class="st">"Lrnr_ranger"</span>)</a>
 <a class="sourceLine" id="cb20-3" data-line-number="3">sl_lrn &lt;-<span class="st"> </span>Lrnr_sl<span class="op">$</span><span class="kw">new</span>(<span class="dt">learners =</span> lrnr_lib, <span class="dt">metalearner =</span> Lrnr_nnls<span class="op">$</span><span class="kw">new</span>())</a>
 <a class="sourceLine" id="cb20-4" data-line-number="4"></a>
 <a class="sourceLine" id="cb20-5" data-line-number="5"><span class="co"># SL learners for conditional densities to be used for the propensity score fit</span></a>
-<a class="sourceLine" id="cb20-6" data-line-number="6">lrnr_dens_lib &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/sl3/topics/make_learner_stack">make_learner_stack</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="st">"Lrnr_condensier"</span>, <span class="dt">nbins =</span> <span class="dv">35</span>,</a>
+<a class="sourceLine" id="cb20-6" data-line-number="6">lrnr_dens_lib &lt;-<span class="st"> </span><span class="kw"><a href="https://tlverse.org/sl3/reference/make_learner_stack.html">make_learner_stack</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="st">"Lrnr_condensier"</span>, <span class="dt">nbins =</span> <span class="dv">35</span>,</a>
 <a class="sourceLine" id="cb20-7" data-line-number="7">                                          <span class="dt">bin_estimator =</span> Lrnr_glm_fast<span class="op">$</span><span class="kw">new</span>(),</a>
 <a class="sourceLine" id="cb20-8" data-line-number="8">                                          <span class="dt">bin_method =</span> <span class="st">"equal.len"</span>,</a>
 <a class="sourceLine" id="cb20-9" data-line-number="9">                                          <span class="dt">pool =</span> <span class="ot">FALSE</span>),</a>
@@ -256,17 +256,17 @@
 <a class="sourceLine" id="cb21-9" data-line-number="9">                                                  <span class="dt">sl_lrnrs =</span> sl_lrn_dens),</a>
 <a class="sourceLine" id="cb21-10" data-line-number="10">                                <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"sl"</span>,</a>
 <a class="sourceLine" id="cb21-11" data-line-number="11">                                                  <span class="dt">sl_lrnrs =</span> sl_lrn),</a>
-<a class="sourceLine" id="cb21-12" data-line-number="12">                                 <span class="dt">eif_reg_spec =</span> <span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb21-12" data-line-number="12">                                 <span class="dt">eif_reg_type =</span> <span class="st">"glm"</span></a>
 <a class="sourceLine" id="cb21-13" data-line-number="13">                               )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 2097.9051     Pars:  0.859270278 0.000009888 0.140719833
-## Iter: 2 fn: 2097.9051     Pars:  0.8592728982 0.0000006548 0.1407264470
+## Iter: 1 fn: 2097.7855     Pars:  0.85494 0.01169 0.13337
+## Iter: 2 fn: 2097.7855     Pars:  0.85494 0.01168 0.13338
 ## solnp--&gt; Completed in 2 iterations</code></pre>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle_sl_shift_<span class="dv">1</span>)</a></code></pre></div>
-<pre><code>##        lwr_ci     param_est        upr_ci     param_var      eif_mean 
-##      1.987294      2.137702      2.288109      0.005889 -2.949345e-05 
-##        n_iter 
-##             2</code></pre>
+<pre><code>##       lwr_ci    param_est       upr_ci    param_var     eif_mean 
+##     1.987092     2.137497     2.287902     0.005889 -3.43636e-05 
+##       n_iter 
+##            2</code></pre>
 <p>As before, we may vary the regression for the submodel fluctuation procedure by weighting each observation by the value of the so-called clever covariate rather than using such an auxiliary covariate directly in the regression procedure:</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1">tmle_sl_shift_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw"><a href="../reference/tmle_txshift.html">tmle_txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y,</a>
 <a class="sourceLine" id="cb25-2" data-line-number="2">                                <span class="dt">C =</span> C, <span class="dt">V =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"W"</span>, <span class="st">"Y"</span>),</a>
@@ -279,15 +279,17 @@
 <a class="sourceLine" id="cb25-9" data-line-number="9">                                                  <span class="dt">sl_lrnrs =</span> sl_lrn_dens),</a>
 <a class="sourceLine" id="cb25-10" data-line-number="10">                                <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"sl"</span>,</a>
 <a class="sourceLine" id="cb25-11" data-line-number="11">                                                  <span class="dt">sl_lrnrs =</span> sl_lrn),</a>
-<a class="sourceLine" id="cb25-12" data-line-number="12">                                 <span class="dt">eif_reg_spec =</span> <span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb25-12" data-line-number="12">                                 <span class="dt">eif_reg_type =</span> <span class="st">"glm"</span></a>
 <a class="sourceLine" id="cb25-13" data-line-number="13">                               )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 1976.8774     Pars:  0.859987494 0.000002762 0.140009745
-## Iter: 2 fn: 1976.8774     Pars:  0.8599883149 0.0000003146 0.1400113704
+## Iter: 1 fn: 1976.7490     Pars:  0.85891027 0.00001297 0.14107676
+## Iter: 2 fn: 1976.7490     Pars:  0.858911971 0.000007685 0.141080343
 ## solnp--&gt; Completed in 2 iterations</code></pre>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle_sl_shift_<span class="dv">2</span>)</a></code></pre></div>
-<pre><code>##      lwr_ci   param_est      upr_ci   param_var    eif_mean      n_iter 
-##    1.955561    2.110277    2.264993    0.006231 5.17941e-05           2</code></pre>
+<pre><code>##       lwr_ci    param_est       upr_ci    param_var     eif_mean 
+##     1.955991     2.110512     2.265034     0.006216 5.934951e-05 
+##       n_iter 
+##            2</code></pre>
 </div>
 <div id="estimating-inefficient-ipcw-tmles-with-optimal-stacked-regressions" class="section level3">
 <h3 class="hasAnchor">
@@ -306,12 +308,12 @@
 <a class="sourceLine" id="cb29-11" data-line-number="11">                                <span class="dt">ipcw_efficiency =</span> <span class="ot">FALSE</span></a>
 <a class="sourceLine" id="cb29-12" data-line-number="12">                               )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 2277.3607     Pars:  0.69434 0.13183 0.17382
-## Iter: 2 fn: 2277.3607     Pars:  0.69435 0.13184 0.17382
+## Iter: 1 fn: 2277.2097     Pars:  0.69142 0.16334 0.14524
+## Iter: 2 fn: 2277.2097     Pars:  0.69142 0.16334 0.14524
 ## solnp--&gt; Completed in 2 iterations</code></pre>
 <div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle_sl_ineffic)</a></code></pre></div>
 <pre><code>##       lwr_ci    param_est       upr_ci    param_var     eif_mean 
-##     1.880913     2.091981     2.303049     0.011597 2.879664e-11 
+##     1.881083     2.092186     2.303289     0.011601 3.162389e-11 
 ##       n_iter 
 ##            0</code></pre>
 <p>Please note that in such cases, the value of <code>n_iter</code> in the resulting output should be <strong><em>exactly zero</em></strong>, as this indicates that the iterative procedure that is used to achieve efficiency has been skipped.</p>
@@ -322,7 +324,7 @@
 <p>For a discussion of the procedure for obtaining statistical inference for TML estimators, the interested reader is referred to the introductory vignette of this package. Here, we focus on addressing the issue of how censoring impacts the inferential procedure…</p>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" data-line-number="1">(ci_shift &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/confint">confint</a></span>(tmle_sl_shift_<span class="dv">1</span>))</a></code></pre></div>
 <pre><code>##   lwr_ci      est   upr_ci 
-## 1.987294 2.137702 2.288109</code></pre>
+## 1.987092 2.137497 2.287902</code></pre>
 <hr>
 </div>
 </div>
@@ -366,7 +368,7 @@
 <a class="sourceLine" id="cb35-34" data-line-number="34">                                <span class="dt">ipcw_fit_spec =</span> ipcw_out,</a>
 <a class="sourceLine" id="cb35-35" data-line-number="35">                                <span class="dt">gn_fit_spec =</span> gn_out,</a>
 <a class="sourceLine" id="cb35-36" data-line-number="36">                                <span class="dt">Qn_fit_spec =</span> Qn_out,</a>
-<a class="sourceLine" id="cb35-37" data-line-number="37">                                <span class="dt">eif_reg_spec =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb35-37" data-line-number="37">                                <span class="dt">eif_reg_type =</span> <span class="st">"hal"</span>)</a>
 <a class="sourceLine" id="cb35-38" data-line-number="38"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle_shift_spec)</a></code></pre></div>
 <pre><code>##        lwr_ci     param_est        upr_ci     param_var      eif_mean 
 ##      1.916552      2.089992      2.263432      0.007831 -7.819876e-04 
@@ -409,7 +411,7 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Nima Hejazi, David Benkeser, Mark van der Laan.</p>
+  <p>Developed by Nima Hejazi, David Benkeser.</p>
 </div>
 
 <div class="pkgdown">

@@ -34,8 +34,12 @@ fit_fluc <- function(Y,
     scale_type = "bound_in_01"
   )
 
+  # bound precision for use of logit transform
+  Qn_scaled_bounded <- apply(Qn_scaled, 2, bound_precision) %>%
+    data.table::as.data.table()
+
   # extract Q and obtain logit transform
-  logit_Qn <- stats::qlogis(Qn_scaled$noshift)
+  logit_Qn <- stats::qlogis(Qn_scaled_bounded$noshift)
 
   # fit the fluctuation regression in one of two ways
   if (method == "standard") {
@@ -80,7 +84,7 @@ fit_fluc <- function(Y,
   )
 
   # need to logit transform Qn(d(A,W),W)
-  Qn_shift_logit <- stats::qlogis(Qn_scaled$upshift)
+  Qn_shift_logit <- stats::qlogis(Qn_scaled_bounded$upshift)
 
   # get Qn_star for the SHIFTED data
   if (method == "standard") {

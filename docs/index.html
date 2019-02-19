@@ -39,7 +39,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.2</span>
       </span>
     </div>
 
@@ -110,7 +110,7 @@
 <h2 class="hasAnchor">
 <a href="#whats-txshift" class="anchor"></a>What’s <code>txshift</code>?</h2>
 <p>The <code>txshift</code> R package is designed to compute targeted maximum likelihood (TML) estimates of the counterfactual mean of an outcome under stochastic mechanisms for treatment assignment and related causal parameters (<span class="citation">Díaz and van der Laan (2012)</span>). In particular, <code>txshift</code> implements and builds upon a simplified algorithm for the TML estimator proposed by <span class="citation">Díaz and van der Laan (2018)</span>.</p>
-<p>For many practical applications (e.g., vaccine efficacy trials), it is often the case that the observed data structure is generated under a two-phase sampling mechanism (i.e., a two-stage design). In such cases, TML estimators must be augmented to exhibit efficiency in spite of the challenges induced by the censoring process. An appropriate augmentation procedure was first proposed by <span class="citation">Rose and van der Laan (2011)</span>, who explore the use of inverse probability of censoring weights (IPCW) and alterations to the relevant efficient influence function. <code>txshift</code> extends the approach of computing IPCW-TML estimators to the counterfactual mean under a stochastic intervention and related causal quantities.</p>
+<p>For many practical applications (e.g., vaccine efficacy trials), it is often the case that the observed data structure is generated under a two-phase sampling mechanism (i.e., a two-stage design). In such cases, TML estimators must be augmented to exhibit efficiency in spite of the challenges induced by the censoring process. An appropriate augmentation procedure was first proposed by <span class="citation">Rose and van der Laan (2011)</span>, who proposed the use of inverse probability of censoring weights (IPCW) alongside an augmentation of the relevant efficient influence function. <code>txshift</code> extends this approach to computing one-step and IPCW-TML estimators of the counterfactual mean under a stochastic treatment regime.</p>
 <hr>
 </div>
 <div id="installation" class="section level2">
@@ -178,7 +178,7 @@
 <a class="sourceLine" id="cb2-52" data-line-number="52">                                                 <span class="dt">parfit =</span> <span class="ot">FALSE</span>),</a>
 <a class="sourceLine" id="cb2-53" data-line-number="53">                               <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>,</a>
 <a class="sourceLine" id="cb2-54" data-line-number="54">                                                 <span class="dt">glm_formula =</span> <span class="st">"Y ~ ."</span>),</a>
-<a class="sourceLine" id="cb2-55" data-line-number="55">                               <span class="dt">eif_reg_spec =</span> <span class="ot">FALSE</span>  <span class="co"># fit EIF with a GLM</span></a>
+<a class="sourceLine" id="cb2-55" data-line-number="55">                               <span class="dt">eif_reg_type =</span> <span class="st">"glm"</span></a>
 <a class="sourceLine" id="cb2-56" data-line-number="56">                              )</a>
 <a class="sourceLine" id="cb2-57" data-line-number="57"></a>
 <a class="sourceLine" id="cb2-58" data-line-number="58"><span class="co"># conveniently summarize the results</span></a>
@@ -205,14 +205,13 @@
 <h2 class="hasAnchor">
 <a href="#citation" class="anchor"></a>Citation</h2>
 <p>After using the <code>txshift</code> R package, please cite the following:</p>
-<pre><code>    @manual{hejazi2018txshift,
-      author = {Hejazi, Nima S and {van der Laan}, Mark J and Benkeser,
-        David C},
+<pre><code>    @manual{hejazi2019txshift,
+      author = {Hejazi, Nima S and Benkeser, David C},
       title = {txshift: {Targeted Learning} of the Causal Effects of
         Stochastic Interventions in {R}},
-      year  = {2018},
+      year  = {2019},
       url = {https://github.com/nhejazi/txshift},
-      note = {R package version 0.2.0}
+      note = {R package version 0.2.2}
     }</code></pre>
 <hr>
 </div>
@@ -221,8 +220,9 @@
 <a href="#related" class="anchor"></a>Related</h2>
 <ul>
 <li><p><a href="https://github.com/tlverse/tmle3shift">R/<code>tmle3shift</code></a> - An R package providing an independent implementation of the same core routines for the TML estimation procedure and statistical methodology as is made available here, through reliance on a unified interface for Targeted Learning provided by the <a href="https://github.com/tlverse/tmle3"><code>tmle3</code></a> engine of the <a href="https://github.com/tlverse"><code>tlverse</code> ecosystem</a>.</p></li>
-<li><p><a href="https://github.com/osofr/condensier">R/<code>condensier</code></a> - Estimation of the treatment mechanism component of this parameter requires conditional density estimation, which is implemented rather generally (for a variety of hazard regression strategies and regression functions) in this package.</p></li>
-<li><p><a href="https://github.com/nhejazi/haldensify">R/<code>haldensify</code></a> - A minimal package for estimating the conditional density treatment mechanism component of this parameter based on using the <a href="https://github.com/tlverse/hal9001">highly adaptive lasso</a> for the required pooled hazard regression.</p></li>
+<li><p><a href="https://github.com/nhejazi/medshift">R/<code>medshift</code></a> - An R package providing facilities to estimate the causal effect of stochastic treatment regimes in the mediation setting, including classical (IPW) and augmented double robust (one-step) estimators. This is an implementation of the methodology explored in <span class="citation">Díaz and Hejazi (2019)</span>.</p></li>
+<li><p><a href="https://github.com/osofr/condensier">R/<code>condensier</code></a> - Estimation of the treatment mechanism component of this parameter requires conditional density estimation, which is implemented rather generally (for a variety of hazard regression strategies and regression functions) in this package. This package implements a variant of the methodology proposed in <span class="citation">Díaz and van der Laan (2011)</span>.</p></li>
+<li><p><a href="https://github.com/nhejazi/haldensify">R/<code>haldensify</code></a> - A minimal package for estimating the conditional density treatment mechanism component of this parameter based on using the <a href="https://github.com/tlverse/hal9001">highly adaptive lasso</a> for the required pooled hazard regression. This package implements the methdology proposed in <span class="citation">Díaz and van der Laan (2011)</span>.</p></li>
 </ul>
 <hr>
 </div>
@@ -259,9 +259,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</code></pre>
 <hr>
+</div>
+<div id="references" class="section level2 unnumbered">
+<h2 class="hasAnchor">
+<a href="#references" class="anchor"></a>References</h2>
 <div id="refs" class="references">
+<div id="ref-diaz2019causal">
+<p>Díaz, Iván, and Nima S Hejazi. 2019. “Causal Mediation Analysis for Stochastic Interventions.” <em>Submitted</em>. <a href="https://arxiv.org/abs/1901.02776" class="uri">https://arxiv.org/abs/1901.02776</a>.</p>
+</div>
+<div id="ref-diaz2011super">
+<p>Díaz, Iván, and Mark J van der Laan. 2011. “Super Learner Based Conditional Density Estimation with Application to Marginal Structural Models.” <em>The International Journal of Biostatistics</em> 7 (1). De Gruyter: 1–20.</p>
+</div>
 <div id="ref-diaz2012population">
-<p>Díaz, Iván, and Mark J van der Laan. 2012. “Population Intervention Causal Effects Based on Stochastic Interventions.” <em>Biometrics</em> 68 (2). Wiley Online Library: 541–49.</p>
+<p>———. 2012. “Population Intervention Causal Effects Based on Stochastic Interventions.” <em>Biometrics</em> 68 (2). Wiley Online Library: 541–49.</p>
 </div>
 <div id="ref-diaz2018stochastic">
 <p>———. 2018. “Stochastic Treatment Regimes.” In <em>Targeted Learning in Data Science: Causal Inference for Complex Longitudinal Studies</em>, 167–80. Springer Science &amp; Business Media.</p>
@@ -297,7 +307,6 @@ SOFTWARE.</code></pre>
 <ul class="list-unstyled">
 <li>Nima Hejazi <br><small class="roles"> Author, maintainer, copyright holder </small> <a href="https://orcid.org/0000-0002-7127-2789" target="orcid.widget"><img src="https://members.orcid.org/sites/default/files/vector_iD_icon.svg" class="orcid" alt="ORCID" height="16"></a> </li>
 <li>David Benkeser <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-1019-8343" target="orcid.widget"><img src="https://members.orcid.org/sites/default/files/vector_iD_icon.svg" class="orcid" alt="ORCID" height="16"></a> </li>
-<li>Mark van der Laan <br><small class="roles"> Author, thesis advisor </small> <a href="https://orcid.org/0000-0003-1432-5511" target="orcid.widget"><img src="https://members.orcid.org/sites/default/files/vector_iD_icon.svg" class="orcid" alt="ORCID" height="16"></a> </li>
 <li><a href="authors.html">All authors...</a></li>
 </ul>
 </div>
@@ -320,7 +329,7 @@ SOFTWARE.</code></pre>
 
 
       <footer><div class="copyright">
-  <p>Developed by Nima Hejazi, David Benkeser, Mark van der Laan.</p>
+  <p>Developed by Nima Hejazi, David Benkeser.</p>
 </div>
 
 <div class="pkgdown">

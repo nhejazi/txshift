@@ -55,13 +55,13 @@
 #'  Learner for the outcome regression, and "fit_spec" to user-specified input
 #'  of the form produced by \code{est_Q}. NOTE THAT this first argument is not
 #'  passed to \code{est_g}.
-#' @param eif_reg_spec Whether a flexible function ought to be used in the
-#'  computation of a targeting step for the censored data case. By default, the
-#'  method used is a nonparametric regression based on the Highly Adaptive LASSO
-#'  (from package \code{hal9001}) is used. If set to \code{FALSE}, then a simple
-#'  linear regression model is assumed. In this step, the efficient influence
-#'  function (EIF) is regressed against the covariates that contribute to the
-#'  censoring mechanism (i.e., EIF ~ V | C = 1).
+#' @param eif_reg_type Whether a flexible nonparametric function ought to be
+#'  used in the dimension-reduced nuisance regression of the targeting step for
+#'  the censored data case. By default, the method used is a nonparametric
+#'  regression based on the Highly Adaptive Lasso (from package \code{hal9001}).
+#'  Set this to \code{"glm"} to instead use a simple linear regression model.
+#'  In this step, the efficient influence function (EIF) is regressed against
+#'  covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).
 #' @param ipcw_efficiency Whether to invoke an augmentation of the IPCW-TMLE
 #'  procedure that performs an iterative process to ensure efficiency of the
 #'  resulting estimate. The default is \code{TRUE}; only set to \code{FALSE} if
@@ -120,7 +120,7 @@ tmle_txshift <- function(W,
                            glm_formula = "Y ~ .",
                            sl_lrnrs = NULL
                          ),
-                         eif_reg_spec = TRUE,
+                         eif_reg_type = c("hal", "glm"),
                          ipcw_efficiency = TRUE,
                          ipcw_fit_spec = NULL,
                          gn_fit_spec = NULL,
@@ -130,6 +130,7 @@ tmle_txshift <- function(W,
   ##############################################################################
   call <- match.call(expand.dots = TRUE)
   fluc_method <- match.arg(fluc_method)
+  eif_reg_type <- match.arg(eif_reg_type)
 
   # dissociate fit type from other arguments to simplify passing to do.call
   ipcw_fit_type <- unlist(ipcw_fit_args[names(ipcw_fit_args) == "fit_type"],
@@ -157,7 +158,19 @@ tmle_txshift <- function(W,
   # perform sub-setting of data and implement IPC weighting if required
   ##############################################################################
   if (!all(C == 1) & !is.null(V)) {
+    # combine censoring node information
     V_in <- data.table::as.data.table(mget(V))
+    # NOTE: resolves downstream naming error
+    V_names <- lapply(seq_along(V), function(j) {
+      node <- mget(V[j], inherits = TRUE)[[1]]
+      if (!is.null(dim(node))) {
+        colnames(node)
+      } else {
+        V[j]
+      }
+    })
+    colnames(V_in) <- do.call(c, V_names)
+
     ipcw_estim_in <- list(
       V = V_in, Delta = C,
       fit_type = ipcw_fit_type
@@ -251,7 +264,7 @@ tmle_txshift <- function(W,
   ##############################################################################
   # invoke efficient IPCW-TMLE, per Rose & van der Laan (2011), if necessary
   ##############################################################################
-  n_steps <- 0 # define iteration outside to easily return in output object
+  n_steps <- 0
   if (ipcw_efficiency & !all(C == 1) & !is.null(V)) {
     # Efficient implementation of the IPCW-TMLE
     eif_mean <- Inf
@@ -264,18 +277,6 @@ tmle_txshift <- function(W,
     # quantities to be updated in iterative procedure (to be overwritten)
     pi_mech_star <- ipcw_out$pi_mech
     Qn_estim_use <- Qn_estim
-
-    # figure out columns of internal data structure used for censoring
-    # TODO: FIX -- this is a horribly UGLY HACK that solves a naming problem...
-    V_cols <- matrix(NA, nrow = ncol(V_in), ncol = ncol(data_internal))
-    for (i in seq_along(V_in)) {
-      V_cols[i, ] <- stringr::str_detect(
-        colnames(V_in)[i],
-        colnames(data_internal)
-      )
-    }
-    V_mask <- as.logical(colSums(V_cols))
-    colnames(V_in) <- colnames(data_internal[, which(V_mask), with = FALSE])
 
     # iterate procedure until convergence conditions are satisfied
     while (abs(eif_mean) > eif_tol & n_steps < max_iter) {
@@ -296,7 +297,7 @@ tmle_txshift <- function(W,
         fit_type = ipcw_fit_type,
         eif_tol = eif_tol,
         sl_lrnrs = ipcw_fit_args$sl_lrnrs,
-        eif_reg_spec = eif_reg_spec
+        eif_reg_type = eif_reg_type
       )
 
       # overwrite and update quantities to be used in the next iteration

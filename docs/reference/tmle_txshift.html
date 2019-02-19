@@ -66,7 +66,7 @@ estimates (TMLE) of the causal parameter discussed in Díaz and van der Laan
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.2</span>
       </span>
     </div>
 
@@ -141,7 +141,7 @@ estimates (TMLE) of the causal parameter discussed in Díaz and van der Laan
   <span class='st'>"sl"</span>, <span class='st'>"fit_spec"</span>), <span class='kw'>nbins</span> <span class='kw'>=</span> <span class='fl'>35</span>, <span class='kw'>bin_method</span> <span class='kw'>=</span> <span class='st'>"dhist"</span>, <span class='kw'>bin_estimator</span> <span class='kw'>=</span>
   <span class='kw pkg'>condensier</span><span class='kw ns'>::</span><span class='no'><a href='https://www.rdocumentation.org/packages/condensier/topics/speedglmR6'>speedglmR6</a></span>$<span class='fu'>new</span>(), <span class='kw'>parfit</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>sl_lrnrs_dens</span> <span class='kw'>=</span> <span class='kw'>NULL</span>),
   <span class='kw'>Q_fit_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"glm"</span>, <span class='st'>"sl"</span>, <span class='st'>"fit_spec"</span>), <span class='kw'>glm_formula</span> <span class='kw'>=</span>
-  <span class='st'>"Y ~ ."</span>, <span class='kw'>sl_lrnrs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>), <span class='kw'>eif_reg_spec</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='st'>"Y ~ ."</span>, <span class='kw'>sl_lrnrs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>), <span class='kw'>eif_reg_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"hal"</span>, <span class='st'>"glm"</span>),
   <span class='kw'>ipcw_efficiency</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>ipcw_fit_spec</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>gn_fit_spec</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>Qn_fit_spec</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
@@ -235,14 +235,14 @@ of the form produced by <code>est_Q</code>. NOTE THAT this first argument is not
 passed to <code>est_g</code>.</p></td>
     </tr>
     <tr>
-      <th>eif_reg_spec</th>
-      <td><p>Whether a flexible function ought to be used in the
-computation of a targeting step for the censored data case. By default, the
-method used is a nonparametric regression based on the Highly Adaptive LASSO
-(from package <code>hal9001</code>) is used. If set to <code>FALSE</code>, then a simple
-linear regression model is assumed. In this step, the efficient influence
-function (EIF) is regressed against the covariates that contribute to the
-censoring mechanism (i.e., EIF ~ V | C = 1).</p></td>
+      <th>eif_reg_type</th>
+      <td><p>Whether a flexible nonparametric function ought to be
+used in the dimension-reduced nuisance regression of the targeting step for
+the censored data case. By default, the method used is a nonparametric
+regression based on the Highly Adaptive Lasso (from package <code>hal9001</code>).
+Set this to <code>"glm"</code> to instead use a simple linear regression model.
+In this step, the efficient influence function (EIF) is regressed against
+covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).</p></td>
     </tr>
     <tr>
       <th>ipcw_efficiency</th>
@@ -297,7 +297,7 @@ theory and this software implementation of said theory.</p></td>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Nima Hejazi, David Benkeser, Mark van der Laan.</p>
+  <p>Developed by Nima Hejazi, David Benkeser.</p>
 </div>
 
 <div class="pkgdown">

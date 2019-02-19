@@ -40,11 +40,11 @@ two-phase sampling mechanism (i.e., a two-stage design). In such cases,
 TML estimators must be augmented to exhibit efficiency in spite of the
 challenges induced by the censoring process. An appropriate augmentation
 procedure was first proposed by Rose and van der Laan (2011), who
-explore the use of inverse probability of censoring weights (IPCW) and
-alterations to the relevant efficient influence function. `txshift`
-extends the approach of computing IPCW-TML estimators to the
-counterfactual mean under a stochastic intervention and related causal
-quantities.
+proposed the use of inverse probability of censoring weights (IPCW)
+alongside an augmentation of the relevant efficient influence function.
+`txshift` extends this approach to computing one-step and IPCW-TML
+estimators of the counterfactual mean under a stochastic treatment
+regime.
 
 -----
 
@@ -119,7 +119,7 @@ ipcwtmle_shift <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
                                                  parfit = FALSE),
                                Q_fit_args = list(fit_type = "glm",
                                                  glm_formula = "Y ~ ."),
-                               eif_reg_spec = FALSE  # fit EIF with a GLM
+                               eif_reg_type = "glm"
                               )
 
 # conveniently summarize the results
@@ -153,14 +153,13 @@ prior to submitting a pull request.
 After using the `txshift` R package, please cite the following:
 
 ``` 
-    @manual{hejazi2018txshift,
-      author = {Hejazi, Nima S and {van der Laan}, Mark J and Benkeser,
-        David C},
+    @manual{hejazi2019txshift,
+      author = {Hejazi, Nima S and Benkeser, David C},
       title = {txshift: {Targeted Learning} of the Causal Effects of
         Stochastic Interventions in {R}},
-      year  = {2018},
+      year  = {2019},
       url = {https://github.com/nhejazi/txshift},
-      note = {R package version 0.2.0}
+      note = {R package version 0.2.2}
     }
 ```
 
@@ -176,17 +175,26 @@ After using the `txshift` R package, please cite the following:
     [`tmle3`](https://github.com/tlverse/tmle3) engine of the [`tlverse`
     ecosystem](https://github.com/tlverse).
 
+  - [R/`medshift`](https://github.com/nhejazi/medshift) - An R package
+    providing facilities to estimate the causal effect of stochastic
+    treatment regimes in the mediation setting, including classical
+    (IPW) and augmented double robust (one-step) estimators. This is an
+    implementation of the methodology explored in Díaz and Hejazi
+    (2019).
+
   - [R/`condensier`](https://github.com/osofr/condensier) - Estimation
     of the treatment mechanism component of this parameter requires
     conditional density estimation, which is implemented rather
     generally (for a variety of hazard regression strategies and
-    regression functions) in this package.
+    regression functions) in this package. This package implements a
+    variant of the methodology proposed in Díaz and van der Laan (2011).
 
   - [R/`haldensify`](https://github.com/nhejazi/haldensify) - A minimal
     package for estimating the conditional density treatment mechanism
     component of this parameter based on using the [highly adaptive
     lasso](https://github.com/tlverse/hal9001) for the required pooled
-    hazard regression.
+    hazard regression. This package implements the methdology proposed
+    in Díaz and van der Laan (2011).
 
 -----
 
@@ -229,13 +237,31 @@ See below for details:
 
 -----
 
+## References
+
 <div id="refs" class="references">
+
+<div id="ref-diaz2019causal">
+
+Díaz, Iván, and Nima S Hejazi. 2019. “Causal Mediation Analysis for
+Stochastic Interventions.” *Submitted*.
+<https://arxiv.org/abs/1901.02776>.
+
+</div>
+
+<div id="ref-diaz2011super">
+
+Díaz, Iván, and Mark J van der Laan. 2011. “Super Learner Based
+Conditional Density Estimation with Application to Marginal Structural
+Models.” *The International Journal of Biostatistics* 7 (1). De Gruyter:
+1–20.
+
+</div>
 
 <div id="ref-diaz2012population">
 
-Díaz, Iván, and Mark J van der Laan. 2012. “Population Intervention
-Causal Effects Based on Stochastic Interventions.” *Biometrics* 68 (2).
-Wiley Online Library: 541–49.
+———. 2012. “Population Intervention Causal Effects Based on Stochastic
+Interventions.” *Biometrics* 68 (2). Wiley Online Library: 541–49.
 
 </div>
 
