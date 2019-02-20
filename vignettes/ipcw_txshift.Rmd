@@ -292,11 +292,14 @@ ipcw_out <- list(pi_mech = pi_mech, ipc_weights = ipc_weights_out)
 gn_downshift <- dnorm(A - delta, mean = tx_mult * W, sd = 1)
 ## next, initialize and produce the up-shifted treatment data
 gn_upshift <- dnorm(A + delta, mean = tx_mult * W, sd = 1)
+## now, initialize and produce the up-up-shifted (2 * delta) treatment data
+gn_upupshift <- dnorm(A + 2 * delta, mean = tx_mult * W, sd = 1)
 ## then, initialize and produce the un-shifted treatment data
 gn_noshift <- dnorm(A, mean = tx_mult * W, sd = 1)
 ## finally, put it all together into an object like what's produced internally
-gn_out <- as.data.table(cbind(gn_downshift, gn_noshift, gn_upshift))[C == 1, ]
-setnames(gn_out, c("downshift", "noshift", "upshift"))
+gn_out <- as.data.table(cbind(gn_downshift, gn_noshift, gn_upshift,
+                              gn_upupshift))[C == 1, ]
+setnames(gn_out, c("downshift", "noshift", "upshift", "upupshift"))
 
 # compute outcome regression externally
 Qn_noshift <- (W + A - min(Y)) / diff(range(Y))
