@@ -21,7 +21,7 @@ est_Hn <- function(gn, a = NULL, w = NULL) {
   ratio_g_shift <- (gn$noshift / gn$upshift) * as.numeric(gn$upshift != 0) +
     as.numeric(gn$upupshift == 0)
 
-  # TODO: consider case where there is not support everywhere
+  # set up output table of auxiliary covariate under different shifts
   H_n <- data.table::as.data.table(cbind(ratio_g_noshift, ratio_g_shift))
   data.table::setnames(H_n, c("noshift", "shift"))
   return(H_n)
