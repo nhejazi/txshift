@@ -376,7 +376,8 @@ tmle_txshift <- function(W,
         call = call,
         ipcw_tmle_comp$tmle_eif,
         iter_res = list(conv_results_out),
-        n_iter = n_steps
+        n_iter = n_steps,
+        outcome = list(Y)
       ),
       recursive = FALSE
     )
@@ -387,7 +388,7 @@ tmle_txshift <- function(W,
         call = call,
         tmle_eif_out,
         n_iter = n_steps,
-        outcome_type = ifelse(length(unique(Y)) == 2, "binary", "continous")
+        outcome = list(Y)
       ),
       recursive = FALSE
     )

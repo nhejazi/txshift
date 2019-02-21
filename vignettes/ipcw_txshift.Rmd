@@ -46,10 +46,10 @@ set.seed(429153)
 ## Data and Notation
 
 1. Start with a simple additive shift -- i.e., $d(a,w) = a + \delta$ if
-   $a < u(w) - \delta$ or $d(a, w) = a$ if $a \geq u(w) - \delta$.
+   $a \leq u(w) - \delta$ or $d(a, w) = a$ if $a \geq u(w) - \delta$.
 
 2. The additive shift will have support everywhere -- i.e.,
-   $a < u(w)$ is true everywhere.
+   $a \leq u(w)$ is true everywhere.
 
 3. Consider the case in which some observations are missing --- for now, let us
    consider a simple case-control sampling case wherein the treatment is
@@ -127,8 +127,6 @@ to fit the step for the fluctuation submodels with a _weighted_ method, simply
 weighting each observation by an auxiliary covariate (often denoted $H_n$, and
 sometimes called the "clever covariate" in the literature) rather than using
 such a covariate directly in the submodel regression fit.
-
-<!--Please consult [INSERT REF] for details on potential benefits this approach may have.-->
 
 ```{r}
 tmle_glm_shift_2 <- tmle_txshift(W = W, A = A, Y = Y,
@@ -315,6 +313,7 @@ setnames(Qn_out, c("noshift", "upshift"))
 tmle_shift_spec <- tmle_txshift(W = W, A = A, Y = Y, delta = delta,
                                 C = C, V = c("W", "Y"),
                                 fluc_method = "standard",
+                                max_iter = 2,
                                 ipcw_fit_args = list(fit_type = "fit_spec"),
                                 g_fit_args = list(fit_type = "fit_spec"),
                                 Q_fit_args = list(fit_type = "fit_spec"),

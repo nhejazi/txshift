@@ -11,7 +11,7 @@
 #'  to be computed.
 #' @param ... Other arguments. Not currently used.
 #'
-#' @importFrom stats qnorm plogis
+#' @importFrom stats qnorm plogis qlogis
 #'
 #' @method confint txshift
 #'
@@ -25,7 +25,7 @@ confint.txshift <- function(object,
   # first, let's get Z_(1 - alpha)
   norm_bounds <- c(-1, 1) * abs(stats::qnorm(p = (1 - level) / 2))
 
-  if (object$outcome_type == "continuous") {
+  if (length(unique(object$outcome)) > 2) {   # assume continuous outcome
     # compute the EIF variance multiplier for the CI
     # NOTE: the variance value is already scaled by length of observations
     sd_eif <- sqrt(object$var)
@@ -33,15 +33,14 @@ confint.txshift <- function(object,
     # compute the interval around the point estimate
     ci_psi <- norm_bounds * sd_eif + object$psi
 
-  } else {
+  } else if (length(unique(object$outcome)) == 2) {   # binary outcome
     # for binary outcome case, compute on the logit scale and back-transform
-    psi_ratio <- qlogis(object$psi)
-    grad <- 1/(object$psi - object$psi^2)
-    #grad <- c(1/(object$psi - object$psi^2), 0)
-    eif_vcov <- object$var
-    #eif_vcov <- tcrossprod(object$var)
-    sd_eif_logit <- as.numeric(t(grad) %*% eif_vcov %*% grad)
-    ci_psi <- stats::plogis(norm_bounds * sd_eif_logit + psi_ratio)
+    psi_ratio <- stats::qlogis(object$psi)
+    grad_ratio_delta <- (1 / object$psi) + (1 / (1 - object$psi))
+    se_eif_logit <- sqrt(grad_ratio_delta^2 * object$var)
+    ci_psi <- stats::plogis(norm_bounds * se_eif_logit + psi_ratio)
+  } else {
+    stop("The outcome has fewer than 2 levels: this case is not supported.")
   }
 
   # set up output CI object
