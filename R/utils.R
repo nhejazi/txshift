@@ -22,7 +22,6 @@ confint.txshift <- function(object,
                             level = 0.95,
                             ...) {
 
-  browser()
   # first, let's get Z_(1 - alpha)
   norm_bounds <- c(-1, 1) * abs(stats::qnorm(p = (1 - level) / 2))
 
@@ -36,9 +35,13 @@ confint.txshift <- function(object,
 
   } else {
     # for binary outcome case, compute on the logit scale and back-transform
-    psi_ratio <- log(object$psi / (1 - object$psi))
-    sd_eif <- sqrt(object$var)
-    ci_psi <- stats::plogis(norm_bounds * sd_eif + psi_ratio)
+    psi_ratio <- qlogis(object$psi)
+    grad <- 1/(object$psi - object$psi^2)
+    #grad <- c(1/(object$psi - object$psi^2), 0)
+    eif_vcov <- object$var
+    #eif_vcov <- tcrossprod(object$var)
+    sd_eif_logit <- as.numeric(t(grad) %*% eif_vcov %*% grad)
+    ci_psi <- stats::plogis(norm_bounds * sd_eif_logit + psi_ratio)
   }
 
   # set up output CI object
