@@ -25,15 +25,14 @@ confint.txshift <- function(object,
   # first, let's get Z_(1 - alpha)
   norm_bounds <- c(-1, 1) * abs(stats::qnorm(p = (1 - level) / 2))
 
-  if (length(unique(object$outcome)) > 2) {   # assume continuous outcome
+  if (length(unique(object$outcome)) > 2) { # assume continuous outcome
     # compute the EIF variance multiplier for the CI
     # NOTE: the variance value is already scaled by length of observations
     sd_eif <- sqrt(object$var)
 
     # compute the interval around the point estimate
     ci_psi <- norm_bounds * sd_eif + object$psi
-
-  } else if (length(unique(object$outcome)) == 2) {   # binary outcome
+  } else if (length(unique(object$outcome)) == 2) { # binary outcome
     # for binary outcome case, compute on the logit scale and back-transform
     psi_ratio <- stats::qlogis(object$psi)
     grad_ratio_delta <- (1 / object$psi) + (1 / (1 - object$psi))

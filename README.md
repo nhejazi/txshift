@@ -82,7 +82,7 @@ W <- as.numeric(replicate(n_w, rbinom(n_obs, 1, p_w)))
 A <- as.numeric(rnorm(n_obs, mean = tx_mult * W, sd = 1))
 
 # create outcome as a linear function of A, W + white noise
-Y <- A + W + rnorm(n_obs, mean = 0, sd = 1)
+Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
 
 # fit the TMLE
 tmle_shift <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
@@ -98,10 +98,10 @@ tmle_shift <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
 
 # conveniently summarize the results
 summary(tmle_shift)
-#>       lwr_ci    param_est       upr_ci    param_var     eif_mean 
-#>     1.957777     2.098018     2.238259      0.00512 3.961214e-12 
-#>       n_iter 
-#>            0
+#>        lwr_ci     param_est        upr_ci     param_var      eif_mean 
+#>      0.722106      0.752212       0.78005      0.000219 -3.381496e-17 
+#>        n_iter 
+#>             0
 
 # now, let's introduce a censoring process (for two-stage sampling)
 C <- rbinom(n_obs, 1, plogis(W + Y))
@@ -124,10 +124,10 @@ ipcwtmle_shift <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
 
 # conveniently summarize the results
 summary(ipcwtmle_shift)
-#>       lwr_ci    param_est       upr_ci    param_var     eif_mean 
-#>     1.693336     2.121628     2.549921     0.047751 2.161841e-08 
-#>       n_iter 
-#>           10
+#>        lwr_ci     param_est        upr_ci     param_var      eif_mean 
+#>      0.728859      0.764822      0.797341      0.000306 -2.964196e-04 
+#>        n_iter 
+#>             1
 ```
 
 -----

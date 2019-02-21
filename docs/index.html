@@ -141,7 +141,7 @@
 <a class="sourceLine" id="cb2-15" data-line-number="15">A &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/numeric">as.numeric</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(n_obs, <span class="dt">mean =</span> tx_mult <span class="op">*</span><span class="st"> </span>W, <span class="dt">sd =</span> <span class="dv">1</span>))</a>
 <a class="sourceLine" id="cb2-16" data-line-number="16"></a>
 <a class="sourceLine" id="cb2-17" data-line-number="17"><span class="co"># create outcome as a linear function of A, W + white noise</span></a>
-<a class="sourceLine" id="cb2-18" data-line-number="18">Y &lt;-<span class="st"> </span>A <span class="op">+</span><span class="st"> </span>W <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(n_obs, <span class="dt">mean =</span> <span class="dv">0</span>, <span class="dt">sd =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb2-18" data-line-number="18">Y &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Binomial">rbinom</a></span>(n_obs, <span class="dv">1</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Logistic">plogis</a></span>(A <span class="op">+</span><span class="st"> </span>W <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(n_obs, <span class="dt">mean =</span> <span class="dv">0</span>, <span class="dt">sd =</span> <span class="dv">1</span>)))</a>
 <a class="sourceLine" id="cb2-19" data-line-number="19"></a>
 <a class="sourceLine" id="cb2-20" data-line-number="20"><span class="co"># fit the TMLE</span></a>
 <a class="sourceLine" id="cb2-21" data-line-number="21">tmle_shift &lt;-<span class="st"> </span><span class="kw"><a href="reference/tmle_txshift.html">tmle_txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y, <span class="dt">delta =</span> <span class="fl">0.5</span>,</a>
@@ -157,10 +157,10 @@
 <a class="sourceLine" id="cb2-31" data-line-number="31"></a>
 <a class="sourceLine" id="cb2-32" data-line-number="32"><span class="co"># conveniently summarize the results</span></a>
 <a class="sourceLine" id="cb2-33" data-line-number="33"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle_shift)</a>
-<a class="sourceLine" id="cb2-34" data-line-number="34"><span class="co">#&gt;       lwr_ci    param_est       upr_ci    param_var     eif_mean </span></a>
-<a class="sourceLine" id="cb2-35" data-line-number="35"><span class="co">#&gt;     1.957777     2.098018     2.238259      0.00512 3.961214e-12 </span></a>
-<a class="sourceLine" id="cb2-36" data-line-number="36"><span class="co">#&gt;       n_iter </span></a>
-<a class="sourceLine" id="cb2-37" data-line-number="37"><span class="co">#&gt;            0</span></a>
+<a class="sourceLine" id="cb2-34" data-line-number="34"><span class="co">#&gt;        lwr_ci     param_est        upr_ci     param_var      eif_mean </span></a>
+<a class="sourceLine" id="cb2-35" data-line-number="35"><span class="co">#&gt;      0.722106      0.752212       0.78005      0.000219 -3.381496e-17 </span></a>
+<a class="sourceLine" id="cb2-36" data-line-number="36"><span class="co">#&gt;        n_iter </span></a>
+<a class="sourceLine" id="cb2-37" data-line-number="37"><span class="co">#&gt;             0</span></a>
 <a class="sourceLine" id="cb2-38" data-line-number="38"></a>
 <a class="sourceLine" id="cb2-39" data-line-number="39"><span class="co"># now, let's introduce a censoring process (for two-stage sampling)</span></a>
 <a class="sourceLine" id="cb2-40" data-line-number="40">C &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Binomial">rbinom</a></span>(n_obs, <span class="dv">1</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Logistic">plogis</a></span>(W <span class="op">+</span><span class="st"> </span>Y))</a>
@@ -183,10 +183,10 @@
 <a class="sourceLine" id="cb2-57" data-line-number="57"></a>
 <a class="sourceLine" id="cb2-58" data-line-number="58"><span class="co"># conveniently summarize the results</span></a>
 <a class="sourceLine" id="cb2-59" data-line-number="59"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(ipcwtmle_shift)</a>
-<a class="sourceLine" id="cb2-60" data-line-number="60"><span class="co">#&gt;       lwr_ci    param_est       upr_ci    param_var     eif_mean </span></a>
-<a class="sourceLine" id="cb2-61" data-line-number="61"><span class="co">#&gt;     1.693336     2.121628     2.549921     0.047751 2.161841e-08 </span></a>
-<a class="sourceLine" id="cb2-62" data-line-number="62"><span class="co">#&gt;       n_iter </span></a>
-<a class="sourceLine" id="cb2-63" data-line-number="63"><span class="co">#&gt;           10</span></a></code></pre></div>
+<a class="sourceLine" id="cb2-60" data-line-number="60"><span class="co">#&gt;        lwr_ci     param_est        upr_ci     param_var      eif_mean </span></a>
+<a class="sourceLine" id="cb2-61" data-line-number="61"><span class="co">#&gt;      0.728859      0.764822      0.797341      0.000306 -2.964196e-04 </span></a>
+<a class="sourceLine" id="cb2-62" data-line-number="62"><span class="co">#&gt;        n_iter </span></a>
+<a class="sourceLine" id="cb2-63" data-line-number="63"><span class="co">#&gt;             1</span></a></code></pre></div>
 <hr>
 </div>
 <div id="issues" class="section level2">
