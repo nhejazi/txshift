@@ -11,7 +11,7 @@
 #'  to be computed.
 #' @param ... Other arguments. Not currently used.
 #'
-#' @importFrom stats qnorm
+#' @importFrom stats qnorm plogis
 #'
 #' @method confint txshift
 #'
@@ -22,15 +22,24 @@ confint.txshift <- function(object,
                             level = 0.95,
                             ...) {
 
+  browser()
   # first, let's get Z_(1 - alpha)
   norm_bounds <- c(-1, 1) * abs(stats::qnorm(p = (1 - level) / 2))
 
-  # compute the EIF variance multiplier for the CI
-  # NOTE: the variance value is already scaled by length of observations
-  sd_eif <- sqrt(object$var)
+  if (object$outcome_type == "continuous") {
+    # compute the EIF variance multiplier for the CI
+    # NOTE: the variance value is already scaled by length of observations
+    sd_eif <- sqrt(object$var)
 
-  # compute the interval around the point estimate
-  ci_psi <- norm_bounds * sd_eif + object$psi
+    # compute the interval around the point estimate
+    ci_psi <- norm_bounds * sd_eif + object$psi
+
+  } else {
+    # for binary outcome case, compute on the logit scale and back-transform
+    psi_ratio <- log(object$psi / (1 - object$psi))
+    sd_eif <- sqrt(object$var)
+    ci_psi <- stats::plogis(norm_bounds * sd_eif + psi_ratio)
+  }
 
   # set up output CI object
   ci_out <- c(ci_psi[1], object$psi, ci_psi[2])
