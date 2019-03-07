@@ -1,10 +1,5 @@
-#' Compute Targeted Minimum Loss-Based Estimate of Counterfactual Mean Under
-#' Shifted Treatment
-#'
-#' This is the primary user-facing wrapper function to be used in invoking the
-#' procedure to obtain targeted maximum likelihood / targeted minimum loss-based
-#' estimates (TMLE) of the causal parameter discussed in Díaz and van der Laan
-#' (2013) and Díaz and van der Laan (2018).
+#' Compute Augmented Inverse Probability Weighted Estimate of Counterfactual
+#' Mean Under Shifted Treatment
 #'
 #' @param W A \code{matrix}, \code{data.frame}, or similar corresponding to a
 #'  set of baseline covariates.
@@ -398,3 +393,4 @@ tmle_txshift <- function(W,
   class(txshift_out) <- "txshift"
   return(txshift_out)
 }
+
