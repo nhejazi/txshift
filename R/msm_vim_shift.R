@@ -11,7 +11,7 @@
 #'  values of the shift parameter delta. The default is to weight each estimate
 #'  by the inverse of its variance, in order to improve stability; however, this
 #'  may be changed depending on the exact choice of shift function.
-#' @importFrom ci_type ...
+#' @param ci_type ...
 #'
 #' @importFrom stats cov qnorm pnorm
 #' @importFrom assertthat assert_that

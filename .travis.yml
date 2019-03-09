@@ -31,8 +31,10 @@ r_github_packages:
   - jimhester/covr
   - osofr/simcausal
   - osofr/condensier
+  - tlverse/origami
   - tlverse/hal9001
   - tlverse/sl3
+  - nhejazi/haldensify
 
 after_success:
   ## coverage
