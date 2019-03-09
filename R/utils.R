@@ -1,3 +1,22 @@
+#' Simple Modified Treatment Policy (Shifted Treatment)
+#'
+#' @param A A \code{numeric} vector of observed treatment values.
+#' @param W A \code{numeric} matrix of observed baseline covariate values.
+#' @param delta A \code{numeric} indicating the magnitude of the shift to be
+#'  computed for the treatment \code{A}.
+#'
+#' @keywords internal
+#
+tx_shift <- function(A,
+                     W = NULL,
+                     delta) {
+  # could support more than just additive shifts?
+  a_shift <- A + delta
+  return(a_shift)
+}
+
+################################################################################
+
 #' Confidence Intervals for Shifted Treatment Parameters
 #'
 #' Compute confidence intervals for estimates produced by \code{tmle_txshift}
@@ -134,22 +153,19 @@ bound_precision <- function(vals) {
 #'
 #' @param Y A \code{numeric} vector corresponding to the observed values of the
 #'  outcome variable of interest.
-#' @param pred_vals A \code{numeric} vector corresponding to predicted values of
-#'  the outcome of interest (i.e., Qn in the Targeted Learning notation).
-#' @param scale_target A \code{numeric} vector specifying the quantity that is
-#'  to be re-scaled in the way specified below in \code{scale_type}.
-#' @param scale_type An atomic \code{character} vector specifying the type of
-#'  scaling to be performed. Use "bound_in_01" to force \code{scale_target}
+#' @param scaled_vals A \code{numeric} vector specifying the quantity that is
+#'  to be re-scaled in the way specified below in \code{rescale_to}.
+#' @param rescale_to An atomic \code{character} vector specifying the type of
+#'  scaling to be performed. Use "quasibinomial" to force \code{scaled_vals}
 #'  above to be bounded in the interval (0, 1) with respect to the outcome
-#'  \code{Y}. The other option, "observed_vals", re-scales \code{scale_target}
-#'  to be on the same scale as the input \code{Y}.
+#'  \code{Y}. The other option, "observed", re-scales \code{scaled_vals}
+#'  to be on the same original scale as the input \code{Y}.
 #'
 #' @keywords internal
 #
 bound_scaling <- function(Y,
-                          pred_vals = NULL,
-                          scale_target = Y,
-                          scale_type = c("bound_in_01", "observed_vals")) {
+                          scaled_vals,
+                          rescale_to = c("quasibinomial", "observed")) {
   # check arguments
   scale_type <- match.arg(scale_type)
 
@@ -157,11 +173,11 @@ bound_scaling <- function(Y,
   y_min <- min(Y)
   y_max <- max(Y)
 
-  if (scale_type == "bound_in_01") {
-    out_star <- (scale_target - y_min) / (y_max - y_min)
+  if (scale_type == "quasibinomial") {
+    out_star <- (scaled_vals - y_min) / (y_max - y_min)
     return(out_star)
-  } else if (scale_type == "observed_vals") {
-    out_observed_scale <- (y_max - y_min) * scale_target + y_min
+  } else if (scale_type == "observed") {
+    out_observed_scale <- (y_max - y_min) * scaled_vals + y_min
     return(out_observed_scale)
   }
 }

@@ -18,8 +18,6 @@
 #'
 #' @keywords internal
 #'
-#' @export
-#'
 #' @author Iván Díaz
 #' @author Nima Hejazi
 #'
