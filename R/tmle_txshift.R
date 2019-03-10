@@ -22,6 +22,11 @@
 #' @param delta A \code{numeric} value indicating the shift in the treatment to
 #'  be used in defining the target parameter. This is defined with respect to
 #'  the scale of the treatment (A).
+#' @param cens_weights ...
+#' @param cens_weights_norm ...
+#' @param ipcw_estim ...
+#' @param Qn_estim ...
+#' @param Hn_estim ...
 #' @param fluc_method The method to be used in submodel fluctuation step of
 #'  the TMLE computation. The choices are "standard" and "weighted".
 #' @param eif_tol A \code{numeric} giving the convergence criterion for the TML
@@ -36,6 +41,8 @@
 #'  Set this to \code{"glm"} to instead use a simple linear regression model.
 #'  In this step, the efficient influence function (EIF) is regressed against
 #'  covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).
+#' @param ipcw_fit_args ...
+#' @param ipcw_fit_type ...
 #' @param ipcw_efficiency Whether to invoke an augmentation of the IPCW-TMLE
 #'  procedure that performs an iterative process to ensure efficiency of the
 #'  resulting estimate. The default is \code{TRUE}; only set to \code{FALSE} if
@@ -54,27 +61,33 @@
 tmle_txshift <- function(data_internal,
                          C = rep(1, nrow(data_internal)),
                          V = NULL,
-                         delta = 0,
+                         delta,
+                         cens_weights,
+                         cens_weights_norm,
+                         ipcw_estim,
+                         Qn_estim,
+                         Hn_estim,
                          fluc_method = c("standard", "weighted"),
                          eif_tol = 1 / nrow(data_internal),
                          max_iter = 1e4,
                          eif_reg_type = c("hal", "glm"),
+                         ipcw_fit_args,
+                         ipcw_fit_type,
                          ipcw_efficiency = TRUE) {
-  ##############################################################################
-  # invoke efficient IPCW-TMLE, per Rose & van der Laan (2011), if necessary
-  ##############################################################################
+  # start counter
   n_steps <- 0
-  if (ipcw_efficiency & !all(C == 1) & !is.null(V)) {
+  # invoke efficient IPCW-TMLE, per Rose & van der Laan (2011), if necessary
+  if (ipcw_efficiency & !all(C == 1) & !is.null(V) & !is.null(ipcw_estim)) {
     # Efficient implementation of the IPCW-TMLE
     eif_mean <- Inf
     conv_res <- replicate(3, rep(NA, max_iter))
 
     # normalize censoring mechanism weights (to be overwritten)
-    cens_weights <- C / ipcw_out$pi_mech
+    cens_weights <- C / ipcw_estim$pi_mech
     cens_weights_norm <- cens_weights / sum(cens_weights)
 
     # quantities to be updated in iterative procedure (to be overwritten)
-    pi_mech_star <- ipcw_out$pi_mech
+    pi_mech_star <- ipcw_estim$pi_mech
     Qn_estim_use <- Qn_estim
 
     # iterate procedure until convergence conditions are satisfied
@@ -86,7 +99,7 @@ tmle_txshift <- function(data_internal,
       ipcw_tmle_comp <- ipcw_tmle_proc(
         data_in = data_internal,
         C = C,
-        V = V_in,
+        V = V,
         ipc_mech = pi_mech_star,
         ipc_weights = cens_weights,
         ipc_weights_norm = cens_weights_norm,
@@ -124,9 +137,29 @@ tmle_txshift <- function(data_internal,
     }
     conv_results <- data.table::as.data.table(conv_res)
     data.table::setnames(conv_results, c("psi", "var", "eif_mean"))
-    ##############################################################################
-    # standard TMLE of the shift parameter / inefficient IPCW-TMLE
-    ##############################################################################
+
+    # replace variance in this object with the updated variance if iterative
+    if (exists("eif_var")) {
+      ipcw_tmle_comp$tmle_eif$var <- eif_var
+    }
+
+    # return only the useful convergence results
+    conv_results_out <- conv_results[!is.na(rowSums(conv_results)), ]
+
+    # create output object
+    txshift_out <- unlist(
+      list(
+        call = call,
+        ipcw_tmle_comp$tmle_eif,
+        iter_res = list(conv_results_out),
+        n_iter = n_steps,
+        estimator = "tmle",
+        outcome = list(Y)
+      ),
+      recursive = FALSE
+    )
+
+  # standard TMLE of the shift parameter / inefficient IPCW-TMLE
   } else {
     # fit logistic regression to fluctuate along the sub-model
     fitted_fluc_mod <- fit_fluc(
@@ -146,7 +179,22 @@ tmle_txshift <- function(data_internal,
       ipc_weights_norm = cens_weights_norm,
       tol_eif = eif_tol
     )
+
+    # create output object
+    txshift_out <- unlist(
+      list(
+        call = call,
+        tmle_eif_out,
+        n_iter = n_steps,
+        estimator = "tmle",
+        outcome = list(Y)
+      ),
+      recursive = FALSE
+    )
   }
 
+  # S3-ify and return output object
+  class(txshift_out) <- "txshift"
+  return(txshift_out)
 }
 

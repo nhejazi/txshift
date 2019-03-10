@@ -3,6 +3,7 @@
 S3method(confint,txshift)
 S3method(print,txshift)
 S3method(summary,txshift)
+export(aipw_txshift)
 export(est_Hn)
 export(est_Q)
 export(est_g)

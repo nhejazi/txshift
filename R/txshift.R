@@ -186,13 +186,13 @@ txshift <- function(W,
 
     # compute the IPC weights by passing all args to the relevant function
     if (!is.null(ipcw_fit_spec) & ipcw_fit_type == "fit_spec") {
-      ipcw_out <- ipcw_fit_spec
+      ipcw_estim <- ipcw_fit_spec
     } else {
-      ipcw_out <- do.call(est_ipcw, ipcw_estim_args)
+      ipcw_estim <- do.call(est_ipcw, ipcw_estim_args)
     }
 
     # extract IPC weights for censoring case and normalize weights
-    cens_weights <- ipcw_out$ipc_weights
+    cens_weights <- ipcw_estim$ipc_weights
     cens_weights_norm <- cens_weights / sum(cens_weights)
 
     # remove column corresponding to indicator for censoring
@@ -202,6 +202,7 @@ txshift <- function(W,
       data.table::as.data.table()
   } else {
     # if no censoring, we can just use IPC weights that are identically 1
+    ipcw_estim <- NULL
     cens_weights <- C
     cens_weights_norm <- cens_weights / sum(cens_weights)
     data_internal <- data.table::as.data.table(list(W, A = A, Y = Y))
@@ -267,47 +268,49 @@ txshift <- function(W,
   # TODO: compute the TML or one-step/AIPW estimator
   ##############################################################################
   if (estimator == "tmle") {
-    # ...
+    # compute targeted maximum likelihood estimator
+    tmle_fit <- tmle_txshift(data_internal = data_internal,
+                             C = C,
+                             V = V_in,
+                             delta = delta,
+                             cens_weights = cens_weights,
+                             cens_weights_norm = cens_weights_norm,
+                             ipcw_estim = ipcw_estim,
+                             Qn_estim = Qn_estim,
+                             Hn_estim = Hn_estim,
+                             fluc_method = fluc_method,
+                             eif_tol = eif_tol,
+                             max_iter = max_iter,
+                             eif_reg_type = eif_reg_type,
+                             ipcw_fit_args = ipcw_fit_args,
+                             ipcw_fit_type = ipcw_fit_type,
+                             ipcw_efficiency = ipcw_efficiency)
+
+
+    # return output object created by TML estimation routine
+    return(tmle_fit)
+
   } else if (estimator == "onestep") {
-    #...
+    # compute augmented inverse probability weighted estimator
+    aipw_fit <- aipw_txshift(data_internal = data_internal,
+                             C = C,
+                             V = V_in,
+                             delta = delta,
+                             cens_weights = cens_weights,
+                             cens_weights_norm = cens_weights_norm,
+                             ipcw_estim = ipcw_estim,
+                             Qn_estim = Qn_estim,
+                             Hn_estim = Hn_estim,
+                             fluc_method = fluc_method,
+                             eif_tol = eif_tol,
+                             max_iter = max_iter,
+                             eif_reg_type = eif_reg_type,
+                             ipcw_fit_args = ipcw_fit_args,
+                             ipcw_fit_type = ipcw_fit_type,
+                             ipcw_efficiency = ipcw_efficiency)
+
+    # return output object created by AIPW estimation routine
+    return(aipw_fit)
   }
 
-  ##############################################################################
-  # create output object
-  ##############################################################################
-  if (ipcw_efficiency & !all(C == 1) & !is.null(V)) {
-    # replace variance in this object with the updated variance if iterative
-    if (exists("eif_var")) {
-      ipcw_tmle_comp$tmle_eif$var <- eif_var
-    }
-
-    # return only the useful convergence results
-    conv_results_out <- conv_results[!is.na(rowSums(conv_results)), ]
-
-    # create output object
-    txshift_out <- unlist(
-      list(
-        call = call,
-        ipcw_tmle_comp$tmle_eif,
-        iter_res = list(conv_results_out),
-        n_iter = n_steps,
-        outcome = list(Y)
-      ),
-      recursive = FALSE
-    )
-  } else {
-    # create output object
-    txshift_out <- unlist(
-      list(
-        call = call,
-        tmle_eif_out,
-        n_iter = n_steps,
-        outcome = list(Y)
-      ),
-      recursive = FALSE
-    )
-  }
-  # S3-ify and return output object
-  class(txshift_out) <- "txshift"
-  return(txshift_out)
 }

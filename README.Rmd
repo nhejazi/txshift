@@ -89,16 +89,15 @@ A <- as.numeric(rnorm(n_obs, mean = tx_mult * W, sd = 1))
 Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
 
 # fit the TMLE
-tmle_shift <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
-                           g_fit_args = list(fit_type = "glm",
-                                             nbins = 25,
-                                             bin_method = "dhist",
-                                             bin_estimator =
-                                               speedglmR6$new(),
-                                             parfit = FALSE),
-                           Q_fit_args = list(fit_type = "glm",
-                                             glm_formula = "Y ~ .")
-                          )
+tmle_shift <- txshift(W = W, A = A, Y = Y, delta = 0.5,
+                      g_fit_args = list(fit_type = "glm",
+                                        nbins = 25,
+                                        bin_method = "dhist",
+                                        bin_estimator = speedglmR6$new(),
+                                        parfit = FALSE),
+                      Q_fit_args = list(fit_type = "glm",
+                                        glm_formula = "Y ~ .")
+                     )
 
 # conveniently summarize the results
 summary(tmle_shift)
@@ -107,20 +106,19 @@ summary(tmle_shift)
 C <- rbinom(n_obs, 1, plogis(W + Y))
 
 # fit an IPCW-TMLE to account for this censoring process:
-ipcwtmle_shift <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
-                               C = C, V = c("W", "Y"),
-                               max_iter = 10,  # limit iterations for speed
-                               ipcw_fit_args = list(fit_type = "glm"),
-                               g_fit_args = list(fit_type = "glm",
-                                                 nbins = 25,
-                                                 bin_method = "dhist",
-                                                 bin_estimator =
-                                                   speedglmR6$new(),
-                                                 parfit = FALSE),
-                               Q_fit_args = list(fit_type = "glm",
-                                                 glm_formula = "Y ~ ."),
-                               eif_reg_type = "glm"
-                              )
+ipcwtmle_shift <- txshift(W = W, A = A, Y = Y, delta = 0.5,
+                          C = C, V = c("W", "Y"),
+                          max_iter = 10,  # limit iterations for speed
+                          ipcw_fit_args = list(fit_type = "glm"),
+                          g_fit_args = list(fit_type = "glm",
+                                            nbins = 25,
+                                            bin_method = "dhist",
+                                            bin_estimator = speedglmR6$new(),
+                                            parfit = FALSE),
+                          Q_fit_args = list(fit_type = "glm",
+                                            glm_formula = "Y ~ ."),
+                          eif_reg_type = "glm"
+                         )
 
 # conveniently summarize the results
 summary(ipcwtmle_shift)

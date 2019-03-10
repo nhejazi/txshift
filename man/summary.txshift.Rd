@@ -4,7 +4,7 @@
 \alias{summary.txshift}
 \title{Summary for Shifted Treatment Parameter Objects}
 \usage{
-\method{summary}{txshift}(object, ..., ci_level = 0.95)
+\method{summary}{txshift}(object, ..., ci_level = 0.95, digits = 5)
 }
 \arguments{
 \item{object}{An object of class \code{txshift}, as produced by invoking
@@ -15,6 +15,9 @@ computed.}
 
 \item{ci_level}{A \code{numeric} indicating the level of the confidence
 interval to be computed.}
+
+\item{digits}{A \code{numeric} scalar giving the number of digits to be
+displayed or to round results to.}
 }
 \description{
 Print a convenient summary for objects computed using \code{tmle_txshift}.

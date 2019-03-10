@@ -11,8 +11,8 @@ tx_shift <- function(A,
                      W = NULL,
                      delta) {
   # could support more than just additive shifts?
-  a_shift <- A + delta
-  return(a_shift)
+  shifted_A <- A + delta
+  return(shifted_A)
 }
 
 ################################################################################
@@ -79,6 +79,8 @@ confint.txshift <- function(object,
 #' @param ... Other arguments. Not currently used.
 #' @param ci_level A \code{numeric} indicating the level of the confidence
 #'  interval to be computed.
+#' @param digits A \code{numeric} scalar giving the number of digits to be
+#'  displayed or to round results to.
 #'
 #' @importFrom stats confint
 #'
@@ -88,19 +90,21 @@ confint.txshift <- function(object,
 #
 summary.txshift <- function(object,
                             ...,
-                            ci_level = 0.95) {
+                            ci_level = 0.95,
+                            digits = 5) {
 
   # compute confidence interval using the pre-defined method
   ci <- stats::confint(object, level = ci_level)
 
   # only print useful info about the mean of the efficient influence function
-  eif_mean <- format(mean(object$eif), scientific = TRUE)
+  eif_mean <- formatC(mean(object$eif), digits = digits, format = "e")
 
   # create output table from input object and confidence interval results
-  out <- c(round(c(ci, object$var), digits = 6), eif_mean, object$n_iter)
+  out <- c(round(c(ci, object$var), digits = digits), eif_mean,
+           object$estimator, object$n_iter)
   names(out) <- c(
     "lwr_ci", "param_est", "upr_ci", "param_var",
-    "eif_mean", "n_iter"
+    "eif_mean", "estimator", "n_iter"
   )
   print(noquote(out))
 }
@@ -120,7 +124,7 @@ summary.txshift <- function(object,
 #'
 #
 print.txshift <- function(x, ...) {
-  print(x[c("psi", "var", "msg", "n_iter")])
+  print(x[c("psi", "var", "estimator", "msg", "n_iter")])
 }
 
 ################################################################################
