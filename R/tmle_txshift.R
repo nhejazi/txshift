@@ -96,7 +96,7 @@ tmle_txshift <- function(data_internal,
       n_steps <- n_steps + 1
 
       # update sub-model fluctuation, re-compute EIF, and update EIF
-      ipcw_tmle_comp <- ipcw_tmle_proc(
+      ipcw_tmle_comp <- ipcw_eif_update(
         data_in = data_internal,
         C = C,
         V = V,
@@ -170,14 +170,16 @@ tmle_txshift <- function(data_internal,
       method = fluc_method
     )
     # compute TML estimate and EIF for the treatment shift parameter
-    tmle_eif_out <- tmle_eif(
-      fluc_mod_out = fitted_fluc_mod,
-      Hn = Hn_estim,
+    tmle_eif_out <- eif(
       Y = data_internal$Y,
+      Qn = Qn_estim,
+      Hn = Hn_estim,
+      estimator = "tmle",
+      fluc_mod_out = fitted_fluc_mod,
       Delta = C,
       ipc_weights = cens_weights,
       ipc_weights_norm = cens_weights_norm,
-      tol_eif = eif_tol
+      eif_tol = eif_tol
     )
 
     # create output object
@@ -197,4 +199,3 @@ tmle_txshift <- function(data_internal,
   class(txshift_out) <- "txshift"
   return(txshift_out)
 }
-

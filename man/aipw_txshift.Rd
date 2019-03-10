@@ -7,7 +7,6 @@ Mean Under Shifted Treatment}
 \usage{
 aipw_txshift(data_internal, C = rep(1, nrow(data_internal)), V = NULL,
   delta, cens_weights, cens_weights_norm, ipcw_estim, Qn_estim, Hn_estim,
-  fluc_method = c("standard", "weighted"),
   eif_tol = 1/nrow(data_internal), max_iter = 10000,
   eif_reg_type = c("hal", "glm"), ipcw_fit_args, ipcw_fit_type,
   ipcw_efficiency = TRUE)
@@ -16,11 +15,11 @@ aipw_txshift(data_internal, C = rep(1, nrow(data_internal)), V = NULL,
 \item{data_internal}{...}
 
 \item{C}{A \code{numeric} binary vector giving information on whether a given
-observation was subject to censoring. This is used to compute an IPCW-TMLE
-in cases where two-stage sampling is performed. The default assumes that no
+observation was subject to censoring. This is used to compute an IPCW-AIPW
+estimator in cases where two-stage sampling is performed. Default assumes no
 censoring was present (i.e., a two-stage design was NOT used). N.B., this is
 equivalent to the term %\Delta in the notation used in the original Rose and
-van der Laan manuscript that introduced/formulated IPCW-TML estimators.}
+van der Laan manuscript that introduced/formulated IPCW-AIPW estimators.}
 
 \item{V}{The covariates that are used in determining the sampling procedure
 that gives rise to censoring. The default is \code{NULL} and corresponds to
@@ -43,10 +42,7 @@ the scale of the treatment (A).}
 
 \item{Hn_estim}{...}
 
-\item{fluc_method}{The method to be used in submodel fluctuation step of
-the TMLE computation. The choices are "standard" and "weighted".}
-
-\item{eif_tol}{A \code{numeric} giving the convergence criterion for the TML
+\item{eif_tol}{A \code{numeric} giving the convergence criterion for the AIPW
 estimator. This is the the maximum mean of the efficient influence function
 (EIF) to be used in declaring convergence (theoretically, should be zero).}
 
@@ -65,14 +61,14 @@ covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).}
 
 \item{ipcw_fit_type}{...}
 
-\item{ipcw_efficiency}{Whether to invoke an augmentation of the IPCW-TMLE
-procedure that performs an iterative process to ensure efficiency of the
-resulting estimate. The default is \code{TRUE}; only set to \code{FALSE} if
-possible inefficiency of the IPCW-TMLE is not a concern.}
+\item{ipcw_efficiency}{Whether to invoke an augmentation of the IPCW-AIPW
+estimation procedure that performs an iterative process to ensure efficiency
+of the resulting estimate. The default is \code{TRUE}; only set to
+\code{FALSE} if possible inefficiency of the IPCW-AIPW is not a concern.}
 }
 \value{
 S3 object of class \code{txshift} containing the results of the
- procedure to compute a TML estimate of the treatment shift parameter.
+ procedure to compute a AIPW estimate of the treatment shift parameter.
 }
 \description{
 Compute Augmented Inverse Probability Weighted Estimate of Counterfactual

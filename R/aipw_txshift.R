@@ -3,11 +3,11 @@
 #'
 #' @param data_internal ...
 #' @param C A \code{numeric} binary vector giving information on whether a given
-#'  observation was subject to censoring. This is used to compute an IPCW-TMLE
-#'  in cases where two-stage sampling is performed. The default assumes that no
+#'  observation was subject to censoring. This is used to compute an IPCW-AIPW
+#'  estimator in cases where two-stage sampling is performed. Default assumes no
 #'  censoring was present (i.e., a two-stage design was NOT used). N.B., this is
 #'  equivalent to the term %\Delta in the notation used in the original Rose and
-#'  van der Laan manuscript that introduced/formulated IPCW-TML estimators.
+#'  van der Laan manuscript that introduced/formulated IPCW-AIPW estimators.
 #' @param V The covariates that are used in determining the sampling procedure
 #'  that gives rise to censoring. The default is \code{NULL} and corresponds to
 #'  scenarios in which there is no censoring (in which case all values in the
@@ -22,9 +22,7 @@
 #' @param ipcw_estim ...
 #' @param Qn_estim ...
 #' @param Hn_estim ...
-#' @param fluc_method The method to be used in submodel fluctuation step of
-#'  the TMLE computation. The choices are "standard" and "weighted".
-#' @param eif_tol A \code{numeric} giving the convergence criterion for the TML
+#' @param eif_tol A \code{numeric} giving the convergence criterion for the AIPW
 #'  estimator. This is the the maximum mean of the efficient influence function
 #'  (EIF) to be used in declaring convergence (theoretically, should be zero).
 #' @param max_iter A \code{numeric} integer giving the maximum number of steps
@@ -38,10 +36,10 @@
 #'  covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).
 #' @param ipcw_fit_args ...
 #' @param ipcw_fit_type ...
-#' @param ipcw_efficiency Whether to invoke an augmentation of the IPCW-TMLE
-#'  procedure that performs an iterative process to ensure efficiency of the
-#'  resulting estimate. The default is \code{TRUE}; only set to \code{FALSE} if
-#'  possible inefficiency of the IPCW-TMLE is not a concern.
+#' @param ipcw_efficiency Whether to invoke an augmentation of the IPCW-AIPW
+#'  estimation procedure that performs an iterative process to ensure efficiency
+#'  of the resulting estimate. The default is \code{TRUE}; only set to
+#'  \code{FALSE} if possible inefficiency of the IPCW-AIPW is not a concern.
 #'
 #' @importFrom data.table as.data.table setnames
 #' @importFrom stringr str_detect
@@ -49,7 +47,7 @@
 #' @importFrom Rdpack reprompt
 #'
 #' @return S3 object of class \code{txshift} containing the results of the
-#'  procedure to compute a TML estimate of the treatment shift parameter.
+#'  procedure to compute a AIPW estimate of the treatment shift parameter.
 #'
 #' @export
 #
@@ -62,7 +60,6 @@ aipw_txshift <- function(data_internal,
                          ipcw_estim,
                          Qn_estim,
                          Hn_estim,
-                         fluc_method = c("standard", "weighted"),
                          eif_tol = 1 / nrow(data_internal),
                          max_iter = 1e4,
                          eif_reg_type = c("hal", "glm"),
@@ -73,7 +70,7 @@ aipw_txshift <- function(data_internal,
   n_steps <- 0
   # invoke efficient IPCW-AIPW, per Rose & van der Laan (2011), if necessary
   if (ipcw_efficiency & !all(C == 1) & !is.null(V) & !is.null(ipcw_estim)) {
-    # Efficient implementation of the IPCW-TMLE
+    # Efficient implementation of the IPCW-AIPW estimator
     eif_mean <- Inf
     conv_res <- replicate(3, rep(NA, max_iter))
 
@@ -91,7 +88,7 @@ aipw_txshift <- function(data_internal,
       n_steps <- n_steps + 1
 
       # update sub-model fluctuation, re-compute EIF, and update EIF
-      ipcw_tmle_comp <- ipcw_tmle_proc(
+      ipcw_aipw_comp <- ipcw_eif_update(
         data_in = data_internal,
         C = C,
         V = V,
@@ -112,30 +109,30 @@ aipw_txshift <- function(data_internal,
         list(
           # NOTE: need to re-scale estimated outcomes values within bounds of Y
           scale_to_unit(
-            vals = ipcw_tmle_comp$fluc_mod_out$Qn_noshift_star
+            vals = ipcw_aipw_comp$fluc_mod_out$Qn_noshift_star
           ),
           scale_to_unit(
-            vals = ipcw_tmle_comp$fluc_mod_out$Qn_shift_star
+            vals = ipcw_aipw_comp$fluc_mod_out$Qn_shift_star
           )
         )
       )
       data.table::setnames(Qn_estim_use, names(Qn_estim))
-      cens_weights <- ipcw_tmle_comp$ipc_weights
-      cens_weights_norm <- ipcw_tmle_comp$ipc_weights_norm
-      pi_mech_star <- ipcw_tmle_comp$pi_mech_star
+      cens_weights <- ipcw_aipw_comp$ipc_weights
+      cens_weights_norm <- ipcw_aipw_comp$ipc_weights_norm
+      pi_mech_star <- ipcw_aipw_comp$pi_mech_star
 
       # compute updated mean of efficient influence function and save
-      eif_mean <- mean(ipcw_tmle_comp$tmle_eif$eif - ipcw_tmle_comp$ipcw_eif)
-      eif_var <- var(ipcw_tmle_comp$tmle_eif$eif - ipcw_tmle_comp$ipcw_eif) /
+      eif_mean <- mean(ipcw_aipw_comp$tmle_eif$eif - ipcw_aipw_comp$ipcw_eif)
+      eif_var <- var(ipcw_aipw_comp$tmle_eif$eif - ipcw_aipw_comp$ipcw_eif) /
         length(C)
-      conv_res[n_steps, ] <- c(ipcw_tmle_comp$tmle_eif$psi, eif_var, eif_mean)
+      conv_res[n_steps, ] <- c(ipcw_aipw_comp$tmle_eif$psi, eif_var, eif_mean)
     }
     conv_results <- data.table::as.data.table(conv_res)
     data.table::setnames(conv_results, c("psi", "var", "eif_mean"))
 
     # replace variance in this object with the updated variance if iterative
     if (exists("eif_var")) {
-      ipcw_tmle_comp$tmle_eif$var <- eif_var
+      ipcw_aipw_comp$tmle_eif$var <- eif_var
     }
 
     # return only the useful convergence results
@@ -145,7 +142,7 @@ aipw_txshift <- function(data_internal,
     txshift_out <- unlist(
       list(
         call = call,
-        ipcw_tmle_comp$tmle_eif,
+        ipcw_aipw_comp$tmle_eif,
         iter_res = list(conv_results_out),
         n_iter = n_steps,
         estimator = "onestep",
@@ -156,30 +153,23 @@ aipw_txshift <- function(data_internal,
 
   # standard one-step of the shift parameter / inefficient IPCW-AIPW estimator
   } else {
-    # fit logistic regression to fluctuate along the sub-model
-    fitted_fluc_mod <- fit_fluc(
+    # compute one-step estimate and EIF for the treatment shift parameter
+    aipw_eif_out <- eif(
       Y = data_internal$Y,
-      Qn_scaled = Qn_estim,
+      Qn = Qn_estim,
       Hn = Hn_estim,
-      ipc_weights = cens_weights,
-      method = fluc_method
-    )
-    # compute TML estimate and EIF for the treatment shift parameter
-    tmle_eif_out <- tmle_eif(
-      fluc_mod_out = fitted_fluc_mod,
-      Hn = Hn_estim,
-      Y = data_internal$Y,
+      estimator = "onestep",
       Delta = C,
       ipc_weights = cens_weights,
       ipc_weights_norm = cens_weights_norm,
-      tol_eif = eif_tol
+      eif_tol = eif_tol
     )
 
     # create output object
     txshift_out <- unlist(
       list(
         call = call,
-        tmle_eif_out,
+        aipw_eif_out,
         n_iter = n_steps,
         estimator = "onestep",
         outcome = list(Y)
@@ -192,4 +182,3 @@ aipw_txshift <- function(data_internal,
   class(txshift_out) <- "txshift"
   return(txshift_out)
 }
-

@@ -202,6 +202,7 @@ txshift <- function(W,
       data.table::as.data.table()
   } else {
     # if no censoring, we can just use IPC weights that are identically 1
+    V_in <- NULL
     ipcw_estim <- NULL
     cens_weights <- C
     cens_weights_norm <- cens_weights / sum(cens_weights)
@@ -291,6 +292,7 @@ txshift <- function(W,
     return(tmle_fit)
 
   } else if (estimator == "onestep") {
+    #browser()
     # compute augmented inverse probability weighted estimator
     aipw_fit <- aipw_txshift(data_internal = data_internal,
                              C = C,
@@ -301,7 +303,6 @@ txshift <- function(W,
                              ipcw_estim = ipcw_estim,
                              Qn_estim = Qn_estim,
                              Hn_estim = Hn_estim,
-                             fluc_method = fluc_method,
                              eif_tol = eif_tol,
                              max_iter = max_iter,
                              eif_reg_type = eif_reg_type,
