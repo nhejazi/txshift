@@ -88,7 +88,7 @@ tmle_txshift <- function(data_internal,
 
     # quantities to be updated in iterative procedure (to be overwritten)
     pi_mech_star <- ipcw_estim$pi_mech
-    Qn_estim_use <- Qn_estim
+    Qn_estim_updated <- Qn_estim
 
     # iterate procedure until convergence conditions are satisfied
     while (abs(eif_mean) > eif_tol & n_steps < max_iter) {
@@ -103,8 +103,9 @@ tmle_txshift <- function(data_internal,
         ipc_mech = pi_mech_star,
         ipc_weights = cens_weights,
         ipc_weights_norm = cens_weights_norm,
-        Qn_estim = Qn_estim_use,
+        Qn_estim = Qn_estim_updated,
         Hn_estim = Hn_estim,
+        estimator = "tmle",
         fluc_method = fluc_method,
         fit_type = ipcw_fit_type,
         eif_tol = eif_tol,
@@ -113,7 +114,7 @@ tmle_txshift <- function(data_internal,
       )
 
       # overwrite and update quantities to be used in the next iteration
-      Qn_estim_use <- data.table::as.data.table(
+      Qn_estim_updated <- data.table::as.data.table(
         list(
           # NOTE: need to re-scale estimated outcomes values within bounds of Y
           scale_to_unit(
@@ -124,23 +125,23 @@ tmle_txshift <- function(data_internal,
           )
         )
       )
-      data.table::setnames(Qn_estim_use, names(Qn_estim))
+      data.table::setnames(Qn_estim_updated, names(Qn_estim))
       cens_weights <- ipcw_tmle_comp$ipc_weights
       cens_weights_norm <- ipcw_tmle_comp$ipc_weights_norm
       pi_mech_star <- ipcw_tmle_comp$pi_mech_star
 
       # compute updated mean of efficient influence function and save
-      eif_mean <- mean(ipcw_tmle_comp$tmle_eif$eif - ipcw_tmle_comp$ipcw_eif)
-      eif_var <- var(ipcw_tmle_comp$tmle_eif$eif - ipcw_tmle_comp$ipcw_eif) /
+      eif_mean <- mean(ipcw_tmle_comp$eif_eval$eif - ipcw_tmle_comp$ipcw_eif)
+      eif_var <- var(ipcw_tmle_comp$eif_eval$eif - ipcw_tmle_comp$ipcw_eif) /
         length(C)
-      conv_res[n_steps, ] <- c(ipcw_tmle_comp$tmle_eif$psi, eif_var, eif_mean)
+      conv_res[n_steps, ] <- c(ipcw_tmle_comp$eif_eval$psi, eif_var, eif_mean)
     }
     conv_results <- data.table::as.data.table(conv_res)
     data.table::setnames(conv_results, c("psi", "var", "eif_mean"))
 
     # replace variance in this object with the updated variance if iterative
     if (exists("eif_var")) {
-      ipcw_tmle_comp$tmle_eif$var <- eif_var
+      ipcw_tmle_comp$eif_eval$var <- eif_var
     }
 
     # return only the useful convergence results
@@ -150,7 +151,7 @@ tmle_txshift <- function(data_internal,
     txshift_out <- unlist(
       list(
         call = call,
-        ipcw_tmle_comp$tmle_eif,
+        ipcw_tmle_comp$eif_eval,
         iter_res = list(conv_results_out),
         n_iter = n_steps,
         estimator = "tmle",

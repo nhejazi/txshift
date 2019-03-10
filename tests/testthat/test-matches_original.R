@@ -102,7 +102,7 @@ tmle_shift_new <- tmle_shift_orig(
 
 
 # run the new tmle_txshift formulation
-out <- tmle_txshift(
+out <- txshift(
   Y = Y, A = A, W = W, delta = 2, max_iter = 5,
   g_fit = list(
     fit_type = "glm", nbins = 10,

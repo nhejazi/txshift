@@ -84,17 +84,16 @@ the estimator with generalized linear models. To do this, one may merely call
 the `tmle_shifttx` function, providing the standard inputs listed below.
 
 ```{r}
-tmle_glm_shift_1 <- tmle_txshift(W = W, A = A, Y = Y, delta = delta,
-                                 fluc_method = "standard",
-                                 g_fit_args = list(fit_type = "glm",
-                                                   nbins = 20,
-                                                   bin_method = "dhist",
-                                                   bin_estimator =
-                                                     speedglmR6$new(),
-                                                   parfit = FALSE),
-                                 Q_fit_args = list(fit_type = "glm",
-                                                   glm_formula = "Y ~ .")
-                                )
+tmle_glm_shift_1 <- txshift(W = W, A = A, Y = Y, delta = delta,
+                            fluc_method = "standard",
+                            g_fit_args = list(fit_type = "glm",
+                                              nbins = 20,
+                                              bin_method = "dhist",
+                                              bin_estimator = speedglmR6$new(),
+                                              parfit = FALSE),
+                            Q_fit_args = list(fit_type = "glm",
+                                              glm_formula = "Y ~ .")
+                           )
 summary(tmle_glm_shift_1)
 ```
 
@@ -105,20 +104,17 @@ weighting each observation by an auxiliary covariate (often denoted $H_n$, and
 sometimes called the "clever covariate" in the literature) rather than using
 such a covariate directly in the submodel regression fit.
 
-<!--Please consult [INSERT REF] for details on potential benefits this approach may have.-->
-
 ```{r}
-tmle_glm_shift_2 <- tmle_txshift(W = W, A = A, Y = Y, delta = delta,
-                                 fluc_method = "weighted",
-                                 g_fit_args = list(fit_type = "glm",
-                                                   nbins = 20,
-                                                   bin_method = "dhist",
-                                                   bin_estimator =
-                                                     speedglmR6$new(),
-                                                   parfit = FALSE),
-                                 Q_fit_args = list(fit_type = "glm",
-                                                   glm_formula = "Y ~ .")
-                                )
+tmle_glm_shift_2 <- txshift(W = W, A = A, Y = Y, delta = delta,
+                            fluc_method = "weighted",
+                            g_fit_args = list(fit_type = "glm",
+                                              nbins = 20,
+                                              bin_method = "dhist",
+                                              bin_estimator = speedglmR6$new(),
+                                              parfit = FALSE),
+                            Q_fit_args = list(fit_type = "glm",
+                                              glm_formula = "Y ~ .")
+                           )
 summary(tmle_glm_shift_2)
 ```
 
@@ -153,7 +149,7 @@ sl_lrn_dens <- Lrnr_sl$new(learners = lrnr_dens_lib,
                            metalearner = Lrnr_solnp_density$new())
 ```
 
-### Estimating Stochastic Interventions Effects with Optimal Stacked Regressions
+### Estimating Stochastic Interventions Effects with Stacked Regressions
 
 Using the framework provided by the [`sl3` package](https://sl3.tlverse.org),
 the nuisance parameters of the TML estimator may be fit with ensemble learning,
@@ -161,13 +157,13 @@ using the cross-validation framework of the Super Learner algorithm of
 @vdl2007super.
 
 ```{r}
-tmle_sl_shift_1 <- tmle_txshift(W = W, A = A, Y = Y, delta = delta,
-                                fluc_method = "standard",
-                                g_fit_args = list(fit_type = "sl",
-                                                  sl_lrnrs = sl_lrn_dens),
-                                Q_fit_args = list(fit_type = "sl",
-                                                  sl_lrnrs = sl_lrn)
-                               )
+tmle_sl_shift_1 <- txshift(W = W, A = A, Y = Y, delta = delta,
+                           fluc_method = "standard",
+                           g_fit_args = list(fit_type = "sl",
+                                             sl_lrnrs = sl_lrn_dens),
+                           Q_fit_args = list(fit_type = "sl",
+                                             sl_lrnrs = sl_lrn)
+                          )
 summary(tmle_sl_shift_1)
 ```
 
@@ -176,13 +172,13 @@ weighting each observation by the value of the so-called clever covariate rather
 than using such an auxiliary covariate directly in the regression procedure:
 
 ```{r}
-tmle_sl_shift_2 <- tmle_txshift(W = W, A = A, Y = Y, delta = delta,
-                                fluc_method = "weighted",
-                                g_fit_args = list(fit_type = "sl",
-                                                  sl_lrnrs = sl_lrn_dens),
-                                Q_fit_args = list(fit_type = "sl",
-                                                  sl_lrnrs = sl_lrn)
-                               )
+tmle_sl_shift_2 <- txshift(W = W, A = A, Y = Y, delta = delta,
+                           fluc_method = "weighted",
+                           g_fit_args = list(fit_type = "sl",
+                                             sl_lrnrs = sl_lrn_dens),
+                           Q_fit_args = list(fit_type = "sl",
+                                             sl_lrnrs = sl_lrn)
+                          )
 summary(tmle_sl_shift_2)
 ```
 
@@ -261,14 +257,14 @@ Qn_out <- as.data.table(cbind(Qn_noshift, Qn_upshift))
 setnames(Qn_out, c("noshift", "upshift"))
 
 # invoke the wrapper function only to apply the targeting step
-tmle_shift_user <- tmle_txshift(W = W, A = A, Y = Y, delta = delta,
-                                fluc_method = "standard",
-                                ipcw_fit_args = NULL,
-                                g_fit_args = list(fit_type = "glm"),
-                                Q_fit_args = list(fit_type = "glm"),
-                                gn_fit_spec = gn_out,
-                                Qn_fit_spec = Qn_out)
-summary(tmle_shift_user)
+tmle_shift_spec <- txshift(W = W, A = A, Y = Y, delta = delta,
+                           fluc_method = "standard",
+                           ipcw_fit_args = NULL,
+                           g_fit_args = list(fit_type = "glm"),
+                           Q_fit_args = list(fit_type = "glm"),
+                           gn_fit_spec = gn_out,
+                           Qn_fit_spec = Qn_out)
+summary(tmle_shift_spec)
 ```
 
 ---

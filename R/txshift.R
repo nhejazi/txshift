@@ -126,9 +126,7 @@ txshift <- function(W,
                       gn_fit_spec = NULL,
                       Qn_fit_spec = NULL
                     ) {
-  ##############################################################################
-  # TODO: check arguments and set up some objects for programmatic convenience
-  ##############################################################################
+  # check arguments and set up some objects for programmatic convenience
   call <- match.call(expand.dots = TRUE)
   estimator <- match.arg(estimator)
   fluc_method <- match.arg(fluc_method)
@@ -156,9 +154,7 @@ txshift <- function(W,
     colnames(W) <- W_names
   }
 
-  ##############################################################################
   # perform sub-setting of data and implement IPC weighting if required
-  ##############################################################################
   if (!all(C == 1) & !is.null(V)) {
     # combine censoring node information
     V_in <- data.table::as.data.table(mget(V))
@@ -209,9 +205,7 @@ txshift <- function(W,
     data_internal <- data.table::as.data.table(list(W, A = A, Y = Y))
   }
 
-  ##############################################################################
   # initial estimate of the treatment mechanism (propensity score)
-  ##############################################################################
   if (!is.null(gn_fit_spec) & g_fit_type == "fit_spec") {
     gn_estim <- gn_fit_spec
   } else {
@@ -240,9 +234,7 @@ txshift <- function(W,
     gn_estim <- do.call(est_g, gn_estim_args)
   }
 
-  ##############################################################################
   # initial estimate of the outcome regression
-  ##############################################################################
   if (!is.null(Qn_fit_spec) & Q_fit_type == "fit_spec") {
     Qn_estim <- Qn_fit_spec
   } else {
@@ -260,13 +252,11 @@ txshift <- function(W,
     Qn_estim <- do.call(est_Q, Qn_estim_args)
   }
 
-  ##############################################################################
   # initial estimate of the auxiliary ("clever") covariate
-  ##############################################################################
   Hn_estim <- est_Hn(gn = gn_estim)
 
   ##############################################################################
-  # TODO: compute the TML or one-step/AIPW estimator
+  # compute the TML or one-step/AIPW estimator
   ##############################################################################
   if (estimator == "tmle") {
     # compute targeted maximum likelihood estimator
@@ -287,31 +277,29 @@ txshift <- function(W,
                              ipcw_fit_type = ipcw_fit_type,
                              ipcw_efficiency = ipcw_efficiency)
 
-
     # return output object created by TML estimation routine
     return(tmle_fit)
 
   } else if (estimator == "onestep") {
     #browser()
     # compute augmented inverse probability weighted estimator
-    aipw_fit <- aipw_txshift(data_internal = data_internal,
-                             C = C,
-                             V = V_in,
-                             delta = delta,
-                             cens_weights = cens_weights,
-                             cens_weights_norm = cens_weights_norm,
-                             ipcw_estim = ipcw_estim,
-                             Qn_estim = Qn_estim,
-                             Hn_estim = Hn_estim,
-                             eif_tol = eif_tol,
-                             max_iter = max_iter,
-                             eif_reg_type = eif_reg_type,
-                             ipcw_fit_args = ipcw_fit_args,
-                             ipcw_fit_type = ipcw_fit_type,
-                             ipcw_efficiency = ipcw_efficiency)
+    onestep_fit <- onestep_txshift(data_internal = data_internal,
+                                   C = C,
+                                   V = V_in,
+                                   delta = delta,
+                                   cens_weights = cens_weights,
+                                   cens_weights_norm = cens_weights_norm,
+                                   ipcw_estim = ipcw_estim,
+                                   Qn_estim = Qn_estim,
+                                   Hn_estim = Hn_estim,
+                                   eif_tol = eif_tol,
+                                   max_iter = max_iter,
+                                   eif_reg_type = eif_reg_type,
+                                   ipcw_fit_args = ipcw_fit_args,
+                                   ipcw_fit_type = ipcw_fit_type,
+                                   ipcw_efficiency = ipcw_efficiency)
 
     # return output object created by AIPW estimation routine
-    return(aipw_fit)
+    return(onestep_fit)
   }
-
 }
