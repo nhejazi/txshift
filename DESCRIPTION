@@ -35,13 +35,15 @@ Imports:
     dplyr,
     stringr,
     ggplot2,
+    tibble,
     data.table,
     future.apply,
     assertthat,
-    condensier,
     origami,
     sl3,
+    condensier,
     hal9001,
+    haldensify,
     Rdpack
 Suggests:
     testthat,

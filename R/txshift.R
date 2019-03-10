@@ -110,8 +110,7 @@ txshift <- function(W,
                       fit_type = c("glm", "sl", "fit_spec"),
                       nbins = 35,
                       bin_method = "dhist",
-                      bin_estimator =
-                      condensier::speedglmR6$new(),
+                      bin_estimator = condensier::speedglmR6$new(),
                       parfit = FALSE,
                       sl_lrnrs_dens = NULL
                     ),
@@ -121,11 +120,11 @@ txshift <- function(W,
                       sl_lrnrs = NULL
                     ),
                     eif_reg_type = c("hal", "glm"),
-                      ipcw_efficiency = TRUE,
-                      ipcw_fit_spec = NULL,
-                      gn_fit_spec = NULL,
-                      Qn_fit_spec = NULL
-                    ) {
+                    ipcw_efficiency = TRUE,
+                    ipcw_fit_spec = NULL,
+                    gn_fit_spec = NULL,
+                    Qn_fit_spec = NULL
+                   ) {
   # check arguments and set up some objects for programmatic convenience
   call <- match.call(expand.dots = TRUE)
   estimator <- match.arg(estimator)
@@ -278,6 +277,7 @@ txshift <- function(W,
                              ipcw_efficiency = ipcw_efficiency)
 
     # return output object created by TML estimation routine
+    tmle_fit$call <- call
     return(tmle_fit)
 
   } else if (estimator == "onestep") {
@@ -300,6 +300,7 @@ txshift <- function(W,
                                    ipcw_efficiency = ipcw_efficiency)
 
     # return output object created by AIPW estimation routine
+    onestep_fit$call <- call
     return(onestep_fit)
   }
 }

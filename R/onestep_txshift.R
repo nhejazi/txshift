@@ -172,7 +172,7 @@ onestep_txshift <- function(data_internal,
         aipw_eif_out,
         n_iter = n_steps,
         estimator = "onestep",
-        outcome = list(Y)
+        outcome = list(data_internal$Y)
       ),
       recursive = FALSE
     )
@@ -180,5 +180,4 @@ onestep_txshift <- function(data_internal,
 
   # S3-ify and return output object
   class(txshift_out) <- "txshift"
-  return(txshift_out)
 }

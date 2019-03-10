@@ -20,8 +20,10 @@
 #'  to "glm" (not invoking Super Learner).
 #'
 #' @importFrom data.table as.data.table setnames set copy
-#' @importFrom condensier fit_density predict_probability speedglmR6
 #' @importFrom sl3 sl3_Task
+#' @importFrom stats predict
+#' @importFrom condensier fit_density predict_probability speedglmR6
+#' @importFrom haldensify haldensify
 #'
 #' @export
 #'
