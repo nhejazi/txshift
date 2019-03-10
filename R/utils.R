@@ -147,37 +147,34 @@ bound_precision <- function(vals) {
 
 ################################################################################
 
-#' Scaling by Inducing Boundedness
+#' Scale values to the unit interval [0, 1]
 #'
-#' description
-#'
-#' @param Y A \code{numeric} vector corresponding to the observed values of the
-#'  outcome variable of interest.
-#' @param scaled_vals A \code{numeric} vector specifying the quantity that is
-#'  to be re-scaled in the way specified below in \code{rescale_to}.
-#' @param rescale_to An atomic \code{character} vector specifying the type of
-#'  scaling to be performed. Use "quasibinomial" to force \code{scaled_vals}
-#'  above to be bounded in the interval (0, 1) with respect to the outcome
-#'  \code{Y}. The other option, "observed", re-scales \code{scaled_vals}
-#'  to be on the same original scale as the input \code{Y}.
+#' @param vals A \code{numeric} vector corresponding to the observed values of
+#'  the variable of interest, to be re-scaled to the unit interval [0, 1].
 #'
 #' @keywords internal
 #
-bound_scaling <- function(Y,
-                          scaled_vals,
-                          rescale_to = c("quasibinomial", "observed")) {
-  # check arguments
-  scale_type <- match.arg(scale_type)
-
-  # compute minimum and maximum of Y
-  y_min <- min(Y)
-  y_max <- max(Y)
-
-  if (scale_type == "quasibinomial") {
-    out_star <- (scaled_vals - y_min) / (y_max - y_min)
-    return(out_star)
-  } else if (scale_type == "observed") {
-    out_observed_scale <- (y_max - y_min) * scaled_vals + y_min
-    return(out_observed_scale)
-  }
+scale_to_unit <- function(vals) {
+  # compute re-scaled value in interval [0,1]
+  scaled_vals <- (vals - min(vals)) / (max(vals) - min(vals))
+  return(scaled_vals)
 }
+
+################################################################################
+
+#' Scale transformed values in the unit interval to the original scale
+#'
+#' @param scaled_vals A \code{numeric} vector corresponding to re-scaled values
+#'  in the unit interval, to be re-scaled to the original interval.
+#' @param max_orig A \code{numeric} scalar value giving the maximum of the
+#'  values on the original scale.
+#' @param min_orig A \code{numeric} scalar value giving the minimum of the
+#'  values on the original scale.
+#'
+#' @keywords internal
+#
+scale_to_original <- function(scaled_vals, max_orig, min_orig) {
+  scaled_orig <- scaled_vals * (max_orig - min_orig) + min_orig
+  return(scaled_orig)
+}
+

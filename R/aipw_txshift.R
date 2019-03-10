@@ -1,11 +1,7 @@
 #' Compute Augmented Inverse Probability Weighted Estimate of Counterfactual
 #' Mean Under Shifted Treatment
 #'
-#' @param W A \code{matrix}, \code{data.frame}, or similar corresponding to a
-#'  set of baseline covariates.
-#' @param A A \code{numeric} vector corresponding to a treatment variable. The
-#'  parameter of interest is defined as a location shift of this quantity.
-#' @param Y A \code{numeric} vector corresponding to an outcome variable.
+#' @param data_internal ...
 #' @param C A \code{numeric} binary vector giving information on whether a given
 #'  observation was subject to censoring. This is used to compute an IPCW-TMLE
 #'  in cases where two-stage sampling is performed. The default assumes that no
@@ -28,29 +24,6 @@
 #'  (EIF) to be used in declaring convergence (theoretically, should be zero).
 #' @param max_iter A \code{numeric} integer giving the maximum number of steps
 #'  to be taken in iterating to a solution of the efficient influence function.
-#' @param ipcw_fit_args A \code{list} of arguments, all but one of which are
-#'  passed to \code{est_ipcw}. For details, please consult the documentation for
-#'  \code{est_ipcw}. The first element of this (i.e., \code{fit_type}) is used
-#'  to determine how this regression is fit: "glm" for generalized linear model,
-#'  "sl" for a Super Learner, and "fit_spec" a user-specified input of the form
-#'  produced by \code{est_ipcw}. NOTE THAT this first argument is not passed to
-#'  \code{est_ipcw}.
-#' @param g_fit_args A \code{list} of arguments, all but one of which are passed
-#'  to \code{est_g}. For further details, please consult the documentation for
-#'  \code{est_g}. The first element of this (i.e., \code{fit_type}) is used to
-#'  determine how this regression is fit: "glm" for a generalized linear model
-#'  for fitting densities via the \code{condensier} package, "sl" for \code{sl3}
-#'  learners used to fit Super Learner to densities via \code{Lrnr_condensier},
-#'  and "fit_spec" to user-specified input of the form produced by \code{est_g}.
-#'  NOTE THAT this first argument is not passed to \code{est_g}.
-#' @param Q_fit_args A \code{list} of arguments, all but one of which are passed
-#'  to \code{est_Q}. For further details, please consult the documentation for
-#'  \code{est_Q}. The first element of this (i.e., \code{fit_type}) is used to
-#'  determine how this regression is fit: "glm" for a generalized linear model
-#'  for the outcome regression, "sl" for \code{sl3} learners used to fit a Super
-#'  Learner for the outcome regression, and "fit_spec" to user-specified input
-#'  of the form produced by \code{est_Q}. NOTE THAT this first argument is not
-#'  passed to \code{est_g}.
 #' @param eif_reg_type Whether a flexible nonparametric function ought to be
 #'  used in the dimension-reduced nuisance regression of the targeting step for
 #'  the censored data case. By default, the method used is a nonparametric
@@ -62,23 +35,7 @@
 #'  procedure that performs an iterative process to ensure efficiency of the
 #'  resulting estimate. The default is \code{TRUE}; only set to \code{FALSE} if
 #'  possible inefficiency of the IPCW-TMLE is not a concern.
-#' @param ipcw_fit_spec User-specified version of the argument above for fitting
-#'  the censoring mechanism (\code{ipcw_fit_args}). Consult the documentation
-#'  for that argument for details on how to properly use this. In general, this
-#'  should only be used by advanced users familiar with both the underlying
-#'  theory and this software implementation of said theory.
-#' @param gn_fit_spec User-specified version of the argument above for fitting
-#'  the censoring mechanism (\code{g_fit_args}). Consult the documentation for
-#'  that argument for details on how to properly use this. In general, this
-#'  should only be used by advanced users familiar with both the underlying
-#'  theory and this software implementation of said theory.
-#' @param Qn_fit_spec User-specified version of the argument above for fitting
-#'  the censoring mechanism (\code{Q_fit_args}). Consult the documentation for
-#'  that argument for details on how to properly use this. In general, this
-#'  should only be used by advanced users familiar with both the underlying
-#'  theory and this software implementation of said theory.
 #'
-#' @importFrom condensier speedglmR6
 #' @importFrom data.table as.data.table setnames
 #' @importFrom stringr str_detect
 #' @importFrom dplyr filter select "%>%"
@@ -89,38 +46,15 @@
 #'
 #' @export
 #
-tmle_txshift <- function(W,
-                         A,
-                         Y,
-                         C = rep(1, length(Y)),
+tmle_txshift <- function(data_internal,
+                         C = rep(1, nrow(data_internal)),
                          V = NULL,
                          delta = 0,
                          fluc_method = c("standard", "weighted"),
-                         eif_tol = 1 / length(Y),
+                         eif_tol = 1 / nrow(data_internal),
                          max_iter = 1e4,
-                         ipcw_fit_args = list(
-                           fit_type = c("glm", "sl", "fit_spec"),
-                           sl_lrnrs = NULL
-                         ),
-                         g_fit_args = list(
-                           fit_type = c("glm", "sl", "fit_spec"),
-                           nbins = 35,
-                           bin_method = "dhist",
-                           bin_estimator =
-                             condensier::speedglmR6$new(),
-                           parfit = FALSE,
-                           sl_lrnrs_dens = NULL
-                         ),
-                         Q_fit_args = list(
-                           fit_type = c("glm", "sl", "fit_spec"),
-                           glm_formula = "Y ~ .",
-                           sl_lrnrs = NULL
-                         ),
                          eif_reg_type = c("hal", "glm"),
-                         ipcw_efficiency = TRUE,
-                         ipcw_fit_spec = NULL,
-                         gn_fit_spec = NULL,
-                         Qn_fit_spec = NULL) {
+                         ipcw_efficiency = TRUE) {
   ##############################################################################
   # invoke efficient IPCW-TMLE, per Rose & van der Laan (2011), if necessary
   ##############################################################################
@@ -164,19 +98,11 @@ tmle_txshift <- function(W,
       Qn_estim_use <- data.table::as.data.table(
         list(
           # NOTE: need to re-scale estimated outcomes values within bounds of Y
-          bound_scaling(
-            Y = Y,
-            pred_vals = ipcw_tmle_comp$fluc_mod_out$Qn_noshift_star,
-            scale_target =
-              ipcw_tmle_comp$fluc_mod_out$Qn_noshift_star,
-            scale_type = "bound_in_01"
+          scale_to_unit(
+            vals = ipcw_tmle_comp$fluc_mod_out$Qn_noshift_star
           ),
-          bound_scaling(
-            Y = Y,
-            pred_vals = ipcw_tmle_comp$fluc_mod_out$Qn_shift_star,
-            scale_target =
-              ipcw_tmle_comp$fluc_mod_out$Qn_shift_star,
-            scale_type = "bound_in_01"
+          scale_to_unit(
+            vals = ipcw_tmle_comp$fluc_mod_out$Qn_shift_star
           )
         )
       )

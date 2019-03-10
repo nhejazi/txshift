@@ -28,10 +28,8 @@ fit_fluc <- function(Y,
                      method = c("standard", "weighted")) {
 
   # scale the outcome for the logit transform
-  y_star <- bound_scaling(
-    Y = Y,
-    scale_target = Y,
-    scale_type = "bound_in_01"
+  y_star <- scale_to_unit(
+    vals = Y
   )
 
   # bound precision for use of logit transform
@@ -76,11 +74,10 @@ fit_fluc <- function(Y,
   # get fitted values from fluctuation model
   Qn_noshift_star_pred <- stats::fitted(mod_fluc) %>%
     as.numeric()
-  Qn_noshift_star <- bound_scaling(
-    Y = Y,
-    pred_vals = Qn_noshift_star_pred,
-    scale_target = Qn_noshift_star_pred,
-    scale_type = "observed_vals"
+  Qn_noshift_star <- scale_to_original(
+    scaled_vals = Qn_noshift_star_pred,
+    max_orig = max(Y),
+    min_orig = min(Y)
   )
 
   # need to logit transform Qn(d(A,W),W)
@@ -113,11 +110,10 @@ fit_fluc <- function(Y,
       as.numeric()
   }
 
-  Qn_shift_star <- bound_scaling(
-    Y = Y,
-    pred_vals = Qn_shift_star_pred,
-    scale_target = Qn_shift_star_pred,
-    scale_type = "observed_vals"
+  Qn_shift_star <- scale_to_original(
+    scaled_vals = Qn_shift_star_pred,
+    max_orig = max(Y),
+    min_orig = min(Y)
   )
 
   # return the fit model object

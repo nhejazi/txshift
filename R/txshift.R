@@ -20,6 +20,10 @@
 #' @param delta A \code{numeric} value indicating the shift in the treatment to
 #'  be used in defining the target parameter. This is defined with respect to
 #'  the scale of the treatment (A).
+#' @param estimator A \code{character} indicating the typ of estimator to
+#'  compute. Choices are currently limited to a targeted maximum likelihood
+#'  estimator \code{"tmle"} or a one-step / augmented inverse probability
+#'  weighted estimator \code{"onestep"}.
 #' @param fluc_method The method to be used in submodel fluctuation step of
 #'  the TMLE computation. The choices are "standard" and "weighted".
 #' @param eif_tol A \code{numeric} giving the convergence criterion for the TML
@@ -94,6 +98,7 @@ txshift <- function(W,
                     C = rep(1, length(Y)),
                     V = NULL,
                     delta = 0,
+                    estimator = c("tmle", "onestep"),
                     fluc_method = c("standard", "weighted"),
                     eif_tol = 1 / length(Y),
                     max_iter = 1e4,
@@ -125,6 +130,7 @@ txshift <- function(W,
   # TODO: check arguments and set up some objects for programmatic convenience
   ##############################################################################
   call <- match.call(expand.dots = TRUE)
+  estimator <- match.arg(estimator)
   fluc_method <- match.arg(fluc_method)
   eif_reg_type <- match.arg(eif_reg_type)
 
@@ -258,16 +264,18 @@ txshift <- function(W,
   Hn_estim <- est_Hn(gn = gn_estim)
 
   ##############################################################################
-  # TODO: compute the AIPW or TML estimator 
+  # TODO: compute the TML or one-step/AIPW estimator
   ##############################################################################
-
-  # ...
+  if (estimator == "tmle") {
+    # ...
+  } else if (estimator == "onestep") {
+    #...
+  }
 
   ##############################################################################
   # create output object
   ##############################################################################
   if (ipcw_efficiency & !all(C == 1) & !is.null(V)) {
-
     # replace variance in this object with the updated variance if iterative
     if (exists("eif_var")) {
       ipcw_tmle_comp$tmle_eif$var <- eif_var

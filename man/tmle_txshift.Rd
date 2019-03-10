@@ -5,36 +5,18 @@
 \title{Compute Augmented Inverse Probability Weighted Estimate of Counterfactual
 Mean Under Shifted Treatment}
 \usage{
-tmle_txshift(W, A, Y, C = rep(1, length(Y)), V = NULL, delta = 0,
-  fluc_method = c("standard", "weighted"), eif_tol = 1/length(Y),
-  max_iter = 10000, ipcw_fit_args = list(fit_type = c("glm", "sl",
-  "fit_spec"), sl_lrnrs = NULL), g_fit_args = list(fit_type = c("glm",
-  "sl", "fit_spec"), nbins = 35, bin_method = "dhist", bin_estimator =
-  condensier::speedglmR6$new(), parfit = FALSE, sl_lrnrs_dens = NULL),
-  Q_fit_args = list(fit_type = c("glm", "sl", "fit_spec"), glm_formula =
-  "Y ~ .", sl_lrnrs = NULL), eif_reg_type = c("hal", "glm"),
-  ipcw_efficiency = TRUE, ipcw_fit_spec = NULL, gn_fit_spec = NULL,
-  Qn_fit_spec = NULL)
+tmle_txshift(data_internal, C = rep(1, nrow(data_internal)), V = NULL,
+  delta = 0, fluc_method = c("standard", "weighted"),
+  eif_tol = 1/nrow(data_internal), max_iter = 10000,
+  eif_reg_type = c("hal", "glm"), ipcw_efficiency = TRUE)
 
-tmle_txshift(W, A, Y, C = rep(1, length(Y)), V = NULL, delta = 0,
-  fluc_method = c("standard", "weighted"), eif_tol = 1/length(Y),
-  max_iter = 10000, ipcw_fit_args = list(fit_type = c("glm", "sl",
-  "fit_spec"), sl_lrnrs = NULL), g_fit_args = list(fit_type = c("glm",
-  "sl", "fit_spec"), nbins = 35, bin_method = "dhist", bin_estimator =
-  condensier::speedglmR6$new(), parfit = FALSE, sl_lrnrs_dens = NULL),
-  Q_fit_args = list(fit_type = c("glm", "sl", "fit_spec"), glm_formula =
-  "Y ~ .", sl_lrnrs = NULL), eif_reg_type = c("hal", "glm"),
-  ipcw_efficiency = TRUE, ipcw_fit_spec = NULL, gn_fit_spec = NULL,
-  Qn_fit_spec = NULL)
+tmle_txshift(data_internal, C = rep(1, nrow(data_internal)), V = NULL,
+  delta = 0, fluc_method = c("standard", "weighted"),
+  eif_tol = 1/nrow(data_internal), max_iter = 10000,
+  eif_reg_type = c("hal", "glm"), ipcw_efficiency = TRUE)
 }
 \arguments{
-\item{W}{A \code{matrix}, \code{data.frame}, or similar corresponding to a
-set of baseline covariates.}
-
-\item{A}{A \code{numeric} vector corresponding to a treatment variable. The
-parameter of interest is defined as a location shift of this quantity.}
-
-\item{Y}{A \code{numeric} vector corresponding to an outcome variable.}
+\item{data_internal}{...}
 
 \item{C}{A \code{numeric} binary vector giving information on whether a given
 observation was subject to censoring. This is used to compute an IPCW-TMLE
@@ -64,32 +46,6 @@ estimator. This is the the maximum mean of the efficient influence function
 \item{max_iter}{A \code{numeric} integer giving the maximum number of steps
 to be taken in iterating to a solution of the efficient influence function.}
 
-\item{ipcw_fit_args}{A \code{list} of arguments, all but one of which are
-passed to \code{est_ipcw}. For details, please consult the documentation for
-\code{est_ipcw}. The first element of this (i.e., \code{fit_type}) is used
-to determine how this regression is fit: "glm" for generalized linear model,
-"sl" for a Super Learner, and "fit_spec" a user-specified input of the form
-produced by \code{est_ipcw}. NOTE THAT this first argument is not passed to
-\code{est_ipcw}.}
-
-\item{g_fit_args}{A \code{list} of arguments, all but one of which are passed
-to \code{est_g}. For further details, please consult the documentation for
-\code{est_g}. The first element of this (i.e., \code{fit_type}) is used to
-determine how this regression is fit: "glm" for a generalized linear model
-for fitting densities via the \code{condensier} package, "sl" for \code{sl3}
-learners used to fit Super Learner to densities via \code{Lrnr_condensier},
-and "fit_spec" to user-specified input of the form produced by \code{est_g}.
-NOTE THAT this first argument is not passed to \code{est_g}.}
-
-\item{Q_fit_args}{A \code{list} of arguments, all but one of which are passed
-to \code{est_Q}. For further details, please consult the documentation for
-\code{est_Q}. The first element of this (i.e., \code{fit_type}) is used to
-determine how this regression is fit: "glm" for a generalized linear model
-for the outcome regression, "sl" for \code{sl3} learners used to fit a Super
-Learner for the outcome regression, and "fit_spec" to user-specified input
-of the form produced by \code{est_Q}. NOTE THAT this first argument is not
-passed to \code{est_g}.}
-
 \item{eif_reg_type}{Whether a flexible nonparametric function ought to be
 used in the dimension-reduced nuisance regression of the targeting step for
 the censored data case. By default, the method used is a nonparametric
@@ -103,31 +59,7 @@ procedure that performs an iterative process to ensure efficiency of the
 resulting estimate. The default is \code{TRUE}; only set to \code{FALSE} if
 possible inefficiency of the IPCW-TMLE is not a concern.}
 
-\item{ipcw_fit_spec}{User-specified version of the argument above for fitting
-the censoring mechanism (\code{ipcw_fit_args}). Consult the documentation
-for that argument for details on how to properly use this. In general, this
-should only be used by advanced users familiar with both the underlying
-theory and this software implementation of said theory.}
-
-\item{gn_fit_spec}{User-specified version of the argument above for fitting
-the censoring mechanism (\code{g_fit_args}). Consult the documentation for
-that argument for details on how to properly use this. In general, this
-should only be used by advanced users familiar with both the underlying
-theory and this software implementation of said theory.}
-
-\item{Qn_fit_spec}{User-specified version of the argument above for fitting
-the censoring mechanism (\code{Q_fit_args}). Consult the documentation for
-that argument for details on how to properly use this. In general, this
-should only be used by advanced users familiar with both the underlying
-theory and this software implementation of said theory.}
-
-\item{W}{A \code{matrix}, \code{data.frame}, or similar corresponding to a
-set of baseline covariates.}
-
-\item{A}{A \code{numeric} vector corresponding to a treatment variable. The
-parameter of interest is defined as a location shift of this quantity.}
-
-\item{Y}{A \code{numeric} vector corresponding to an outcome variable.}
+\item{data_internal}{...}
 
 \item{C}{A \code{numeric} binary vector giving information on whether a given
 observation was subject to censoring. This is used to compute an IPCW-TMLE
@@ -157,32 +89,6 @@ estimator. This is the the maximum mean of the efficient influence function
 \item{max_iter}{A \code{numeric} integer giving the maximum number of steps
 to be taken in iterating to a solution of the efficient influence function.}
 
-\item{ipcw_fit_args}{A \code{list} of arguments, all but one of which are
-passed to \code{est_ipcw}. For details, please consult the documentation for
-\code{est_ipcw}. The first element of this (i.e., \code{fit_type}) is used
-to determine how this regression is fit: "glm" for generalized linear model,
-"sl" for a Super Learner, and "fit_spec" a user-specified input of the form
-produced by \code{est_ipcw}. NOTE THAT this first argument is not passed to
-\code{est_ipcw}.}
-
-\item{g_fit_args}{A \code{list} of arguments, all but one of which are passed
-to \code{est_g}. For further details, please consult the documentation for
-\code{est_g}. The first element of this (i.e., \code{fit_type}) is used to
-determine how this regression is fit: "glm" for a generalized linear model
-for fitting densities via the \code{condensier} package, "sl" for \code{sl3}
-learners used to fit Super Learner to densities via \code{Lrnr_condensier},
-and "fit_spec" to user-specified input of the form produced by \code{est_g}.
-NOTE THAT this first argument is not passed to \code{est_g}.}
-
-\item{Q_fit_args}{A \code{list} of arguments, all but one of which are passed
-to \code{est_Q}. For further details, please consult the documentation for
-\code{est_Q}. The first element of this (i.e., \code{fit_type}) is used to
-determine how this regression is fit: "glm" for a generalized linear model
-for the outcome regression, "sl" for \code{sl3} learners used to fit a Super
-Learner for the outcome regression, and "fit_spec" to user-specified input
-of the form produced by \code{est_Q}. NOTE THAT this first argument is not
-passed to \code{est_g}.}
-
 \item{eif_reg_type}{Whether a flexible nonparametric function ought to be
 used in the dimension-reduced nuisance regression of the targeting step for
 the censored data case. By default, the method used is a nonparametric
@@ -195,24 +101,6 @@ covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).}
 procedure that performs an iterative process to ensure efficiency of the
 resulting estimate. The default is \code{TRUE}; only set to \code{FALSE} if
 possible inefficiency of the IPCW-TMLE is not a concern.}
-
-\item{ipcw_fit_spec}{User-specified version of the argument above for fitting
-the censoring mechanism (\code{ipcw_fit_args}). Consult the documentation
-for that argument for details on how to properly use this. In general, this
-should only be used by advanced users familiar with both the underlying
-theory and this software implementation of said theory.}
-
-\item{gn_fit_spec}{User-specified version of the argument above for fitting
-the censoring mechanism (\code{g_fit_args}). Consult the documentation for
-that argument for details on how to properly use this. In general, this
-should only be used by advanced users familiar with both the underlying
-theory and this software implementation of said theory.}
-
-\item{Qn_fit_spec}{User-specified version of the argument above for fitting
-the censoring mechanism (\code{Q_fit_args}). Consult the documentation for
-that argument for details on how to properly use this. In general, this
-should only be used by advanced users familiar with both the underlying
-theory and this software implementation of said theory.}
 }
 \value{
 S3 object of class \code{txshift} containing the results of the

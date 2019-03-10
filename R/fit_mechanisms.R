@@ -242,8 +242,8 @@ est_Q <- function(Y,
   ##############################################################################
   # make data objects from inputs but using the outcome y_star instead of y
   ##############################################################################
-  # scale the outcome for the logit transform
-  y_star <- bound_scaling(Y = Y, scale_type = "bound_in_01")
+  # scale the outcome for logit transform
+  y_star <- scale_to_unit(vals = Y)
 
   # generate the data objects for fitting the outcome regression
   data_in <- data.table::as.data.table(cbind(y_star, A, W))
