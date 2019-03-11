@@ -16,12 +16,12 @@
 #'
 #' @importFrom stats var
 #'
+#' @author Iván Díaz
+#' @author Nima Hejazi
+#'
 #' @keywords internal
 #'
 #' @export
-#'
-#' @author Iván Díaz
-#' @author Nima Hejazi
 #'
 #' @examples
 #' n <- 100

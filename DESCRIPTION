@@ -1,6 +1,6 @@
 Package: txshift
 Title: Targeted Learning of the Causal Effects of Stochastic Interventions
-Version: 0.2.2
+Version: 0.2.3
 Authors@R: c(
     person("Nima", "Hejazi", email = "nh@nimahejazi.org",
            role = c("aut", "cre", "cph"),
@@ -35,18 +35,21 @@ Imports:
     dplyr,
     stringr,
     ggplot2,
+    tibble,
     data.table,
     future.apply,
     assertthat,
-    condensier,
     origami,
     sl3,
+    condensier,
     hal9001,
+    haldensify,
     Rdpack
 Suggests:
     testthat,
     knitr,
     rmarkdown,
+    covr,
     future,
     tidyverse,
     Rsolnp,
@@ -58,7 +61,8 @@ Remotes:
     github::osofr/condensier@master,
     github::tlverse/origami@master,
     github::tlverse/sl3@master,
-    github::tlverse/hal9001@master
+    github::tlverse/hal9001@master,
+    github::nhejazi/haldensify@master
 License: MIT + file LICENSE
 URL: https://github.com/nhejazi/txshift
 BugReports: https://github.com/nhejazi/txshift/issues

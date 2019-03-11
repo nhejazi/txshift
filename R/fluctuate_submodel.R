@@ -28,10 +28,8 @@ fit_fluc <- function(Y,
                      method = c("standard", "weighted")) {
 
   # scale the outcome for the logit transform
-  y_star <- bound_scaling(
-    Y = Y,
-    scale_target = Y,
-    scale_type = "bound_in_01"
+  y_star <- scale_to_unit(
+    vals = Y
   )
 
   # bound precision for use of logit transform
@@ -39,33 +37,33 @@ fit_fluc <- function(Y,
     data.table::as.data.table()
 
   # extract Q and obtain logit transform
-  logit_Qn <- stats::qlogis(Qn_scaled_bounded$noshift)
+  Qn_noshift_logit <- stats::qlogis(Qn_scaled_bounded$noshift)
 
   # fit the fluctuation regression in one of two ways
   if (method == "standard") {
     # note that \epsilon_n will be the coefficient of the covariate Hn
     suppressWarnings(
-      mod_fluc <- stats::glm(
+      fluctuation_model <- stats::glm(
         formula = stats::as.formula(
           "y_star ~ -1 + offset(logit_Qn) + Hn"
         ),
         weights = ipc_weights,
         data = data.table::as.data.table(list(
           y_star = y_star,
-          logit_Qn = logit_Qn,
+          logit_Qn = Qn_noshift_logit,
           Hn = Hn$noshift
         )),
         family = "binomial"
       )
     )
   } else if (method == "weighted") {
-    # note that \epsilon_n will be the intercept term here
+    # note that epsilon_n will be the intercept term here
     suppressWarnings(
-      mod_fluc <- stats::glm(
+      fluctuation_model <- stats::glm(
         formula = stats::as.formula("y_star ~ offset(logit_Qn)"),
         data = data.table::as.data.table(list(
           y_star = y_star,
-          logit_Qn = logit_Qn
+          logit_Qn = Qn_noshift_logit
         )),
         weights = as.numeric(Hn$noshift * ipc_weights),
         family = "binomial"
@@ -74,13 +72,12 @@ fit_fluc <- function(Y,
   }
 
   # get fitted values from fluctuation model
-  Qn_noshift_star_pred <- stats::fitted(mod_fluc) %>%
+  Qn_noshift_star_unit <- stats::fitted(fluctuation_model) %>%
     as.numeric()
-  Qn_noshift_star <- bound_scaling(
-    Y = Y,
-    pred_vals = Qn_noshift_star_pred,
-    scale_target = Qn_noshift_star_pred,
-    scale_type = "observed_vals"
+  Qn_noshift_star <- scale_to_original(
+    scaled_vals = Qn_noshift_star_unit,
+    max_orig = max(Y),
+    min_orig = min(Y)
   )
 
   # need to logit transform Qn(d(A,W),W)
@@ -88,41 +85,40 @@ fit_fluc <- function(Y,
 
   # get Qn_star for the SHIFTED data
   if (method == "standard") {
-    Qn_shift_star_in <- data.table::as.data.table(list(
+    Qn_shift_star_data <- data.table::as.data.table(list(
       logit_Qn = Qn_shift_logit,
       Hn = Hn$shift
     ))
 
     # predict from fluctuation model on Q(d(A,W),W) and Hn(d(A,W))
-    Qn_shift_star_pred <- stats::predict(
-      object = mod_fluc,
-      newdata = Qn_shift_star_in,
+    Qn_shift_star_unit <- stats::predict(
+      object = fluctuation_model,
+      newdata = Qn_shift_star_data,
       type = "response"
     ) %>%
       as.numeric()
   } else if (method == "weighted") {
-    Qn_shift_star_in <- data.table::as.data.table(Qn_shift_logit)
-    data.table::setnames(Qn_shift_star_in, "logit_Qn")
+    Qn_shift_star_data <- data.table::as.data.table(Qn_shift_logit)
+    data.table::setnames(Qn_shift_star_data, "logit_Qn")
 
     # predict from fluctuation model on Q(d(A,W),W)
-    Qn_shift_star_pred <- stats::predict(
-      object = mod_fluc,
-      newdata = Qn_shift_star_in,
+    Qn_shift_star_unit <- stats::predict(
+      object = fluctuation_model,
+      newdata = Qn_shift_star_data,
       type = "response"
     ) %>%
       as.numeric()
   }
 
-  Qn_shift_star <- bound_scaling(
-    Y = Y,
-    pred_vals = Qn_shift_star_pred,
-    scale_target = Qn_shift_star_pred,
-    scale_type = "observed_vals"
+  Qn_shift_star <- scale_to_original(
+    scaled_vals = Qn_shift_star_unit,
+    max_orig = max(Y),
+    min_orig = min(Y)
   )
 
   # return the fit model object
   out <- list(
-    fluc_fit = mod_fluc,
+    fluc_fit = fluctuation_model,
     covar_method = method,
     Qn_shift_star = as.numeric(Qn_shift_star),
     Qn_noshift_star = as.numeric(Qn_noshift_star)

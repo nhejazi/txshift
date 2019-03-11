@@ -1,3 +1,22 @@
+#' Simple Modified Treatment Policy (Shifted Treatment)
+#'
+#' @param A A \code{numeric} vector of observed treatment values.
+#' @param W A \code{numeric} matrix of observed baseline covariate values.
+#' @param delta A \code{numeric} indicating the magnitude of the shift to be
+#'  computed for the treatment \code{A}.
+#'
+#' @keywords internal
+#
+tx_shift <- function(A,
+                     W = NULL,
+                     delta) {
+  # could support more than just additive shifts?
+  shifted_A <- A + delta
+  return(shifted_A)
+}
+
+################################################################################
+
 #' Confidence Intervals for Shifted Treatment Parameters
 #'
 #' Compute confidence intervals for estimates produced by \code{tmle_txshift}
@@ -60,6 +79,8 @@ confint.txshift <- function(object,
 #' @param ... Other arguments. Not currently used.
 #' @param ci_level A \code{numeric} indicating the level of the confidence
 #'  interval to be computed.
+#' @param digits A \code{numeric} scalar giving the number of digits to be
+#'  displayed or to round results to.
 #'
 #' @importFrom stats confint
 #'
@@ -69,19 +90,23 @@ confint.txshift <- function(object,
 #
 summary.txshift <- function(object,
                             ...,
-                            ci_level = 0.95) {
+                            ci_level = 0.95,
+                            digits = 5) {
 
   # compute confidence interval using the pre-defined method
   ci <- stats::confint(object, level = ci_level)
 
   # only print useful info about the mean of the efficient influence function
-  eif_mean <- format(mean(object$eif), scientific = TRUE)
+  eif_mean <- formatC(mean(object$eif), digits = digits, format = "e")
 
   # create output table from input object and confidence interval results
-  out <- c(round(c(ci, object$var), digits = 6), eif_mean, object$n_iter)
+  out <- c(
+    round(c(ci, object$var), digits = digits), eif_mean,
+    object$estimator, object$n_iter
+  )
   names(out) <- c(
     "lwr_ci", "param_est", "upr_ci", "param_var",
-    "eif_mean", "n_iter"
+    "eif_mean", "estimator", "n_iter"
   )
   print(noquote(out))
 }
@@ -101,7 +126,7 @@ summary.txshift <- function(object,
 #'
 #
 print.txshift <- function(x, ...) {
-  print(x[c("psi", "var", "msg", "n_iter")])
+  print(x[c("psi", "var", "estimator", "msg", "n_iter")])
 }
 
 ################################################################################
@@ -128,40 +153,33 @@ bound_precision <- function(vals) {
 
 ################################################################################
 
-#' Scaling by Inducing Boundedness
+#' Scale values to the unit interval [0, 1]
 #'
-#' description
-#'
-#' @param Y A \code{numeric} vector corresponding to the observed values of the
-#'  outcome variable of interest.
-#' @param pred_vals A \code{numeric} vector corresponding to predicted values of
-#'  the outcome of interest (i.e., Qn in the Targeted Learning notation).
-#' @param scale_target A \code{numeric} vector specifying the quantity that is
-#'  to be re-scaled in the way specified below in \code{scale_type}.
-#' @param scale_type An atomic \code{character} vector specifying the type of
-#'  scaling to be performed. Use "bound_in_01" to force \code{scale_target}
-#'  above to be bounded in the interval (0, 1) with respect to the outcome
-#'  \code{Y}. The other option, "observed_vals", re-scales \code{scale_target}
-#'  to be on the same scale as the input \code{Y}.
+#' @param vals A \code{numeric} vector corresponding to the observed values of
+#'  the variable of interest, to be re-scaled to the unit interval [0, 1].
 #'
 #' @keywords internal
 #
-bound_scaling <- function(Y,
-                          pred_vals = NULL,
-                          scale_target = Y,
-                          scale_type = c("bound_in_01", "observed_vals")) {
-  # check arguments
-  scale_type <- match.arg(scale_type)
+scale_to_unit <- function(vals) {
+  # compute re-scaled value in interval [0,1]
+  scaled_vals <- (vals - min(vals)) / (max(vals) - min(vals))
+  return(scaled_vals)
+}
 
-  # compute minimum and maximum of Y
-  y_min <- min(Y)
-  y_max <- max(Y)
+################################################################################
 
-  if (scale_type == "bound_in_01") {
-    out_star <- (scale_target - y_min) / (y_max - y_min)
-    return(out_star)
-  } else if (scale_type == "observed_vals") {
-    out_observed_scale <- (y_max - y_min) * scale_target + y_min
-    return(out_observed_scale)
-  }
+#' Scale transformed values in the unit interval to the original scale
+#'
+#' @param scaled_vals A \code{numeric} vector corresponding to re-scaled values
+#'  in the unit interval, to be re-scaled to the original interval.
+#' @param max_orig A \code{numeric} scalar value giving the maximum of the
+#'  values on the original scale.
+#' @param min_orig A \code{numeric} scalar value giving the minimum of the
+#'  values on the original scale.
+#'
+#' @keywords internal
+#
+scale_to_original <- function(scaled_vals, max_orig, min_orig) {
+  scaled_orig <- scaled_vals * (max_orig - min_orig) + min_orig
+  return(scaled_orig)
 }

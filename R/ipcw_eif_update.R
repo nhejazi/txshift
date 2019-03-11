@@ -1,4 +1,4 @@
-#' Iterative Computation of IPCW-TMLE
+#' Iterative IPCW Update Procedure of Efficient Influence Function
 #'
 #' An adaptation of the general IPCW-TMLE formulation of Rose & van der Laan as
 #' well as its associated algorithm. This may be used to iteratively construct
@@ -34,6 +34,7 @@
 #' @param Hn_estim A \code{data.table} corresponding to values produced in the
 #'  computation of the auxiliary ("clever") covariate. This is produced easily
 #'  by invoking the internal function \code{est_Hn}.
+#' @param estimator ...
 #' @param fluc_method A \code{character} giving the type of regression to be
 #'  used in traversing the fluctuation submodel. The choices are "weighted" and
 #'  "standard" -- please consult the literature for details on the differences.
@@ -69,38 +70,41 @@
 #' @author Nima Hejazi
 #' @author David Benkeser
 #
-ipcw_tmle_proc <- function(data_in,
-                           C,
-                           V,
-                           ipc_mech,
-                           ipc_weights,
-                           ipc_weights_norm,
-                           Qn_estim,
-                           Hn_estim,
-                           fluc_method = c("standard", "weighted"),
-                           fit_type = c("glm", "sl", "fit_spec"),
-                           eif_tol = 1e-9,
-                           sl_lrnrs = NULL,
-                           eif_reg_type = c("hal", "glm")) {
-  # check arguments with options
-  fluc_method <- match.arg(fluc_method)
-  fit_type <- match.arg(fit_type)
-  eif_reg_type <- match.arg(eif_reg_type)
+ipcw_eif_update <- function(data_in,
+                            C,
+                            V,
+                            ipc_mech,
+                            ipc_weights,
+                            ipc_weights_norm,
+                            Qn_estim,
+                            Hn_estim,
+                            estimator = c("tmle", "onestep"),
+                            fluc_method = NULL,
+                            fit_type = c("glm", "sl", "fit_spec"),
+                            eif_tol = 1e-9,
+                            sl_lrnrs = NULL,
+                            eif_reg_type = c("hal", "glm")) {
+  # perform submodel fluctuation if computing TMLE
+  if (estimator == "tmle" & !is.null(fluc_method)) {
+    # fit logistic regression for submodel fluctuation with updated weights
+    fitted_fluc_mod <- fit_fluc(
+      Y = data_in$Y,
+      Qn_scaled = Qn_estim,
+      Hn = Hn_estim,
+      ipc_weights = ipc_weights[C == 1],
+      method = fluc_method
+    )
+  } else if (estimator == "onestep" & is.null(fluc_method)) {
+    fitted_fluc_mod <- NULL
+  }
 
-  # fit logistic regression to fluctuate along the sub-model with NEW WEIGHTS
-  fitted_fluc_mod <- fit_fluc(
+  # compute EIF using updated weights and updated fluctuation (if TMLE)
+  eif_eval <- eif(
     Y = data_in$Y,
-    Qn_scaled = Qn_estim,
+    Qn = Qn_estim,
     Hn = Hn_estim,
-    ipc_weights = ipc_weights[C == 1],
-    method = fluc_method
-  )
-
-  # compute TMLE and EIF using NEW WEIGHTS and UPDATED SUB-MODEL FLUCTUATION
-  tmle_eif_out <- tmle_eif_ipcw(
+    estimator = estimator,
     fluc_mod_out = fitted_fluc_mod,
-    data_in = data_in,
-    Hn = Hn_estim,
     Delta = C,
     ipc_weights = ipc_weights[C == 1],
     ipc_weights_norm = ipc_weights_norm[C == 1],
@@ -116,7 +120,7 @@ ipcw_tmle_proc <- function(data_in,
       data.table::copy() %>%
       dplyr::select(names(V)) %>%
       data.table::as.data.table() %>%
-      data.table::set(j = "eif", value = tmle_eif_out$eif[C == 1])
+      data.table::set(j = "eif", value = eif_eval$eif[C == 1])
 
     # make sl3 task from new data.table
     eif_task <- sl3::sl3_Task$new(
@@ -149,7 +153,7 @@ ipcw_tmle_proc <- function(data_in,
       data.table::copy() %>%
       dplyr::select(names(V)) %>%
       dplyr::mutate(
-        eif = tmle_eif_out$eif[C == 1]
+        eif = eif_eval$eif[C == 1]
       ) %>%
       data.table::as.data.table()
 
@@ -193,41 +197,47 @@ ipcw_tmle_proc <- function(data_in,
     }
   }
 
-  # fit logistic regression to fluctuate along the sub-model wrt epsilon
-  ipcw_fluc_reg_data <-
-    data.table::as.data.table(
-      list(
-        delta = C,
-        logit_ipcw = stats::qlogis(bound_precision(ipc_mech)),
-        eif_by_ipcw = (eif_pred / bound_precision(ipc_mech))
+  # TMLE: fit logistic regression to fluctuate along the sub-model wrt epsilon
+  if (estimator == "tmle") {
+    ipcw_fluc_reg_data <-
+      data.table::as.data.table(
+        list(
+          delta = C,
+          logit_ipcw = stats::qlogis(bound_precision(ipc_mech)),
+          eif_by_ipcw = (eif_pred / bound_precision(ipc_mech))
+        )
       )
+    # fit fluctuation regression
+    ipcw_fluc <- stats::glm(
+      stats::as.formula("delta ~ -1 + offset(logit_ipcw) + eif_by_ipcw"),
+      data = ipcw_fluc_reg_data,
+      family = "binomial"
     )
-  ipcw_fluc <- stats::glm(
-    stats::as.formula("delta ~ -1 + offset(logit_ipcw) + eif_by_ipcw"),
-    data = ipcw_fluc_reg_data,
-    family = "binomial"
-  )
+    # now, we can obtain Pn* from the sub-model fluctuation
+    ipcw_pred <- stats::fitted(ipcw_fluc) %>%
+      as.numeric()
+  } else {
+    # just use the initial estimates of censoring probability for one-step
+    ipcw_pred <- ipc_mech
+  }
 
-  # now, we can obtain Pn* from the sub-model fluctuation
-  ipcw_fluc_pred <- stats::fitted(ipcw_fluc) %>%
-    as.numeric()
-
-  # this is the mean of the second half of the EIF (for censoring bit...)
-  ipcw_eif_out <- (C - ipcw_fluc_pred) * (eif_pred / ipcw_fluc_pred)
+  # this is the mean of the second half of the IPCW-EIF
+  ipcw_eif_out <- (C - ipcw_pred) * (eif_pred / ipcw_pred)
 
   # sanity check: score of the logistic regression fluctuation model
-  ipcw_eif_check <- mean((C - ipcw_fluc_pred) * (eif_pred / ipc_mech))
-  # assertthat::assert_that(abs(ipcw_eif_check) < 1e-5)
+  ipcw_eif_check <- mean((C - ipcw_pred) * (eif_pred / ipc_mech))
 
   # so, now we need weights to feed back into the previous steps
-  ipc_weights <- C / ipcw_fluc_pred
+  ipc_weights <- C / ipcw_pred
   ipc_weights_norm <- ipc_weights / sum(ipc_weights)
 
   # as above, compute TMLE and EIF with NEW WEIGHTS and SUBMODEL FLUCTUATION
-  tmle_eif_out <- tmle_eif_ipcw(
-    fluc_mod_out = fitted_fluc_mod,
-    data_in = data_in,
+  eif_eval <- eif(
+    Y = data_in$Y,
+    Qn = Qn_estim,
     Hn = Hn_estim,
+    estimator = estimator,
+    fluc_mod_out = fitted_fluc_mod,
     Delta = C,
     ipc_weights = ipc_weights[C == 1],
     ipc_weights_norm = ipc_weights_norm[C == 1],
@@ -236,11 +246,12 @@ ipcw_tmle_proc <- function(data_in,
 
   # need to return output such that we can loop over this function
   out <- list(
+    Qn_estim = Qn_estim,
     fluc_mod_out = fitted_fluc_mod,
-    pi_mech_star = ipcw_fluc_pred,
+    pi_mech_star = ipcw_pred,
     ipc_weights = ipc_weights,
     ipc_weights_norm = ipc_weights_norm,
-    tmle_eif = tmle_eif_out,
+    eif_eval = eif_eval,
     ipcw_eif = ipcw_eif_out
   )
   return(out)

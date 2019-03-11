@@ -1,4 +1,7 @@
 context("tmle_shift_orig agrees with Diaz and van der Laan (2012)")
+library(tibble)
+library(dplyr)
+set.seed(73294)
 
 ################################################################################
 ## Original function from Diaz and van der Laan (2012), Biometrics
@@ -62,13 +65,19 @@ tmle.shift <- function(Y, A, W, Qn, gn, delta, tol = 1e-5, iter.max = 5, Aval) {
 n <- 100
 W <- data.frame(W1 = runif(n), W2 = rbinom(n, 1, 0.7))
 A <- rpois(n, lambda = exp(3 + .3 * log(W$W1) - 0.2 * exp(W$W1) * W$W2))
-Y <- rbinom(n, 1, plogis(-1 + 0.05 * A - 0.02 * A * W$W2 + 0.2 * A * tan(W$W1^2)
-  - 0.02 * W$W1 * W$W2 + 0.1 * A * W$W1 * W$W2))
+Y <- rbinom(
+  n, 1,
+  plogis(-1 + 0.05 * A - 0.02 * A * W$W2 + 0.2 * A * tan(W$W1^2) -
+    0.02 * W$W1 * W$W2 + 0.1 * A * W$W1 * W$W2)
+)
+delta_shift <- 2
+
 fitA.0 <- glm(
   A ~ I(log(W1)) + I(exp(W1)):W2,
   family = poisson,
   data = data.frame(A, W)
 )
+
 fitY.0 <- glm(
   Y ~ A + A:W2 + A:I(tan(W1^2)) + W1:W2 + A:W1:W2,
   family = binomial, data = data.frame(A, W)
@@ -86,37 +95,57 @@ Qn.0 <- function(A = A, W = W) {
   )
 }
 
-
 # run the two TMLE-shift algorithms
 tmle_shift_2012 <- tmle.shift(
   Y = Y, A = A, W = W, Qn = Qn.0, gn = gn.0,
-  delta = 2, tol = 1e-4, iter.max = 5,
+  delta = delta_shift, tol = 1e-4, iter.max = 5,
   Aval = seq(1, 60, 1)
 )
+tmle_2012_psi <- as.numeric(tmle_shift_2012[1])
 
 tmle_shift_new <- tmle_shift_orig(
   Y = Y, A = A, W = W, Qn = Qn.0, gn = gn.0,
-  delta = 2, tol = 1e-4, iter_max = 5,
+  delta = delta_shift, tol = 1e-4, iter_max = 5,
   A_val = seq(1, 60, 1)
 )
+tmle_new_psi <- as.numeric(tmle_shift_new[1])
 
-
-# run the new tmle_txshift formulation
-out <- tmle_txshift(
-  Y = Y, A = A, W = W, delta = 2, max_iter = 5,
-  g_fit = list(
-    fit_type = "glm", nbins = 10,
-    bin_method = "dhist",
-    bin_estimator = speedglmR6$new(),
-    parfit = FALSE
-  ),
-  Q_fit = list(
-    fit_type = "glm",
-    glm_formula = "Y ~ ."
-  )
-)
-
-# test for equality
+# test for equality between Ivan's original code and that with minor revisions
 test_that("Revised tmle_shift procedure matches code from 2012 manuscript", {
-  expect_equal(tmle_shift_new, tmle_shift_2012)
+  expect_equal(tmle_new_psi, tmle_2012_psi, tol = 1e-10)
+})
+
+# run the new txshift implementation of TMLE
+# NOTE: should use true density like Ivan does since condensier misspecified
+gn_spec_fitted <-
+  lapply(
+    c(-delta_shift, 0, delta_shift, 2 * delta_shift),
+    function(shift_value) {
+      gn_out <- gn.0(A = A + shift_value, W = W)
+    }
+  ) %>%
+  bind_cols()
+colnames(gn_spec_fitted) <- c("downshift", "noshift", "upshift", "upupshift")
+
+# NOTE: should also use true Q for good measure (truth includes interactions)
+Qn_spec_fitted <-
+  lapply(c(0, delta_shift), function(shift_value) {
+    Qn_out <- Qn.0(A = A + shift_value, W = W)
+  }) %>%
+  bind_cols()
+colnames(Qn_spec_fitted) <- c("noshift", "upshift")
+
+# fit TMLE
+tmle_txshift <- txshift(
+  Y = Y, A = A, W = W, delta = delta_shift,
+  g_fit = list(fit_type = "fit_spec"),
+  Q_fit = list(fit_type = "fit_spec"),
+  gn_fit_spec = gn_spec_fitted,
+  Qn_fit_spec = Qn_spec_fitted
+)
+txshift_psi <- as.numeric(tmle_txshift$psi)
+
+# test for equality between Ivan's modified code and txshift implementation
+test_that("txshift implementation matches revised 2012 procedure closely", {
+  expect_equal(tmle_new_psi, txshift_psi, tol = 1e-3)
 })

@@ -24,15 +24,18 @@ before_install:
 r_packages:
   - devtools
   - covr
+  - sessioninfo
 
 r_github_packages:
+  - r-lib/covr
   - r-lib/sessioninfo
   - Rdatatable/data.table
-  - jimhester/covr
   - osofr/simcausal
   - osofr/condensier
+  - tlverse/origami
   - tlverse/hal9001
   - tlverse/sl3
+  - nhejazi/haldensify
 
 after_success:
   ## coverage
