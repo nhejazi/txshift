@@ -49,8 +49,8 @@ on_failure:
   - 7z a failure.zip *.Rcheck\*
   - appveyor PushArtifact failure.zip
 
-on_success:
-  - Rscript -e "covr::codecov(line_exclusions = list('R/plots.R', 'R/utils.R'))"
+#on_success:
+  #- Rscript -e "covr::codecov(line_exclusions = list('R/plots.R', 'R/utils.R'))"
 
 artifacts:
   - path: '*.Rcheck\**\*.log'

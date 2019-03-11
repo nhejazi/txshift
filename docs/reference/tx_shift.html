@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Treatment Shifting — tx_shift • txshift</title>
+<title>Simple Modified Treatment Policy (Shifted Treatment) — tx_shift • txshift</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Treatment Shifting — tx_shift" />
+<meta property="og:title" content="Simple Modified Treatment Policy (Shifted Treatment) — tx_shift" />
 
-<meta property="og:description" content="Treatment Shifting" />
+<meta property="og:description" content="Simple Modified Treatment Policy (Shifted Treatment)" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.3</span>
       </span>
     </div>
 
@@ -117,19 +117,18 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Treatment Shifting</h1>
-    <small class="dont-index">Source: <a href='https://github.com/nhejazi/txshift/blob/master/R/shift_treatment.R'><code>R/shift_treatment.R</code></a></small>
+    <h1>Simple Modified Treatment Policy (Shifted Treatment)</h1>
+    <small class="dont-index">Source: <a href='https://github.com/nhejazi/txshift/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
     <div class="hidden name"><code>tx_shift.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Treatment Shifting</p>
+    <p>Simple Modified Treatment Policy (Shifted Treatment)</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>tx_shift</span>(<span class='no'>A</span>, <span class='kw'>W</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>delta</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"additive"</span>), <span class='kw'>direc</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"down"</span>,
-  <span class='st'>"up"</span>))</pre>
+    <pre class="usage"><span class='fu'>tx_shift</span>(<span class='no'>A</span>, <span class='kw'>W</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>delta</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -146,17 +145,6 @@
       <th>delta</th>
       <td><p>A <code>numeric</code> indicating the magnitude of the shift to be
 computed for the treatment <code>A</code>.</p></td>
-    </tr>
-    <tr>
-      <th>type</th>
-      <td><p>A <code>character</code> vector describing the type of shift to be
-performed on the treatment. Currently, this is limited only to "additive",
-though the relevant theory supports other forms of shifting as well.</p></td>
-    </tr>
-    <tr>
-      <th>direc</th>
-      <td><p>A <code>character</code> vector describing the direction in which to
-shift the treatment --- currently, only "up" and "down" are supported.</p></td>
     </tr>
     </table>
     

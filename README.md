@@ -66,68 +66,91 @@ treatment, consider the following example:
 
 ``` r
 library(txshift)
-library(condensier)
+library(haldensify)
 set.seed(429153)
 
-# simulate simple data for tmle-shift sketch
-n_obs <- 1000  # number of observations
-n_w <- 1  # number of baseline covariates
-p_w <- 0.5  # probability of a success ("1") in the baseline variables
-tx_mult <- 2  # multiplier for the effect of W = 1 on the treatment
-
-## baseline covariate -- simple, binary
-W <- as.numeric(replicate(n_w, rbinom(n_obs, 1, p_w)))
-
-## create treatment based on baseline W
-A <- as.numeric(rnorm(n_obs, mean = tx_mult * W, sd = 1))
-
-# create outcome as a linear function of A, W + white noise
+# simulate simple data
+n_obs <- 1000
+W <- replicate(2, rbinom(n_obs, 1, 0.5))
+A <- rnorm(n_obs, mean = 2 * W, sd = 1)
 Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
 
 # fit the TMLE
-tmle_shift <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
-                           g_fit_args = list(fit_type = "glm",
-                                             nbins = 25,
-                                             bin_method = "dhist",
-                                             bin_estimator =
-                                               speedglmR6$new(),
-                                             parfit = FALSE),
-                           Q_fit_args = list(fit_type = "glm",
-                                             glm_formula = "Y ~ .")
-                          )
+tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
+                estimator = "tmle",
+                g_fit_args = list(fit_type = "hal",
+                                  n_bins = 5,
+                                  grid_type = "equal_mass",
+                                  lambda_seq = exp(seq(-1, -9, length = 300))),
+                Q_fit_args = list(fit_type = "glm",
+                                  glm_formula = "Y ~ .")
+               )
+summary(tmle)
+#>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
+#>     0.74743     0.77825     0.80629     0.00023 8.10317e-10        tmle 
+#>      n_iter 
+#>           0
 
-# conveniently summarize the results
-summary(tmle_shift)
-#>        lwr_ci     param_est        upr_ci     param_var      eif_mean 
-#>      0.722106      0.752212       0.78005      0.000219 -3.381496e-17 
-#>        n_iter 
-#>             0
+# fit a one-step estimator for comparison
+aipw <- txshift(W = W, A = A, Y = Y, delta = 0.5,
+                estimator = "onestep",
+                g_fit_args = list(fit_type = "hal",
+                                  n_bins = 5,
+                                  grid_type = "equal_mass",
+                                  lambda_seq = exp(seq(-1, -9, length = 300))),
+                Q_fit_args = list(fit_type = "glm",
+                                  glm_formula = "Y ~ .")
+               )
+summary(aipw)
+#>       lwr_ci    param_est       upr_ci    param_var     eif_mean 
+#>      0.74716      0.77792      0.80592      0.00022 -1.65428e-03 
+#>    estimator       n_iter 
+#>      onestep            0
 
 # now, let's introduce a censoring process (for two-stage sampling)
 C <- rbinom(n_obs, 1, plogis(W + Y))
 
 # fit an IPCW-TMLE to account for this censoring process:
-ipcwtmle_shift <- tmle_txshift(W = W, A = A, Y = Y, delta = 0.5,
-                               C = C, V = c("W", "Y"),
-                               max_iter = 10,  # limit iterations for speed
-                               ipcw_fit_args = list(fit_type = "glm"),
-                               g_fit_args = list(fit_type = "glm",
-                                                 nbins = 25,
-                                                 bin_method = "dhist",
-                                                 bin_estimator =
-                                                   speedglmR6$new(),
-                                                 parfit = FALSE),
-                               Q_fit_args = list(fit_type = "glm",
-                                                 glm_formula = "Y ~ ."),
-                               eif_reg_type = "glm"
-                              )
+ipcw_tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
+                     C = C, V = c("W", "Y"),
+                     estimator = "tmle",
+                     max_iter = 5,
+                     ipcw_fit_args = list(fit_type = "glm"),
+                     g_fit_args = list(fit_type = "hal",
+                                       n_bins = 5,
+                                       grid_type = "equal_mass",
+                                       lambda_seq =
+                                         exp(seq(-1, -9, length = 300))),
+                     Q_fit_args = list(fit_type = "glm",
+                                       glm_formula = "Y ~ ."),
+                     eif_reg_type = "glm"
+                    )
+summary(ipcw_tmle)
+#>       lwr_ci    param_est       upr_ci    param_var     eif_mean 
+#>       0.7566      0.79212      0.82367      0.00029 -4.76866e-06 
+#>    estimator       n_iter 
+#>         tmle            1
 
-# conveniently summarize the results
-summary(ipcwtmle_shift)
-#>        lwr_ci     param_est        upr_ci     param_var      eif_mean 
-#>      0.728859      0.764822      0.797341      0.000306 -2.964196e-04 
-#>        n_iter 
-#>             1
+# compare with an IPCW-agumented one-step estimator under censoring:
+ipcw_aipw <- txshift(W = W, A = A, Y = Y, delta = 0.5,
+                     C = C, V = c("W", "Y"),
+                     estimator = "onestep",
+                     max_iter = 5,
+                     ipcw_fit_args = list(fit_type = "glm"),
+                     g_fit_args = list(fit_type = "hal",
+                                       n_bins = 5,
+                                       grid_type = "equal_mass",
+                                       lambda_seq =
+                                         exp(seq(-1, -9, length = 300))),
+                     Q_fit_args = list(fit_type = "glm",
+                                       glm_formula = "Y ~ ."),
+                     eif_reg_type = "glm"
+                    )
+summary(ipcw_aipw)
+#>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
+#>     0.74805     0.78355     0.81527     0.00029 4.36006e-02     onestep 
+#>      n_iter 
+#>           5
 ```
 
 -----
@@ -159,7 +182,7 @@ After using the `txshift` R package, please cite the following:
         Stochastic Interventions in {R}},
       year  = {2019},
       url = {https://github.com/nhejazi/txshift},
-      note = {R package version 0.2.2}
+      note = {R package version 0.2.3}
     }
 ```
 
@@ -182,19 +205,14 @@ After using the `txshift` R package, please cite the following:
     implementation of the methodology explored in Díaz and Hejazi
     (2019).
 
-  - [R/`condensier`](https://github.com/osofr/condensier) - Estimation
-    of the treatment mechanism component of this parameter requires
-    conditional density estimation, which is implemented rather
-    generally (for a variety of hazard regression strategies and
-    regression functions) in this package. This package implements a
-    variant of the methodology proposed in Díaz and van der Laan (2011).
-
   - [R/`haldensify`](https://github.com/nhejazi/haldensify) - A minimal
     package for estimating the conditional density treatment mechanism
     component of this parameter based on using the [highly adaptive
-    lasso](https://github.com/tlverse/hal9001) for the required pooled
-    hazard regression. This package implements the methdology proposed
-    in Díaz and van der Laan (2011).
+    lasso](https://github.com/tlverse/hal9001) in combination with a
+    pooled hazard regression. This package implements the methodology
+    proposed in
+    
+    1.  
 
 -----
 
@@ -249,19 +267,11 @@ Stochastic Interventions.” *Submitted*.
 
 </div>
 
-<div id="ref-diaz2011super">
-
-Díaz, Iván, and Mark J van der Laan. 2011. “Super Learner Based
-Conditional Density Estimation with Application to Marginal Structural
-Models.” *The International Journal of Biostatistics* 7 (1). De Gruyter:
-1–20.
-
-</div>
-
 <div id="ref-diaz2012population">
 
-———. 2012. “Population Intervention Causal Effects Based on Stochastic
-Interventions.” *Biometrics* 68 (2). Wiley Online Library: 541–49.
+Díaz, Iván, and Mark J van der Laan. 2012. “Population Intervention
+Causal Effects Based on Stochastic Interventions.” *Biometrics* 68 (2).
+Wiley Online Library: 541–49.
 
 </div>
 

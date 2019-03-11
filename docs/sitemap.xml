@@ -7,10 +7,10 @@
     <loc>https://code.nimahejazi.org/txshift/reference/bound_precision.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/txshift/reference/bound_scaling.html</loc>
+    <loc>https://code.nimahejazi.org/txshift/reference/confint.txshift.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/txshift/reference/confint.txshift.html</loc>
+    <loc>https://code.nimahejazi.org/txshift/reference/eif.html</loc>
   </url>
   <url>
     <loc>https://code.nimahejazi.org/txshift/reference/est_Hn.html</loc>
@@ -34,19 +34,25 @@
     <loc>https://code.nimahejazi.org/txshift/reference/fit_fluc.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/txshift/reference/ipcw_tmle_proc.html</loc>
+    <loc>https://code.nimahejazi.org/txshift/reference/ipcw_eif_update.html</loc>
+  </url>
+  <url>
+    <loc>https://code.nimahejazi.org/txshift/reference/msm_vimshift.html</loc>
+  </url>
+  <url>
+    <loc>https://code.nimahejazi.org/txshift/reference/onestep_txshift.html</loc>
   </url>
   <url>
     <loc>https://code.nimahejazi.org/txshift/reference/print.txshift.html</loc>
   </url>
   <url>
+    <loc>https://code.nimahejazi.org/txshift/reference/scale_to_original.html</loc>
+  </url>
+  <url>
+    <loc>https://code.nimahejazi.org/txshift/reference/scale_to_unit.html</loc>
+  </url>
+  <url>
     <loc>https://code.nimahejazi.org/txshift/reference/summary.txshift.html</loc>
-  </url>
-  <url>
-    <loc>https://code.nimahejazi.org/txshift/reference/tmle_eif.html</loc>
-  </url>
-  <url>
-    <loc>https://code.nimahejazi.org/txshift/reference/tmle_eif_ipcw.html</loc>
   </url>
   <url>
     <loc>https://code.nimahejazi.org/txshift/reference/tmle_shift_orig.html</loc>
@@ -56,6 +62,9 @@
   </url>
   <url>
     <loc>https://code.nimahejazi.org/txshift/reference/tx_shift.html</loc>
+  </url>
+  <url>
+    <loc>https://code.nimahejazi.org/txshift/reference/txshift.html</loc>
   </url>
   <url>
     <loc>https://code.nimahejazi.org/txshift/articles/intro_txshift.html</loc>

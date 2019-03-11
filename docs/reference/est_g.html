@@ -34,7 +34,7 @@
 
 <meta property="og:description" content="Compute the propensity score (treatment mechanism) for the observed data,
 including the shift. This returns the propensity score for the observed data
-(at A_i) and the shift of interest (at A_i - delta)." />
+(at A) and the shift of interest (at A - delta)." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -65,7 +65,7 @@ including the shift. This returns the propensity score for the observed data
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.3</span>
       </span>
     </div>
 
@@ -120,7 +120,7 @@ including the shift. This returns the propensity score for the observed data
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Estimate the Treatment Mechanism (Propensity Score)</h1>
-    <small class="dont-index">Source: <a href='https://github.com/nhejazi/txshift/blob/master/R/estimate-propensity_score.R'><code>R/estimate-propensity_score.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/nhejazi/txshift/blob/master/R/fit_mechanisms.R'><code>R/fit_mechanisms.R</code></a></small>
     <div class="hidden name"><code>est_g.Rd</code></div>
     </div>
 
@@ -128,14 +128,15 @@ including the shift. This returns the propensity score for the observed data
     
     <p>Compute the propensity score (treatment mechanism) for the observed data,
 including the shift. This returns the propensity score for the observed data
-(at A_i) and the shift of interest (at A_i - delta).</p>
+(at A) and the shift of interest (at A - delta).</p>
     
     </div>
 
     <pre class="usage"><span class='fu'>est_g</span>(<span class='no'>A</span>, <span class='no'>W</span>, <span class='kw'>delta</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>ipc_weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/length'>length</a></span>(<span class='no'>A</span>)),
-  <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"sl"</span>, <span class='st'>"glm"</span>), <span class='kw'>sl_lrnrs_dens</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>std_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>nbins</span> <span class='kw'>=</span> <span class='fl'>25</span>, <span class='kw'>bin_method</span> <span class='kw'>=</span> <span class='st'>"dhist"</span>, <span class='kw'>bin_estimator</span> <span class='kw'>=</span>
-  <span class='kw pkg'>condensier</span><span class='kw ns'>::</span><span class='no'><a href='https://www.rdocumentation.org/packages/condensier/topics/speedglmR6'>speedglmR6</a></span>$<span class='fu'>new</span>(), <span class='kw'>parfit</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>))</pre>
+  <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"sl"</span>, <span class='st'>"hal"</span>), <span class='kw'>sl_lrnrs_dens</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>std_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>n_bins</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>10</span>, <span class='fl'>25</span>), <span class='kw'>grid_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"equal_range"</span>,
+  <span class='st'>"equal_mass"</span>), <span class='kw'>lambda_seq</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/Log'>exp</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/seq'>seq</a></span>(-<span class='fl'>1</span>, -<span class='fl'>13</span>, <span class='kw'>length</span> <span class='kw'>=</span> <span class='fl'>300</span>)), <span class='kw'>use_future</span> <span class='kw'>=</span>
+  <span class='fl'>FALSE</span>))</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -161,8 +162,8 @@ produced by the internal procedure to estimate the censoring mechanism
     </tr>
     <tr>
       <th>fit_type</th>
-      <td><p>A <code>character</code> specifying whether to use Super Learner to
-fit the density estimation.</p></td>
+      <td><p>A <code>character</code> specifying whether to use Super Learner or
+the Highly Adaptive Lasso to estimate the conditional treatment density.</p></td>
     </tr>
     <tr>
       <th>sl_lrnrs_dens</th>
@@ -171,9 +172,10 @@ the <code>sl3</code> package, to be used in fitting an ensemble model.</p></td>
     </tr>
     <tr>
       <th>std_args</th>
-      <td><p>A <code>list</code> of arguments to be passed to <code>fit_density</code>
-from the <code>condensier</code> package when the argument <code>fit_type</code> is set
-to "glm" (not invoking Super Learner).</p></td>
+      <td><p>A <code>list</code> of arguments to be passed to <code>haldensify</code>
+from the <code>haldensify</code> package when the argument <code>fit_type</code> is set
+to <code>"hal"</code>. Note that this invokes HAL instead of Super Learner and is
+thus only feasible for relatively small data sets (n &lt; 2000).</p></td>
     </tr>
     </table>
     
