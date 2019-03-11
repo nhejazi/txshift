@@ -37,66 +37,104 @@
 #' @importFrom tibble as_tibble
 #'
 #' @export
+#'
+#' @examples
+#' set.seed(429153)
+#' n_obs <- 1000
+#' W <- as.numeric(replicate(1, rbinom(n_obs, 1, 0.5)))
+#' A <- as.numeric(rnorm(n_obs, mean = 2 * W, sd = 1))
+#' Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
+#' msm <- msm_vimshift(W = W, A = A, Y = Y, estimator = "tmle",
+#'                     g_fit_args = list(fit_type = "hal",
+#'                                       n_bins = 5,
+#'                                       grid_type = "equal_mass",
+#'                                       lambda_seq = exp(seq(-1, -9,
+#'                                                            length = 300))),
+#'                     Q_fit_args = list(fit_type = "glm",
+#'                                       glm_formula = "Y ~ ."))
+#'
 #
-#msm_vimshift <- function(Y,
-                         #A,
-                         #W,
-                         #C,
-                         #V,
-                         #delta_grid,
-                         #estimator = c("tmle", "onestep"),
-                         #weighting = c("identity", "variance"),
-                         #ci_level = 0.95,
-                         #ci_type = c("simultaneous", "marginal"),
-                         #...) {
+msm_vimshift <- function(Y,
+                         A,
+                         W,
+                         C = rep(1, length(Y)),
+                         V = NULL,
+                         delta_grid = seq(-1, 1, 1),
+                         estimator = c("tmle", "onestep"),
+                         weighting = c("identity", "variance"),
+                         ci_level = 0.95,
+                         ci_type = c("simultaneous", "marginal"),
+                         ...) {
+  # set default values of arguments
+  estimator <- match.arg(estimator)
+  weighting <- match.arg(weighting)
+  ci_type <- match.arg(ci_type)
 
-  ## make sure more than one parameter has been estimated for trend
-  #assertthat::assert_that(length(tmle_fit_estimates) > 1)
+  # make sure more than one parameter is to be estimated for trend test
+  assertthat::assert_that(length(delta_grid) > 1)
 
-  ## matrix of EIF(O_i) values and estimates across each parameter estimated
-  #eif_mat <- sapply(tmle_fit_estimates, `[[`, "eif")
-  #psi_vec <- sapply(tmle_fit_estimates, `[[`, "psi")
+  # multiplier for CI construction
+  ci_mult <- (c(1, -1) * stats::qnorm((1 - ci_level) / 2))
 
-  ## set weights to be the inverse of the variance of each TML estimate
-  #if (is.null(weights)) {
-    #weights <- as.numeric(1 / diag(stats::cov(eif_mat)))
-  #}
+  # fit TML or one-step estimator for each value of shift in the grid
+  est_over_grid <-
+    lapply(delta_grid, function(shift) {
+             est <- txshift(W = W, A = A, Y = Y, C = C, V = V,
+                            delta = shift, estimator = estimator,
+                            ...)
+             return(est)
+          })
 
-  ## multiplier for CI construction
-  #ci_mult <- (c(1, -1) * stats::qnorm((1 - level) / 2))
+  browser()
+  # matrix of EIF(O_i) values and estimates across each parameter estimated
+  psi_vec <- sapply(est_over_grid, `[[`, "psi")
+  eif_mat <- sapply(est_over_grid, `[[`, "eif")
 
-  ## compute the MSM parameters
-  #intercept <- rep(1, length(delta_grid))
-  #x_mat <- cbind(intercept, delta_grid)
-  #omega <- diag(weights)
-  #s_mat <- solve(t(x_mat) %*% omega %*% x_mat) %*% t(x_mat) %*% omega
-  #msm_param <- as.vector(s_mat %*% psi_vec)
+  # set weights to be the inverse of the variance of each TML estimate
+  if (weighting == "variance") {
+    weights <- as.numeric(1 / diag(stats::cov(eif_mat)))
+  } else {
+    weights <- rep(1, length(psi_vec))
+  }
 
-  ## compute inference for MSM based on individual EIF(O_i) for each parameter
-  #msm_eif <- t(tcrossprod(s_mat, eif_mat))
-  #msm_var <- diag(stats::cov(msm_eif))
-  #msm_se <- sqrt(msm_var / nrow(msm_eif))
+  # compute the MSM parameters
+  intercept <- rep(1, length(delta_grid))
+  x_mat <- cbind(intercept, delta_grid)
+  omega <- diag(weights)
+  s_mat <- solve(t(x_mat) %*% omega %*% x_mat) %*% t(x_mat) %*% omega
+  msm_param <- as.vector(s_mat %*% psi_vec)
 
-  ## build confidence intervals and hypothesis tests for EIF(msm)
-  #ci_msm_param <- msm_se %*% t(ci_mult) + msm_param
-  #pval_msm_param <- 2 * stats::pnorm(-abs(msm_param / msm_se))
+  # compute inference for MSM based on individual EIF(O_i) for each parameter
+  msm_eif <- tcrossprod(eif_mat, s_mat)
+  msm_var <- diag(stats::cov(msm_eif))
+  msm_se <- sqrt(msm_var / nrow(msm_eif))
 
-  ## table for output
-  #txshift_out <- list(
-    #ci_low = psi_vec + ci_mult[1] * sqrt(diag(stats::cov(eif_mat))),
-    #psi = psi_vec,
-    #ci_high = psi_vec + ci_mult[2] * sqrt(diag(stats::cov(eif_mat)))
-  #) %>%
-  #tibble::as_tibble()
+  # build confidence intervals and hypothesis tests for EIF(msm)
+  ci_msm_param <- msm_se %*% t(ci_mult) + msm_param
+  pval_msm_param <- 2 * stats::pnorm(-abs(msm_param / msm_se))
 
-  #msm_out <- list(
-    #param = names(msm_se),
-    #ci_low = ci_msm_param[, 1],
-    #param_est = msm_param,
-    #ci_high = ci_msm_param[, 2],
-    #param_se = msm_se,
-    #p_value = pval_msm_param
-  #) %>%
-  #tibble::as_tibble()
-  #return(out)
-#}
+  # summarize output of individual shift-specific estimates
+  vimshift_out <- list(
+    delta = delta_grid,
+    ci_low = psi_vec + ci_mult[1] * sqrt(diag(stats::cov(eif_mat))),
+    psi = psi_vec,
+    ci_high = psi_vec + ci_mult[2] * sqrt(diag(stats::cov(eif_mat)))
+  ) %>%
+  tibble::as_tibble()
+
+  # create summary table for MSM estimates
+  msm_out <- list(
+    param = names(msm_se),
+    ci_low = ci_msm_param[, 1],
+    param_est = msm_param,
+    ci_high = ci_msm_param[, 2],
+    param_se = msm_se,
+    p_value = pval_msm_param
+  ) %>%
+  tibble::as_tibble()
+
+  # complete output for MSM
+  out <- list(param_est = vimshift_out,
+              msm_est = msm_out)
+  return(out)
+}

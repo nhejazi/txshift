@@ -73,19 +73,10 @@ library(txshift)
 library(haldensify)
 set.seed(429153)
 
-# simulate simple data for tmle-shift sketch
-n_obs <- 1000  # number of observations
-n_w <- 1  # number of baseline covariates
-p_w <- 0.5  # probability of a success ("1") in the baseline variables
-tx_mult <- 2  # multiplier for the effect of W = 1 on the treatment
-
-## baseline covariate -- simple, binary
-W <- as.numeric(replicate(n_w, rbinom(n_obs, 1, p_w)))
-
-## create treatment based on baseline W
-A <- as.numeric(rnorm(n_obs, mean = tx_mult * W, sd = 1))
-
-# create outcome as a linear function of A, W + white noise
+# simulate simple data
+n_obs <- 1000
+W <- replicate(2, rbinom(n_obs, 1, 0.5))
+A <- rnorm(n_obs, mean = 2 * W, sd = 1)
 Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
 
 # fit the TMLE
