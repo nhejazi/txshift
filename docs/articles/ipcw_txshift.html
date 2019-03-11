@@ -257,12 +257,12 @@
 <a class="sourceLine" id="cb20-12" data-line-number="12">                           <span class="dt">eif_reg_type =</span> <span class="st">"glm"</span></a>
 <a class="sourceLine" id="cb20-13" data-line-number="13">                          )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 2219.1284     Pars:  0.7789695255 0.0000006021 0.2210298729
-## Iter: 2 fn: 2219.1284     Pars:  0.7789695861 0.0000003963 0.2210300177
+## Iter: 1 fn: 2219.0346     Pars:  0.7782929818 0.0000005393 0.2217064793
+## Iter: 2 fn: 2219.0346     Pars:  0.7782930435 0.0000003568 0.2217065996
 ## solnp--&gt; Completed in 2 iterations</code></pre>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle_sl_shift_<span class="dv">1</span>)</a></code></pre></div>
 <pre><code>##      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-##     0.57078     0.71658     0.86238     0.00553 3.10589e-04        tmle 
+##     0.57605     0.72196     0.86787     0.00554 3.59193e-04        tmle 
 ##      n_iter 
 ##           2</code></pre>
 <p>As before, we may vary the regression for the submodel fluctuation procedure by weighting each observation by the value of the so-called clever covariate rather than using such an auxiliary covariate directly in the regression procedure:</p>
@@ -280,12 +280,12 @@
 <a class="sourceLine" id="cb24-12" data-line-number="12">                           <span class="dt">eif_reg_type =</span> <span class="st">"glm"</span></a>
 <a class="sourceLine" id="cb24-13" data-line-number="13">                          )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 2062.9391     Pars:  0.7805720998 0.0000003558 0.2194275449
-## Iter: 2 fn: 2062.9391     Pars:  0.7805721330 0.0000002247 0.2194276424
+## Iter: 1 fn: 2063.5167     Pars:  0.7806848911 0.0000004242 0.2193146852
+## Iter: 2 fn: 2063.5167     Pars:  0.7806849297 0.0000002691 0.2193148012
 ## solnp--&gt; Completed in 2 iterations</code></pre>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle_sl_shift_<span class="dv">2</span>)</a></code></pre></div>
 <pre><code>##      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-##     1.31814     1.49592     1.67369     0.00823 1.19135e-04        tmle 
+##     1.31661     1.49408     1.67156      0.0082 1.27970e-04        tmle 
 ##      n_iter 
 ##           2</code></pre>
 </div>
@@ -306,12 +306,12 @@
 <a class="sourceLine" id="cb28-11" data-line-number="11">                           <span class="dt">ipcw_efficiency =</span> <span class="ot">FALSE</span></a>
 <a class="sourceLine" id="cb28-12" data-line-number="12">                          )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 1934.6624     Pars:  0.69257 0.05994 0.24750
-## Iter: 2 fn: 1934.6624     Pars:  0.69257 0.05994 0.24750
+## Iter: 1 fn: 1934.7531     Pars:  0.69599 0.06114 0.24287
+## Iter: 2 fn: 1934.7531     Pars:  0.69597 0.06116 0.24287
 ## solnp--&gt; Completed in 2 iterations</code></pre>
 <div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle_sl_ineffic)</a></code></pre></div>
 <pre><code>##      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-##     1.88301     2.09418     2.30535     0.01161 3.04234e-11        tmle 
+##     1.88401     2.09514     2.30627      0.0116 3.16461e-11        tmle 
 ##      n_iter 
 ##           0</code></pre>
 <p>Please note that in such cases, the value of <code>n_iter</code> in the resulting output should be <strong><em>exactly zero</em></strong>, as this indicates that the iterative procedure that is used to achieve efficiency has been skipped.</p>
@@ -322,7 +322,7 @@
 <p>For a discussion of the procedure for obtaining statistical inference for TML estimators, the interested reader is referred to the introductory vignette of this package. Here, we focus on addressing the issue of how censoring impacts the inferential procedure…</p>
 <div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" data-line-number="1">(ci_shift &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/confint">confint</a></span>(tmle_sl_shift_<span class="dv">1</span>))</a></code></pre></div>
 <pre><code>##    lwr_ci       est    upr_ci 
-## 0.5707792 0.7165784 0.8623775</code></pre>
+## 0.5760498 0.7219579 0.8678659</code></pre>
 <hr>
 </div>
 </div>

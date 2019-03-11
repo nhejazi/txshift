@@ -237,12 +237,12 @@
 <a class="sourceLine" id="cb20-6" data-line-number="6">                                             <span class="dt">sl_lrnrs =</span> sl_lrn)</a>
 <a class="sourceLine" id="cb20-7" data-line-number="7">                          )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 3283.2957     Pars:  0.62179 0.01286 0.36536
-## Iter: 2 fn: 3283.2957     Pars:  0.62179 0.01285 0.36536
+## Iter: 1 fn: 3284.6745     Pars:  0.62102 0.01278 0.36620
+## Iter: 2 fn: 3284.6745     Pars:  0.62102 0.01278 0.36620
 ## solnp--&gt; Completed in 2 iterations</code></pre>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle_sl_shift_<span class="dv">1</span>)</a></code></pre></div>
 <pre><code>##      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-##     1.91049     2.03884     2.16719     0.00429 1.78220e-10        tmle 
+##     1.91047     2.03883     2.16719     0.00429 1.78543e-10        tmle 
 ##      n_iter 
 ##           0</code></pre>
 <p>As before, we may vary the regression for the submodel fluctuation procedure by weighting each observation by the value of the so-called clever covariate rather than using such an auxiliary covariate directly in the regression procedure:</p>
@@ -254,12 +254,12 @@
 <a class="sourceLine" id="cb24-6" data-line-number="6">                                             <span class="dt">sl_lrnrs =</span> sl_lrn)</a>
 <a class="sourceLine" id="cb24-7" data-line-number="7">                          )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 3371.4355     Pars:  0.6770487711 0.0000001057 0.3229511214
-## Iter: 2 fn: 3371.4355     Pars:  0.67704879348 0.00000006726 0.32295113926
+## Iter: 1 fn: 3372.4186     Pars:  0.6793496540 0.0000001074 0.3206502368
+## Iter: 2 fn: 3372.4186     Pars:  0.67934968714 0.00000006844 0.32065024441
 ## solnp--&gt; Completed in 2 iterations</code></pre>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle_sl_shift_<span class="dv">2</span>)</a></code></pre></div>
 <pre><code>##      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-##     1.92074     2.04917      2.1776     0.00429 9.29356e-14        tmle 
+##     1.92041     2.04882     2.17722     0.00429 9.27295e-14        tmle 
 ##      n_iter 
 ##           0</code></pre>
 </div>
@@ -279,7 +279,7 @@
 <p><span class="math display">\[\sigma_n^2 = \frac{1}{n} \sum_{i = 1}^{n} D^2(\bar{Q}_n^*, g_n)(O_i)\]</span></p>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1">(ci_shift &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/confint">confint</a></span>(tmle_sl_shift_<span class="dv">1</span>))</a></code></pre></div>
 <pre><code>##   lwr_ci      est   upr_ci 
-## 1.910489 2.038840 2.167190</code></pre>
+## 1.910467 2.038829 2.167191</code></pre>
 <hr>
 </div>
 </div>
