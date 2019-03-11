@@ -23,7 +23,7 @@ set of baseline covariates.}
 \item{A}{A \code{numeric} vector corresponding to a treatment variable. The
 parameter of interest is defined as a location shift of this quantity.}
 
-\item{Y}{A \code{numeric} vector corresponding to an outcome variable.}
+\item{Y}{A \code{numeric} vector of the observed outcomes.}
 
 \item{C}{A \code{numeric} binary vector giving information on whether a given
 observation was subject to censoring. This is used to compute an IPCW-TMLE
@@ -43,10 +43,9 @@ have played a role in defining the sampling/censoring mechanism (C).}
 be used in defining the target parameter. This is defined with respect to
 the scale of the treatment (A).}
 
-\item{estimator}{A \code{character} indicating the typ of estimator to
-compute. Choices are currently limited to a targeted maximum likelihood
-estimator \code{"tmle"} or a one-step / augmented inverse probability
-weighted estimator \code{"onestep"}.}
+\item{estimator}{The type of estimator to be fit, either \code{"tmle"} for
+targeted maximum likelihood estimation or \code{"onestep"} for a one-step
+augmented inverse probability weighted (AIPW) estimator.}
 
 \item{fluc_method}{The method to be used in submodel fluctuation step of
 the TMLE computation. The choices are "standard" and "weighted".}

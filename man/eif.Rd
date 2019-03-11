@@ -9,16 +9,20 @@ eif(Y, Qn, Hn, estimator = c("tmle", "onestep"), fluc_mod_out = NULL,
   ipc_weights_norm = rep(1, length(Y)), eif_tol = 1e-07)
 }
 \arguments{
-\item{Y}{A \code{numeric} vector of observed outcomes.}
+\item{Y}{A \code{numeric} vector of the observed outcomes.}
 
-\item{Qn}{...}
+\item{Qn}{An object providing the value of the outcome evaluated after
+imposing a shift in the treatment. This object is passed in after being
+constructed by a call to the internal function \code{est_Q}.}
 
 \item{Hn}{An object providing values of the auxiliary ("clever") covariate,
 constructed from the treatment mechanism and required for targeted minimum
 loss-based estimation. This object object should be passed in after being
 constructed by a call to the internal function \code{est_Hn}.}
 
-\item{estimator}{...}
+\item{estimator}{The type of estimator to be fit, either \code{"tmle"} for
+targeted maximum likelihood estimation or \code{"onestep"} for a one-step
+augmented inverse probability weighted (AIPW) estimator.}
 
 \item{fluc_mod_out}{An object giving values of the logistic regression fit to
 traverse the submodel for targeted minimum loss-based estimation. This type

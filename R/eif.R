@@ -5,13 +5,17 @@
 #' target parameter, which takes the following form:
 #' %D(P)(o) = H(a,w)(y - \bar{Q}(a,w)) + \bar{Q}(d(a,w)) - \psi(P)
 #'
-#' @param Y A \code{numeric} vector of observed outcomes.
-#' @param Qn ...
+#' @param Y A \code{numeric} vector of the observed outcomes.
+#' @param Qn An object providing the value of the outcome evaluated after
+#'  imposing a shift in the treatment. This object is passed in after being
+#'  constructed by a call to the internal function \code{est_Q}.
 #' @param Hn An object providing values of the auxiliary ("clever") covariate,
 #'  constructed from the treatment mechanism and required for targeted minimum
 #'  loss-based estimation. This object object should be passed in after being
 #'  constructed by a call to the internal function \code{est_Hn}.
-#' @param estimator ...
+#' @param estimator The type of estimator to be fit, either \code{"tmle"} for
+#'  targeted maximum likelihood estimation or \code{"onestep"} for a one-step
+#'  augmented inverse probability weighted (AIPW) estimator.
 #' @param Delta Indicator for missingness. Used for compatibility with the
 #'  routine to compute IPCW-TML estimates.
 #' @param ipc_weights A \code{numeric} vector that gives inverse probability of

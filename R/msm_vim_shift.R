@@ -1,20 +1,35 @@
 #' Test for a trend in the causal effects of a grid of shift interventions
 #'
-#' @param Y ...
-#' @param A ...
-#' @param W ...
-#' @param C ...
+#' @param Y A \code{numeric} vector of the observed outcomes.
+#' @param A A \code{numeric} vector corresponding to a treatment variable. The
+#'  parameter of interest is defined as a location shift of this quantity.
+#' @param W A \code{matrix}, \code{data.frame}, or similar corresponding to a
+#'  set of baseline covariates.
+#' @param C A \code{numeric} binary vector giving information on whether a given
+#'  observation was subject to censoring. This is used to compute an IPCW-TMLE
+#'  in cases where two-stage sampling is performed. The default assumes that no
+#'  censoring was present (i.e., a two-stage design was NOT used). N.B., this is
+#'  equivalent to the term %\Delta in the notation used in the original Rose and
+#'  van der Laan manuscript that introduced/formulated IPCW-TML estimators.
+#' @param V The covariates that are used in determining the sampling procedure
+#'  that gives rise to censoring. The default is \code{NULL} and corresponds to
+#'  scenarios in which there is no censoring (in which case all values in the
+#'  preceding argument \code{C} must be uniquely 1. To specify this, pass in a
+#'  NAMED \code{list} identifying variables amongst W, A, Y that are thought to
+#'  have played a role in defining the sampling/censoring mechanism (C).
 #' @param delta_grid A \code{numeric} vector giving the individual values of the
 #'  shift parameter used in computing each of the TML estimates.
-#' @param estimator ...
-#' @param weighting A \code{numeric} vector indicating the weights (if any) to
-#'  be applied to each of the estimated mean counterfactual outcomes under
-#'  posited values of the shift parameter delta. The default is to weight each
-#'  estimate by the inverse of its variance, in order to improve stability;
-#'  however, this may be changed depending on the exact choice of shift
-#'  function.
-#' @param ci_level The nominal coverage probability of the confidence interval.
-#' @param ci_type ...
+#' @param estimator The type of estimator to be fit, either \code{"tmle"} for
+#'  targeted maximum likelihood estimation or \code{"onestep"} for a one-step
+#'  augmented inverse probability weighted (AIPW) estimator.
+#' @param weighting Whether to weight each parameter estimate by the inverse of
+#'  its variance (in order to improve stability of the resultant MSM fit) or to
+#'  simply weight all parameter estimates equally.
+#' @param ci_level A \code{numeric} indicating the desired coverage level of the
+#'  confidence interval to be computed.
+#' @param ci_type Whether to construct a simultaneous confidence band covering
+#'  all parameter estimates at once or marginal confidence intervals covering
+#'  each parameter estimate separately.
 #' @param ... Additional arguments to be passed to \code{txshift}.
 #'
 #' @importFrom stats cov qnorm pnorm
@@ -27,6 +42,7 @@
                          #A,
                          #W,
                          #C,
+                         #V,
                          #delta_grid,
                          #estimator = c("tmle", "onestep"),
                          #weighting = c("identity", "variance"),

@@ -36,5 +36,5 @@ thus only feasible for relatively small data sets (n < 2000).}
 \description{
 Compute the propensity score (treatment mechanism) for the observed data,
 including the shift. This returns the propensity score for the observed data
-(at A_i) and the shift of interest (at A_i - delta).
+(at A) and the shift of interest (at A - delta).
 }

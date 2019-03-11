@@ -2,7 +2,7 @@
 #'
 #' Compute the propensity score (treatment mechanism) for the observed data,
 #' including the shift. This returns the propensity score for the observed data
-#' (at A_i) and the shift of interest (at A_i - delta).
+#' (at A) and the shift of interest (at A - delta).
 #'
 #' @param A A \code{numeric} vector of observed treatment values.
 #' @param W A \code{numeric} matrix of observed baseline covariate values.
@@ -454,4 +454,3 @@ est_Hn <- function(gn, a = NULL, w = NULL) {
   data.table::setnames(H_n, c("noshift", "shift"))
   return(H_n)
 }
-

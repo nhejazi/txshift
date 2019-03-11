@@ -4,7 +4,7 @@
 #'  set of baseline covariates.
 #' @param A A \code{numeric} vector corresponding to a treatment variable. The
 #'  parameter of interest is defined as a location shift of this quantity.
-#' @param Y A \code{numeric} vector corresponding to an outcome variable.
+#' @param Y A \code{numeric} vector of the observed outcomes.
 #' @param C A \code{numeric} binary vector giving information on whether a given
 #'  observation was subject to censoring. This is used to compute an IPCW-TMLE
 #'  in cases where two-stage sampling is performed. The default assumes that no
@@ -20,10 +20,9 @@
 #' @param delta A \code{numeric} value indicating the shift in the treatment to
 #'  be used in defining the target parameter. This is defined with respect to
 #'  the scale of the treatment (A).
-#' @param estimator A \code{character} indicating the typ of estimator to
-#'  compute. Choices are currently limited to a targeted maximum likelihood
-#'  estimator \code{"tmle"} or a one-step / augmented inverse probability
-#'  weighted estimator \code{"onestep"}.
+#' @param estimator The type of estimator to be fit, either \code{"tmle"} for
+#'  targeted maximum likelihood estimation or \code{"onestep"} for a one-step
+#'  augmented inverse probability weighted (AIPW) estimator.
 #' @param fluc_method The method to be used in submodel fluctuation step of
 #'  the TMLE computation. The choices are "standard" and "weighted".
 #' @param eif_tol A \code{numeric} giving the convergence criterion for the TML
