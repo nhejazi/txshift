@@ -8,12 +8,13 @@ txshift(W, A, Y, C = rep(1, length(Y)), V = NULL, delta = 0,
   estimator = c("tmle", "onestep"), fluc_method = c("standard",
   "weighted"), eif_tol = 1/length(Y), max_iter = 10000,
   ipcw_fit_args = list(fit_type = c("glm", "sl", "fit_spec"), sl_lrnrs =
-  NULL), g_fit_args = list(fit_type = c("glm", "sl", "fit_spec"), nbins =
-  35, bin_method = "dhist", bin_estimator = condensier::speedglmR6$new(),
-  parfit = FALSE, sl_lrnrs_dens = NULL), Q_fit_args = list(fit_type =
-  c("glm", "sl", "fit_spec"), glm_formula = "Y ~ .", sl_lrnrs = NULL),
-  eif_reg_type = c("hal", "glm"), ipcw_efficiency = TRUE,
-  ipcw_fit_spec = NULL, gn_fit_spec = NULL, Qn_fit_spec = NULL)
+  NULL), g_fit_args = list(fit_type = c("hal", "sl", "fit_spec"), n_bins
+  = c(10, 25), grid_type = c("equal_range", "equal_mass"), lambda_seq =
+  exp(seq(-1, -13, length = 300)), use_future = FALSE, sl_lrnrs_dens =
+  NULL), Q_fit_args = list(fit_type = c("glm", "sl", "fit_spec"),
+  glm_formula = "Y ~ .", sl_lrnrs = NULL), eif_reg_type = c("hal",
+  "glm"), ipcw_efficiency = TRUE, ipcw_fit_spec = NULL,
+  gn_fit_spec = NULL, Qn_fit_spec = NULL)
 }
 \arguments{
 \item{W}{A \code{matrix}, \code{data.frame}, or similar corresponding to a
@@ -68,20 +69,21 @@ produced by \code{est_ipcw}. NOTE THAT this first argument is not passed to
 \item{g_fit_args}{A \code{list} of arguments, all but one of which are passed
 to \code{est_g}. For further details, please consult the documentation for
 \code{est_g}. The first element of this (i.e., \code{fit_type}) is used to
-determine how this regression is fit: "glm" for a generalized linear model
-for fitting densities via the \code{condensier} package, "sl" for \code{sl3}
-learners used to fit Super Learner to densities via \code{Lrnr_condensier},
-and "fit_spec" to user-specified input of the form produced by \code{est_g}.
-NOTE THAT this first argument is not passed to \code{est_g}.}
+determine how this regression is fit: \code{"hal"} for a method using the
+highly adaptive lasso to fit conditional densities via the \code{haldensify}
+package, \code{"sl"} for \code{sl3} learners used to fit Super Learner to
+densities via \code{Lrnr_haldensify} or similar, and \code{"fit_spec"} for
+user-specified input of the form produced by \code{est_g}. NOTE THAT this
+first argument is not passed to \code{est_g}.}
 
 \item{Q_fit_args}{A \code{list} of arguments, all but one of which are passed
 to \code{est_Q}. For further details, please consult the documentation for
 \code{est_Q}. The first element of this (i.e., \code{fit_type}) is used to
-determine how this regression is fit: "glm" for a generalized linear model
-for the outcome regression, "sl" for \code{sl3} learners used to fit a Super
-Learner for the outcome regression, and "fit_spec" to user-specified input
-of the form produced by \code{est_Q}. NOTE THAT this first argument is not
-passed to \code{est_g}.}
+determine how this regression is fit: \code{"glm"} for a generalized linear
+model for the outcome regression, \code{"sl"} for \code{sl3} learners used
+to fit a Super Learner for the outcome regression, and \code{"fit_spec"} for
+user-specified input of the form produced by \code{est_Q}. NOTE THAT this
+first argument is not passed to \code{est_g}.}
 
 \item{eif_reg_type}{Whether a flexible nonparametric function ought to be
 used in the dimension-reduced nuisance regression of the targeting step for
@@ -103,16 +105,16 @@ should only be used by advanced users familiar with both the underlying
 theory and this software implementation of said theory.}
 
 \item{gn_fit_spec}{User-specified version of the argument above for fitting
-the censoring mechanism (\code{g_fit_args}). Consult the documentation for
+the treatment mechanism (\code{g_fit_args}). Consult the documentation for
 that argument for details on how to properly use this. In general, this
 should only be used by advanced users familiar with both the underlying
-theory and this software implementation of said theory.}
+theory and this software implementation of said theoretical details.}
 
 \item{Qn_fit_spec}{User-specified version of the argument above for fitting
-the censoring mechanism (\code{Q_fit_args}). Consult the documentation for
+the outcome mechanism (\code{Q_fit_args}). Consult the documentation for
 that argument for details on how to properly use this. In general, this
 should only be used by advanced users familiar with both the underlying
-theory and this software implementation of said theory.}
+theory and this software implementation of said theoretical details.}
 }
 \value{
 S3 object of class \code{txshift} containing the results of the

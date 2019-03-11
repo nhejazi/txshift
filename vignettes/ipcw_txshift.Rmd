@@ -35,7 +35,7 @@ To start, let's load the packages we'll use and set a seed for simulation:
 ```{r setup}
 library(tidyverse)
 library(data.table)
-library(condensier)
+library(haldensify)
 library(sl3)
 library(txshift)
 set.seed(429153)
@@ -102,22 +102,23 @@ with HAL; however, this is significantly slower than simple using a GLM.
 ### Inverse Probability Weighting with Targeted Maximum Likelihood Estimation
 
 ```{r}
-tmle_glm_shift_1 <- txshift(W = W, A = A, Y = Y,
+tmle_hal_shift_1 <- txshift(W = W, A = A, Y = Y,
                             C = C, V = c("W", "Y"),
                             delta = delta,
                             fluc_method = "standard",
                             max_iter = 2,
                             ipcw_fit_args = list(fit_type = "glm"),
-                            g_fit_args = list(fit_type = "glm",
-                                              nbins = 35,
-                                              bin_method = "dhist",
-                                              bin_estimator = speedglmR6$new(),
-                                              parfit = FALSE),
+                            g_fit_args = list(fit_type = "hal",
+                                              n_bins = 5,
+                                              grid_type = "equal_mass",
+                                              lambda_seq =
+                                                exp(seq(-1, -9,
+                                                        length = 300))),
                             Q_fit_args = list(fit_type = "glm",
                                               glm_formula = "Y ~ ."),
                             eif_reg_type = "glm"
                            )
-summary(tmle_glm_shift_1)
+summary(tmle_hal_shift_1)
 ```
 
 When computing any such TML estimator, we may, of course, vary the regressions
@@ -128,22 +129,23 @@ sometimes called the "clever covariate" in the literature) rather than using
 such a covariate directly in the submodel regression fit.
 
 ```{r}
-tmle_glm_shift_2 <- txshift(W = W, A = A, Y = Y,
+tmle_hal_shift_2 <- txshift(W = W, A = A, Y = Y,
                             C = C, V = c("W", "Y"),
                             delta = delta,
                             fluc_method = "weighted",
                             max_iter = 2,
                             ipcw_fit_args = list(fit_type = "glm"),
-                            g_fit_args = list(fit_type = "glm",
-                                              nbins = 35,
-                                              bin_method = "dhist",
-                                              bin_estimator = speedglmR6$new(),
-                                              parfit = FALSE),
+                            g_fit_args = list(fit_type = "hal",
+                                              n_bins = 5,
+                                              grid_type = "equal_mass",
+                                              lambda_seq =
+                                                exp(seq(-1, -9,
+                                                        length = 300))),
                             Q_fit_args = list(fit_type = "glm",
                                               glm_formula = "Y ~ ."),
                             eif_reg_type = "glm"
                            )
-summary(tmle_glm_shift_2)
+summary(tmle_hal_shift_2)
 ```
 
 ### Interlude: Constructing Optimal Stacked Regressions with `sl3`

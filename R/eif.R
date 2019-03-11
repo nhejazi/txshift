@@ -49,10 +49,10 @@ eif <- function(Y,
   estimator <- match.arg(estimator)
 
   # set Qn to use based on estimator type
-  if (estimator == "tmle" & !is.null(fluc_mod_out)) {
+  if (estimator == "tmle") {
     Qn_shift <- fluc_mod_out$Qn_shift_star
     Qn_noshift <- fluc_mod_out$Qn_noshift_star
-  } else if (estimator == "onestep" & is.null(fluc_mod_out)) {
+  } else if (estimator == "onestep") {
     Qn_shift <- Qn$upshift
     Qn_noshift <- Qn$noshift
   }
@@ -66,6 +66,11 @@ eif <- function(Y,
   eif <- rep(0, length(Delta))
   eif[Delta == 1] <-
     ipc_weights * (Hn$noshift * (Y - Qn_noshift) + (Qn_shift - psi))
+
+  # add mean of EIF to parameter estimate if fitting one-step
+  if (estimator == "onestep") {
+    psi <- psi + mean(eif)
+  }
 
   # NOTE: sanity check --- EIF ~ N(0, V(D(P)(o))), so mean(EIF) ~= 0
   eif_msg <- dplyr::if_else(

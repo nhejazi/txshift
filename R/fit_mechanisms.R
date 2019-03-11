@@ -11,18 +11,18 @@
 #' @param ipc_weights A \code{numeric} vector of observation-level weights, as
 #'  produced by the internal procedure to estimate the censoring mechanism
 #'  \code{estimate-ipc_weights}.
-#' @param fit_type A \code{character} specifying whether to use Super Learner to
-#'  fit the density estimation.
+#' @param fit_type A \code{character} specifying whether to use Super Learner or
+#'  the Highly Adaptive Lasso to estimate the conditional treatment density.
 #' @param sl_lrnrs_dens An object containing a set of instantiated learners from
 #'  the \code{sl3} package, to be used in fitting an ensemble model.
-#' @param std_args A \code{list} of arguments to be passed to \code{fit_density}
-#'  from the \code{condensier} package when the argument \code{fit_type} is set
-#'  to "glm" (not invoking Super Learner).
+#' @param std_args A \code{list} of arguments to be passed to \code{haldensify}
+#'  from the \code{haldensify} package when the argument \code{fit_type} is set
+#'  to \code{"hal"}. Note that this invokes HAL instead of Super Learner and is
+#'  thus only feasible for relatively small data sets (n < 2000).
 #'
 #' @importFrom data.table as.data.table setnames set copy
 #' @importFrom sl3 sl3_Task
 #' @importFrom stats predict
-#' @importFrom condensier fit_density predict_probability speedglmR6
 #' @importFrom haldensify haldensify
 #'
 #' @export
@@ -32,13 +32,13 @@ est_g <- function(A,
                   W,
                   delta = 0,
                   ipc_weights = rep(1, length(A)),
-                  fit_type = c("sl", "glm"),
+                  fit_type = c("sl", "hal"),
                   sl_lrnrs_dens = NULL,
                   std_args = list(
-                    nbins = 25,
-                    bin_method = "dhist",
-                    bin_estimator = condensier::speedglmR6$new(),
-                    parfit = FALSE
+                    n_bins = c(10, 25),
+                    grid_type = c("equal_range", "equal_mass"),
+                    lambda_seq = exp(seq(-1, -13, length = 300)),
+                    use_future = FALSE
                   )) {
   ##############################################################################
   # make data objects from inputs
@@ -104,18 +104,18 @@ est_g <- function(A,
   }
 
   ##############################################################################
-  # fit conditional densities with condensier
+  # fit conditional densities with haldensify
   ##############################################################################
-  if (fit_type == "glm" & is.null(sl_lrnrs_dens)) {
+  if (fit_type == "hal" & is.null(sl_lrnrs_dens)) {
     fit_args <- unlist(
       list(
-        X = list(colnames(W)),
-        Y = "A", weights = "ipc_weights", std_args
+        A = list(A), W = list(W),
+        wts = list(ipc_weights),
+        std_args
       ),
       recursive = FALSE
     )
-    fit_args$input_data <- data_in
-    fit_g_dens_glm <- do.call(condensier::fit_density, fit_args)
+    fit_g_dens_hal <- do.call(haldensify::haldensify, fit_args)
   } else if (fit_type == "sl" & !is.null(sl_lrnrs_dens)) {
     suppressMessages(
       fit_g_dens_sl <- sl_lrnrs_dens$train(sl_task)
@@ -125,11 +125,12 @@ est_g <- function(A,
   ##############################################################################
   # predict probabilities for the UNSHIFTED data (A = a)
   ##############################################################################
-  if (fit_type == "glm" & is.null(sl_lrnrs_dens)) {
+  if (fit_type == "hal" & is.null(sl_lrnrs_dens)) {
     pred_g_A_noshift <-
-      condensier::predict_probability(
-        model_fit = fit_g_dens_glm,
-        newdata = data_in
+      stats::predict(
+        object = fit_g_dens_hal,
+        new_A = as.numeric(data_in$A),
+        new_W = as.matrix(data_in[, colnames(W), with = FALSE])
       )
   } else if (fit_type == "sl" & !is.null(sl_lrnrs_dens)) {
     suppressMessages(
@@ -140,11 +141,12 @@ est_g <- function(A,
   ##############################################################################
   # predict probabilities for the DOWNSHIFTED data (A = a - delta)
   ##############################################################################
-  if (fit_type == "glm" & is.null(sl_lrnrs_dens)) {
+  if (fit_type == "hal" & is.null(sl_lrnrs_dens)) {
     pred_g_A_downshifted <-
-      condensier::predict_probability(
-        model_fit = fit_g_dens_glm,
-        newdata = data_in_downshifted
+      stats::predict(
+        object = fit_g_dens_hal,
+        new_A = as.numeric(data_in_downshifted$A),
+        new_W = as.matrix(data_in[, colnames(W), with = FALSE])
       )
   } else if (fit_type == "sl" & !is.null(sl_lrnrs_dens)) {
     suppressMessages(
@@ -155,11 +157,12 @@ est_g <- function(A,
   ##############################################################################
   # predict probabilities for the UPSHIFTED data (A = a + delta)
   ##############################################################################
-  if (fit_type == "glm" & is.null(sl_lrnrs_dens)) {
+  if (fit_type == "hal" & is.null(sl_lrnrs_dens)) {
     pred_g_A_upshifted <-
-      condensier::predict_probability(
-        model_fit = fit_g_dens_glm,
-        newdata = data_in_upshifted
+      stats::predict(
+        object = fit_g_dens_hal,
+        new_A = as.numeric(data_in_upshifted$A),
+        new_W = as.matrix(data_in[, colnames(W), with = FALSE])
       )
   } else if (fit_type == "sl" & !is.null(sl_lrnrs_dens)) {
     suppressMessages(
@@ -170,11 +173,12 @@ est_g <- function(A,
   ##############################################################################
   # predict probabilities for the UPSHIFTED data (A = a + 2*delta)
   ##############################################################################
-  if (fit_type == "glm" & is.null(sl_lrnrs_dens)) {
+  if (fit_type == "hal" & is.null(sl_lrnrs_dens)) {
     pred_g_A_upupshifted <-
-      condensier::predict_probability(
-        model_fit = fit_g_dens_glm,
-        newdata = data_in_upupshifted
+      stats::predict(
+        object = fit_g_dens_hal,
+        new_A = as.numeric(data_in_upupshifted$A),
+        new_W = as.matrix(data_in[, colnames(W), with = FALSE])
       )
   } else if (fit_type == "sl" & !is.null(sl_lrnrs_dens)) {
     suppressMessages(
@@ -443,6 +447,7 @@ est_Hn <- function(gn, a = NULL, w = NULL) {
   # compute the ratio of the propensity scores for Hn(d(A,W),W)
   ratio_g_shift <- (gn$noshift / gn$upshift) * as.numeric(gn$upshift != 0) +
     as.numeric(gn$upupshift == 0)
+  ratio_g_shift[is.na(ratio_g_shift)] <- 1
 
   # set up output table of auxiliary covariate under different shifts
   H_n <- data.table::as.data.table(cbind(ratio_g_noshift, ratio_g_shift))

@@ -197,33 +197,38 @@ ipcw_eif_update <- function(data_in,
     }
   }
 
-  # fit logistic regression to fluctuate along the sub-model wrt epsilon
-  ipcw_fluc_reg_data <-
-    data.table::as.data.table(
-      list(
-        delta = C,
-        logit_ipcw = stats::qlogis(bound_precision(ipc_mech)),
-        eif_by_ipcw = (eif_pred / bound_precision(ipc_mech))
+  # TMLE: fit logistic regression to fluctuate along the sub-model wrt epsilon
+  if (estimator == "tmle") {
+    ipcw_fluc_reg_data <-
+      data.table::as.data.table(
+        list(
+          delta = C,
+          logit_ipcw = stats::qlogis(bound_precision(ipc_mech)),
+          eif_by_ipcw = (eif_pred / bound_precision(ipc_mech))
+        )
       )
+    # fit fluctuation regression
+    ipcw_fluc <- stats::glm(
+      stats::as.formula("delta ~ -1 + offset(logit_ipcw) + eif_by_ipcw"),
+      data = ipcw_fluc_reg_data,
+      family = "binomial"
     )
-  ipcw_fluc <- stats::glm(
-    stats::as.formula("delta ~ -1 + offset(logit_ipcw) + eif_by_ipcw"),
-    data = ipcw_fluc_reg_data,
-    family = "binomial"
-  )
+    # now, we can obtain Pn* from the sub-model fluctuation
+    ipcw_pred <- stats::fitted(ipcw_fluc) %>%
+      as.numeric()
+  } else {
+    # just use the initial estimates of censoring probability for one-step
+    ipcw_pred <- ipc_mech
+  }
 
-  # now, we can obtain Pn* from the sub-model fluctuation
-  ipcw_fluc_pred <- stats::fitted(ipcw_fluc) %>%
-    as.numeric()
-
-  # this is the mean of the second half of the EIF (for censoring bit...)
-  ipcw_eif_out <- (C - ipcw_fluc_pred) * (eif_pred / ipcw_fluc_pred)
+  # this is the mean of the second half of the IPCW-EIF
+  ipcw_eif_out <- (C - ipcw_pred) * (eif_pred / ipcw_pred)
 
   # sanity check: score of the logistic regression fluctuation model
-  ipcw_eif_check <- mean((C - ipcw_fluc_pred) * (eif_pred / ipc_mech))
+  ipcw_eif_check <- mean((C - ipcw_pred) * (eif_pred / ipc_mech))
 
   # so, now we need weights to feed back into the previous steps
-  ipc_weights <- C / ipcw_fluc_pred
+  ipc_weights <- C / ipcw_pred
   ipc_weights_norm <- ipc_weights / sum(ipc_weights)
 
   # as above, compute TMLE and EIF with NEW WEIGHTS and SUBMODEL FLUCTUATION
@@ -243,7 +248,7 @@ ipcw_eif_update <- function(data_in,
   out <- list(
     Qn_estim = Qn_estim,
     fluc_mod_out = fitted_fluc_mod,
-    pi_mech_star = ipcw_fluc_pred,
+    pi_mech_star = ipcw_pred,
     ipc_weights = ipc_weights,
     ipc_weights_norm = ipc_weights_norm,
     eif_eval = eif_eval,

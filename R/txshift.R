@@ -41,19 +41,20 @@
 #' @param g_fit_args A \code{list} of arguments, all but one of which are passed
 #'  to \code{est_g}. For further details, please consult the documentation for
 #'  \code{est_g}. The first element of this (i.e., \code{fit_type}) is used to
-#'  determine how this regression is fit: "glm" for a generalized linear model
-#'  for fitting densities via the \code{condensier} package, "sl" for \code{sl3}
-#'  learners used to fit Super Learner to densities via \code{Lrnr_condensier},
-#'  and "fit_spec" to user-specified input of the form produced by \code{est_g}.
-#'  NOTE THAT this first argument is not passed to \code{est_g}.
+#'  determine how this regression is fit: \code{"hal"} for a method using the
+#'  highly adaptive lasso to fit conditional densities via the \code{haldensify}
+#'  package, \code{"sl"} for \code{sl3} learners used to fit Super Learner to
+#'  densities via \code{Lrnr_haldensify} or similar, and \code{"fit_spec"} for
+#'  user-specified input of the form produced by \code{est_g}. NOTE THAT this
+#'  first argument is not passed to \code{est_g}.
 #' @param Q_fit_args A \code{list} of arguments, all but one of which are passed
 #'  to \code{est_Q}. For further details, please consult the documentation for
 #'  \code{est_Q}. The first element of this (i.e., \code{fit_type}) is used to
-#'  determine how this regression is fit: "glm" for a generalized linear model
-#'  for the outcome regression, "sl" for \code{sl3} learners used to fit a Super
-#'  Learner for the outcome regression, and "fit_spec" to user-specified input
-#'  of the form produced by \code{est_Q}. NOTE THAT this first argument is not
-#'  passed to \code{est_g}.
+#'  determine how this regression is fit: \code{"glm"} for a generalized linear
+#'  model for the outcome regression, \code{"sl"} for \code{sl3} learners used
+#'  to fit a Super Learner for the outcome regression, and \code{"fit_spec"} for
+#'  user-specified input of the form produced by \code{est_Q}. NOTE THAT this
+#'  first argument is not passed to \code{est_g}.
 #' @param eif_reg_type Whether a flexible nonparametric function ought to be
 #'  used in the dimension-reduced nuisance regression of the targeting step for
 #'  the censored data case. By default, the method used is a nonparametric
@@ -71,17 +72,16 @@
 #'  should only be used by advanced users familiar with both the underlying
 #'  theory and this software implementation of said theory.
 #' @param gn_fit_spec User-specified version of the argument above for fitting
-#'  the censoring mechanism (\code{g_fit_args}). Consult the documentation for
+#'  the treatment mechanism (\code{g_fit_args}). Consult the documentation for
 #'  that argument for details on how to properly use this. In general, this
 #'  should only be used by advanced users familiar with both the underlying
-#'  theory and this software implementation of said theory.
+#'  theory and this software implementation of said theoretical details.
 #' @param Qn_fit_spec User-specified version of the argument above for fitting
-#'  the censoring mechanism (\code{Q_fit_args}). Consult the documentation for
+#'  the outcome mechanism (\code{Q_fit_args}). Consult the documentation for
 #'  that argument for details on how to properly use this. In general, this
 #'  should only be used by advanced users familiar with both the underlying
-#'  theory and this software implementation of said theory.
+#'  theory and this software implementation of said theoretical details.
 #'
-#' @importFrom condensier speedglmR6
 #' @importFrom data.table as.data.table setnames
 #' @importFrom stringr str_detect
 #' @importFrom dplyr filter select "%>%"
@@ -107,11 +107,11 @@ txshift <- function(W,
                       sl_lrnrs = NULL
                     ),
                     g_fit_args = list(
-                      fit_type = c("glm", "sl", "fit_spec"),
-                      nbins = 35,
-                      bin_method = "dhist",
-                      bin_estimator = condensier::speedglmR6$new(),
-                      parfit = FALSE,
+                      fit_type = c("hal", "sl", "fit_spec"),
+                      n_bins = c(10, 25),
+                      grid_type = c("equal_range", "equal_mass"),
+                      lambda_seq = exp(seq(-1, -13, length = 300)),
+                      use_future = FALSE,
                       sl_lrnrs_dens = NULL
                     ),
                     Q_fit_args = list(
@@ -215,7 +215,7 @@ txshift <- function(W,
       ipc_weights = cens_weights,
       fit_type = g_fit_type
     )
-    if (g_fit_type == "glm") {
+    if (g_fit_type == "hal") {
       # since fitting a GLM, can safely remove all args related to SL
       g_fit_args <- g_fit_args[!stringr::str_detect(names(g_fit_args), "sl")]
       # reshape args to a list suitable to be passed to do.call
@@ -224,7 +224,7 @@ txshift <- function(W,
         recursive = FALSE
       )
     } else if (g_fit_type == "sl") {
-      # if fitting SL, we can discard all the standard condensier-related args
+      # if fitting SL, we can discard all the standard non-sl3 arguments
       g_fit_args <- g_fit_args[stringr::str_detect(names(g_fit_args), "sl")]
       # reshapes list of args to make passing to do.call possible
       gn_estim_args <- unlist(list(gn_estim_in, g_fit_args), recursive = FALSE)
@@ -281,7 +281,6 @@ txshift <- function(W,
     return(tmle_fit)
 
   } else if (estimator == "onestep") {
-    #browser()
     # compute augmented inverse probability weighted estimator
     onestep_fit <- onestep_txshift(data_internal = data_internal,
                                    C = C,
