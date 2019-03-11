@@ -193,8 +193,8 @@ After using the `txshift` R package, please cite the following:
   for estimating the conditional density treatment mechanism component of this
   parameter based on using the [highly adaptive
   lasso](https://github.com/tlverse/hal9001) in combination with a pooled
-  hazard regression. This package implements the methodology proposed in
-  @diaz2011super.
+  hazard regression. This package implements the methodology proposed
+  in @diaz2011super.
 
 ---
 

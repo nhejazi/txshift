@@ -210,9 +210,7 @@ After using the `txshift` R package, please cite the following:
     component of this parameter based on using the [highly adaptive
     lasso](https://github.com/tlverse/hal9001) in combination with a
     pooled hazard regression. This package implements the methodology
-    proposed in
-    
-    1.  
+    proposed in Díaz and van der Laan (2011).
 
 -----
 
@@ -267,11 +265,19 @@ Stochastic Interventions.” *Submitted*.
 
 </div>
 
+<div id="ref-diaz2011super">
+
+Díaz, Iván, and Mark J van der Laan. 2011. “Super Learner Based
+Conditional Density Estimation with Application to Marginal Structural
+Models.” *The International Journal of Biostatistics* 7 (1). De Gruyter:
+1–20.
+
+</div>
+
 <div id="ref-diaz2012population">
 
-Díaz, Iván, and Mark J van der Laan. 2012. “Population Intervention
-Causal Effects Based on Stochastic Interventions.” *Biometrics* 68 (2).
-Wiley Online Library: 541–49.
+———. 2012. “Population Intervention Causal Effects Based on Stochastic
+Interventions.” *Biometrics* 68 (2). Wiley Online Library: 541–49.
 
 </div>
 
