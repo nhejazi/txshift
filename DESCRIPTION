@@ -49,6 +49,7 @@ Suggests:
     testthat,
     knitr,
     rmarkdown,
+    covr,
     future,
     tidyverse,
     Rsolnp,
