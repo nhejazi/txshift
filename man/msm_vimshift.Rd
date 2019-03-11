@@ -61,13 +61,21 @@ n_obs <- 1000
 W <- as.numeric(replicate(1, rbinom(n_obs, 1, 0.5)))
 A <- as.numeric(rnorm(n_obs, mean = 2 * W, sd = 1))
 Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
-msm <- msm_vimshift(W = W, A = A, Y = Y, estimator = "tmle",
-                    g_fit_args = list(fit_type = "hal",
-                                      n_bins = 5,
-                                      grid_type = "equal_mass",
-                                      lambda_seq = exp(seq(-1, -9,
-                                                           length = 300))),
-                    Q_fit_args = list(fit_type = "glm",
-                                      glm_formula = "Y ~ ."))
+msm <- msm_vimshift(
+  W = W, A = A, Y = Y, estimator = "tmle",
+  g_fit_args = list(
+    fit_type = "hal",
+    n_bins = 5,
+    grid_type = "equal_mass",
+    lambda_seq = exp(seq(-1, -9,
+      length = 300
+    ))
+  ),
+  Q_fit_args = list(
+    fit_type = "glm",
+    glm_formula = "Y ~ ."
+  )
+)
 
+#
 }

@@ -65,9 +65,11 @@ tmle.shift <- function(Y, A, W, Qn, gn, delta, tol = 1e-5, iter.max = 5, Aval) {
 n <- 100
 W <- data.frame(W1 = runif(n), W2 = rbinom(n, 1, 0.7))
 A <- rpois(n, lambda = exp(3 + .3 * log(W$W1) - 0.2 * exp(W$W1) * W$W2))
-Y <- rbinom(n, 1,
-            plogis(-1 + 0.05 * A - 0.02 * A * W$W2 + 0.2 * A * tan(W$W1^2) -
-                   0.02 * W$W1 * W$W2 + 0.1 * A * W$W1 * W$W2))
+Y <- rbinom(
+  n, 1,
+  plogis(-1 + 0.05 * A - 0.02 * A * W$W2 + 0.2 * A * tan(W$W1^2) -
+    0.02 * W$W1 * W$W2 + 0.1 * A * W$W1 * W$W2)
+)
 delta_shift <- 2
 
 fitA.0 <- glm(
@@ -116,18 +118,20 @@ test_that("Revised tmle_shift procedure matches code from 2012 manuscript", {
 # run the new txshift implementation of TMLE
 # NOTE: should use true density like Ivan does since condensier misspecified
 gn_spec_fitted <-
-  lapply(c(-delta_shift, 0, delta_shift, 2 * delta_shift),
-         function(shift_value) {
-           gn_out <- gn.0(A = A + shift_value, W = W)
-        }) %>%
+  lapply(
+    c(-delta_shift, 0, delta_shift, 2 * delta_shift),
+    function(shift_value) {
+      gn_out <- gn.0(A = A + shift_value, W = W)
+    }
+  ) %>%
   bind_cols()
 colnames(gn_spec_fitted) <- c("downshift", "noshift", "upshift", "upupshift")
 
 # NOTE: should also use true Q for good measure (truth includes interactions)
 Qn_spec_fitted <-
   lapply(c(0, delta_shift), function(shift_value) {
-           Qn_out <- Qn.0(A = A + shift_value, W = W)
-        }) %>%
+    Qn_out <- Qn.0(A = A + shift_value, W = W)
+  }) %>%
   bind_cols()
 colnames(Qn_spec_fitted) <- c("noshift", "upshift")
 
@@ -145,4 +149,3 @@ txshift_psi <- as.numeric(tmle_txshift$psi)
 test_that("txshift implementation matches revised 2012 procedure closely", {
   expect_equal(tmle_new_psi, txshift_psi, tol = 1e-3)
 })
-

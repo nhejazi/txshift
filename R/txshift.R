@@ -122,8 +122,7 @@ txshift <- function(W,
                     ipcw_efficiency = TRUE,
                     ipcw_fit_spec = NULL,
                     gn_fit_spec = NULL,
-                    Qn_fit_spec = NULL
-                   ) {
+                    Qn_fit_spec = NULL) {
   # check arguments and set up some objects for programmatic convenience
   call <- match.call(expand.dots = TRUE)
   estimator <- match.arg(estimator)
@@ -258,44 +257,47 @@ txshift <- function(W,
   ##############################################################################
   if (estimator == "tmle") {
     # compute targeted maximum likelihood estimator
-    tmle_fit <- tmle_txshift(data_internal = data_internal,
-                             C = C,
-                             V = V_in,
-                             delta = delta,
-                             cens_weights = cens_weights,
-                             cens_weights_norm = cens_weights_norm,
-                             ipcw_estim = ipcw_estim,
-                             Qn_estim = Qn_estim,
-                             Hn_estim = Hn_estim,
-                             fluc_method = fluc_method,
-                             eif_tol = eif_tol,
-                             max_iter = max_iter,
-                             eif_reg_type = eif_reg_type,
-                             ipcw_fit_args = ipcw_fit_args,
-                             ipcw_fit_type = ipcw_fit_type,
-                             ipcw_efficiency = ipcw_efficiency)
+    tmle_fit <- tmle_txshift(
+      data_internal = data_internal,
+      C = C,
+      V = V_in,
+      delta = delta,
+      cens_weights = cens_weights,
+      cens_weights_norm = cens_weights_norm,
+      ipcw_estim = ipcw_estim,
+      Qn_estim = Qn_estim,
+      Hn_estim = Hn_estim,
+      fluc_method = fluc_method,
+      eif_tol = eif_tol,
+      max_iter = max_iter,
+      eif_reg_type = eif_reg_type,
+      ipcw_fit_args = ipcw_fit_args,
+      ipcw_fit_type = ipcw_fit_type,
+      ipcw_efficiency = ipcw_efficiency
+    )
 
     # return output object created by TML estimation routine
     tmle_fit$call <- call
     return(tmle_fit)
-
   } else if (estimator == "onestep") {
     # compute augmented inverse probability weighted estimator
-    onestep_fit <- onestep_txshift(data_internal = data_internal,
-                                   C = C,
-                                   V = V_in,
-                                   delta = delta,
-                                   cens_weights = cens_weights,
-                                   cens_weights_norm = cens_weights_norm,
-                                   ipcw_estim = ipcw_estim,
-                                   Qn_estim = Qn_estim,
-                                   Hn_estim = Hn_estim,
-                                   eif_tol = eif_tol,
-                                   max_iter = max_iter,
-                                   eif_reg_type = eif_reg_type,
-                                   ipcw_fit_args = ipcw_fit_args,
-                                   ipcw_fit_type = ipcw_fit_type,
-                                   ipcw_efficiency = ipcw_efficiency)
+    onestep_fit <- onestep_txshift(
+      data_internal = data_internal,
+      C = C,
+      V = V_in,
+      delta = delta,
+      cens_weights = cens_weights,
+      cens_weights_norm = cens_weights_norm,
+      ipcw_estim = ipcw_estim,
+      Qn_estim = Qn_estim,
+      Hn_estim = Hn_estim,
+      eif_tol = eif_tol,
+      max_iter = max_iter,
+      eif_reg_type = eif_reg_type,
+      ipcw_fit_args = ipcw_fit_args,
+      ipcw_fit_type = ipcw_fit_type,
+      ipcw_efficiency = ipcw_efficiency
+    )
 
     # return output object created by AIPW estimation routine
     onestep_fit$call <- call

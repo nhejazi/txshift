@@ -100,8 +100,10 @@ summary.txshift <- function(object,
   eif_mean <- formatC(mean(object$eif), digits = digits, format = "e")
 
   # create output table from input object and confidence interval results
-  out <- c(round(c(ci, object$var), digits = digits), eif_mean,
-           object$estimator, object$n_iter)
+  out <- c(
+    round(c(ci, object$var), digits = digits), eif_mean,
+    object$estimator, object$n_iter
+  )
   names(out) <- c(
     "lwr_ci", "param_est", "upr_ci", "param_var",
     "eif_mean", "estimator", "n_iter"
@@ -181,4 +183,3 @@ scale_to_original <- function(scaled_vals, max_orig, min_orig) {
   scaled_orig <- scaled_vals * (max_orig - min_orig) + min_orig
   return(scaled_orig)
 }
-

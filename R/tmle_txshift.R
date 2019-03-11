@@ -183,7 +183,7 @@ tmle_txshift <- function(data_internal,
       recursive = FALSE
     )
 
-  # standard TMLE of the shift parameter / inefficient IPCW-TMLE
+    # standard TMLE of the shift parameter / inefficient IPCW-TMLE
   } else {
     # fit logistic regression to fluctuate along the sub-model
     fitted_fluc_mod <- fit_fluc(

@@ -44,16 +44,23 @@
 #' W <- as.numeric(replicate(1, rbinom(n_obs, 1, 0.5)))
 #' A <- as.numeric(rnorm(n_obs, mean = 2 * W, sd = 1))
 #' Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
-#' msm <- msm_vimshift(W = W, A = A, Y = Y, estimator = "tmle",
-#'                     g_fit_args = list(fit_type = "hal",
-#'                                       n_bins = 5,
-#'                                       grid_type = "equal_mass",
-#'                                       lambda_seq = exp(seq(-1, -9,
-#'                                                            length = 300))),
-#'                     Q_fit_args = list(fit_type = "glm",
-#'                                       glm_formula = "Y ~ ."))
-#'
-#
+#' msm <- msm_vimshift(
+#'   W = W, A = A, Y = Y, estimator = "tmle",
+#'   g_fit_args = list(
+#'     fit_type = "hal",
+#'     n_bins = 5,
+#'     grid_type = "equal_mass",
+#'     lambda_seq = exp(seq(-1, -9,
+#'       length = 300
+#'     ))
+#'   ),
+#'   Q_fit_args = list(
+#'     fit_type = "glm",
+#'     glm_formula = "Y ~ ."
+#'   )
+#' )
+#' 
+#' #
 msm_vimshift <- function(Y,
                          A,
                          W,
@@ -79,13 +86,14 @@ msm_vimshift <- function(Y,
   # fit TML or one-step estimator for each value of shift in the grid
   est_over_grid <-
     lapply(delta_grid, function(shift) {
-             est <- txshift(W = W, A = A, Y = Y, C = C, V = V,
-                            delta = shift, estimator = estimator,
-                            ...)
-             return(est)
-          })
+      est <- txshift(
+        W = W, A = A, Y = Y, C = C, V = V,
+        delta = shift, estimator = estimator,
+        ...
+      )
+      return(est)
+    })
 
-  browser()
   # matrix of EIF(O_i) values and estimates across each parameter estimated
   psi_vec <- sapply(est_over_grid, `[[`, "psi")
   eif_mat <- sapply(est_over_grid, `[[`, "eif")
@@ -120,7 +128,7 @@ msm_vimshift <- function(Y,
     psi = psi_vec,
     ci_high = psi_vec + ci_mult[2] * sqrt(diag(stats::cov(eif_mat)))
   ) %>%
-  tibble::as_tibble()
+    tibble::as_tibble()
 
   # create summary table for MSM estimates
   msm_out <- list(
@@ -131,10 +139,12 @@ msm_vimshift <- function(Y,
     param_se = msm_se,
     p_value = pval_msm_param
   ) %>%
-  tibble::as_tibble()
+    tibble::as_tibble()
 
   # complete output for MSM
-  out <- list(param_est = vimshift_out,
-              msm_est = msm_out)
+  out <- list(
+    param_est = vimshift_out,
+    msm_est = msm_out
+  )
   return(out)
 }
