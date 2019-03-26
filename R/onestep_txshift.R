@@ -100,7 +100,6 @@ onestep_txshift <- function(data_internal,
     pi_mech_star <- ipcw_estim$pi_mech
     Qn_estim_updated <- Qn_estim
 
-    browser()
     # update sub-model fluctuation, re-compute EIF, and update EIF
     ipcw_aipw_comp <- ipcw_eif_update(
       data_in = data_internal,

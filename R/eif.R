@@ -72,6 +72,7 @@ eif <- function(Y,
     ipc_weights * (Hn$noshift * (Y - Qn_noshift) + (Qn_shift - psi))
 
   # add mean of EIF to parameter estimate if fitting one-step
+  # NOTE: the estimate of psi is updated _after_ evaluating the EIF
   if (estimator == "onestep") {
     psi <- psi + mean(eif)
   }
