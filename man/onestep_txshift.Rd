@@ -7,9 +7,8 @@ Mean Under Shifted Treatment}
 \usage{
 onestep_txshift(data_internal, C = rep(1, nrow(data_internal)),
   V = NULL, delta, cens_weights, cens_weights_norm, ipcw_estim, Qn_estim,
-  Hn_estim, eif_tol = 1/nrow(data_internal), max_iter = 10000,
-  eif_reg_type = c("hal", "glm"), ipcw_fit_args, ipcw_fit_type,
-  ipcw_efficiency = TRUE)
+  Hn_estim, eif_tol = 1/nrow(data_internal), eif_reg_type = c("hal",
+  "glm"), ipcw_fit_args, ipcw_fit_type, ipcw_efficiency = TRUE)
 }
 \arguments{
 \item{data_internal}{A \code{data.table} constructed internally by a call to
@@ -58,9 +57,6 @@ in after being constructed by a call to the internal function \code{est_Hn}.}
 \item{eif_tol}{A \code{numeric} giving the convergence criterion for the AIPW
 estimator. This is the the maximum mean of the efficient influence function
 (EIF) to be used in declaring convergence (theoretically, should be zero).}
-
-\item{max_iter}{A \code{numeric} integer giving the maximum number of steps
-to be taken in iterating to a solution of the efficient influence function.}
 
 \item{eif_reg_type}{Whether a flexible nonparametric function ought to be
 used in the dimension-reduced nuisance regression of the targeting step for

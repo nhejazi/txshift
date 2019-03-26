@@ -99,6 +99,8 @@ ipcw_eif_update <- function(data_in,
   }
 
   # compute EIF using updated weights and updated fluctuation (if TMLE)
+  # NOTE: for one-step, this adds the first half of the EIF as the correction
+  #       SO the second half (from the reduced regression) is still needed...
   eif_eval <- eif(
     Y = data_in$Y,
     Qn = Qn_estim,
@@ -112,8 +114,8 @@ ipcw_eif_update <- function(data_in,
   )
 
   # the efficient influence function equation we're solving looks like
-  # pi_mech = missing-ness mechanism weights for ALL observations
-  # 0 = (C - pi_mech) * \E(f(eif ~ V, subset = (C = 1)) / pi_mech)
+  # pi = missingness mechanism weights for ALL observations
+  # 0 = (C - pi) * \E(f(eif ~ V, subset = (C = 1)) / pi)
   if (fit_type == "sl" & !is.null(sl_lrnrs)) {
     # organize EIF data as data.table
     eif_data <- data_in %>%
@@ -224,25 +226,26 @@ ipcw_eif_update <- function(data_in,
   # this is the mean of the second half of the IPCW-EIF
   ipcw_eif_out <- (C - ipcw_pred) * (eif_pred / ipcw_pred)
 
-  # sanity check: score of the logistic regression fluctuation model
-  ipcw_eif_check <- mean((C - ipcw_pred) * (eif_pred / ipc_mech))
-
   # so, now we need weights to feed back into the previous steps
   ipc_weights <- C / ipcw_pred
   ipc_weights_norm <- ipc_weights / sum(ipc_weights)
 
   # as above, compute TMLE and EIF with NEW WEIGHTS and SUBMODEL FLUCTUATION
-  eif_eval <- eif(
-    Y = data_in$Y,
-    Qn = Qn_estim,
-    Hn = Hn_estim,
-    estimator = estimator,
-    fluc_mod_out = fitted_fluc_mod,
-    Delta = C,
-    ipc_weights = ipc_weights[C == 1],
-    ipc_weights_norm = ipc_weights_norm[C == 1],
-    eif_tol = eif_tol
-  )
+  # NOTE: since this is meant to update the EIF components based on the TMLE
+  #       update steps, it accomplishes _literally_ nothing for the one-step
+  if (estimator == "tmle") {
+    eif_eval <- eif(
+      Y = data_in$Y,
+      Qn = Qn_estim,
+      Hn = Hn_estim,
+      estimator = estimator,
+      fluc_mod_out = fitted_fluc_mod,
+      Delta = C,
+      ipc_weights = ipc_weights[C == 1],
+      ipc_weights_norm = ipc_weights_norm[C == 1],
+      eif_tol = eif_tol
+    )
+  }
 
   # need to return output such that we can loop over this function
   out <- list(

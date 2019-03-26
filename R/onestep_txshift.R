@@ -38,8 +38,6 @@
 #' @param eif_tol A \code{numeric} giving the convergence criterion for the AIPW
 #'  estimator. This is the the maximum mean of the efficient influence function
 #'  (EIF) to be used in declaring convergence (theoretically, should be zero).
-#' @param max_iter A \code{numeric} integer giving the maximum number of steps
-#'  to be taken in iterating to a solution of the efficient influence function.
 #' @param eif_reg_type Whether a flexible nonparametric function ought to be
 #'  used in the dimension-reduced nuisance regression of the targeting step for
 #'  the censored data case. By default, the method used is a nonparametric
@@ -84,19 +82,13 @@ onestep_txshift <- function(data_internal,
                             Qn_estim,
                             Hn_estim,
                             eif_tol = 1 / nrow(data_internal),
-                            max_iter = 1e4,
                             eif_reg_type = c("hal", "glm"),
                             ipcw_fit_args,
                             ipcw_fit_type,
                             ipcw_efficiency = TRUE) {
-  # start counter
-  n_steps <- 0
+
   # invoke efficient IPCW-AIPW, per Rose & van der Laan (2011), if necessary
   if (ipcw_efficiency & !all(C == 1) & !is.null(V) & !is.null(ipcw_estim)) {
-    # Efficient implementation of the IPCW-AIPW estimator
-    eif_mean <- Inf
-    conv_res <- replicate(3, rep(NA, max_iter))
-
     # normalize censoring mechanism weights (to be overwritten)
     cens_weights <- C / ipcw_estim$pi_mech
     cens_weights_norm <- cens_weights / sum(cens_weights)
@@ -105,76 +97,75 @@ onestep_txshift <- function(data_internal,
     pi_mech_star <- ipcw_estim$pi_mech
     Qn_estim_updated <- Qn_estim
 
-    # iterate procedure until convergence conditions are satisfied
-    while (abs(eif_mean) > eif_tol & n_steps < max_iter) {
-      # iterate counter
-      n_steps <- n_steps + 1
+    browser()
+    # update sub-model fluctuation, re-compute EIF, and update EIF
+    ipcw_aipw_comp <- ipcw_eif_update(
+      data_in = data_internal,
+      C = C,
+      V = V,
+      ipc_mech = pi_mech_star,
+      ipc_weights = cens_weights,
+      ipc_weights_norm = cens_weights_norm,
+      Qn_estim = Qn_estim_updated,
+      Hn_estim = Hn_estim,
+      estimator = "onestep",
+      fit_type = ipcw_fit_type,
+      eif_tol = eif_tol,
+      sl_lrnrs = ipcw_fit_args$sl_lrnrs,
+      eif_reg_type = eif_reg_type
+    )
 
-      # update sub-model fluctuation, re-compute EIF, and update EIF
-      ipcw_aipw_comp <- ipcw_eif_update(
-        data_in = data_internal,
-        C = C,
-        V = V,
-        ipc_mech = pi_mech_star,
-        ipc_weights = cens_weights,
-        ipc_weights_norm = cens_weights_norm,
-        Qn_estim = Qn_estim_updated,
-        Hn_estim = Hn_estim,
-        estimator = "onestep",
-        fit_type = ipcw_fit_type,
-        eif_tol = eif_tol,
-        sl_lrnrs = ipcw_fit_args$sl_lrnrs,
-        eif_reg_type = eif_reg_type
-      )
-
-      # overwrite and update quantities to be used in the next iteration
-      Qn_estim_updated <- data.table::as.data.table(
-        list(
-          # NOTE: need to re-scale estimated outcomes values within bounds of Y
-          scale_to_unit(
-            vals = ipcw_aipw_comp$Qn_estim$noshift
-          ),
-          scale_to_unit(
-            vals = ipcw_aipw_comp$Qn_estim$upshift
-          )
+    # overwrite and update quantities to be used in the next iteration
+    Qn_estim_updated <- data.table::as.data.table(
+      list(
+        # NOTE: need to re-scale estimated outcomes values within bounds of Y
+        scale_to_unit(
+          vals = ipcw_aipw_comp$Qn_estim$noshift
+        ),
+        scale_to_unit(
+          vals = ipcw_aipw_comp$Qn_estim$upshift
         )
       )
-      data.table::setnames(Qn_estim_updated, names(Qn_estim))
-      cens_weights <- ipcw_aipw_comp$ipc_weights
-      cens_weights_norm <- ipcw_aipw_comp$ipc_weights_norm
-      pi_mech_star <- ipcw_aipw_comp$pi_mech_star
+    )
+    data.table::setnames(Qn_estim_updated, names(Qn_estim))
+    cens_weights <- ipcw_aipw_comp$ipc_weights
+    cens_weights_norm <- ipcw_aipw_comp$ipc_weights_norm
+    pi_mech_star <- ipcw_aipw_comp$pi_mech_star
 
-      # compute updated mean of efficient influence function and save
-      eif_mean <- mean(ipcw_aipw_comp$eif_eval$eif - ipcw_aipw_comp$ipcw_eif)
-      eif_var <- var(ipcw_aipw_comp$eif_eval$eif - ipcw_aipw_comp$ipcw_eif) /
-        length(C)
-      conv_res[n_steps, ] <- c(ipcw_aipw_comp$eif_eval$psi, eif_var, eif_mean)
-    }
-    conv_results <- data.table::as.data.table(conv_res)
-    data.table::setnames(conv_results, c("psi", "var", "eif_mean"))
+    # compute updated mean of efficient influence function
+    eif_mean <- mean(ipcw_aipw_comp$eif_eval$eif - ipcw_aipw_comp$ipcw_eif)
+    eif_var <- var(ipcw_aipw_comp$eif_eval$eif - ipcw_aipw_comp$ipcw_eif) /
+      length(C)
+
+    # update the one-step estimator with mean of the 2nd half of augmented EIF
+    # NOTE: the 2nd half of the EIF is actually a correction (with a minus sign
+    #       in front of it) so the mean ought to be subtracted, not added
+    psi_onestep <- ipcw_aipw_comp$eif_eval$psi - mean(ipcw_aipw_comp$ipcw_eif)
+    conv_results <- list(psi_onestep, eif_var, eif_mean) %>%
+      as.matrix() %>%
+      t() %>%
+      data.table::as.data.table() %>%
+      data.table::setnames(., c("psi", "var", "eif_mean"))
 
     # replace variance in this object with the updated variance if iterative
     if (exists("eif_var")) {
       ipcw_aipw_comp$eif_eval$var <- eif_var
     }
 
-    # return only the useful convergence results
-    conv_results_out <- conv_results[!is.na(rowSums(conv_results)), ]
-
     # create output object
     txshift_out <- unlist(
       list(
         call = call,
         ipcw_aipw_comp$eif_eval,
-        iter_res = list(conv_results_out),
-        n_iter = n_steps,
+        iter_res = list(conv_results),
+        n_iter = 0,
         estimator = "onestep",
         outcome = list(data_internal$Y)
       ),
       recursive = FALSE
     )
 
-    # standard one-step of the shift parameter / inefficient IPCW-AIPW estimator
+  # standard one-step of the shift parameter / inefficient IPCW-AIPW estimator
   } else {
     # compute one-step estimate and EIF for the treatment shift parameter
     aipw_eif_out <- eif(
