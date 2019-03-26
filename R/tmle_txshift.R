@@ -97,13 +97,15 @@ tmle_txshift <- function(data_internal,
                          ipcw_fit_args,
                          ipcw_fit_type,
                          ipcw_efficiency = TRUE) {
-  # start counter
+
+  # initialize counter
   n_steps <- 0
+
   # invoke efficient IPCW-TMLE, per Rose & van der Laan (2011), if necessary
   if (ipcw_efficiency & !all(C == 1) & !is.null(V) & !is.null(ipcw_estim)) {
     # Efficient implementation of the IPCW-TMLE
     eif_mean <- Inf
-    conv_res <- replicate(3, rep(NA, max_iter))
+    conv_res <- replicate(3, rep(NA_real_, max_iter))
 
     # normalize censoring mechanism weights (to be overwritten)
     cens_weights <- C / ipcw_estim$pi_mech
@@ -159,8 +161,8 @@ tmle_txshift <- function(data_internal,
         length(C)
       conv_res[n_steps, ] <- c(ipcw_tmle_comp$eif_eval$psi, eif_var, eif_mean)
     }
-    conv_results <- data.table::as.data.table(conv_res)
-    data.table::setnames(conv_results, c("psi", "var", "eif_mean"))
+    conv_res <- data.table::as.data.table(conv_res)
+    data.table::setnames(conv_res, c("psi", "var", "eif_mean"))
 
     # replace variance in this object with the updated variance if iterative
     if (exists("eif_var")) {
@@ -168,14 +170,14 @@ tmle_txshift <- function(data_internal,
     }
 
     # return only the useful convergence results
-    conv_results_out <- conv_results[!is.na(rowSums(conv_results)), ]
+    conv_res <- conv_res[!is.na(rowSums(conv_res)), ]
 
     # create output object
     txshift_out <- unlist(
       list(
         call = call,
         ipcw_tmle_comp$eif_eval,
-        iter_res = list(conv_results_out),
+        iter_res = list(conv_res),
         n_iter = n_steps,
         estimator = "tmle",
         outcome = list(data_internal$Y)
