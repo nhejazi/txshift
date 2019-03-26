@@ -1,3 +1,6 @@
+utils::globalVariables(c("."))
+################################################################################
+
 #' Compute Augmented Inverse Probability Weighted Estimate of Counterfactual
 #' Mean Under Shifted Treatment
 #'
@@ -184,7 +187,7 @@ onestep_txshift <- function(data_internal,
       list(
         call = call,
         aipw_eif_out,
-        n_iter = n_steps,
+        n_iter = 0,
         estimator = "onestep",
         outcome = list(data_internal$Y)
       ),
