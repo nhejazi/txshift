@@ -135,9 +135,8 @@ Mean Under Shifted Treatment</p>
 
     <pre class="usage"><span class='fu'>onestep_txshift</span>(<span class='no'>data_internal</span>, <span class='kw'>C</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>nrow</a></span>(<span class='no'>data_internal</span>)),
   <span class='kw'>V</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>delta</span>, <span class='no'>cens_weights</span>, <span class='no'>cens_weights_norm</span>, <span class='no'>ipcw_estim</span>, <span class='no'>Qn_estim</span>,
-  <span class='no'>Hn_estim</span>, <span class='kw'>eif_tol</span> <span class='kw'>=</span> <span class='fl'>1</span>/<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>nrow</a></span>(<span class='no'>data_internal</span>), <span class='kw'>max_iter</span> <span class='kw'>=</span> <span class='fl'>10000</span>,
-  <span class='kw'>eif_reg_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"hal"</span>, <span class='st'>"glm"</span>), <span class='no'>ipcw_fit_args</span>, <span class='no'>ipcw_fit_type</span>,
-  <span class='kw'>ipcw_efficiency</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+  <span class='no'>Hn_estim</span>, <span class='kw'>eif_tol</span> <span class='kw'>=</span> <span class='fl'>1</span>/<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>nrow</a></span>(<span class='no'>data_internal</span>), <span class='kw'>eif_reg_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"hal"</span>,
+  <span class='st'>"glm"</span>), <span class='no'>ipcw_fit_args</span>, <span class='no'>ipcw_fit_type</span>, <span class='kw'>ipcw_efficiency</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -208,11 +207,6 @@ in after being constructed by a call to the internal function <code>est_Hn</code
       <td><p>A <code>numeric</code> giving the convergence criterion for the AIPW
 estimator. This is the the maximum mean of the efficient influence function
 (EIF) to be used in declaring convergence (theoretically, should be zero).</p></td>
-    </tr>
-    <tr>
-      <th>max_iter</th>
-      <td><p>A <code>numeric</code> integer giving the maximum number of steps
-to be taken in iterating to a solution of the efficient influence function.</p></td>
     </tr>
     <tr>
       <th>eif_reg_type</th>

@@ -88,7 +88,7 @@
 <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://www.benkeserstatistics.com/">David Benkeser</a>
 </h4>
             
-            <h4 class="date">2019-03-11</h4>
+            <h4 class="date">2019-03-31</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nhejazi/txshift/blob/master/vignettes/intro_txshift.Rmd"><code>vignettes/intro_txshift.Rmd</code></a></small>
       <div class="hidden name"><code>intro_txshift.Rmd</code></div>
@@ -104,9 +104,9 @@
 <p>To start, let’s load the packages we’ll use and set a seed for simulation:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tidyverse)</a></code></pre></div>
 <pre><code>## ── Attaching packages ────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
-<pre><code>## ✔ ggplot2 3.1.0       ✔ purrr   0.3.0  
-## ✔ tibble  2.0.1       ✔ dplyr   0.8.0.1
-## ✔ tidyr   0.8.2       ✔ stringr 1.4.0  
+<pre><code>## ✔ ggplot2 3.1.0       ✔ purrr   0.3.2  
+## ✔ tibble  2.1.1       ✔ dplyr   0.8.0.1
+## ✔ tidyr   0.8.3       ✔ stringr 1.4.0  
 ## ✔ readr   1.3.1       ✔ forcats 0.4.0</code></pre>
 <pre><code>## ── Conflicts ───────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
@@ -237,12 +237,12 @@
 <a class="sourceLine" id="cb20-6" data-line-number="6">                                             <span class="dt">sl_lrnrs =</span> sl_lrn)</a>
 <a class="sourceLine" id="cb20-7" data-line-number="7">                          )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 3284.6745     Pars:  0.62102 0.01278 0.36620
-## Iter: 2 fn: 3284.6745     Pars:  0.62102 0.01278 0.36620
+## Iter: 1 fn: 3284.3548     Pars:  0.62285 0.01275 0.36440
+## Iter: 2 fn: 3284.3548     Pars:  0.62285 0.01275 0.36441
 ## solnp--&gt; Completed in 2 iterations</code></pre>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle_sl_shift_<span class="dv">1</span>)</a></code></pre></div>
 <pre><code>##      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-##     1.91047     2.03883     2.16719     0.00429 1.78543e-10        tmle 
+##     1.91065     2.03905     2.16745     0.00429 1.79777e-10        tmle 
 ##      n_iter 
 ##           0</code></pre>
 <p>As before, we may vary the regression for the submodel fluctuation procedure by weighting each observation by the value of the so-called clever covariate rather than using such an auxiliary covariate directly in the regression procedure:</p>
@@ -254,12 +254,12 @@
 <a class="sourceLine" id="cb24-6" data-line-number="6">                                             <span class="dt">sl_lrnrs =</span> sl_lrn)</a>
 <a class="sourceLine" id="cb24-7" data-line-number="7">                          )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 3372.4186     Pars:  0.6793496540 0.0000001074 0.3206502368
-## Iter: 2 fn: 3372.4186     Pars:  0.67934968714 0.00000006844 0.32065024441
+## Iter: 1 fn: 3371.7552     Pars:  0.6783688491 0.0000001068 0.3216310423
+## Iter: 2 fn: 3371.7552     Pars:  0.67836887189 0.00000006801 0.32163106010
 ## solnp--&gt; Completed in 2 iterations</code></pre>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle_sl_shift_<span class="dv">2</span>)</a></code></pre></div>
 <pre><code>##      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-##     1.92041     2.04882     2.17722     0.00429 9.27295e-14        tmle 
+##      1.9207     2.04911     2.17751     0.00429 9.55362e-14        tmle 
 ##      n_iter 
 ##           0</code></pre>
 </div>
@@ -279,7 +279,7 @@
 <p><span class="math display">\[\sigma_n^2 = \frac{1}{n} \sum_{i = 1}^{n} D^2(\bar{Q}_n^*, g_n)(O_i)\]</span></p>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1">(ci_shift &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/confint">confint</a></span>(tmle_sl_shift_<span class="dv">1</span>))</a></code></pre></div>
 <pre><code>##   lwr_ci      est   upr_ci 
-## 1.910467 2.038829 2.167191</code></pre>
+## 1.910654 2.039054 2.167454</code></pre>
 <hr>
 </div>
 </div>

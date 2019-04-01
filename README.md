@@ -135,7 +135,6 @@ summary(ipcw_tmle)
 ipcw_aipw <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                      C = C, V = c("W", "Y"),
                      estimator = "onestep",
-                     max_iter = 5,
                      ipcw_fit_args = list(fit_type = "glm"),
                      g_fit_args = list(fit_type = "hal",
                                        n_bins = 5,
@@ -148,9 +147,9 @@ ipcw_aipw <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                     )
 summary(ipcw_aipw)
 #>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-#>     0.74805     0.78355     0.81527     0.00029 4.36006e-02     onestep 
+#>     0.75847     0.79396     0.82544     0.00029 1.06521e-02     onestep 
 #>      n_iter 
-#>           5
+#>           0
 ```
 
 -----

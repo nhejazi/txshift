@@ -88,7 +88,7 @@
 <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://www.benkeserstatistics.com/">David Benkeser</a>
 </h4>
             
-            <h4 class="date">2019-03-11</h4>
+            <h4 class="date">2019-03-31</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nhejazi/txshift/blob/master/vignettes/ipcw_txshift.Rmd"><code>vignettes/ipcw_txshift.Rmd</code></a></small>
       <div class="hidden name"><code>ipcw_txshift.Rmd</code></div>
@@ -104,9 +104,9 @@
 <p>To start, let’s load the packages we’ll use and set a seed for simulation:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tidyverse)</a></code></pre></div>
 <pre><code>## ── Attaching packages ────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
-<pre><code>## ✔ ggplot2 3.1.0       ✔ purrr   0.3.0  
-## ✔ tibble  2.0.1       ✔ dplyr   0.8.0.1
-## ✔ tidyr   0.8.2       ✔ stringr 1.4.0  
+<pre><code>## ✔ ggplot2 3.1.0       ✔ purrr   0.3.2  
+## ✔ tibble  2.1.1       ✔ dplyr   0.8.0.1
+## ✔ tidyr   0.8.3       ✔ stringr 1.4.0  
 ## ✔ readr   1.3.1       ✔ forcats 0.4.0</code></pre>
 <pre><code>## ── Conflicts ───────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
@@ -257,35 +257,49 @@
 <a class="sourceLine" id="cb20-12" data-line-number="12">                           <span class="dt">eif_reg_type =</span> <span class="st">"glm"</span></a>
 <a class="sourceLine" id="cb20-13" data-line-number="13">                          )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 2219.0346     Pars:  0.7782929818 0.0000005393 0.2217064793
-## Iter: 2 fn: 2219.0346     Pars:  0.7782930435 0.0000003568 0.2217065996
+## Iter: 1 fn: 2219.4831     Pars:  0.7797160513 0.0000003938 0.2202835553
+## Iter: 2 fn: 2219.4831     Pars:  0.77971617672 0.00000003949 0.22028378379
 ## solnp--&gt; Completed in 2 iterations</code></pre>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle_sl_shift_<span class="dv">1</span>)</a></code></pre></div>
+<pre><code>## Warning in .subset2(public_bind_env, "initialize")(...): Missing Outcome Data Found. This is okay for prediction, but will likely break training. 
+## 
+##                You can drop observations with missing outcomes by setting drop_missing_outcome=TRUE in make_sl3_Task
+
+## Warning in .subset2(public_bind_env, "initialize")(...): Missing Outcome Data Found. This is okay for prediction, but will likely break training. 
+## 
+##                You can drop observations with missing outcomes by setting drop_missing_outcome=TRUE in make_sl3_Task</code></pre>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle_sl_shift_<span class="dv">1</span>)</a></code></pre></div>
 <pre><code>##      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-##     0.57605     0.72196     0.86787     0.00554 3.59193e-04        tmle 
+##     0.56939     0.71477     0.86015      0.0055 3.15092e-04        tmle 
 ##      n_iter 
 ##           2</code></pre>
 <p>As before, we may vary the regression for the submodel fluctuation procedure by weighting each observation by the value of the so-called clever covariate rather than using such an auxiliary covariate directly in the regression procedure:</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1">tmle_sl_shift_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw"><a href="../reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y,</a>
-<a class="sourceLine" id="cb24-2" data-line-number="2">                           <span class="dt">C =</span> C, <span class="dt">V =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"W"</span>, <span class="st">"Y"</span>),</a>
-<a class="sourceLine" id="cb24-3" data-line-number="3">                           <span class="dt">delta =</span> delta,</a>
-<a class="sourceLine" id="cb24-4" data-line-number="4">                           <span class="dt">fluc_method =</span> <span class="st">"weighted"</span>,</a>
-<a class="sourceLine" id="cb24-5" data-line-number="5">                           <span class="dt">max_iter =</span> <span class="dv">2</span>,</a>
-<a class="sourceLine" id="cb24-6" data-line-number="6">                           <span class="dt">ipcw_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"sl"</span>,</a>
-<a class="sourceLine" id="cb24-7" data-line-number="7">                                                <span class="dt">sl_lrnrs =</span> sl_lrn),</a>
-<a class="sourceLine" id="cb24-8" data-line-number="8">                           <span class="dt">g_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"sl"</span>,</a>
-<a class="sourceLine" id="cb24-9" data-line-number="9">                                             <span class="dt">sl_lrnrs =</span> sl_lrn_dens),</a>
-<a class="sourceLine" id="cb24-10" data-line-number="10">                           <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"sl"</span>,</a>
-<a class="sourceLine" id="cb24-11" data-line-number="11">                                             <span class="dt">sl_lrnrs =</span> sl_lrn),</a>
-<a class="sourceLine" id="cb24-12" data-line-number="12">                           <span class="dt">eif_reg_type =</span> <span class="st">"glm"</span></a>
-<a class="sourceLine" id="cb24-13" data-line-number="13">                          )</a></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1">tmle_sl_shift_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw"><a href="../reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y,</a>
+<a class="sourceLine" id="cb25-2" data-line-number="2">                           <span class="dt">C =</span> C, <span class="dt">V =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"W"</span>, <span class="st">"Y"</span>),</a>
+<a class="sourceLine" id="cb25-3" data-line-number="3">                           <span class="dt">delta =</span> delta,</a>
+<a class="sourceLine" id="cb25-4" data-line-number="4">                           <span class="dt">fluc_method =</span> <span class="st">"weighted"</span>,</a>
+<a class="sourceLine" id="cb25-5" data-line-number="5">                           <span class="dt">max_iter =</span> <span class="dv">2</span>,</a>
+<a class="sourceLine" id="cb25-6" data-line-number="6">                           <span class="dt">ipcw_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"sl"</span>,</a>
+<a class="sourceLine" id="cb25-7" data-line-number="7">                                                <span class="dt">sl_lrnrs =</span> sl_lrn),</a>
+<a class="sourceLine" id="cb25-8" data-line-number="8">                           <span class="dt">g_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"sl"</span>,</a>
+<a class="sourceLine" id="cb25-9" data-line-number="9">                                             <span class="dt">sl_lrnrs =</span> sl_lrn_dens),</a>
+<a class="sourceLine" id="cb25-10" data-line-number="10">                           <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"sl"</span>,</a>
+<a class="sourceLine" id="cb25-11" data-line-number="11">                                             <span class="dt">sl_lrnrs =</span> sl_lrn),</a>
+<a class="sourceLine" id="cb25-12" data-line-number="12">                           <span class="dt">eif_reg_type =</span> <span class="st">"glm"</span></a>
+<a class="sourceLine" id="cb25-13" data-line-number="13">                          )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 2063.5167     Pars:  0.7806848911 0.0000004242 0.2193146852
-## Iter: 2 fn: 2063.5167     Pars:  0.7806849297 0.0000002691 0.2193148012
+## Iter: 1 fn: 2063.3205     Pars:  0.7806761920 0.0000003643 0.2193234442
+## Iter: 2 fn: 2063.3205     Pars:  0.7806762383 0.0000002302 0.2193235315
 ## solnp--&gt; Completed in 2 iterations</code></pre>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle_sl_shift_<span class="dv">2</span>)</a></code></pre></div>
+<pre><code>## Warning in .subset2(public_bind_env, "initialize")(...): Missing Outcome Data Found. This is okay for prediction, but will likely break training. 
+## 
+##                You can drop observations with missing outcomes by setting drop_missing_outcome=TRUE in make_sl3_Task
+
+## Warning in .subset2(public_bind_env, "initialize")(...): Missing Outcome Data Found. This is okay for prediction, but will likely break training. 
+## 
+##                You can drop observations with missing outcomes by setting drop_missing_outcome=TRUE in make_sl3_Task</code></pre>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle_sl_shift_<span class="dv">2</span>)</a></code></pre></div>
 <pre><code>##      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-##     1.31661     1.49408     1.67156      0.0082 1.27970e-04        tmle 
+##     1.31452     1.49261      1.6707     0.00826 1.84118e-04        tmle 
 ##      n_iter 
 ##           2</code></pre>
 </div>
@@ -293,25 +307,25 @@
 <h3 class="hasAnchor">
 <a href="#estimating-inefficient-ipcw-tmles-with-optimal-stacked-regressions" class="anchor"></a>Estimating <em>Inefficient</em> IPCW-TMLEs with Optimal Stacked Regressions</h3>
 <p>Utilizing the <code>sl3</code> R package in exactly the same manner, it is also possible to estimate <em>inefficient</em> IPCW-TML estimators with <code>txshift</code>. The inefficient IPCW-TMLE performs nearly all of the same computations as the efficient version of the estimator, eschewing only the iterative targeting procedure performed over a more complex efficient influence function; the interested reader is referred to <span class="citation">Rose and van der Laan (2011)</span> for further details on the differences between the efficient and inefficient IPCW-TMLEs. By default, an efficient IPCW-TMLE is computed when censoring is detected; however, this may be disable by setting the <code>ipcw_efficiency</code> argument to <code>FALSE</code> like so</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1">tmle_sl_ineffic &lt;-<span class="st"> </span><span class="kw"><a href="../reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y,</a>
-<a class="sourceLine" id="cb28-2" data-line-number="2">                           <span class="dt">C =</span> C, <span class="dt">V =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"W"</span>, <span class="st">"Y"</span>),</a>
-<a class="sourceLine" id="cb28-3" data-line-number="3">                           <span class="dt">delta =</span> delta,</a>
-<a class="sourceLine" id="cb28-4" data-line-number="4">                           <span class="dt">fluc_method =</span> <span class="st">"standard"</span>,</a>
-<a class="sourceLine" id="cb28-5" data-line-number="5">                           <span class="dt">ipcw_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"sl"</span>,</a>
-<a class="sourceLine" id="cb28-6" data-line-number="6">                                                <span class="dt">sl_lrnrs =</span> sl_lrn),</a>
-<a class="sourceLine" id="cb28-7" data-line-number="7">                           <span class="dt">g_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"sl"</span>,</a>
-<a class="sourceLine" id="cb28-8" data-line-number="8">                                             <span class="dt">sl_lrnrs =</span> sl_lrn_dens),</a>
-<a class="sourceLine" id="cb28-9" data-line-number="9">                           <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"sl"</span>,</a>
-<a class="sourceLine" id="cb28-10" data-line-number="10">                                             <span class="dt">sl_lrnrs =</span> sl_lrn),</a>
-<a class="sourceLine" id="cb28-11" data-line-number="11">                           <span class="dt">ipcw_efficiency =</span> <span class="ot">FALSE</span></a>
-<a class="sourceLine" id="cb28-12" data-line-number="12">                          )</a></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1">tmle_sl_ineffic &lt;-<span class="st"> </span><span class="kw"><a href="../reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y,</a>
+<a class="sourceLine" id="cb30-2" data-line-number="2">                           <span class="dt">C =</span> C, <span class="dt">V =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"W"</span>, <span class="st">"Y"</span>),</a>
+<a class="sourceLine" id="cb30-3" data-line-number="3">                           <span class="dt">delta =</span> delta,</a>
+<a class="sourceLine" id="cb30-4" data-line-number="4">                           <span class="dt">fluc_method =</span> <span class="st">"standard"</span>,</a>
+<a class="sourceLine" id="cb30-5" data-line-number="5">                           <span class="dt">ipcw_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"sl"</span>,</a>
+<a class="sourceLine" id="cb30-6" data-line-number="6">                                                <span class="dt">sl_lrnrs =</span> sl_lrn),</a>
+<a class="sourceLine" id="cb30-7" data-line-number="7">                           <span class="dt">g_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"sl"</span>,</a>
+<a class="sourceLine" id="cb30-8" data-line-number="8">                                             <span class="dt">sl_lrnrs =</span> sl_lrn_dens),</a>
+<a class="sourceLine" id="cb30-9" data-line-number="9">                           <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"sl"</span>,</a>
+<a class="sourceLine" id="cb30-10" data-line-number="10">                                             <span class="dt">sl_lrnrs =</span> sl_lrn),</a>
+<a class="sourceLine" id="cb30-11" data-line-number="11">                           <span class="dt">ipcw_efficiency =</span> <span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb30-12" data-line-number="12">                          )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 1934.7531     Pars:  0.69599 0.06114 0.24287
-## Iter: 2 fn: 1934.7531     Pars:  0.69597 0.06116 0.24287
+## Iter: 1 fn: 1934.8745     Pars:  0.69140 0.06043 0.24818
+## Iter: 2 fn: 1934.8745     Pars:  0.69140 0.06043 0.24818
 ## solnp--&gt; Completed in 2 iterations</code></pre>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle_sl_ineffic)</a></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle_sl_ineffic)</a></code></pre></div>
 <pre><code>##      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-##     1.88401     2.09514     2.30627      0.0116 3.16461e-11        tmle 
+##       1.884     2.09518     2.30635     0.01161 3.07120e-11        tmle 
 ##      n_iter 
 ##           0</code></pre>
 <p>Please note that in such cases, the value of <code>n_iter</code> in the resulting output should be <strong><em>exactly zero</em></strong>, as this indicates that the iterative procedure that is used to achieve efficiency has been skipped.</p>
@@ -320,9 +334,9 @@
 <h3 class="hasAnchor">
 <a href="#statistical-inference-for-targeted-maximum-likelihood-estimates" class="anchor"></a>Statistical Inference for Targeted Maximum Likelihood Estimates</h3>
 <p>For a discussion of the procedure for obtaining statistical inference for TML estimators, the interested reader is referred to the introductory vignette of this package. Here, we focus on addressing the issue of how censoring impacts the inferential procedure…</p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" data-line-number="1">(ci_shift &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/confint">confint</a></span>(tmle_sl_shift_<span class="dv">1</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" data-line-number="1">(ci_shift &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/confint">confint</a></span>(tmle_sl_shift_<span class="dv">1</span>))</a></code></pre></div>
 <pre><code>##    lwr_ci       est    upr_ci 
-## 0.5760498 0.7219579 0.8678659</code></pre>
+## 0.5693862 0.7147671 0.8601481</code></pre>
 <hr>
 </div>
 </div>
@@ -330,48 +344,48 @@
 <h2 class="hasAnchor">
 <a href="#advanced-usage-user-specified-regressions" class="anchor"></a><em>Advanced Usage:</em> User-Specified Regressions</h2>
 <p>In some special cases it may be useful for the experienced user to compute the censoring mechanism, treatment mechanism, and outcome mechanism regressions separately (i.e., outside of the <code>txshift</code> wrapper function), instead applying this user-facing wrapper only to invoke the <em>targeting</em> steps involved in computing the TML estimator for the treatment shift parameter. In such cases, the optional arguments <code>ipcw_fit_spec</code>, <code>gn_fit_spec</code> and <code>Qn_fit_spec</code> may be utilized. We present a case of using these arguments here:</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" data-line-number="1"><span class="co"># compute the censoring mechanism and produce IPC weights externally</span></a>
-<a class="sourceLine" id="cb34-2" data-line-number="2">pi_mech &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Logistic">plogis</a></span>(W)</a>
-<a class="sourceLine" id="cb34-3" data-line-number="3">ipc_weights_out &lt;-<span class="st"> </span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/numeric">as.numeric</a></span>(C <span class="op">==</span><span class="st"> </span><span class="dv">1</span>) <span class="op">/</span><span class="st"> </span>pi_mech)[C <span class="op">==</span><span class="st"> </span><span class="dv">1</span>]</a>
-<a class="sourceLine" id="cb34-4" data-line-number="4">ipcw_out &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">pi_mech =</span> pi_mech, <span class="dt">ipc_weights =</span> ipc_weights_out)</a>
-<a class="sourceLine" id="cb34-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb34-6" data-line-number="6"><span class="co"># compute treatment mechanism (propensity score) externally</span></a>
-<a class="sourceLine" id="cb34-7" data-line-number="7">## first, produce the down-shifted treatment data</a>
-<a class="sourceLine" id="cb34-8" data-line-number="8">gn_downshift &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">dnorm</a></span>(A <span class="op">-</span><span class="st"> </span>delta, <span class="dt">mean =</span> tx_mult <span class="op">*</span><span class="st"> </span>W, <span class="dt">sd =</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb34-9" data-line-number="9">## next, initialize and produce the up-shifted treatment data</a>
-<a class="sourceLine" id="cb34-10" data-line-number="10">gn_upshift &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">dnorm</a></span>(A <span class="op">+</span><span class="st"> </span>delta, <span class="dt">mean =</span> tx_mult <span class="op">*</span><span class="st"> </span>W, <span class="dt">sd =</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb34-11" data-line-number="11">## now, initialize and produce the up-up-shifted (2 * delta) treatment data</a>
-<a class="sourceLine" id="cb34-12" data-line-number="12">gn_upupshift &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">dnorm</a></span>(A <span class="op">+</span><span class="st"> </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span>delta, <span class="dt">mean =</span> tx_mult <span class="op">*</span><span class="st"> </span>W, <span class="dt">sd =</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb34-13" data-line-number="13">## then, initialize and produce the un-shifted treatment data</a>
-<a class="sourceLine" id="cb34-14" data-line-number="14">gn_noshift &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">dnorm</a></span>(A, <span class="dt">mean =</span> tx_mult <span class="op">*</span><span class="st"> </span>W, <span class="dt">sd =</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb34-15" data-line-number="15">## finally, put it all together into an object like what's produced internally</a>
-<a class="sourceLine" id="cb34-16" data-line-number="16">gn_out &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/data.table/topics/as.data.table">as.data.table</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cbind">cbind</a></span>(gn_downshift, gn_noshift, gn_upshift,</a>
-<a class="sourceLine" id="cb34-17" data-line-number="17">                              gn_upupshift))[C <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, ]</a>
-<a class="sourceLine" id="cb34-18" data-line-number="18"><span class="kw"><a href="https://www.rdocumentation.org/packages/data.table/topics/setattr">setnames</a></span>(gn_out, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"downshift"</span>, <span class="st">"noshift"</span>, <span class="st">"upshift"</span>, <span class="st">"upupshift"</span>))</a>
-<a class="sourceLine" id="cb34-19" data-line-number="19"></a>
-<a class="sourceLine" id="cb34-20" data-line-number="20"><span class="co"># compute outcome regression externally</span></a>
-<a class="sourceLine" id="cb34-21" data-line-number="21">Qn_noshift &lt;-<span class="st"> </span>(W <span class="op">+</span><span class="st"> </span>A <span class="op">-</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Extremes">min</a></span>(Y)) <span class="op">/</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/diff">diff</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/range">range</a></span>(Y))</a>
-<a class="sourceLine" id="cb34-22" data-line-number="22">Qn_upshift &lt;-<span class="st"> </span>(W <span class="op">+</span><span class="st"> </span>A <span class="op">+</span><span class="st"> </span>delta <span class="op">-</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Extremes">min</a></span>(Y)) <span class="op">/</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/diff">diff</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/range">range</a></span>(Y))</a>
-<a class="sourceLine" id="cb34-23" data-line-number="23">Qn_noshift[Qn_noshift <span class="op">&lt;</span><span class="st"> </span><span class="dv">0</span>] &lt;-<span class="st"> </span>.Machine<span class="op">$</span>double.neg.eps</a>
-<a class="sourceLine" id="cb34-24" data-line-number="24">Qn_noshift[Qn_noshift <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>] &lt;-<span class="st"> </span><span class="dv">1</span> <span class="op">-</span><span class="st"> </span>.Machine<span class="op">$</span>double.neg.eps</a>
-<a class="sourceLine" id="cb34-25" data-line-number="25">Qn_upshift[Qn_upshift <span class="op">&lt;</span><span class="st"> </span><span class="dv">0</span>] &lt;-<span class="st"> </span>.Machine<span class="op">$</span>double.neg.eps</a>
-<a class="sourceLine" id="cb34-26" data-line-number="26">Qn_upshift[Qn_upshift <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>] &lt;-<span class="st"> </span><span class="dv">1</span> <span class="op">-</span><span class="st"> </span>.Machine<span class="op">$</span>double.neg.eps</a>
-<a class="sourceLine" id="cb34-27" data-line-number="27">Qn_out &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/data.table/topics/as.data.table">as.data.table</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cbind">cbind</a></span>(Qn_noshift, Qn_upshift))[C <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, ]</a>
-<a class="sourceLine" id="cb34-28" data-line-number="28"><span class="kw"><a href="https://www.rdocumentation.org/packages/data.table/topics/setattr">setnames</a></span>(Qn_out, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"noshift"</span>, <span class="st">"upshift"</span>))</a>
-<a class="sourceLine" id="cb34-29" data-line-number="29"></a>
-<a class="sourceLine" id="cb34-30" data-line-number="30"><span class="co"># invoke the wrapper function only to apply the targeting step</span></a>
-<a class="sourceLine" id="cb34-31" data-line-number="31">tmle_shift_spec &lt;-<span class="st"> </span><span class="kw"><a href="../reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y, <span class="dt">delta =</span> delta,</a>
-<a class="sourceLine" id="cb34-32" data-line-number="32">                           <span class="dt">C =</span> C, <span class="dt">V =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"W"</span>, <span class="st">"Y"</span>),</a>
-<a class="sourceLine" id="cb34-33" data-line-number="33">                           <span class="dt">fluc_method =</span> <span class="st">"standard"</span>,</a>
-<a class="sourceLine" id="cb34-34" data-line-number="34">                           <span class="dt">max_iter =</span> <span class="dv">2</span>,</a>
-<a class="sourceLine" id="cb34-35" data-line-number="35">                           <span class="dt">ipcw_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"fit_spec"</span>),</a>
-<a class="sourceLine" id="cb34-36" data-line-number="36">                           <span class="dt">g_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"fit_spec"</span>),</a>
-<a class="sourceLine" id="cb34-37" data-line-number="37">                           <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"fit_spec"</span>),</a>
-<a class="sourceLine" id="cb34-38" data-line-number="38">                           <span class="dt">ipcw_fit_spec =</span> ipcw_out,</a>
-<a class="sourceLine" id="cb34-39" data-line-number="39">                           <span class="dt">gn_fit_spec =</span> gn_out,</a>
-<a class="sourceLine" id="cb34-40" data-line-number="40">                           <span class="dt">Qn_fit_spec =</span> Qn_out,</a>
-<a class="sourceLine" id="cb34-41" data-line-number="41">                           <span class="dt">eif_reg_type =</span> <span class="st">"glm"</span>)</a>
-<a class="sourceLine" id="cb34-42" data-line-number="42"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle_shift_spec)</a></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" data-line-number="1"><span class="co"># compute the censoring mechanism and produce IPC weights externally</span></a>
+<a class="sourceLine" id="cb36-2" data-line-number="2">pi_mech &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Logistic">plogis</a></span>(W)</a>
+<a class="sourceLine" id="cb36-3" data-line-number="3">ipc_weights_out &lt;-<span class="st"> </span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/numeric">as.numeric</a></span>(C <span class="op">==</span><span class="st"> </span><span class="dv">1</span>) <span class="op">/</span><span class="st"> </span>pi_mech)[C <span class="op">==</span><span class="st"> </span><span class="dv">1</span>]</a>
+<a class="sourceLine" id="cb36-4" data-line-number="4">ipcw_out &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">pi_mech =</span> pi_mech, <span class="dt">ipc_weights =</span> ipc_weights_out)</a>
+<a class="sourceLine" id="cb36-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb36-6" data-line-number="6"><span class="co"># compute treatment mechanism (propensity score) externally</span></a>
+<a class="sourceLine" id="cb36-7" data-line-number="7">## first, produce the down-shifted treatment data</a>
+<a class="sourceLine" id="cb36-8" data-line-number="8">gn_downshift &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">dnorm</a></span>(A <span class="op">-</span><span class="st"> </span>delta, <span class="dt">mean =</span> tx_mult <span class="op">*</span><span class="st"> </span>W, <span class="dt">sd =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb36-9" data-line-number="9">## next, initialize and produce the up-shifted treatment data</a>
+<a class="sourceLine" id="cb36-10" data-line-number="10">gn_upshift &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">dnorm</a></span>(A <span class="op">+</span><span class="st"> </span>delta, <span class="dt">mean =</span> tx_mult <span class="op">*</span><span class="st"> </span>W, <span class="dt">sd =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb36-11" data-line-number="11">## now, initialize and produce the up-up-shifted (2 * delta) treatment data</a>
+<a class="sourceLine" id="cb36-12" data-line-number="12">gn_upupshift &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">dnorm</a></span>(A <span class="op">+</span><span class="st"> </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span>delta, <span class="dt">mean =</span> tx_mult <span class="op">*</span><span class="st"> </span>W, <span class="dt">sd =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb36-13" data-line-number="13">## then, initialize and produce the un-shifted treatment data</a>
+<a class="sourceLine" id="cb36-14" data-line-number="14">gn_noshift &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">dnorm</a></span>(A, <span class="dt">mean =</span> tx_mult <span class="op">*</span><span class="st"> </span>W, <span class="dt">sd =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb36-15" data-line-number="15">## finally, put it all together into an object like what's produced internally</a>
+<a class="sourceLine" id="cb36-16" data-line-number="16">gn_out &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/data.table/topics/as.data.table">as.data.table</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cbind">cbind</a></span>(gn_downshift, gn_noshift, gn_upshift,</a>
+<a class="sourceLine" id="cb36-17" data-line-number="17">                              gn_upupshift))[C <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, ]</a>
+<a class="sourceLine" id="cb36-18" data-line-number="18"><span class="kw"><a href="https://www.rdocumentation.org/packages/data.table/topics/setattr">setnames</a></span>(gn_out, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"downshift"</span>, <span class="st">"noshift"</span>, <span class="st">"upshift"</span>, <span class="st">"upupshift"</span>))</a>
+<a class="sourceLine" id="cb36-19" data-line-number="19"></a>
+<a class="sourceLine" id="cb36-20" data-line-number="20"><span class="co"># compute outcome regression externally</span></a>
+<a class="sourceLine" id="cb36-21" data-line-number="21">Qn_noshift &lt;-<span class="st"> </span>(W <span class="op">+</span><span class="st"> </span>A <span class="op">-</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Extremes">min</a></span>(Y)) <span class="op">/</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/diff">diff</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/range">range</a></span>(Y))</a>
+<a class="sourceLine" id="cb36-22" data-line-number="22">Qn_upshift &lt;-<span class="st"> </span>(W <span class="op">+</span><span class="st"> </span>A <span class="op">+</span><span class="st"> </span>delta <span class="op">-</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Extremes">min</a></span>(Y)) <span class="op">/</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/diff">diff</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/range">range</a></span>(Y))</a>
+<a class="sourceLine" id="cb36-23" data-line-number="23">Qn_noshift[Qn_noshift <span class="op">&lt;</span><span class="st"> </span><span class="dv">0</span>] &lt;-<span class="st"> </span>.Machine<span class="op">$</span>double.neg.eps</a>
+<a class="sourceLine" id="cb36-24" data-line-number="24">Qn_noshift[Qn_noshift <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>] &lt;-<span class="st"> </span><span class="dv">1</span> <span class="op">-</span><span class="st"> </span>.Machine<span class="op">$</span>double.neg.eps</a>
+<a class="sourceLine" id="cb36-25" data-line-number="25">Qn_upshift[Qn_upshift <span class="op">&lt;</span><span class="st"> </span><span class="dv">0</span>] &lt;-<span class="st"> </span>.Machine<span class="op">$</span>double.neg.eps</a>
+<a class="sourceLine" id="cb36-26" data-line-number="26">Qn_upshift[Qn_upshift <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>] &lt;-<span class="st"> </span><span class="dv">1</span> <span class="op">-</span><span class="st"> </span>.Machine<span class="op">$</span>double.neg.eps</a>
+<a class="sourceLine" id="cb36-27" data-line-number="27">Qn_out &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/data.table/topics/as.data.table">as.data.table</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cbind">cbind</a></span>(Qn_noshift, Qn_upshift))[C <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, ]</a>
+<a class="sourceLine" id="cb36-28" data-line-number="28"><span class="kw"><a href="https://www.rdocumentation.org/packages/data.table/topics/setattr">setnames</a></span>(Qn_out, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"noshift"</span>, <span class="st">"upshift"</span>))</a>
+<a class="sourceLine" id="cb36-29" data-line-number="29"></a>
+<a class="sourceLine" id="cb36-30" data-line-number="30"><span class="co"># invoke the wrapper function only to apply the targeting step</span></a>
+<a class="sourceLine" id="cb36-31" data-line-number="31">tmle_shift_spec &lt;-<span class="st"> </span><span class="kw"><a href="../reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y, <span class="dt">delta =</span> delta,</a>
+<a class="sourceLine" id="cb36-32" data-line-number="32">                           <span class="dt">C =</span> C, <span class="dt">V =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"W"</span>, <span class="st">"Y"</span>),</a>
+<a class="sourceLine" id="cb36-33" data-line-number="33">                           <span class="dt">fluc_method =</span> <span class="st">"standard"</span>,</a>
+<a class="sourceLine" id="cb36-34" data-line-number="34">                           <span class="dt">max_iter =</span> <span class="dv">2</span>,</a>
+<a class="sourceLine" id="cb36-35" data-line-number="35">                           <span class="dt">ipcw_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"fit_spec"</span>),</a>
+<a class="sourceLine" id="cb36-36" data-line-number="36">                           <span class="dt">g_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"fit_spec"</span>),</a>
+<a class="sourceLine" id="cb36-37" data-line-number="37">                           <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"fit_spec"</span>),</a>
+<a class="sourceLine" id="cb36-38" data-line-number="38">                           <span class="dt">ipcw_fit_spec =</span> ipcw_out,</a>
+<a class="sourceLine" id="cb36-39" data-line-number="39">                           <span class="dt">gn_fit_spec =</span> gn_out,</a>
+<a class="sourceLine" id="cb36-40" data-line-number="40">                           <span class="dt">Qn_fit_spec =</span> Qn_out,</a>
+<a class="sourceLine" id="cb36-41" data-line-number="41">                           <span class="dt">eif_reg_type =</span> <span class="st">"glm"</span>)</a>
+<a class="sourceLine" id="cb36-42" data-line-number="42"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle_shift_spec)</a></code></pre></div>
 <pre><code>##      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
 ##     1.21061     1.36916     1.52771     0.00654 2.67204e-06        tmle 
 ##      n_iter 
