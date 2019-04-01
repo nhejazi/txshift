@@ -194,22 +194,21 @@
 <a class="sourceLine" id="cb2-68" data-line-number="68">ipcw_aipw &lt;-<span class="st"> </span><span class="kw"><a href="reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y, <span class="dt">delta =</span> <span class="fl">0.5</span>,</a>
 <a class="sourceLine" id="cb2-69" data-line-number="69">                     <span class="dt">C =</span> C, <span class="dt">V =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"W"</span>, <span class="st">"Y"</span>),</a>
 <a class="sourceLine" id="cb2-70" data-line-number="70">                     <span class="dt">estimator =</span> <span class="st">"onestep"</span>,</a>
-<a class="sourceLine" id="cb2-71" data-line-number="71">                     <span class="dt">max_iter =</span> <span class="dv">5</span>,</a>
-<a class="sourceLine" id="cb2-72" data-line-number="72">                     <span class="dt">ipcw_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>),</a>
-<a class="sourceLine" id="cb2-73" data-line-number="73">                     <span class="dt">g_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"hal"</span>,</a>
-<a class="sourceLine" id="cb2-74" data-line-number="74">                                       <span class="dt">n_bins =</span> <span class="dv">5</span>,</a>
-<a class="sourceLine" id="cb2-75" data-line-number="75">                                       <span class="dt">grid_type =</span> <span class="st">"equal_mass"</span>,</a>
-<a class="sourceLine" id="cb2-76" data-line-number="76">                                       <span class="dt">lambda_seq =</span></a>
-<a class="sourceLine" id="cb2-77" data-line-number="77">                                         <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">exp</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/seq">seq</a></span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">-9</span>, <span class="dt">length =</span> <span class="dv">300</span>))),</a>
-<a class="sourceLine" id="cb2-78" data-line-number="78">                     <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>,</a>
-<a class="sourceLine" id="cb2-79" data-line-number="79">                                       <span class="dt">glm_formula =</span> <span class="st">"Y ~ ."</span>),</a>
-<a class="sourceLine" id="cb2-80" data-line-number="80">                     <span class="dt">eif_reg_type =</span> <span class="st">"glm"</span></a>
-<a class="sourceLine" id="cb2-81" data-line-number="81">                    )</a>
-<a class="sourceLine" id="cb2-82" data-line-number="82"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(ipcw_aipw)</a>
-<a class="sourceLine" id="cb2-83" data-line-number="83"><span class="co">#&gt;      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator </span></a>
-<a class="sourceLine" id="cb2-84" data-line-number="84"><span class="co">#&gt;     0.74805     0.78355     0.81527     0.00029 4.36006e-02     onestep </span></a>
-<a class="sourceLine" id="cb2-85" data-line-number="85"><span class="co">#&gt;      n_iter </span></a>
-<a class="sourceLine" id="cb2-86" data-line-number="86"><span class="co">#&gt;           5</span></a></code></pre></div>
+<a class="sourceLine" id="cb2-71" data-line-number="71">                     <span class="dt">ipcw_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>),</a>
+<a class="sourceLine" id="cb2-72" data-line-number="72">                     <span class="dt">g_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"hal"</span>,</a>
+<a class="sourceLine" id="cb2-73" data-line-number="73">                                       <span class="dt">n_bins =</span> <span class="dv">5</span>,</a>
+<a class="sourceLine" id="cb2-74" data-line-number="74">                                       <span class="dt">grid_type =</span> <span class="st">"equal_mass"</span>,</a>
+<a class="sourceLine" id="cb2-75" data-line-number="75">                                       <span class="dt">lambda_seq =</span></a>
+<a class="sourceLine" id="cb2-76" data-line-number="76">                                         <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">exp</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/seq">seq</a></span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">-9</span>, <span class="dt">length =</span> <span class="dv">300</span>))),</a>
+<a class="sourceLine" id="cb2-77" data-line-number="77">                     <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>,</a>
+<a class="sourceLine" id="cb2-78" data-line-number="78">                                       <span class="dt">glm_formula =</span> <span class="st">"Y ~ ."</span>),</a>
+<a class="sourceLine" id="cb2-79" data-line-number="79">                     <span class="dt">eif_reg_type =</span> <span class="st">"glm"</span></a>
+<a class="sourceLine" id="cb2-80" data-line-number="80">                    )</a>
+<a class="sourceLine" id="cb2-81" data-line-number="81"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(ipcw_aipw)</a>
+<a class="sourceLine" id="cb2-82" data-line-number="82"><span class="co">#&gt;      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator </span></a>
+<a class="sourceLine" id="cb2-83" data-line-number="83"><span class="co">#&gt;     0.75847     0.79396     0.82544     0.00029 1.06521e-02     onestep </span></a>
+<a class="sourceLine" id="cb2-84" data-line-number="84"><span class="co">#&gt;      n_iter </span></a>
+<a class="sourceLine" id="cb2-85" data-line-number="85"><span class="co">#&gt;           0</span></a></code></pre></div>
 <hr>
 </div>
 <div id="issues" class="section level2">
