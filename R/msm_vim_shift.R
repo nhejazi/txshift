@@ -59,8 +59,8 @@
 #'     glm_formula = "Y ~ ."
 #'   )
 #' )
-#' 
-#' #
+#'
+#
 msm_vimshift <- function(Y,
                          A,
                          W,

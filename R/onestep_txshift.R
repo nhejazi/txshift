@@ -1,6 +1,3 @@
-utils::globalVariables(c("."))
-################################################################################
-
 #' Compute Augmented Inverse Probability Weighted Estimate of Counterfactual
 #' Mean Under Shifted Treatment
 #'
@@ -68,6 +65,7 @@ utils::globalVariables(c("."))
 #' @importFrom data.table as.data.table setnames
 #' @importFrom stringr str_detect
 #' @importFrom dplyr filter select "%>%"
+#' @importFrom rlang .data
 #' @importFrom Rdpack reprompt
 #'
 #' @return S3 object of class \code{txshift} containing the results of the
@@ -147,7 +145,7 @@ onestep_txshift <- function(data_internal,
       as.matrix() %>%
       t() %>%
       data.table::as.data.table() %>%
-      data.table::setnames(., c("psi", "var", "eif_mean"))
+      data.table::setnames(.data, c("psi", "var", "eif_mean"))
 
     # replace variance in this object with the updated variance if iterative
     if (exists("eif_var")) {
