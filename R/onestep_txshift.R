@@ -65,7 +65,6 @@
 #' @importFrom data.table as.data.table setnames
 #' @importFrom stringr str_detect
 #' @importFrom dplyr filter select "%>%"
-#' @importFrom rlang .data
 #' @importFrom Rdpack reprompt
 #'
 #' @return S3 object of class \code{txshift} containing the results of the
@@ -133,37 +132,32 @@ onestep_txshift <- function(data_internal,
     pi_mech_star <- ipcw_aipw_comp$pi_mech_star
 
     # compute updated mean of efficient influence function
-    eif_mean <- mean(ipcw_aipw_comp$eif_eval$eif - ipcw_aipw_comp$ipcw_eif)
-    eif_var <- var(ipcw_aipw_comp$eif_eval$eif - ipcw_aipw_comp$ipcw_eif) /
-      length(C)
+    eif_ipcw <- ipcw_aipw_comp$eif_eval$eif - ipcw_aipw_comp$ipcw_eif
+    eif_ipcw_mean <- mean(eif_ipcw)
+    eif_ipcw_var <- var(eif_ipcw) / length(C)
 
     # update the one-step estimator with mean of the 2nd half of augmented EIF
     # NOTE: the 2nd half of the EIF is actually a correction (with a minus sign
     #       in front of it) so the mean ought to be subtracted, not added
     psi_onestep <- ipcw_aipw_comp$eif_eval$psi - mean(ipcw_aipw_comp$ipcw_eif)
-    conv_results <- list(psi_onestep, eif_var, eif_mean) %>%
+    conv_results <- list(psi_onestep, eif_ipcw_var, eif_ipcw_mean) %>%
       as.matrix() %>%
       t() %>%
-      data.table::as.data.table() %>%
-      data.table::setnames(.data, c("psi", "var", "eif_mean"))
-
-    # replace variance in this object with the updated variance if iterative
-    if (exists("eif_var")) {
-      ipcw_aipw_comp$eif_eval$var <- eif_var
-    }
+      data.table::as.data.table()
+    data.table::setnames(conv_results, c("psi", "var", "eif_mean"))
 
     # create output object
-    txshift_out <- unlist(
+    txshift_out <-
       list(
         call = call,
-        ipcw_aipw_comp$eif_eval,
+        psi = psi_onestep,
+        var = eif_ipcw_var,
+        eif = eif_ipcw,
         iter_res = list(conv_results),
         n_iter = 0,
         estimator = "onestep",
         outcome = list(data_internal$Y)
-      ),
-      recursive = FALSE
-    )
+      )
 
     # standard one-step of the shift parameter / inefficient IPCW-AIPW estimator
   } else {

@@ -37,7 +37,6 @@ Imports:
     tibble,
     data.table,
     assertthat,
-    rlang,
     Rdpack,
     sl3,
     hal9001,
