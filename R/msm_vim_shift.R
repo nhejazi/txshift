@@ -1,4 +1,4 @@
-#' Test for a trend in the causal effects of a grid of shift interventions
+#' Marginal structural model for the causal effects of a grid of interventions
 #'
 #' @param Y A \code{numeric} vector of the observed outcomes.
 #' @param A A \code{numeric} vector corresponding to a treatment variable. The
@@ -32,15 +32,16 @@
 #'  each parameter estimate separately.
 #' @param ... Additional arguments to be passed to \code{txshift}.
 #'
-#' @importFrom stats cov qnorm pnorm
-#' @importFrom assertthat assert_that
 #' @importFrom tibble as_tibble
+#' @importFrom assertthat assert_that
+#' @importFrom stats cov qnorm pnorm
+#' @importFrom mvtnorm qmvnorm
 #'
 #' @export
 #'
 #' @examples
 #' set.seed(429153)
-#' n_obs <- 1000
+#' n_obs <- 100
 #' W <- as.numeric(replicate(1, rbinom(n_obs, 1, 0.5)))
 #' A <- as.numeric(rnorm(n_obs, mean = 2 * W, sd = 1))
 #' Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
@@ -51,7 +52,7 @@
 #'     n_bins = 5,
 #'     grid_type = "equal_mass",
 #'     lambda_seq = exp(seq(-1, -9,
-#'       length = 300
+#'       length = 100
 #'     ))
 #'   ),
 #'   Q_fit_args = list(
@@ -59,16 +60,14 @@
 #'     glm_formula = "Y ~ ."
 #'   )
 #' )
-#'
-#
 msm_vimshift <- function(Y,
                          A,
                          W,
                          C = rep(1, length(Y)),
                          V = NULL,
-                         delta_grid = seq(-1, 1, 1),
+                         delta_grid = seq(-0.5, 0.5, 0.5),
                          estimator = c("tmle", "onestep"),
-                         weighting = c("identity", "variance"),
+                         weighting = c("variance", "identity"),
                          ci_level = 0.95,
                          ci_type = c("simultaneous", "marginal"),
                          ...) {
@@ -81,7 +80,7 @@ msm_vimshift <- function(Y,
   assertthat::assert_that(length(delta_grid) > 1)
 
   # multiplier for CI construction
-  ci_mult <- (c(1, -1) * stats::qnorm((1 - ci_level) / 2))
+  ci_mult <- c(1, -1) * stats::qnorm( (1 - ci_level) / 2)
 
   # fit TML or one-step estimator for each value of shift in the grid
   est_over_grid <-
@@ -117,17 +116,29 @@ msm_vimshift <- function(Y,
   msm_var <- diag(stats::cov(msm_eif))
   msm_se <- sqrt(msm_var / nrow(msm_eif))
 
+  # simultaneous confidence interval
+  if (ci_type == "simultaneous" && (ncol(eif_mat) > 1)) {
+    # compute correlation based on covariance of EIF
+    var_eif <- stats::cov(eif_mat)
+    rho_eif <- var_eif / sqrt(tcrossprod(diag(var_eif)))
+    mvt_eif <- mvtnorm::qmvnorm(ci_level, tail = "both", corr = rho_eif)
+    # for simultaneous interval, update the quantiles for the CI
+    # NOTE: c(-1, 1) instead of c(1, -1): mvtnorm call differs from qnorm
+    ci_mult <- c(-1, 1) * mvt_eif$quantile
+  }
+
   # build confidence intervals and hypothesis tests for EIF(msm)
   ci_msm_param <- msm_se %*% t(ci_mult) + msm_param
   pval_msm_param <- 2 * stats::pnorm(-abs(msm_param / msm_se))
 
   # summarize output of individual shift-specific estimates
-  vimshift_out <- list(
-    delta = delta_grid,
-    ci_low = psi_vec + ci_mult[1] * sqrt(diag(stats::cov(eif_mat))),
-    psi = psi_vec,
-    ci_high = psi_vec + ci_mult[2] * sqrt(diag(stats::cov(eif_mat)))
-  ) %>%
+  vimshift_out <-
+    list(
+      delta = delta_grid,
+      ci_low = psi_vec + ci_mult[1] * sqrt(diag(stats::cov(eif_mat))),
+      psi = psi_vec,
+      ci_high = psi_vec + ci_mult[2] * sqrt(diag(stats::cov(eif_mat)))
+    ) %>%
     tibble::as_tibble()
 
   # create summary table for MSM estimates

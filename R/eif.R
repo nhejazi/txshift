@@ -38,7 +38,6 @@
 #'
 #' @author Nima Hejazi
 #' @author David Benkeser
-#
 eif <- function(Y,
                 Qn,
                 Hn,

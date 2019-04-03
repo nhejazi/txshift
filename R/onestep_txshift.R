@@ -71,7 +71,6 @@
 #'  procedure to compute a AIPW estimate of the treatment shift parameter.
 #'
 #' @export
-#
 onestep_txshift <- function(data_internal,
                             C = rep(1, nrow(data_internal)),
                             V = NULL,
@@ -98,7 +97,7 @@ onestep_txshift <- function(data_internal,
     Qn_estim_updated <- Qn_estim
 
     # update sub-model fluctuation, re-compute EIF, and update EIF
-    ipcw_aipw_comp <- ipcw_eif_update(
+    os_ipcw_eif_out <- ipcw_eif_update(
       data_in = data_internal,
       C = C,
       V = V,
@@ -119,50 +118,53 @@ onestep_txshift <- function(data_internal,
       list(
         # NOTE: need to re-scale estimated outcomes values within bounds of Y
         scale_to_unit(
-          vals = ipcw_aipw_comp$Qn_estim$noshift
+          vals = os_ipcw_eif_out$Qn_estim$noshift
         ),
         scale_to_unit(
-          vals = ipcw_aipw_comp$Qn_estim$upshift
+          vals = os_ipcw_eif_out$Qn_estim$upshift
         )
       )
     )
     data.table::setnames(Qn_estim_updated, names(Qn_estim))
-    cens_weights <- ipcw_aipw_comp$ipc_weights
-    cens_weights_norm <- ipcw_aipw_comp$ipc_weights_norm
-    pi_mech_star <- ipcw_aipw_comp$pi_mech_star
+    cens_weights <- os_ipcw_eif_out$ipc_weights
+    cens_weights_norm <- os_ipcw_eif_out$ipc_weights_norm
+    pi_mech_star <- os_ipcw_eif_out$pi_mech_star
 
     # compute updated mean of efficient influence function
-    eif_ipcw <- ipcw_aipw_comp$eif_eval$eif - ipcw_aipw_comp$ipcw_eif
-    eif_ipcw_mean <- mean(eif_ipcw)
+    eif_ipcw <- os_ipcw_eif_out$eif_eval$eif - os_ipcw_eif_out$ipcw_eif
     eif_ipcw_var <- var(eif_ipcw) / length(C)
 
     # update the one-step estimator with mean of the 2nd half of augmented EIF
     # NOTE: the 2nd half of the EIF is actually a correction (with a minus sign
     #       in front of it) so the mean ought to be subtracted, not added
-    psi_onestep <- ipcw_aipw_comp$eif_eval$psi - mean(ipcw_aipw_comp$ipcw_eif)
-    conv_results <- list(psi_onestep, eif_ipcw_var, eif_ipcw_mean) %>%
+    psi_onestep <- os_ipcw_eif_out$eif_eval$psi - mean(os_ipcw_eif_out$ipcw_eif)
+    conv_results <- list(psi_onestep, eif_ipcw_var, mean(eif_ipcw)) %>%
       as.matrix() %>%
       t() %>%
       data.table::as.data.table()
     data.table::setnames(conv_results, c("psi", "var", "eif_mean"))
 
     # create output object
-    txshift_out <-
+    txshift_out <- unlist(
       list(
         call = call,
-        psi = psi_onestep,
-        var = eif_ipcw_var,
-        eif = eif_ipcw,
-        iter_res = list(conv_results),
+        os_ipcw_eif_out$eif_eval,
         n_iter = 0,
         estimator = "onestep",
         outcome = list(data_internal$Y)
-      )
+      ),
+      recursive = FALSE
+    )
 
-    # standard one-step of the shift parameter / inefficient IPCW-AIPW estimator
+    # manually update output object with one-step results
+    txshift_out[["psi"]] <- psi_onestep
+    txshift_out[["var"]] <- eif_ipcw_var
+    txshift_out[["eif"]] <- eif_ipcw
+
+  # standard one-step of the shift parameter / inefficient IPCW-AIPW estimator
   } else {
     # compute one-step estimate and EIF for the treatment shift parameter
-    aipw_eif_out <- eif(
+    os_eif_out <- eif(
       Y = data_internal$Y,
       Qn = Qn_estim,
       Hn = Hn_estim,
@@ -177,7 +179,7 @@ onestep_txshift <- function(data_internal,
     txshift_out <- unlist(
       list(
         call = call,
-        aipw_eif_out,
+        os_eif_out,
         n_iter = 0,
         estimator = "onestep",
         outcome = list(data_internal$Y)

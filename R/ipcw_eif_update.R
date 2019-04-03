@@ -69,7 +69,6 @@
 #'
 #' @author Nima Hejazi
 #' @author David Benkeser
-#
 ipcw_eif_update <- function(data_in,
                             C,
                             V,

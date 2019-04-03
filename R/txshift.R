@@ -90,7 +90,6 @@
 #'  procedure to compute a TML estimate of the treatment shift parameter.
 #'
 #' @export
-#
 txshift <- function(W,
                     A,
                     Y,

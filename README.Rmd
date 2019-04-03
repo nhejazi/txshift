@@ -127,6 +127,7 @@ summary(ipcw_tmle)
 ipcw_os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                    C = C, V = c("W", "Y"),
                    estimator = "onestep",
+                   ipcw_efficiency = FALSE,
                    ipcw_fit_args = list(fit_type = "glm"),
                    g_fit_args = list(fit_type = "hal",
                                      n_bins = 5,

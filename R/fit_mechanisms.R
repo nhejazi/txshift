@@ -26,8 +26,6 @@
 #' @importFrom haldensify haldensify
 #'
 #' @export
-#'
-#
 est_g <- function(A,
                   W,
                   delta = 0,
