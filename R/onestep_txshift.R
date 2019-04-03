@@ -161,7 +161,7 @@ onestep_txshift <- function(data_internal,
     txshift_out[["var"]] <- eif_ipcw_var
     txshift_out[["eif"]] <- eif_ipcw
 
-  # standard one-step of the shift parameter / inefficient IPCW-AIPW estimator
+    # standard one-step of the shift parameter / inefficient IPCW-AIPW estimator
   } else {
     # compute one-step estimate and EIF for the treatment shift parameter
     os_eif_out <- eif(

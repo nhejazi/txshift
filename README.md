@@ -92,16 +92,16 @@ summary(tmle)
 #>           0
 
 # fit a one-step estimator for comparison
-aipw <- txshift(W = W, A = A, Y = Y, delta = 0.5,
-                estimator = "onestep",
-                g_fit_args = list(fit_type = "hal",
-                                  n_bins = 5,
-                                  grid_type = "equal_mass",
-                                  lambda_seq = exp(seq(-1, -9, length = 300))),
-                Q_fit_args = list(fit_type = "glm",
-                                  glm_formula = "Y ~ .")
-               )
-summary(aipw)
+os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
+              estimator = "onestep",
+              g_fit_args = list(fit_type = "hal",
+                                n_bins = 5,
+                                grid_type = "equal_mass",
+                                lambda_seq = exp(seq(-1, -9, length = 300))),
+              Q_fit_args = list(fit_type = "glm",
+                                glm_formula = "Y ~ .")
+             )
+summary(os)
 #>       lwr_ci    param_est       upr_ci    param_var     eif_mean 
 #>      0.74716      0.77792      0.80592      0.00022 -1.65428e-03 
 #>    estimator       n_iter 
@@ -132,22 +132,23 @@ summary(ipcw_tmle)
 #>         tmle            1
 
 # compare with an IPCW-agumented one-step estimator under censoring:
-ipcw_aipw <- txshift(W = W, A = A, Y = Y, delta = 0.5,
-                     C = C, V = c("W", "Y"),
-                     estimator = "onestep",
-                     ipcw_fit_args = list(fit_type = "glm"),
-                     g_fit_args = list(fit_type = "hal",
-                                       n_bins = 5,
-                                       grid_type = "equal_mass",
-                                       lambda_seq =
-                                         exp(seq(-1, -9, length = 300))),
-                     Q_fit_args = list(fit_type = "glm",
-                                       glm_formula = "Y ~ ."),
-                     eif_reg_type = "glm"
-                    )
-summary(ipcw_aipw)
+ipcw_os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
+                   C = C, V = c("W", "Y"),
+                   estimator = "onestep",
+                   ipcw_efficiency = FALSE,
+                   ipcw_fit_args = list(fit_type = "glm"),
+                   g_fit_args = list(fit_type = "hal",
+                                     n_bins = 5,
+                                     grid_type = "equal_mass",
+                                     lambda_seq =
+                                       exp(seq(-1, -9, length = 300))),
+                   Q_fit_args = list(fit_type = "glm",
+                                     glm_formula = "Y ~ ."),
+                   eif_reg_type = "glm"
+                  )
+summary(ipcw_os)
 #>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-#>     0.75847     0.79396     0.82544     0.00029 1.06521e-02     onestep 
+#>     0.74805     0.79396     0.83337     0.00047 1.06521e-02     onestep 
 #>      n_iter 
 #>           0
 ```

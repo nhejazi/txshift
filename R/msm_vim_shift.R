@@ -80,7 +80,7 @@ msm_vimshift <- function(Y,
   assertthat::assert_that(length(delta_grid) > 1)
 
   # multiplier for CI construction
-  ci_mult <- c(1, -1) * stats::qnorm( (1 - ci_level) / 2)
+  ci_mult <- c(1, -1) * stats::qnorm((1 - ci_level) / 2)
 
   # fit TML or one-step estimator for each value of shift in the grid
   est_over_grid <-
