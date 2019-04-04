@@ -88,7 +88,7 @@
 <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://www.benkeserstatistics.com/">David Benkeser</a>
 </h4>
             
-            <h4 class="date">2019-03-31</h4>
+            <h4 class="date">2019-04-03</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nhejazi/txshift/blob/master/vignettes/intro_txshift.Rmd"><code>vignettes/intro_txshift.Rmd</code></a></small>
       <div class="hidden name"><code>intro_txshift.Rmd</code></div>
@@ -237,12 +237,12 @@
 <a class="sourceLine" id="cb20-6" data-line-number="6">                                             <span class="dt">sl_lrnrs =</span> sl_lrn)</a>
 <a class="sourceLine" id="cb20-7" data-line-number="7">                          )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 3284.3548     Pars:  0.62285 0.01275 0.36440
-## Iter: 2 fn: 3284.3548     Pars:  0.62285 0.01275 0.36441
+## Iter: 1 fn: 3284.8440     Pars:  0.62262 0.01296 0.36442
+## Iter: 2 fn: 3284.8440     Pars:  0.62262 0.01296 0.36442
 ## solnp--&gt; Completed in 2 iterations</code></pre>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle_sl_shift_<span class="dv">1</span>)</a></code></pre></div>
 <pre><code>##      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-##     1.91065     2.03905     2.16745     0.00429 1.79777e-10        tmle 
+##     1.91052     2.03888     2.16723     0.00429 1.74369e-10        tmle 
 ##      n_iter 
 ##           0</code></pre>
 <p>As before, we may vary the regression for the submodel fluctuation procedure by weighting each observation by the value of the so-called clever covariate rather than using such an auxiliary covariate directly in the regression procedure:</p>
@@ -254,12 +254,12 @@
 <a class="sourceLine" id="cb24-6" data-line-number="6">                                             <span class="dt">sl_lrnrs =</span> sl_lrn)</a>
 <a class="sourceLine" id="cb24-7" data-line-number="7">                          )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 3371.7552     Pars:  0.6783688491 0.0000001068 0.3216310423
-## Iter: 2 fn: 3371.7552     Pars:  0.67836887189 0.00000006801 0.32163106010
+## Iter: 1 fn: 3371.6053     Pars:  0.6769733439 0.0000001076 0.3230265468
+## Iter: 2 fn: 3371.6053     Pars:  0.67697336007 0.00000006853 0.32302657140
 ## solnp--&gt; Completed in 2 iterations</code></pre>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle_sl_shift_<span class="dv">2</span>)</a></code></pre></div>
 <pre><code>##      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-##      1.9207     2.04911     2.17751     0.00429 9.55362e-14        tmle 
+##     1.92069      2.0491      2.1775     0.00429 9.48275e-14        tmle 
 ##      n_iter 
 ##           0</code></pre>
 </div>
@@ -279,7 +279,7 @@
 <p><span class="math display">\[\sigma_n^2 = \frac{1}{n} \sum_{i = 1}^{n} D^2(\bar{Q}_n^*, g_n)(O_i)\]</span></p>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1">(ci_shift &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/confint">confint</a></span>(tmle_sl_shift_<span class="dv">1</span>))</a></code></pre></div>
 <pre><code>##   lwr_ci      est   upr_ci 
-## 1.910654 2.039054 2.167454</code></pre>
+## 1.910520 2.038875 2.167230</code></pre>
 <hr>
 </div>
 </div>

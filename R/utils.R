@@ -6,7 +6,6 @@
 #'  computed for the treatment \code{A}.
 #'
 #' @keywords internal
-#
 tx_shift <- function(A,
                      W = NULL,
                      delta) {
@@ -35,7 +34,6 @@ tx_shift <- function(A,
 #' @method confint txshift
 #'
 #' @export
-#
 confint.txshift <- function(object,
                             parm = seq_len(object$psi),
                             level = 0.95,
@@ -87,11 +85,10 @@ confint.txshift <- function(object,
 #' @method summary txshift
 #'
 #' @export
-#
 summary.txshift <- function(object,
                             ...,
                             ci_level = 0.95,
-                            digits = 5) {
+                            digits = 4) {
 
   # compute confidence interval using the pre-defined method
   ci <- stats::confint(object, level = ci_level)
@@ -123,8 +120,6 @@ summary.txshift <- function(object,
 #' @export
 #'
 #' @method print txshift
-#'
-#
 print.txshift <- function(x, ...) {
   print(x[c("psi", "var", "estimator", "msg", "n_iter")])
 }
@@ -143,7 +138,6 @@ print.txshift <- function(x, ...) {
 #' @importFrom assertthat assert_that
 #'
 #' @keywords internal
-#
 bound_precision <- function(vals) {
   assertthat::assert_that(!(max(vals) > 1 | min(vals) < 0))
   vals[vals == 0] <- .Machine$double.neg.eps
@@ -159,7 +153,6 @@ bound_precision <- function(vals) {
 #'  the variable of interest, to be re-scaled to the unit interval [0, 1].
 #'
 #' @keywords internal
-#
 scale_to_unit <- function(vals) {
   # compute re-scaled value in interval [0,1]
   scaled_vals <- (vals - min(vals)) / (max(vals) - min(vals))
@@ -178,7 +171,6 @@ scale_to_unit <- function(vals) {
 #'  values on the original scale.
 #'
 #' @keywords internal
-#
 scale_to_original <- function(scaled_vals, max_orig, min_orig) {
   scaled_orig <- scaled_vals * (max_orig - min_orig) + min_orig
   return(scaled_orig)

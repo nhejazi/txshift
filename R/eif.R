@@ -38,7 +38,6 @@
 #'
 #' @author Nima Hejazi
 #' @author David Benkeser
-#
 eif <- function(Y,
                 Qn,
                 Hn,
@@ -77,20 +76,10 @@ eif <- function(Y,
     psi <- psi + mean(eif)
   }
 
-  # NOTE: sanity check --- EIF ~ N(0, V(D(P)(o))), so mean(EIF) ~= 0
-  eif_msg <- dplyr::if_else(
-    abs(mean(eif)) < eif_tol,
-    paste("EIF mean <", eif_tol, "(sufficiently low)."),
-    paste(
-      "EIF mean =", mean(eif),
-      "(higher than expected)."
-    )
-  )
-
   # compute the variance based on the EIF and scale by number of observations
   var_eif <- stats::var(eif) / length(Y)
 
   # return the variance and the EIF value at each observation
-  out <- list(psi = psi, var = var_eif, eif = eif, msg = eif_msg)
+  out <- list(psi = psi, var = var_eif, eif = eif)
   return(out)
 }

@@ -4,7 +4,7 @@
 \alias{summary.txshift}
 \title{Summary for Shifted Treatment Parameter Objects}
 \usage{
-\method{summary}{txshift}(object, ..., ci_level = 0.95, digits = 5)
+\method{summary}{txshift}(object, ..., ci_level = 0.95, digits = 4)
 }
 \arguments{
 \item{object}{An object of class \code{txshift}, as produced by invoking

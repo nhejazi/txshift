@@ -35,12 +35,13 @@ Imports:
     dplyr,
     stringr,
     tibble,
-    data.table,
     assertthat,
+    data.table,
+    mvtnorm,
+    Rdpack,
     sl3,
     hal9001,
-    haldensify,
-    Rdpack
+    haldensify
 Suggests:
     testthat,
     knitr,

@@ -80,7 +80,6 @@
 #'  procedure to compute a TML estimate of the treatment shift parameter.
 #'
 #' @export
-#
 tmle_txshift <- function(data_internal,
                          C = rep(1, nrow(data_internal)),
                          V = NULL,

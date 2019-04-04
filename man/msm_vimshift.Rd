@@ -2,11 +2,11 @@
 % Please edit documentation in R/msm_vim_shift.R
 \name{msm_vimshift}
 \alias{msm_vimshift}
-\title{Test for a trend in the causal effects of a grid of shift interventions}
+\title{Marginal structural model for the causal effects of a grid of interventions}
 \usage{
 msm_vimshift(Y, A, W, C = rep(1, length(Y)), V = NULL,
-  delta_grid = seq(-1, 1, 1), estimator = c("tmle", "onestep"),
-  weighting = c("identity", "variance"), ci_level = 0.95,
+  delta_grid = seq(-0.5, 0.5, 0.5), estimator = c("tmle", "onestep"),
+  weighting = c("variance", "identity"), ci_level = 0.95,
   ci_type = c("simultaneous", "marginal"), ...)
 }
 \arguments{
@@ -53,11 +53,11 @@ each parameter estimate separately.}
 \item{...}{Additional arguments to be passed to \code{txshift}.}
 }
 \description{
-Test for a trend in the causal effects of a grid of shift interventions
+Marginal structural model for the causal effects of a grid of interventions
 }
 \examples{
 set.seed(429153)
-n_obs <- 1000
+n_obs <- 100
 W <- as.numeric(replicate(1, rbinom(n_obs, 1, 0.5)))
 A <- as.numeric(rnorm(n_obs, mean = 2 * W, sd = 1))
 Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
@@ -68,7 +68,7 @@ msm <- msm_vimshift(
     n_bins = 5,
     grid_type = "equal_mass",
     lambda_seq = exp(seq(-1, -9,
-      length = 300
+      length = 100
     ))
   ),
   Q_fit_args = list(
@@ -76,6 +76,4 @@ msm <- msm_vimshift(
     glm_formula = "Y ~ ."
   )
 )
-
-#
 }

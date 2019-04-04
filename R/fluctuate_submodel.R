@@ -20,7 +20,6 @@
 #' @importFrom dplyr "%>%"
 #'
 #' @export
-#
 fit_fluc <- function(Y,
                      Qn_scaled,
                      Hn,

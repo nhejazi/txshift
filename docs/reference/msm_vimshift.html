@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Test for a trend in the causal effects of a grid of shift interventions — msm_vimshift • txshift</title>
+<title>Marginal structural model for the causal effects of a grid of interventions — msm_vimshift • txshift</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Test for a trend in the causal effects of a grid of shift interventions — msm_vimshift" />
+<meta property="og:title" content="Marginal structural model for the causal effects of a grid of interventions — msm_vimshift" />
 
-<meta property="og:description" content="Test for a trend in the causal effects of a grid of shift interventions" />
+<meta property="og:description" content="Marginal structural model for the causal effects of a grid of interventions" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -117,20 +117,20 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Test for a trend in the causal effects of a grid of shift interventions</h1>
+    <h1>Marginal structural model for the causal effects of a grid of interventions</h1>
     <small class="dont-index">Source: <a href='https://github.com/nhejazi/txshift/blob/master/R/msm_vim_shift.R'><code>R/msm_vim_shift.R</code></a></small>
     <div class="hidden name"><code>msm_vimshift.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Test for a trend in the causal effects of a grid of shift interventions</p>
+    <p>Marginal structural model for the causal effects of a grid of interventions</p>
     
     </div>
 
     <pre class="usage"><span class='fu'>msm_vimshift</span>(<span class='no'>Y</span>, <span class='no'>A</span>, <span class='no'>W</span>, <span class='kw'>C</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/length'>length</a></span>(<span class='no'>Y</span>)), <span class='kw'>V</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>delta_grid</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/seq'>seq</a></span>(-<span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>), <span class='kw'>estimator</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"tmle"</span>, <span class='st'>"onestep"</span>),
-  <span class='kw'>weighting</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"identity"</span>, <span class='st'>"variance"</span>), <span class='kw'>ci_level</span> <span class='kw'>=</span> <span class='fl'>0.95</span>,
+  <span class='kw'>delta_grid</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/seq'>seq</a></span>(-<span class='fl'>0.5</span>, <span class='fl'>0.5</span>, <span class='fl'>0.5</span>), <span class='kw'>estimator</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"tmle"</span>, <span class='st'>"onestep"</span>),
+  <span class='kw'>weighting</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"variance"</span>, <span class='st'>"identity"</span>), <span class='kw'>ci_level</span> <span class='kw'>=</span> <span class='fl'>0.95</span>,
   <span class='kw'>ci_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"simultaneous"</span>, <span class='st'>"marginal"</span>), <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -205,7 +205,7 @@ each parameter estimate separately.</p></td>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/Random'>set.seed</a></span>(<span class='fl'>429153</span>)
-<span class='no'>n_obs</span> <span class='kw'>&lt;-</span> <span class='fl'>1000</span>
+<span class='no'>n_obs</span> <span class='kw'>&lt;-</span> <span class='fl'>100</span>
 <span class='no'>W</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/numeric'>as.numeric</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/lapply'>replicate</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Binomial'>rbinom</a></span>(<span class='no'>n_obs</span>, <span class='fl'>1</span>, <span class='fl'>0.5</span>)))
 <span class='no'>A</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/numeric'>as.numeric</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Normal'>rnorm</a></span>(<span class='no'>n_obs</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>2</span> * <span class='no'>W</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>1</span>))
 <span class='no'>Y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Binomial'>rbinom</a></span>(<span class='no'>n_obs</span>, <span class='fl'>1</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Logistic'>plogis</a></span>(<span class='no'>A</span> + <span class='no'>W</span> + <span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Normal'>rnorm</a></span>(<span class='no'>n_obs</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>1</span>)))
@@ -216,16 +216,14 @@ each parameter estimate separately.</p></td>
     <span class='kw'>n_bins</span> <span class='kw'>=</span> <span class='fl'>5</span>,
     <span class='kw'>grid_type</span> <span class='kw'>=</span> <span class='st'>"equal_mass"</span>,
     <span class='kw'>lambda_seq</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/Log'>exp</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/seq'>seq</a></span>(-<span class='fl'>1</span>, -<span class='fl'>9</span>,
-      <span class='kw'>length</span> <span class='kw'>=</span> <span class='fl'>300</span>
+      <span class='kw'>length</span> <span class='kw'>=</span> <span class='fl'>100</span>
     ))
   ),
   <span class='kw'>Q_fit_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(
     <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='st'>"glm"</span>,
     <span class='kw'>glm_formula</span> <span class='kw'>=</span> <span class='st'>"Y ~ ."</span>
   )
-)
-
-<span class='co'>#</span></div></pre>
+)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
