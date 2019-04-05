@@ -30,9 +30,9 @@ Benkeser](https://www.benkeserstatistics.com/)
 The `txshift` R package is designed to compute targeted maximum
 likelihood (TML) estimates of the counterfactual mean of an outcome
 under stochastic mechanisms for treatment assignment and related causal
-parameters (Díaz and van der Laan (2012)). In particular, `txshift`
-implements and builds upon a simplified algorithm for the TML estimator
-proposed by Díaz and van der Laan (2018).
+parameters (@diaz2012population). In particular, `txshift` implements
+and builds upon a simplified algorithm for the TML estimator proposed by
+Dı́az and van der Laan (2018).
 
 For many practical applications (e.g., vaccine efficacy trials), it is
 often the case that the observed data structure is generated under a
@@ -182,7 +182,7 @@ After using the `txshift` R package, please cite the following:
         Stochastic Interventions in {R}},
       year  = {2019},
       url = {https://github.com/nhejazi/txshift},
-      note = {R package version 0.2.3}
+      note = {R package version 0.2.4}
     }
 ```
 
@@ -202,7 +202,7 @@ After using the `txshift` R package, please cite the following:
     providing facilities to estimate the causal effect of stochastic
     treatment regimes in the mediation setting, including classical
     (IPW) and augmented double robust (one-step) estimators. This is an
-    implementation of the methodology explored in Díaz and Hejazi
+    implementation of the methodology explored in Dı́az and Hejazi
     (2019).
 
   - [R/`haldensify`](https://github.com/nhejazi/haldensify) - A minimal
@@ -210,7 +210,7 @@ After using the `txshift` R package, please cite the following:
     component of this parameter based on using the [highly adaptive
     lasso](https://github.com/tlverse/hal9001) in combination with a
     pooled hazard regression. This package implements the methodology
-    proposed in Díaz and van der Laan (2011).
+    proposed in Dı́az and van der Laan (2011).
 
 -----
 
@@ -259,7 +259,7 @@ See below for details:
 
 <div id="ref-diaz2019causal">
 
-Díaz, Iván, and Nima S Hejazi. 2019. “Causal Mediation Analysis for
+Dı́az, Iván, and Nima S Hejazi. 2019. “Causal Mediation Analysis for
 Stochastic Interventions.” *Submitted*.
 <https://arxiv.org/abs/1901.02776>.
 
@@ -267,17 +267,9 @@ Stochastic Interventions.” *Submitted*.
 
 <div id="ref-diaz2011super">
 
-Díaz, Iván, and Mark J van der Laan. 2011. “Super Learner Based
+Dı́az, Iván, and van der LaanMark J. 2011. “Super Learner Based
 Conditional Density Estimation with Application to Marginal Structural
-Models.” *The International Journal of Biostatistics* 7 (1). De Gruyter:
-1–20.
-
-</div>
-
-<div id="ref-diaz2012population">
-
-———. 2012. “Population Intervention Causal Effects Based on Stochastic
-Interventions.” *Biometrics* 68 (2). Wiley Online Library: 541–49.
+Models.” *The International Journal of Biostatistics* 7 (1): 1–20.
 
 </div>
 
@@ -291,7 +283,7 @@ Springer Science & Business Media.
 
 <div id="ref-rose2011targeted2sd">
 
-Rose, Sherri, and Mark J van der Laan. 2011. “A Targeted Maximum
+Rose, Sherri, and van der LaanMark J. 2011. “A Targeted Maximum
 Likelihood Estimator for Two-Stage Designs.” *The International Journal
 of Biostatistics* 7 (1): 1–21.
 
