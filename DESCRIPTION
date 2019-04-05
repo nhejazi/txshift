@@ -1,6 +1,6 @@
 Package: txshift
 Title: Targeted Learning of the Causal Effects of Stochastic Interventions
-Version: 0.2.3
+Version: 0.2.4
 Authors@R: c(
     person("Nima", "Hejazi", email = "nh@nimahejazi.org",
            role = c("aut", "cre", "cph"),

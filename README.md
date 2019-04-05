@@ -86,10 +86,10 @@ tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                                   glm_formula = "Y ~ .")
                )
 summary(tmle)
-#>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-#>     0.74743     0.77825     0.80629     0.00023 8.10317e-10        tmle 
-#>      n_iter 
-#>           0
+#>     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator 
+#>     0.7474     0.7783     0.8063      2e-04 8.1032e-10       tmle 
+#>     n_iter 
+#>          0
 
 # fit a one-step estimator for comparison
 os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
@@ -102,10 +102,10 @@ os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                                 glm_formula = "Y ~ .")
              )
 summary(os)
-#>       lwr_ci    param_est       upr_ci    param_var     eif_mean 
-#>      0.74716      0.77792      0.80592      0.00022 -1.65428e-03 
-#>    estimator       n_iter 
-#>      onestep            0
+#>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
+#>      0.7472      0.7779      0.8059       2e-04 -1.6543e-03     onestep 
+#>      n_iter 
+#>           0
 
 # now, let's introduce a censoring process (for two-stage sampling)
 C <- rbinom(n_obs, 1, plogis(W + Y))
@@ -126,10 +126,10 @@ ipcw_tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                      eif_reg_type = "glm"
                     )
 summary(ipcw_tmle)
-#>       lwr_ci    param_est       upr_ci    param_var     eif_mean 
-#>       0.7566      0.79212      0.82367      0.00029 -4.76866e-06 
-#>    estimator       n_iter 
-#>         tmle            1
+#>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
+#>      0.7566      0.7921      0.8237       3e-04 -4.7687e-06        tmle 
+#>      n_iter 
+#>           1
 
 # compare with an IPCW-agumented one-step estimator under censoring:
 ipcw_os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
@@ -147,10 +147,10 @@ ipcw_os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                    eif_reg_type = "glm"
                   )
 summary(ipcw_os)
-#>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-#>     0.74805     0.79396     0.83337     0.00047 1.06521e-02     onestep 
-#>      n_iter 
-#>           0
+#>     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator 
+#>     0.7481      0.794     0.8334      5e-04 1.0652e-02    onestep 
+#>     n_iter 
+#>          0
 ```
 
 -----

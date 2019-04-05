@@ -215,7 +215,7 @@ using such an auxiliary covariate directly in the regression procedure. Note
 that we again avoid running the following code chunk for the sake of saving time
 in this vignette.
 
-```{r ipcw_tmle_sl_1_not_run, eval=FALSE}
+```{r ipcw_tmle_sl_2_not_run, eval=FALSE}
 tmle_sl_shift_2 <- txshift(W = W, A = A, Y = Y,
                            C = C, V = c("W", "Y"),
                            delta = delta,
