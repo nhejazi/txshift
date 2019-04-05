@@ -7,7 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Targeted Learning of the Causal Effects of Stochastic Interventions • txshift</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/readable/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Targeted Learning of the Causal Effects of Stochastic Interventions">
 <meta property="og:description" content="Computation of targeted maximum likelihood (TML) estimates of the
@@ -39,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.4</span>
       </span>
     </div>
 
@@ -47,7 +48,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -76,7 +77,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/nhejazi/txshift">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -109,7 +110,7 @@
 <div id="whats-txshift" class="section level2">
 <h2 class="hasAnchor">
 <a href="#whats-txshift" class="anchor"></a>What’s <code>txshift</code>?</h2>
-<p>The <code>txshift</code> R package is designed to compute targeted maximum likelihood (TML) estimates of the counterfactual mean of an outcome under stochastic mechanisms for treatment assignment and related causal parameters (<span class="citation">Díaz and van der Laan (2012)</span>). In particular, <code>txshift</code> implements and builds upon a simplified algorithm for the TML estimator proposed by <span class="citation">Díaz and van der Laan (2018)</span>.</p>
+<p>The <code>txshift</code> R package is designed to compute targeted maximum likelihood (TML) estimates of the counterfactual mean of an outcome under stochastic mechanisms for treatment assignment and related causal parameters (@diaz2012population). In particular, <code>txshift</code> implements and builds upon a simplified algorithm for the TML estimator proposed by <span class="citation">Dı́az and van der Laan (2018)</span>.</p>
 <p>For many practical applications (e.g., vaccine efficacy trials), it is often the case that the observed data structure is generated under a two-phase sampling mechanism (i.e., a two-stage design). In such cases, TML estimators must be augmented to exhibit efficiency in spite of the challenges induced by the censoring process. An appropriate augmentation procedure was first proposed by <span class="citation">Rose and van der Laan (2011)</span>, who proposed the use of inverse probability of censoring weights (IPCW) alongside an augmentation of the relevant efficient influence function. <code>txshift</code> extends this approach to computing one-step and IPCW-TML estimators of the counterfactual mean under a stochastic treatment regime.</p>
 <hr>
 </div>
@@ -117,99 +118,99 @@
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p>Install the most recent <em>stable release</em> from GitHub via <a href="https://www.rstudio.com/products/rpackages/devtools/"><code>devtools</code></a>:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"nhejazi/txshift"</span>, <span class="dt">build_vignettes =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"nhejazi/txshift"</span>, <span class="dt">build_vignettes =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
 <hr>
 </div>
 <div id="example" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example" class="anchor"></a>Example</h2>
 <p>To illustrate how <code>txshift</code> may be used to ascertain the effect of a treatment, consider the following example:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(txshift)</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(haldensify)</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Random">set.seed</a></span>(<span class="dv">429153</span>)</a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="co"># simulate simple data</span></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">n_obs &lt;-<span class="st"> </span><span class="dv">1000</span></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7">W &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">replicate</a></span>(<span class="dv">2</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Binomial">rbinom</a></span>(n_obs, <span class="dv">1</span>, <span class="fl">0.5</span>))</a>
-<a class="sourceLine" id="cb2-8" data-line-number="8">A &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(n_obs, <span class="dt">mean =</span> <span class="dv">2</span> <span class="op">*</span><span class="st"> </span>W, <span class="dt">sd =</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb2-9" data-line-number="9">Y &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Binomial">rbinom</a></span>(n_obs, <span class="dv">1</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Logistic">plogis</a></span>(A <span class="op">+</span><span class="st"> </span>W <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(n_obs, <span class="dt">mean =</span> <span class="dv">0</span>, <span class="dt">sd =</span> <span class="dv">1</span>)))</a>
-<a class="sourceLine" id="cb2-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb2-11" data-line-number="11"><span class="co"># fit the TMLE</span></a>
-<a class="sourceLine" id="cb2-12" data-line-number="12">tmle &lt;-<span class="st"> </span><span class="kw"><a href="reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y, <span class="dt">delta =</span> <span class="fl">0.5</span>,</a>
-<a class="sourceLine" id="cb2-13" data-line-number="13">                <span class="dt">estimator =</span> <span class="st">"tmle"</span>,</a>
-<a class="sourceLine" id="cb2-14" data-line-number="14">                <span class="dt">g_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"hal"</span>,</a>
-<a class="sourceLine" id="cb2-15" data-line-number="15">                                  <span class="dt">n_bins =</span> <span class="dv">5</span>,</a>
-<a class="sourceLine" id="cb2-16" data-line-number="16">                                  <span class="dt">grid_type =</span> <span class="st">"equal_mass"</span>,</a>
-<a class="sourceLine" id="cb2-17" data-line-number="17">                                  <span class="dt">lambda_seq =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">exp</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/seq">seq</a></span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">-9</span>, <span class="dt">length =</span> <span class="dv">300</span>))),</a>
-<a class="sourceLine" id="cb2-18" data-line-number="18">                <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>,</a>
-<a class="sourceLine" id="cb2-19" data-line-number="19">                                  <span class="dt">glm_formula =</span> <span class="st">"Y ~ ."</span>)</a>
-<a class="sourceLine" id="cb2-20" data-line-number="20">               )</a>
-<a class="sourceLine" id="cb2-21" data-line-number="21"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle)</a>
-<a class="sourceLine" id="cb2-22" data-line-number="22"><span class="co">#&gt;      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator </span></a>
-<a class="sourceLine" id="cb2-23" data-line-number="23"><span class="co">#&gt;     0.74743     0.77825     0.80629     0.00023 8.10317e-10        tmle </span></a>
-<a class="sourceLine" id="cb2-24" data-line-number="24"><span class="co">#&gt;      n_iter </span></a>
-<a class="sourceLine" id="cb2-25" data-line-number="25"><span class="co">#&gt;           0</span></a>
-<a class="sourceLine" id="cb2-26" data-line-number="26"></a>
-<a class="sourceLine" id="cb2-27" data-line-number="27"><span class="co"># fit a one-step estimator for comparison</span></a>
-<a class="sourceLine" id="cb2-28" data-line-number="28">os &lt;-<span class="st"> </span><span class="kw"><a href="reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y, <span class="dt">delta =</span> <span class="fl">0.5</span>,</a>
-<a class="sourceLine" id="cb2-29" data-line-number="29">              <span class="dt">estimator =</span> <span class="st">"onestep"</span>,</a>
-<a class="sourceLine" id="cb2-30" data-line-number="30">              <span class="dt">g_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"hal"</span>,</a>
-<a class="sourceLine" id="cb2-31" data-line-number="31">                                <span class="dt">n_bins =</span> <span class="dv">5</span>,</a>
-<a class="sourceLine" id="cb2-32" data-line-number="32">                                <span class="dt">grid_type =</span> <span class="st">"equal_mass"</span>,</a>
-<a class="sourceLine" id="cb2-33" data-line-number="33">                                <span class="dt">lambda_seq =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">exp</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/seq">seq</a></span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">-9</span>, <span class="dt">length =</span> <span class="dv">300</span>))),</a>
-<a class="sourceLine" id="cb2-34" data-line-number="34">              <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>,</a>
-<a class="sourceLine" id="cb2-35" data-line-number="35">                                <span class="dt">glm_formula =</span> <span class="st">"Y ~ ."</span>)</a>
-<a class="sourceLine" id="cb2-36" data-line-number="36">             )</a>
-<a class="sourceLine" id="cb2-37" data-line-number="37"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(os)</a>
-<a class="sourceLine" id="cb2-38" data-line-number="38"><span class="co">#&gt;       lwr_ci    param_est       upr_ci    param_var     eif_mean </span></a>
-<a class="sourceLine" id="cb2-39" data-line-number="39"><span class="co">#&gt;      0.74716      0.77792      0.80592      0.00022 -1.65428e-03 </span></a>
-<a class="sourceLine" id="cb2-40" data-line-number="40"><span class="co">#&gt;    estimator       n_iter </span></a>
-<a class="sourceLine" id="cb2-41" data-line-number="41"><span class="co">#&gt;      onestep            0</span></a>
-<a class="sourceLine" id="cb2-42" data-line-number="42"></a>
-<a class="sourceLine" id="cb2-43" data-line-number="43"><span class="co"># now, let's introduce a censoring process (for two-stage sampling)</span></a>
-<a class="sourceLine" id="cb2-44" data-line-number="44">C &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Binomial">rbinom</a></span>(n_obs, <span class="dv">1</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Logistic">plogis</a></span>(W <span class="op">+</span><span class="st"> </span>Y))</a>
-<a class="sourceLine" id="cb2-45" data-line-number="45"></a>
-<a class="sourceLine" id="cb2-46" data-line-number="46"><span class="co"># fit an IPCW-TMLE to account for this censoring process:</span></a>
-<a class="sourceLine" id="cb2-47" data-line-number="47">ipcw_tmle &lt;-<span class="st"> </span><span class="kw"><a href="reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y, <span class="dt">delta =</span> <span class="fl">0.5</span>,</a>
-<a class="sourceLine" id="cb2-48" data-line-number="48">                     <span class="dt">C =</span> C, <span class="dt">V =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"W"</span>, <span class="st">"Y"</span>),</a>
-<a class="sourceLine" id="cb2-49" data-line-number="49">                     <span class="dt">estimator =</span> <span class="st">"tmle"</span>,</a>
-<a class="sourceLine" id="cb2-50" data-line-number="50">                     <span class="dt">max_iter =</span> <span class="dv">5</span>,</a>
-<a class="sourceLine" id="cb2-51" data-line-number="51">                     <span class="dt">ipcw_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>),</a>
-<a class="sourceLine" id="cb2-52" data-line-number="52">                     <span class="dt">g_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"hal"</span>,</a>
-<a class="sourceLine" id="cb2-53" data-line-number="53">                                       <span class="dt">n_bins =</span> <span class="dv">5</span>,</a>
-<a class="sourceLine" id="cb2-54" data-line-number="54">                                       <span class="dt">grid_type =</span> <span class="st">"equal_mass"</span>,</a>
-<a class="sourceLine" id="cb2-55" data-line-number="55">                                       <span class="dt">lambda_seq =</span></a>
-<a class="sourceLine" id="cb2-56" data-line-number="56">                                         <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">exp</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/seq">seq</a></span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">-9</span>, <span class="dt">length =</span> <span class="dv">300</span>))),</a>
-<a class="sourceLine" id="cb2-57" data-line-number="57">                     <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>,</a>
-<a class="sourceLine" id="cb2-58" data-line-number="58">                                       <span class="dt">glm_formula =</span> <span class="st">"Y ~ ."</span>),</a>
-<a class="sourceLine" id="cb2-59" data-line-number="59">                     <span class="dt">eif_reg_type =</span> <span class="st">"glm"</span></a>
-<a class="sourceLine" id="cb2-60" data-line-number="60">                    )</a>
-<a class="sourceLine" id="cb2-61" data-line-number="61"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(ipcw_tmle)</a>
-<a class="sourceLine" id="cb2-62" data-line-number="62"><span class="co">#&gt;       lwr_ci    param_est       upr_ci    param_var     eif_mean </span></a>
-<a class="sourceLine" id="cb2-63" data-line-number="63"><span class="co">#&gt;       0.7566      0.79212      0.82367      0.00029 -4.76866e-06 </span></a>
-<a class="sourceLine" id="cb2-64" data-line-number="64"><span class="co">#&gt;    estimator       n_iter </span></a>
-<a class="sourceLine" id="cb2-65" data-line-number="65"><span class="co">#&gt;         tmle            1</span></a>
-<a class="sourceLine" id="cb2-66" data-line-number="66"></a>
-<a class="sourceLine" id="cb2-67" data-line-number="67"><span class="co"># compare with an IPCW-agumented one-step estimator under censoring:</span></a>
-<a class="sourceLine" id="cb2-68" data-line-number="68">ipcw_os &lt;-<span class="st"> </span><span class="kw"><a href="reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y, <span class="dt">delta =</span> <span class="fl">0.5</span>,</a>
-<a class="sourceLine" id="cb2-69" data-line-number="69">                   <span class="dt">C =</span> C, <span class="dt">V =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"W"</span>, <span class="st">"Y"</span>),</a>
-<a class="sourceLine" id="cb2-70" data-line-number="70">                   <span class="dt">estimator =</span> <span class="st">"onestep"</span>,</a>
-<a class="sourceLine" id="cb2-71" data-line-number="71">                   <span class="dt">ipcw_efficiency =</span> <span class="ot">FALSE</span>,</a>
-<a class="sourceLine" id="cb2-72" data-line-number="72">                   <span class="dt">ipcw_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>),</a>
-<a class="sourceLine" id="cb2-73" data-line-number="73">                   <span class="dt">g_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"hal"</span>,</a>
-<a class="sourceLine" id="cb2-74" data-line-number="74">                                     <span class="dt">n_bins =</span> <span class="dv">5</span>,</a>
-<a class="sourceLine" id="cb2-75" data-line-number="75">                                     <span class="dt">grid_type =</span> <span class="st">"equal_mass"</span>,</a>
-<a class="sourceLine" id="cb2-76" data-line-number="76">                                     <span class="dt">lambda_seq =</span></a>
-<a class="sourceLine" id="cb2-77" data-line-number="77">                                       <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">exp</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/seq">seq</a></span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">-9</span>, <span class="dt">length =</span> <span class="dv">300</span>))),</a>
-<a class="sourceLine" id="cb2-78" data-line-number="78">                   <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>,</a>
-<a class="sourceLine" id="cb2-79" data-line-number="79">                                     <span class="dt">glm_formula =</span> <span class="st">"Y ~ ."</span>),</a>
-<a class="sourceLine" id="cb2-80" data-line-number="80">                   <span class="dt">eif_reg_type =</span> <span class="st">"glm"</span></a>
-<a class="sourceLine" id="cb2-81" data-line-number="81">                  )</a>
-<a class="sourceLine" id="cb2-82" data-line-number="82"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(ipcw_os)</a>
-<a class="sourceLine" id="cb2-83" data-line-number="83"><span class="co">#&gt;      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator </span></a>
-<a class="sourceLine" id="cb2-84" data-line-number="84"><span class="co">#&gt;     0.74805     0.79396     0.83337     0.00047 1.06521e-02     onestep </span></a>
-<a class="sourceLine" id="cb2-85" data-line-number="85"><span class="co">#&gt;      n_iter </span></a>
-<a class="sourceLine" id="cb2-86" data-line-number="86"><span class="co">#&gt;           0</span></a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(txshift)</a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(haldensify)</a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Random">set.seed</a></span>(<span class="dv">429153</span>)</a>
+<a class="sourceLine" id="cb2-4" title="4"></a>
+<a class="sourceLine" id="cb2-5" title="5"><span class="co"># simulate simple data</span></a>
+<a class="sourceLine" id="cb2-6" title="6">n_obs &lt;-<span class="st"> </span><span class="dv">1000</span></a>
+<a class="sourceLine" id="cb2-7" title="7">W &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">replicate</a></span>(<span class="dv">2</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Binomial">rbinom</a></span>(n_obs, <span class="dv">1</span>, <span class="fl">0.5</span>))</a>
+<a class="sourceLine" id="cb2-8" title="8">A &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(n_obs, <span class="dt">mean =</span> <span class="dv">2</span> <span class="op">*</span><span class="st"> </span>W, <span class="dt">sd =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb2-9" title="9">Y &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Binomial">rbinom</a></span>(n_obs, <span class="dv">1</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Logistic">plogis</a></span>(A <span class="op">+</span><span class="st"> </span>W <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(n_obs, <span class="dt">mean =</span> <span class="dv">0</span>, <span class="dt">sd =</span> <span class="dv">1</span>)))</a>
+<a class="sourceLine" id="cb2-10" title="10"></a>
+<a class="sourceLine" id="cb2-11" title="11"><span class="co"># fit the TMLE</span></a>
+<a class="sourceLine" id="cb2-12" title="12">tmle &lt;-<span class="st"> </span><span class="kw"><a href="reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y, <span class="dt">delta =</span> <span class="fl">0.5</span>,</a>
+<a class="sourceLine" id="cb2-13" title="13">                <span class="dt">estimator =</span> <span class="st">"tmle"</span>,</a>
+<a class="sourceLine" id="cb2-14" title="14">                <span class="dt">g_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"hal"</span>,</a>
+<a class="sourceLine" id="cb2-15" title="15">                                  <span class="dt">n_bins =</span> <span class="dv">5</span>,</a>
+<a class="sourceLine" id="cb2-16" title="16">                                  <span class="dt">grid_type =</span> <span class="st">"equal_mass"</span>,</a>
+<a class="sourceLine" id="cb2-17" title="17">                                  <span class="dt">lambda_seq =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">exp</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/seq">seq</a></span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">-9</span>, <span class="dt">length =</span> <span class="dv">300</span>))),</a>
+<a class="sourceLine" id="cb2-18" title="18">                <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>,</a>
+<a class="sourceLine" id="cb2-19" title="19">                                  <span class="dt">glm_formula =</span> <span class="st">"Y ~ ."</span>)</a>
+<a class="sourceLine" id="cb2-20" title="20">               )</a>
+<a class="sourceLine" id="cb2-21" title="21"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(tmle)</a>
+<a class="sourceLine" id="cb2-22" title="22"><span class="co">#&gt;     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator </span></a>
+<a class="sourceLine" id="cb2-23" title="23"><span class="co">#&gt;     0.7474     0.7783     0.8063      2e-04 8.1032e-10       tmle </span></a>
+<a class="sourceLine" id="cb2-24" title="24"><span class="co">#&gt;     n_iter </span></a>
+<a class="sourceLine" id="cb2-25" title="25"><span class="co">#&gt;          0</span></a>
+<a class="sourceLine" id="cb2-26" title="26"></a>
+<a class="sourceLine" id="cb2-27" title="27"><span class="co"># fit a one-step estimator for comparison</span></a>
+<a class="sourceLine" id="cb2-28" title="28">os &lt;-<span class="st"> </span><span class="kw"><a href="reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y, <span class="dt">delta =</span> <span class="fl">0.5</span>,</a>
+<a class="sourceLine" id="cb2-29" title="29">              <span class="dt">estimator =</span> <span class="st">"onestep"</span>,</a>
+<a class="sourceLine" id="cb2-30" title="30">              <span class="dt">g_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"hal"</span>,</a>
+<a class="sourceLine" id="cb2-31" title="31">                                <span class="dt">n_bins =</span> <span class="dv">5</span>,</a>
+<a class="sourceLine" id="cb2-32" title="32">                                <span class="dt">grid_type =</span> <span class="st">"equal_mass"</span>,</a>
+<a class="sourceLine" id="cb2-33" title="33">                                <span class="dt">lambda_seq =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">exp</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/seq">seq</a></span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">-9</span>, <span class="dt">length =</span> <span class="dv">300</span>))),</a>
+<a class="sourceLine" id="cb2-34" title="34">              <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>,</a>
+<a class="sourceLine" id="cb2-35" title="35">                                <span class="dt">glm_formula =</span> <span class="st">"Y ~ ."</span>)</a>
+<a class="sourceLine" id="cb2-36" title="36">             )</a>
+<a class="sourceLine" id="cb2-37" title="37"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(os)</a>
+<a class="sourceLine" id="cb2-38" title="38"><span class="co">#&gt;      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator </span></a>
+<a class="sourceLine" id="cb2-39" title="39"><span class="co">#&gt;      0.7472      0.7779      0.8059       2e-04 -1.6543e-03     onestep </span></a>
+<a class="sourceLine" id="cb2-40" title="40"><span class="co">#&gt;      n_iter </span></a>
+<a class="sourceLine" id="cb2-41" title="41"><span class="co">#&gt;           0</span></a>
+<a class="sourceLine" id="cb2-42" title="42"></a>
+<a class="sourceLine" id="cb2-43" title="43"><span class="co"># now, let's introduce a censoring process (for two-stage sampling)</span></a>
+<a class="sourceLine" id="cb2-44" title="44">C &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Binomial">rbinom</a></span>(n_obs, <span class="dv">1</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Logistic">plogis</a></span>(W <span class="op">+</span><span class="st"> </span>Y))</a>
+<a class="sourceLine" id="cb2-45" title="45"></a>
+<a class="sourceLine" id="cb2-46" title="46"><span class="co"># fit an IPCW-TMLE to account for this censoring process:</span></a>
+<a class="sourceLine" id="cb2-47" title="47">ipcw_tmle &lt;-<span class="st"> </span><span class="kw"><a href="reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y, <span class="dt">delta =</span> <span class="fl">0.5</span>,</a>
+<a class="sourceLine" id="cb2-48" title="48">                     <span class="dt">C =</span> C, <span class="dt">V =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"W"</span>, <span class="st">"Y"</span>),</a>
+<a class="sourceLine" id="cb2-49" title="49">                     <span class="dt">estimator =</span> <span class="st">"tmle"</span>,</a>
+<a class="sourceLine" id="cb2-50" title="50">                     <span class="dt">max_iter =</span> <span class="dv">5</span>,</a>
+<a class="sourceLine" id="cb2-51" title="51">                     <span class="dt">ipcw_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>),</a>
+<a class="sourceLine" id="cb2-52" title="52">                     <span class="dt">g_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"hal"</span>,</a>
+<a class="sourceLine" id="cb2-53" title="53">                                       <span class="dt">n_bins =</span> <span class="dv">5</span>,</a>
+<a class="sourceLine" id="cb2-54" title="54">                                       <span class="dt">grid_type =</span> <span class="st">"equal_mass"</span>,</a>
+<a class="sourceLine" id="cb2-55" title="55">                                       <span class="dt">lambda_seq =</span></a>
+<a class="sourceLine" id="cb2-56" title="56">                                         <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">exp</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/seq">seq</a></span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">-9</span>, <span class="dt">length =</span> <span class="dv">300</span>))),</a>
+<a class="sourceLine" id="cb2-57" title="57">                     <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>,</a>
+<a class="sourceLine" id="cb2-58" title="58">                                       <span class="dt">glm_formula =</span> <span class="st">"Y ~ ."</span>),</a>
+<a class="sourceLine" id="cb2-59" title="59">                     <span class="dt">eif_reg_type =</span> <span class="st">"glm"</span></a>
+<a class="sourceLine" id="cb2-60" title="60">                    )</a>
+<a class="sourceLine" id="cb2-61" title="61"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(ipcw_tmle)</a>
+<a class="sourceLine" id="cb2-62" title="62"><span class="co">#&gt;      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator </span></a>
+<a class="sourceLine" id="cb2-63" title="63"><span class="co">#&gt;      0.7566      0.7921      0.8237       3e-04 -4.7687e-06        tmle </span></a>
+<a class="sourceLine" id="cb2-64" title="64"><span class="co">#&gt;      n_iter </span></a>
+<a class="sourceLine" id="cb2-65" title="65"><span class="co">#&gt;           1</span></a>
+<a class="sourceLine" id="cb2-66" title="66"></a>
+<a class="sourceLine" id="cb2-67" title="67"><span class="co"># compare with an IPCW-agumented one-step estimator under censoring:</span></a>
+<a class="sourceLine" id="cb2-68" title="68">ipcw_os &lt;-<span class="st"> </span><span class="kw"><a href="reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y, <span class="dt">delta =</span> <span class="fl">0.5</span>,</a>
+<a class="sourceLine" id="cb2-69" title="69">                   <span class="dt">C =</span> C, <span class="dt">V =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"W"</span>, <span class="st">"Y"</span>),</a>
+<a class="sourceLine" id="cb2-70" title="70">                   <span class="dt">estimator =</span> <span class="st">"onestep"</span>,</a>
+<a class="sourceLine" id="cb2-71" title="71">                   <span class="dt">ipcw_efficiency =</span> <span class="ot">FALSE</span>,</a>
+<a class="sourceLine" id="cb2-72" title="72">                   <span class="dt">ipcw_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>),</a>
+<a class="sourceLine" id="cb2-73" title="73">                   <span class="dt">g_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"hal"</span>,</a>
+<a class="sourceLine" id="cb2-74" title="74">                                     <span class="dt">n_bins =</span> <span class="dv">5</span>,</a>
+<a class="sourceLine" id="cb2-75" title="75">                                     <span class="dt">grid_type =</span> <span class="st">"equal_mass"</span>,</a>
+<a class="sourceLine" id="cb2-76" title="76">                                     <span class="dt">lambda_seq =</span></a>
+<a class="sourceLine" id="cb2-77" title="77">                                       <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">exp</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/seq">seq</a></span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">-9</span>, <span class="dt">length =</span> <span class="dv">300</span>))),</a>
+<a class="sourceLine" id="cb2-78" title="78">                   <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>,</a>
+<a class="sourceLine" id="cb2-79" title="79">                                     <span class="dt">glm_formula =</span> <span class="st">"Y ~ ."</span>),</a>
+<a class="sourceLine" id="cb2-80" title="80">                   <span class="dt">eif_reg_type =</span> <span class="st">"glm"</span></a>
+<a class="sourceLine" id="cb2-81" title="81">                  )</a>
+<a class="sourceLine" id="cb2-82" title="82"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/summary">summary</a></span>(ipcw_os)</a>
+<a class="sourceLine" id="cb2-83" title="83"><span class="co">#&gt;     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator </span></a>
+<a class="sourceLine" id="cb2-84" title="84"><span class="co">#&gt;     0.7481      0.794     0.8334      5e-04 1.0652e-02    onestep </span></a>
+<a class="sourceLine" id="cb2-85" title="85"><span class="co">#&gt;     n_iter </span></a>
+<a class="sourceLine" id="cb2-86" title="86"><span class="co">#&gt;          0</span></a></code></pre></div>
 <hr>
 </div>
 <div id="issues" class="section level2">
@@ -234,7 +235,7 @@
         Stochastic Interventions in {R}},
       year  = {2019},
       url = {https://github.com/nhejazi/txshift},
-      note = {R package version 0.2.3}
+      note = {R package version 0.2.4}
     }</code></pre>
 <hr>
 </div>
@@ -243,8 +244,8 @@
 <a href="#related" class="anchor"></a>Related</h2>
 <ul>
 <li><p><a href="https://github.com/tlverse/tmle3shift">R/<code>tmle3shift</code></a> - An R package providing an independent implementation of the same core routines for the TML estimation procedure and statistical methodology as is made available here, through reliance on a unified interface for Targeted Learning provided by the <a href="https://github.com/tlverse/tmle3"><code>tmle3</code></a> engine of the <a href="https://github.com/tlverse"><code>tlverse</code> ecosystem</a>.</p></li>
-<li><p><a href="https://github.com/nhejazi/medshift">R/<code>medshift</code></a> - An R package providing facilities to estimate the causal effect of stochastic treatment regimes in the mediation setting, including classical (IPW) and augmented double robust (one-step) estimators. This is an implementation of the methodology explored in <span class="citation">Díaz and Hejazi (2019)</span>.</p></li>
-<li><p><a href="https://github.com/nhejazi/haldensify">R/<code>haldensify</code></a> - A minimal package for estimating the conditional density treatment mechanism component of this parameter based on using the <a href="https://github.com/tlverse/hal9001">highly adaptive lasso</a> in combination with a pooled hazard regression. This package implements the methodology proposed in <span class="citation">Díaz and van der Laan (2011)</span>.</p></li>
+<li><p><a href="https://github.com/nhejazi/medshift">R/<code>medshift</code></a> - An R package providing facilities to estimate the causal effect of stochastic treatment regimes in the mediation setting, including classical (IPW) and augmented double robust (one-step) estimators. This is an implementation of the methodology explored in <span class="citation">Dı́az and Hejazi (2019)</span>.</p></li>
+<li><p><a href="https://github.com/nhejazi/haldensify">R/<code>haldensify</code></a> - A minimal package for estimating the conditional density treatment mechanism component of this parameter based on using the <a href="https://github.com/tlverse/hal9001">highly adaptive lasso</a> in combination with a pooled hazard regression. This package implements the methodology proposed in <span class="citation">Dı́az and van der Laan (2011)</span>.</p></li>
 </ul>
 <hr>
 </div>
@@ -287,19 +288,16 @@ SOFTWARE.</code></pre>
 <a href="#references" class="anchor"></a>References</h2>
 <div id="refs" class="references">
 <div id="ref-diaz2019causal">
-<p>Díaz, Iván, and Nima S Hejazi. 2019. “Causal Mediation Analysis for Stochastic Interventions.” <em>Submitted</em>. <a href="https://arxiv.org/abs/1901.02776" class="uri">https://arxiv.org/abs/1901.02776</a>.</p>
+<p>Dı́az, Iván, and Nima S Hejazi. 2019. “Causal Mediation Analysis for Stochastic Interventions.” <em>Submitted</em>. <a href="https://arxiv.org/abs/1901.02776">https://arxiv.org/abs/1901.02776</a>.</p>
 </div>
 <div id="ref-diaz2011super">
-<p>Díaz, Iván, and Mark J van der Laan. 2011. “Super Learner Based Conditional Density Estimation with Application to Marginal Structural Models.” <em>The International Journal of Biostatistics</em> 7 (1). De Gruyter: 1–20.</p>
-</div>
-<div id="ref-diaz2012population">
-<p>———. 2012. “Population Intervention Causal Effects Based on Stochastic Interventions.” <em>Biometrics</em> 68 (2). Wiley Online Library: 541–49.</p>
+<p>Dı́az, Iván, and van der LaanMark J. 2011. “Super Learner Based Conditional Density Estimation with Application to Marginal Structural Models.” <em>The International Journal of Biostatistics</em> 7 (1): 1–20.</p>
 </div>
 <div id="ref-diaz2018stochastic">
 <p>———. 2018. “Stochastic Treatment Regimes.” In <em>Targeted Learning in Data Science: Causal Inference for Complex Longitudinal Studies</em>, 167–80. Springer Science &amp; Business Media.</p>
 </div>
 <div id="ref-rose2011targeted2sd">
-<p>Rose, Sherri, and Mark J van der Laan. 2011. “A Targeted Maximum Likelihood Estimator for Two-Stage Designs.” <em>The International Journal of Biostatistics</em> 7 (1): 1–21.</p>
+<p>Rose, Sherri, and van der LaanMark J. 2011. “A Targeted Maximum Likelihood Estimator for Two-Stage Designs.” <em>The International Journal of Biostatistics</em> 7 (1): 1–21.</p>
 </div>
 </div>
 </div>
@@ -355,7 +353,7 @@ SOFTWARE.</code></pre>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.9000.</p>
 </div>
       </footer>
 </div>

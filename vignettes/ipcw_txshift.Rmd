@@ -101,7 +101,7 @@ with HAL; however, this is significantly slower than simple using a GLM.
 
 ### Inverse Probability Weighting with Targeted Maximum Likelihood Estimation
 
-```{r}
+```{r ipcw_tmle_ghal_Qglm_1}
 tmle_hal_shift_1 <- txshift(W = W, A = A, Y = Y,
                             C = C, V = c("W", "Y"),
                             delta = delta,
@@ -128,7 +128,7 @@ weighting each observation by an auxiliary covariate (often denoted $H_n$, and
 sometimes called the "clever covariate" in the literature) rather than using
 such a covariate directly in the submodel regression fit.
 
-```{r}
+```{r ipcw_tmle_ghal_Qglm_2}
 tmle_hal_shift_2 <- txshift(W = W, A = A, Y = Y,
                             C = C, V = c("W", "Y"),
                             delta = delta,
@@ -156,24 +156,24 @@ package](https://sl3.tlverse.org). For a complete guide on using the `sl3` R
 package, consider consulting https://sl3.tlverse.org, or https://tlverse.org for
 the `tlverse` ecosystem, of which `sl3` is a major part.
 
-```{r}
+```{r make_sl}
 # SL learners to be used for most fits (e.g., IPCW, outcome regression)
-lrnr_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm_fast", "Lrnr_ranger")
+lrnr_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm_fast", "Lrnr_xgboost")
 sl_lrn <- Lrnr_sl$new(learners = lrnr_lib, metalearner = Lrnr_nnls$new())
 
 # SL learners for conditional densities to be used for the propensity score fit
-lrnr_dens_lib <- make_learner_stack(list("Lrnr_condensier", nbins = 35,
-                                          bin_estimator = Lrnr_glm_fast$new(),
-                                          bin_method = "equal.len",
-                                          pool = FALSE),
-                                    list("Lrnr_condensier", nbins = 30,
-                                          bin_estimator = Lrnr_ranger$new(),
-                                          bin_method = "equal.len",
-                                          pool = FALSE),
-                                    list("Lrnr_condensier", nbins = 25,
-                                          bin_estimator = Lrnr_ranger$new(),
-                                          bin_method = "equal.len",
-                                          pool = FALSE)
+lrnr_dens_lib <- make_learner_stack(list("Lrnr_haldensify", n_bins = 5,
+                                          grid_type = "equal_range",
+                                          lambda_seq = exp(seq(-1, -7,
+                                                               length = 100))),
+                                    list("Lrnr_haldensify", n_bins = 5,
+                                          bin_method = "equal_mass",
+                                          lambda_seq = exp(seq(-1, -7,
+                                                               length = 100))),
+                                    list("Lrnr_haldensify", nbins = 10,
+                                          bin_method = "equal_mass",
+                                          lambda_seq = exp(seq(-1, -9,
+                                                               length = 300)))
                                    )
 sl_lrn_dens <- Lrnr_sl$new(learners = lrnr_dens_lib,
                            metalearner = Lrnr_solnp_density$new())
@@ -184,9 +184,15 @@ sl_lrn_dens <- Lrnr_sl$new(learners = lrnr_dens_lib,
 Using the framework provided by the [`sl3` package](https://sl3.tlverse.org),
 the nuisance parameters of the TML estimator may be fit with ensemble learning,
 using the cross-validation framework of the Super Learner algorithm of
-@vdl2007super.
+@vdl2007super. In principal, it would be desirable to estimate the parameter
+using data-adaptive stacked regressions for the samplign mechanism (via
+`ipcw_fit_args`, the treatment mechanism (via `g_fit_args`), and the outcome
+mechanism (via `Q_fit_args`). This could be done with a call to the `txshift`
+function like the following; however, we avoid running the following code chunk
+for the sake of saving time in this vignette.
 
-```{r}
+
+```{r ipcw_tmle_sl_1_not_run, eval=FALSE}
 tmle_sl_shift_1 <- txshift(W = W, A = A, Y = Y,
                            C = C, V = c("W", "Y"),
                            delta = delta,
@@ -204,10 +210,12 @@ summary(tmle_sl_shift_1)
 ```
 
 As before, we may vary the regression for the submodel fluctuation procedure by
-weighting each observation by the value of the so-called clever covariate rather
-than using such an auxiliary covariate directly in the regression procedure:
+weighting each observation by the value of the auxiliary covariate rather than
+using such an auxiliary covariate directly in the regression procedure. Note
+that we again avoid running the following code chunk for the sake of saving time
+in this vignette.
 
-```{r}
+```{r ipcw_tmle_sl_2_not_run, eval=FALSE}
 tmle_sl_shift_2 <- txshift(W = W, A = A, Y = Y,
                            C = C, V = c("W", "Y"),
                            delta = delta,
@@ -215,8 +223,12 @@ tmle_sl_shift_2 <- txshift(W = W, A = A, Y = Y,
                            max_iter = 2,
                            ipcw_fit_args = list(fit_type = "sl",
                                                 sl_lrnrs = sl_lrn),
-                           g_fit_args = list(fit_type = "sl",
-                                             sl_lrnrs = sl_lrn_dens),
+                           g_fit_args = list(fit_type = "hal",
+                                             n_bins = 5,
+                                             grid_type = "equal_mass",
+                                             lambda_seq =
+                                               exp(seq(-1, -9,
+                                                       length = 300))),
                            Q_fit_args = list(fit_type = "sl",
                                              sl_lrnrs = sl_lrn),
                            eif_reg_type = "glm"
@@ -236,15 +248,19 @@ the efficient and inefficient IPCW-TMLEs. By default, an efficient IPCW-TMLE is
 computed when censoring is detected; however, this may be disable by setting
 the `ipcw_efficiency` argument to `FALSE` like so
 
-```{r}
+```{r ipcw_tmle_ghal_sl_inefficient}
 tmle_sl_ineffic <- txshift(W = W, A = A, Y = Y,
                            C = C, V = c("W", "Y"),
                            delta = delta,
                            fluc_method = "standard",
                            ipcw_fit_args = list(fit_type = "sl",
                                                 sl_lrnrs = sl_lrn),
-                           g_fit_args = list(fit_type = "sl",
-                                             sl_lrnrs = sl_lrn_dens),
+                           g_fit_args = list(fit_type = "hal",
+                                             n_bins = 5,
+                                             grid_type = "equal_mass",
+                                             lambda_seq =
+                                               exp(seq(-1, -9,
+                                                       length = 300))),
                            Q_fit_args = list(fit_type = "sl",
                                              sl_lrnrs = sl_lrn),
                            ipcw_efficiency = FALSE
@@ -264,7 +280,7 @@ this package. Here, we focus on addressing the issue of how censoring impacts
 the inferential procedure...
 
 ```{r}
-(ci_shift <- confint(tmle_sl_shift_1))
+(ci_shift <- confint(tmle_hal_shift_1))
 ```
 
 ---
@@ -279,7 +295,7 @@ in computing the TML estimator for the treatment shift parameter. In such cases,
 the optional arguments `ipcw_fit_spec`, `gn_fit_spec` and `Qn_fit_spec` may be
 utilized. We present a case of using these arguments here:
 
-```{r}
+```{r manual_ipcw_tmle}
 # compute the censoring mechanism and produce IPC weights externally
 pi_mech <- plogis(W)
 ipc_weights_out <- (as.numeric(C == 1) / pi_mech)[C == 1]

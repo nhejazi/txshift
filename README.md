@@ -30,9 +30,9 @@ Benkeser](https://www.benkeserstatistics.com/)
 The `txshift` R package is designed to compute targeted maximum
 likelihood (TML) estimates of the counterfactual mean of an outcome
 under stochastic mechanisms for treatment assignment and related causal
-parameters (Díaz and van der Laan (2012)). In particular, `txshift`
-implements and builds upon a simplified algorithm for the TML estimator
-proposed by Díaz and van der Laan (2018).
+parameters (@diaz2012population). In particular, `txshift` implements
+and builds upon a simplified algorithm for the TML estimator proposed by
+Dı́az and van der Laan (2018).
 
 For many practical applications (e.g., vaccine efficacy trials), it is
 often the case that the observed data structure is generated under a
@@ -86,10 +86,10 @@ tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                                   glm_formula = "Y ~ .")
                )
 summary(tmle)
-#>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-#>     0.74743     0.77825     0.80629     0.00023 8.10317e-10        tmle 
-#>      n_iter 
-#>           0
+#>     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator 
+#>     0.7474     0.7783     0.8063      2e-04 8.1032e-10       tmle 
+#>     n_iter 
+#>          0
 
 # fit a one-step estimator for comparison
 os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
@@ -102,10 +102,10 @@ os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                                 glm_formula = "Y ~ .")
              )
 summary(os)
-#>       lwr_ci    param_est       upr_ci    param_var     eif_mean 
-#>      0.74716      0.77792      0.80592      0.00022 -1.65428e-03 
-#>    estimator       n_iter 
-#>      onestep            0
+#>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
+#>      0.7472      0.7779      0.8059       2e-04 -1.6543e-03     onestep 
+#>      n_iter 
+#>           0
 
 # now, let's introduce a censoring process (for two-stage sampling)
 C <- rbinom(n_obs, 1, plogis(W + Y))
@@ -126,10 +126,10 @@ ipcw_tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                      eif_reg_type = "glm"
                     )
 summary(ipcw_tmle)
-#>       lwr_ci    param_est       upr_ci    param_var     eif_mean 
-#>       0.7566      0.79212      0.82367      0.00029 -4.76866e-06 
-#>    estimator       n_iter 
-#>         tmle            1
+#>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
+#>      0.7566      0.7921      0.8237       3e-04 -4.7687e-06        tmle 
+#>      n_iter 
+#>           1
 
 # compare with an IPCW-agumented one-step estimator under censoring:
 ipcw_os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
@@ -147,10 +147,10 @@ ipcw_os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                    eif_reg_type = "glm"
                   )
 summary(ipcw_os)
-#>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-#>     0.74805     0.79396     0.83337     0.00047 1.06521e-02     onestep 
-#>      n_iter 
-#>           0
+#>     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator 
+#>     0.7481      0.794     0.8334      5e-04 1.0652e-02    onestep 
+#>     n_iter 
+#>          0
 ```
 
 -----
@@ -182,7 +182,7 @@ After using the `txshift` R package, please cite the following:
         Stochastic Interventions in {R}},
       year  = {2019},
       url = {https://github.com/nhejazi/txshift},
-      note = {R package version 0.2.3}
+      note = {R package version 0.2.4}
     }
 ```
 
@@ -202,7 +202,7 @@ After using the `txshift` R package, please cite the following:
     providing facilities to estimate the causal effect of stochastic
     treatment regimes in the mediation setting, including classical
     (IPW) and augmented double robust (one-step) estimators. This is an
-    implementation of the methodology explored in Díaz and Hejazi
+    implementation of the methodology explored in Dı́az and Hejazi
     (2019).
 
   - [R/`haldensify`](https://github.com/nhejazi/haldensify) - A minimal
@@ -210,7 +210,7 @@ After using the `txshift` R package, please cite the following:
     component of this parameter based on using the [highly adaptive
     lasso](https://github.com/tlverse/hal9001) in combination with a
     pooled hazard regression. This package implements the methodology
-    proposed in Díaz and van der Laan (2011).
+    proposed in Dı́az and van der Laan (2011).
 
 -----
 
@@ -259,7 +259,7 @@ See below for details:
 
 <div id="ref-diaz2019causal">
 
-Díaz, Iván, and Nima S Hejazi. 2019. “Causal Mediation Analysis for
+Dı́az, Iván, and Nima S Hejazi. 2019. “Causal Mediation Analysis for
 Stochastic Interventions.” *Submitted*.
 <https://arxiv.org/abs/1901.02776>.
 
@@ -267,17 +267,9 @@ Stochastic Interventions.” *Submitted*.
 
 <div id="ref-diaz2011super">
 
-Díaz, Iván, and Mark J van der Laan. 2011. “Super Learner Based
+Dı́az, Iván, and van der LaanMark J. 2011. “Super Learner Based
 Conditional Density Estimation with Application to Marginal Structural
-Models.” *The International Journal of Biostatistics* 7 (1). De Gruyter:
-1–20.
-
-</div>
-
-<div id="ref-diaz2012population">
-
-———. 2012. “Population Intervention Causal Effects Based on Stochastic
-Interventions.” *Biometrics* 68 (2). Wiley Online Library: 541–49.
+Models.” *The International Journal of Biostatistics* 7 (1): 1–20.
 
 </div>
 
@@ -291,7 +283,7 @@ Springer Science & Business Media.
 
 <div id="ref-rose2011targeted2sd">
 
-Rose, Sherri, and Mark J van der Laan. 2011. “A Targeted Maximum
+Rose, Sherri, and van der LaanMark J. 2011. “A Targeted Maximum
 Likelihood Estimator for Two-Stage Designs.” *The International Journal
 of Biostatistics* 7 (1): 1–21.
 

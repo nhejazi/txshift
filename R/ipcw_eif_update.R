@@ -139,7 +139,7 @@ ipcw_eif_update <- function(data_in,
       data = data.table::set(
         data.table::as.data.table(V),
         j = "eif",
-        value = rep(NaN, unique(lapply(V, length)))
+        value = rep(0, unique(lapply(V, length)))
       ),
       covariates = names(V),
       outcome = "eif",
