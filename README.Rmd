@@ -34,21 +34,24 @@ Benkeser](https://www.benkeserstatistics.com/)
 
 ## What's `txshift`?
 
-The `txshift` R package is designed to compute targeted maximum likelihood (TML)
+The `txshift` R package is designed to compute semiparametric-efficient
 estimates of the counterfactual mean of an outcome under stochastic mechanisms
-for treatment assignment and related causal parameters (@diaz2012population). In
-particular, `txshift ` implements and builds upon a simplified algorithm for the
-TML estimator proposed by @diaz2018stochastic.
+for treatment assignment and causal quantities defined through such quantities
+[@diaz2012population]. In particular, `txshift ` implements and builds upon a
+simplified algorithm for the targeted maximum likelihood (TML) estimator of such
+a counterfactual mean, originally proposed in @diaz2018stochastic, and uses the
+same machinery to compute a one-step estimator [@pfanzagl1985contributions].
 
 For many practical applications (e.g., vaccine efficacy trials), it is often the
 case that the observed data structure is generated under a two-phase sampling
-mechanism (i.e., a two-stage design). In such cases, TML estimators must be
-augmented to exhibit efficiency in spite of the challenges induced by the
-censoring process. An appropriate augmentation procedure was first proposed by
-@rose2011targeted2sd, who proposed the use of inverse probability of censoring
-weights (IPCW) alongside an augmentation of the relevant efficient influence
-function. `txshift` extends this approach to computing one-step and IPCW-TML
-estimators of the counterfactual mean under a stochastic treatment regime.
+mechanism (i.e., through the use of a two-stage design). In such cases,
+semiparametric-efficient estimators (both of both the TML and one-step
+varieties) must be augmented to exhibit efficiency in spite of the challenges
+induced by the sampling process. An appropriate augmentation procedure was
+given by @rose2011targeted2sd, who proposed the use of inverse probability of
+censoring weights (IPCW) alongside an augmentation of the efficient influence
+function. `txshift` extends this approach to computing IPC-weighted one-step and
+TML estimators of the counterfactual mean under a stochastic treatment regime.
 
 ---
 

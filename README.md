@@ -27,23 +27,27 @@ Benkeser](https://www.benkeserstatistics.com/)
 
 ## What’s `txshift`?
 
-The `txshift` R package is designed to compute targeted maximum
-likelihood (TML) estimates of the counterfactual mean of an outcome
-under stochastic mechanisms for treatment assignment and related causal
-parameters (@diaz2012population). In particular, `txshift` implements
-and builds upon a simplified algorithm for the TML estimator proposed by
-Dı́az and van der Laan (2018).
+The `txshift` R package is designed to compute semiparametric-efficient
+estimates of the counterfactual mean of an outcome under stochastic
+mechanisms for treatment assignment and causal quantities defined
+through such quantities (Díaz and van der Laan 2012). In particular,
+`txshift` implements and builds upon a simplified algorithm for the
+targeted maximum likelihood (TML) estimator of such a counterfactual
+mean, originally proposed in Díaz and van der Laan (2018), and uses the
+same machinery to compute a one-step estimator (Pfanzagl and Wefelmeyer
+1985).
 
 For many practical applications (e.g., vaccine efficacy trials), it is
 often the case that the observed data structure is generated under a
-two-phase sampling mechanism (i.e., a two-stage design). In such cases,
-TML estimators must be augmented to exhibit efficiency in spite of the
-challenges induced by the censoring process. An appropriate augmentation
-procedure was first proposed by Rose and van der Laan (2011), who
-proposed the use of inverse probability of censoring weights (IPCW)
-alongside an augmentation of the relevant efficient influence function.
-`txshift` extends this approach to computing one-step and IPCW-TML
-estimators of the counterfactual mean under a stochastic treatment
+two-phase sampling mechanism (i.e., through the use of a two-stage
+design). In such cases, semiparametric-efficient estimators (both of
+both the TML and one-step varieties) must be augmented to exhibit
+efficiency in spite of the challenges induced by the sampling process.
+An appropriate augmentation procedure was given by Rose and van der Laan
+(2011), who proposed the use of inverse probability of censoring weights
+(IPCW) alongside an augmentation of the efficient influence function.
+`txshift` extends this approach to computing IPC-weighted one-step and
+TML estimators of the counterfactual mean under a stochastic treatment
 regime.
 
 -----
@@ -202,7 +206,7 @@ After using the `txshift` R package, please cite the following:
     providing facilities to estimate the causal effect of stochastic
     treatment regimes in the mediation setting, including classical
     (IPW) and augmented double robust (one-step) estimators. This is an
-    implementation of the methodology explored in Dı́az and Hejazi
+    implementation of the methodology explored in Díaz and Hejazi
     (2019).
 
   - [R/`haldensify`](https://github.com/nhejazi/haldensify) - A minimal
@@ -210,7 +214,7 @@ After using the `txshift` R package, please cite the following:
     component of this parameter based on using the [highly adaptive
     lasso](https://github.com/tlverse/hal9001) in combination with a
     pooled hazard regression. This package implements the methodology
-    proposed in Dı́az and van der Laan (2011).
+    proposed in Díaz and van der Laan (2011).
 
 -----
 
@@ -259,7 +263,7 @@ See below for details:
 
 <div id="ref-diaz2019causal">
 
-Dı́az, Iván, and Nima S Hejazi. 2019. “Causal Mediation Analysis for
+Díaz, Iván, and Nima S Hejazi. 2019. “Causal Mediation Analysis for
 Stochastic Interventions.” *Submitted*.
 <https://arxiv.org/abs/1901.02776>.
 
@@ -267,9 +271,17 @@ Stochastic Interventions.” *Submitted*.
 
 <div id="ref-diaz2011super">
 
-Dı́az, Iván, and van der LaanMark J. 2011. “Super Learner Based
+Díaz, Iván, and Mark J van der Laan. 2011. “Super Learner Based
 Conditional Density Estimation with Application to Marginal Structural
-Models.” *The International Journal of Biostatistics* 7 (1): 1–20.
+Models.” *The International Journal of Biostatistics* 7 (1). De Gruyter:
+1–20.
+
+</div>
+
+<div id="ref-diaz2012population">
+
+———. 2012. “Population Intervention Causal Effects Based on Stochastic
+Interventions.” *Biometrics* 68 (2). Wiley Online Library: 541–49.
 
 </div>
 
@@ -281,9 +293,17 @@ Springer Science & Business Media.
 
 </div>
 
+<div id="ref-pfanzagl1985contributions">
+
+Pfanzagl, J, and W Wefelmeyer. 1985. “Contributions to a General
+Asymptotic Statistical Theory.” *Statistics & Risk Modeling* 3 (3-4).
+OLDENBOURG WISSENSCHAFTSVERLAG: 379–88.
+
+</div>
+
 <div id="ref-rose2011targeted2sd">
 
-Rose, Sherri, and van der LaanMark J. 2011. “A Targeted Maximum
+Rose, Sherri, and Mark J van der Laan. 2011. “A Targeted Maximum
 Likelihood Estimator for Two-Stage Designs.” *The International Journal
 of Biostatistics* 7 (1): 1–21.
 

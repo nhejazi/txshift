@@ -1,6 +1,6 @@
-pandoc: '2.4'
-pkgdown: 1.3.0.9000
-pkgdown_sha: a267beee11ac619011b359471c66178dc13685ab
+pandoc: 2.2.1
+pkgdown: 1.3.0
+pkgdown_sha: ~
 articles:
   intro_txshift: intro_txshift.html
   ipcw_txshift: ipcw_txshift.html
