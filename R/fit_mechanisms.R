@@ -437,7 +437,7 @@ est_ipcw <- function(V,
 #
 est_Hn <- function(gn, a = NULL, w = NULL) {
   # set any g(a|w) = 0 values to a very small value above zero
-  gn$noshift <- bound_precision(gn$noshift)
+  gn$noshift <- bound_propensity(gn$noshift)
 
   # compute the ratio of the propensity scores for Hn(A,W)
   ratio_g_noshift <- (gn$downshift / gn$noshift) + as.numeric(gn$upshift == 0)

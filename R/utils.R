@@ -128,8 +128,6 @@ print.txshift <- function(x, ...) {
 
 #' Bound Precision
 #'
-#' description
-#'
 #' @param vals \code{numeric} vector of values in the interval [0, 1] to be
 #'  bounded within arbitrary machine precision. The most common use of this
 #'  functionality is to avoid indeterminate or non-finite values after the
@@ -142,6 +140,22 @@ bound_precision <- function(vals) {
   assertthat::assert_that(!(max(vals) > 1 | min(vals) < 0))
   vals[vals == 0] <- .Machine$double.neg.eps
   vals[vals == 1] <- 1 - .Machine$double.neg.eps
+  return(vals)
+}
+
+################################################################################
+
+#' Bound Propensity Score (Density)
+#'
+#' @param vals \code{numeric} vector of propensity score estimate values. Note
+#'  that, for this parameter, the propensity score is (conditional) density and
+#'  so it ought not be bounded from above.
+#'
+#' @keywords internal
+bound_propensity <- function(vals) {
+  # bound likelihood component g(a|w) away from 0 only
+  propensity_bound <- 1 / length(vals)
+  vals[vals < propensity_bound] <- propensity_bound
   return(vals)
 }
 

@@ -13,6 +13,6 @@ functionality is to avoid indeterminate or non-finite values after the
 application \code{stats::qlogis}.}
 }
 \description{
-description
+Bound Precision
 }
 \keyword{internal}
