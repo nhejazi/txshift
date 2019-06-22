@@ -121,7 +121,7 @@ summary.txshift <- function(object,
 #'
 #' @method print txshift
 print.txshift <- function(x, ...) {
-  print(x[c("psi", "var", "estimator", "msg", "n_iter")])
+  print(x[c("psi", "var", "estimator", "n_iter")])
 }
 
 ################################################################################

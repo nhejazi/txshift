@@ -9,7 +9,7 @@ tmle_txshift(data_internal, C = rep(1, nrow(data_internal)), V = NULL,
   delta, cens_weights, cens_weights_norm, ipcw_estim, Qn_estim, Hn_estim,
   fluc_method = c("standard", "weighted"),
   eif_tol = 1/nrow(data_internal), max_iter = 10000,
-  eif_reg_type = c("hal", "glm"), ipcw_fit_args, ipcw_fit_type,
+  eif_reg_type = c("hal", "glm"), ipcw_fit_args,
   ipcw_efficiency = TRUE)
 }
 \arguments{
@@ -82,16 +82,10 @@ to determine how this regression is fit: "glm" for generalized linear model,
 produced by \code{est_ipcw}. NOTE THAT this first argument is not passed to
 \code{est_ipcw}.}
 
-\item{ipcw_fit_type}{A \code{character} providing the type of regression to
-be fit in estimating the relationship between the variables composing the
-censoring mechanism and the efficient influence function. Choose "glm" for
-generalized linear models or "sl" for use of the Super Learner algorithm. If
-selecting the latter, the final argument \code{sl_lrnrs} must be provided.}
-
 \item{ipcw_efficiency}{Whether to invoke an augmentation of the IPCW-TMLE
 procedure that performs an iterative process to ensure efficiency of the
-resulting estimate. The default is \code{TRUE}; only set to \code{FALSE} if
-possible inefficiency of the IPCW-TMLE is not a concern.}
+resulting estimate. The default is \code{TRUE}; set to \code{FALSE} to use
+an IPC-weighted loss rather than the IPC-augment influence function.}
 }
 \value{
 S3 object of class \code{txshift} containing the results of the

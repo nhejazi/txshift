@@ -34,20 +34,14 @@
 #' @param Hn_estim A \code{data.table} corresponding to values produced in the
 #'  computation of the auxiliary ("clever") covariate. This is produced easily
 #'  by invoking the internal function \code{est_Hn}.
-#' @param estimator ...
+#' @param estimator The type of estimator to be fit, either \code{"tmle"} for
+#'  targeted maximum likelihood estimation or \code{"onestep"} for a one-step
+#'  or augmented inverse probability weighted (AIPW) estimator.
 #' @param fluc_method A \code{character} giving the type of regression to be
 #'  used in traversing the fluctuation submodel. The choices are "weighted" and
 #'  "standard" -- please consult the literature for details on the differences.
-#' @param fit_type A \code{character} providing the type of regression to be fit
-#'  in estimating the relationship between the variables composing the censoring
-#'  mechanism and the efficient influence function. Choose "glm" for generalized
-#'  linear models or "sl" for use of the Super Learner algorithm. If selecting
-#'  the latter, the final argument \code{sl_lrnrs} must be provided.
 #' @param eif_tol A \code{numeric} providing the largest value to be tolerated
 #'  as the mean of the efficient influence function.
-#' @param sl_lrnrs A \code{Lrnr_sl} object composed of a collection of learners
-#'  provided by the \code{sl3} package. This is constructed externally from this
-#'  function and provided as input.
 #' @param eif_reg_type Whether a flexible nonparametric function ought to be
 #'  used in the dimension-reduced nuisance regression of the targeting step for
 #'  the censored data case. By default, the method used is a nonparametric
@@ -60,7 +54,6 @@
 #' @importFrom data.table as.data.table set copy
 #' @importFrom assertthat assert_that
 #' @importFrom dplyr "%>%" select
-#' @importFrom sl3 sl3_Task
 #' @importFrom hal9001 fit_hal
 #'
 #' @keywords internal
@@ -79,9 +72,7 @@ ipcw_eif_update <- function(data_in,
                             Hn_estim,
                             estimator = c("tmle", "onestep"),
                             fluc_method = NULL,
-                            fit_type = c("glm", "sl", "fit_spec"),
                             eif_tol = 1e-9,
-                            sl_lrnrs = NULL,
                             eif_reg_type = c("hal", "glm")) {
   # perform submodel fluctuation if computing TMLE
   if (estimator == "tmle" & !is.null(fluc_method)) {
@@ -96,6 +87,9 @@ ipcw_eif_update <- function(data_in,
   } else if (estimator == "onestep" & is.null(fluc_method)) {
     fitted_fluc_mod <- NULL
   }
+
+  # NOTE: the augmented EIF estimating equation being solved takes the form
+  # 0 = (C - pi) * \E(f(eif ~ V, subset = (C = 1)) / pi)
 
   # compute EIF using updated weights and updated fluctuation (if TMLE)
   # NOTE: for one-step, this adds the first half of the EIF as the correction
@@ -112,93 +106,83 @@ ipcw_eif_update <- function(data_in,
     eif_tol = eif_tol
   )
 
-  # the efficient influence function equation we're solving looks like
-  # pi = missingness mechanism weights for ALL observations
-  # 0 = (C - pi) * \E(f(eif ~ V, subset = (C = 1)) / pi)
-  if (fit_type == "sl" & !is.null(sl_lrnrs)) {
-    # organize EIF data as data.table
-    eif_data <- data_in %>%
-      data.table::copy() %>%
-      dplyr::select(names(V)) %>%
-      data.table::as.data.table() %>%
-      data.table::set(j = "eif", value = eif_eval$eif[C == 1])
+  # organize EIF data as data.table
+  eif_data <- data_in %>%
+    data.table::copy() %>%
+    dplyr::select(names(V)) %>%
+    data.table::as.data.table() %>%
+    data.table::set(j = "eif", value = eif_eval$eif[C == 1])
 
+  # estimate the EIF nuisance regression using HAL
+  if (eif_reg_type == "hal") {
     # make sl3 task from new data.table
-    eif_task <- sl3::sl3_Task$new(
-      data = eif_data,
-      covariates = names(V),
-      outcome = "eif",
-      outcome_type = "continuous"
-    )
+    # eif_task <- sl3::sl3_Task$new(
+    # data = eif_data,
+    # covariates = names(V),
+    # outcome = "eif",
+    # outcome_type = "continuous"
+    # )
 
-    # train an sl3 Super Learner
-    fit_eif_sl <- sl_lrnrs$train(eif_task)
+    # train HAL via sl3 learner
+    # hal_lrnr <- sl3::Lrnr_hal9001$new()
+    # fit_eif_hal <- hal_lrnr$train(eif_task)
 
     # create task of full data (censoring variables only) for prediction
-    eif_pred_task <- sl3::sl3_Task$new(
-      data = data.table::set(
-        data.table::as.data.table(V),
-        j = "eif",
-        value = rep(0, unique(lapply(V, length)))
-      ),
-      covariates = names(V),
-      outcome = "eif",
-      outcome_type = "continuous"
-    )
+    # eif_pred_task <- sl3::sl3_Task$new(
+    # data = data.table::set(
+    # data.table::as.data.table(V),
+    # j = "eif",
+    # value = rep(0, unique(lapply(V, length)))
+    # ),
+    # covariates = names(V),
+    # outcome = "eif",
+    # outcome_type = "continuous"
+    # )
 
-    # predict from Super Learner on full data
-    eif_pred <- fit_eif_sl$predict(eif_pred_task)
-  } else {
-    # regression model for relationship between censoring variables and EIF
-    eif_data <- data_in %>%
+    # predict from HAL on full data
+    # eif_pred_hal <- fit_eif_hal$predict(eif_pred_task)
+
+    # if flexibility specified, just fit a HAL regression
+    X_in <- eif_data %>%
       data.table::copy() %>%
       dplyr::select(names(V)) %>%
-      dplyr::mutate(
-        eif = eif_eval$eif[C == 1]
-      ) %>%
-      data.table::as.data.table()
+      as.matrix()
+    colnames(X_in) <- NULL
 
-    # estimate the EIF nuisance regression using HAL
-    if (eif_reg_type == "hal") {
-      # if flexibility specified, just fit a HAL regression
-      X_in <- eif_data %>%
-        data.table::copy() %>%
-        dplyr::select(names(V)) %>%
-        as.matrix()
-      colnames(X_in) <- NULL
-
-      # fit HAL with custom arguments to get results similar to halplus
-      eif_mod <- hal9001::fit_hal(
-        X = X_in,
-        Y = as.numeric(eif_data$eif),
-        standardize = FALSE,
-        fit_type = "glmnet", # "lassi",
-        lambda = exp(seq(3, -50, length = 2000)),
-        yolo = FALSE
-      )
-      # compute expectation by invoking the predict method
-      V_pred_in <- as.matrix(V)
-      colnames(V_pred_in) <- NULL
-      eif_pred <- stats::predict(
-        eif_mod,
-        new_data = V_pred_in
-      ) %>%
-        as.numeric()
-    } else if (eif_reg_type == "glm") {
-      eif_mod <- stats::glm(
-        stats::as.formula("eif ~ ."),
-        data = eif_data
-      )
-      # compute expectation by invoking the predict method
-      eif_pred <- stats::predict(
-        eif_mod,
-        newdata = V
-      ) %>%
-        as.numeric()
-    }
+    # fit HAL with custom arguments to get results similar to halplus
+    # NOTE: this produces a warning that could be leading to serious issues
+    eif_mod <- hal9001::fit_hal(
+      X = X_in,
+      Y = as.numeric(eif_data$eif),
+      standardize = FALSE,
+      fit_type = "glmnet", # "lassi",
+      lambda = exp(seq(3, -50, length = 2000)),
+      return_lasso = TRUE,
+      yolo = FALSE
+    )
+    # compute expectation by invoking the predict method
+    V_pred_in <- as.matrix(V)
+    colnames(V_pred_in) <- NULL
+    eif_pred <- stats::predict(
+      eif_mod,
+      new_data = V_pred_in
+    ) %>%
+      as.numeric()
+  } else if (eif_reg_type == "glm") {
+    # NOTE: change of formula to examine interactions (for debugging)
+    eif_mod <- stats::glm(
+      stats::as.formula("eif ~ .^2"),
+      data = eif_data
+    )
+    # compute expectation by invoking the predict method
+    eif_pred <- stats::predict(
+      eif_mod,
+      newdata = V
+    ) %>%
+      as.numeric()
   }
 
-  # TMLE: fit logistic regression to fluctuate along the sub-model wrt epsilon
+  # TMLE: fit logistic regression to fluctuate along submodel wrt epsilon
   if (estimator == "tmle") {
     ipcw_fluc_reg_data <-
       data.table::as.data.table(

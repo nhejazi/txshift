@@ -6,8 +6,8 @@
 \usage{
 ipcw_eif_update(data_in, C, V, ipc_mech, ipc_weights, ipc_weights_norm,
   Qn_estim, Hn_estim, estimator = c("tmle", "onestep"),
-  fluc_method = NULL, fit_type = c("glm", "sl", "fit_spec"),
-  eif_tol = 1e-09, sl_lrnrs = NULL, eif_reg_type = c("hal", "glm"))
+  fluc_method = NULL, eif_tol = 1e-09, eif_reg_type = c("hal",
+  "glm"))
 }
 \arguments{
 \item{data_in}{A \code{data.table} containing variables and observations that
@@ -42,24 +42,16 @@ This is produced by invoking the internal function \code{est_Q}.}
 computation of the auxiliary ("clever") covariate. This is produced easily
 by invoking the internal function \code{est_Hn}.}
 
-\item{estimator}{...}
+\item{estimator}{The type of estimator to be fit, either \code{"tmle"} for
+targeted maximum likelihood estimation or \code{"onestep"} for a one-step
+or augmented inverse probability weighted (AIPW) estimator.}
 
 \item{fluc_method}{A \code{character} giving the type of regression to be
 used in traversing the fluctuation submodel. The choices are "weighted" and
 "standard" -- please consult the literature for details on the differences.}
 
-\item{fit_type}{A \code{character} providing the type of regression to be fit
-in estimating the relationship between the variables composing the censoring
-mechanism and the efficient influence function. Choose "glm" for generalized
-linear models or "sl" for use of the Super Learner algorithm. If selecting
-the latter, the final argument \code{sl_lrnrs} must be provided.}
-
 \item{eif_tol}{A \code{numeric} providing the largest value to be tolerated
 as the mean of the efficient influence function.}
-
-\item{sl_lrnrs}{A \code{Lrnr_sl} object composed of a collection of learners
-provided by the \code{sl3} package. This is constructed externally from this
-function and provided as input.}
 
 \item{eif_reg_type}{Whether a flexible nonparametric function ought to be
 used in the dimension-reduced nuisance regression of the targeting step for

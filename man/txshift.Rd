@@ -6,7 +6,7 @@
 \usage{
 txshift(W, A, Y, C = rep(1, length(Y)), V = NULL, delta = 0,
   estimator = c("tmle", "onestep"), fluc_method = c("standard",
-  "weighted"), eif_tol = 1/length(Y), max_iter = 10000,
+  "weighted"), eif_tol = 1/length(Y), max_iter = 1000,
   ipcw_fit_args = list(fit_type = c("glm", "sl", "fit_spec"), sl_lrnrs =
   NULL), g_fit_args = list(fit_type = c("hal", "sl", "fit_spec"), n_bins
   = c(10, 25), grid_type = c("equal_range", "equal_mass"), lambda_seq =
@@ -35,9 +35,12 @@ van der Laan manuscript that introduced/formulated IPCW-TML estimators.}
 \item{V}{The covariates that are used in determining the sampling procedure
 that gives rise to censoring. The default is \code{NULL} and corresponds to
 scenarios in which there is no censoring (in which case all values in the
-preceding argument \code{C} must be uniquely 1. To specify this, pass in a
-NAMED \code{list} identifying variables amongst W, A, Y that are thought to
-have played a role in defining the sampling/censoring mechanism (C).}
+preceding argument \code{C} must be uniquely 1). To specify this, pass in a
+\code{character} vector identifying variables amongst W, A, Y thought to
+have played a role in defining the sampling/censoring mechanism (C). This
+argument also accepts a \code{data.table} (or similar) object composed of
+combinations of the variables W, A, Y; use of this option is NOT recommended
+and should be selected only with care.}
 
 \item{delta}{A \code{numeric} value indicating the shift in the treatment to
 be used in defining the target parameter. This is defined with respect to
@@ -45,7 +48,7 @@ the scale of the treatment (A).}
 
 \item{estimator}{The type of estimator to be fit, either \code{"tmle"} for
 targeted maximum likelihood estimation or \code{"onestep"} for a one-step
-augmented inverse probability weighted (AIPW) estimator.}
+or augmented inverse probability weighted (AIPW) estimator.}
 
 \item{fluc_method}{The method to be used in submodel fluctuation step of
 the TMLE computation. The choices are "standard" and "weighted".}

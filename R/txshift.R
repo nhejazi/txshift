@@ -14,15 +14,18 @@
 #' @param V The covariates that are used in determining the sampling procedure
 #'  that gives rise to censoring. The default is \code{NULL} and corresponds to
 #'  scenarios in which there is no censoring (in which case all values in the
-#'  preceding argument \code{C} must be uniquely 1. To specify this, pass in a
-#'  NAMED \code{list} identifying variables amongst W, A, Y that are thought to
-#'  have played a role in defining the sampling/censoring mechanism (C).
+#'  preceding argument \code{C} must be uniquely 1). To specify this, pass in a
+#'  \code{character} vector identifying variables amongst W, A, Y thought to
+#'  have played a role in defining the sampling/censoring mechanism (C). This
+#'  argument also accepts a \code{data.table} (or similar) object composed of
+#'  combinations of the variables W, A, Y; use of this option is NOT recommended
+#'  and should be selected only with care.
 #' @param delta A \code{numeric} value indicating the shift in the treatment to
 #'  be used in defining the target parameter. This is defined with respect to
 #'  the scale of the treatment (A).
 #' @param estimator The type of estimator to be fit, either \code{"tmle"} for
 #'  targeted maximum likelihood estimation or \code{"onestep"} for a one-step
-#'  augmented inverse probability weighted (AIPW) estimator.
+#'  or augmented inverse probability weighted (AIPW) estimator.
 #' @param fluc_method The method to be used in submodel fluctuation step of
 #'  the TMLE computation. The choices are "standard" and "weighted".
 #' @param eif_tol A \code{numeric} giving the convergence criterion for the TML
@@ -99,7 +102,7 @@ txshift <- function(W,
                     estimator = c("tmle", "onestep"),
                     fluc_method = c("standard", "weighted"),
                     eif_tol = 1 / length(Y),
-                    max_iter = 1e4,
+                    max_iter = 1e3,
                     ipcw_fit_args = list(
                       fit_type = c("glm", "sl", "fit_spec"),
                       sl_lrnrs = NULL
@@ -152,18 +155,23 @@ txshift <- function(W,
 
   # perform sub-setting of data and implement IPC weighting if required
   if (!all(C == 1) & !is.null(V)) {
-    # combine censoring node information
-    V_in <- data.table::as.data.table(mget(V))
-    # NOTE: resolves downstream naming error
-    V_names <- lapply(seq_along(V), function(j) {
-      node <- mget(V[j], inherits = TRUE)[[1]]
-      if (!is.null(dim(node))) {
-        colnames(node)
-      } else {
-        V[j]
-      }
-    })
-    colnames(V_in) <- do.call(c, V_names)
+    if (is.character(V)) {
+      # combine censoring node information
+      V_in <- data.table::as.data.table(mget(V))
+      # NOTE: resolves downstream naming error
+      V_names <- lapply(seq_along(V), function(j) {
+        node <- mget(V[j], inherits = TRUE)[[1]]
+        if (!is.null(dim(node))) {
+          colnames(node)
+        } else {
+          V[j]
+        }
+      })
+      colnames(V_in) <- do.call(c, V_names)
+    } else {
+      # assume V is a given matrix-type object with correctly set names
+      V_in <- V
+    }
 
     ipcw_estim_in <- list(
       V = V_in, Delta = C,
@@ -251,11 +259,8 @@ txshift <- function(W,
   # initial estimate of the auxiliary ("clever") covariate
   Hn_estim <- est_Hn(gn = gn_estim)
 
-  ##############################################################################
-  # compute the TML or one-step/AIPW estimator
-  ##############################################################################
+  # compute targeted maximum likelihood estimator
   if (estimator == "tmle") {
-    # compute targeted maximum likelihood estimator
     tmle_fit <- tmle_txshift(
       data_internal = data_internal,
       C = C,
@@ -271,15 +276,15 @@ txshift <- function(W,
       max_iter = max_iter,
       eif_reg_type = eif_reg_type,
       ipcw_fit_args = ipcw_fit_args,
-      ipcw_fit_type = ipcw_fit_type,
       ipcw_efficiency = ipcw_efficiency
     )
 
     # return output object created by TML estimation routine
     tmle_fit$call <- call
     return(tmle_fit)
+
+  # compute one-step (augmented inverse probability weighted) estimator
   } else if (estimator == "onestep") {
-    # compute augmented inverse probability weighted estimator
     onestep_fit <- onestep_txshift(
       data_internal = data_internal,
       C = C,
@@ -293,7 +298,6 @@ txshift <- function(W,
       eif_tol = eif_tol,
       eif_reg_type = eif_reg_type,
       ipcw_fit_args = ipcw_fit_args,
-      ipcw_fit_type = ipcw_fit_type,
       ipcw_efficiency = ipcw_efficiency
     )
 

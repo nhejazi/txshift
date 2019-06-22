@@ -61,15 +61,10 @@
 #'  "sl" for a Super Learner, and "fit_spec" a user-specified input of the form
 #'  produced by \code{est_ipcw}. NOTE THAT this first argument is not passed to
 #'  \code{est_ipcw}.
-#' @param ipcw_fit_type A \code{character} providing the type of regression to
-#'  be fit in estimating the relationship between the variables composing the
-#'  censoring mechanism and the efficient influence function. Choose "glm" for
-#'  generalized linear models or "sl" for use of the Super Learner algorithm. If
-#'  selecting the latter, the final argument \code{sl_lrnrs} must be provided.
 #' @param ipcw_efficiency Whether to invoke an augmentation of the IPCW-TMLE
 #'  procedure that performs an iterative process to ensure efficiency of the
-#'  resulting estimate. The default is \code{TRUE}; only set to \code{FALSE} if
-#'  possible inefficiency of the IPCW-TMLE is not a concern.
+#'  resulting estimate. The default is \code{TRUE}; set to \code{FALSE} to use
+#'  an IPC-weighted loss rather than the IPC-augment influence function.
 #'
 #' @importFrom data.table as.data.table setnames
 #' @importFrom stringr str_detect
@@ -94,7 +89,6 @@ tmle_txshift <- function(data_internal,
                          max_iter = 1e4,
                          eif_reg_type = c("hal", "glm"),
                          ipcw_fit_args,
-                         ipcw_fit_type,
                          ipcw_efficiency = TRUE) {
 
   # initialize counter
@@ -131,9 +125,7 @@ tmle_txshift <- function(data_internal,
         Hn_estim = Hn_estim,
         estimator = "tmle",
         fluc_method = fluc_method,
-        fit_type = ipcw_fit_type,
         eif_tol = eif_tol,
-        sl_lrnrs = ipcw_fit_args$sl_lrnrs,
         eif_reg_type = eif_reg_type
       )
 
