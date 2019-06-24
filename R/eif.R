@@ -70,6 +70,10 @@ eif <- function(Y,
   eif[Delta == 1] <-
     ipc_weights * (Hn$noshift * (Y - Qn_noshift) + (Qn_shift - psi))
 
+  # this will be the outcome of the extra regression
+  eif_unweighted <- rep(0, length(Delta))
+  eif_unweighted[Delta == 1] <- (Hn$noshift * (Y - Qn_noshift) + (Qn_shift - psi))
+
   # add mean of EIF to parameter estimate if fitting one-step
   # NOTE: the estimate of psi is updated _after_ evaluating the EIF
   if (estimator == "onestep") {
@@ -80,6 +84,6 @@ eif <- function(Y,
   var_eif <- stats::var(eif) / length(Y)
 
   # return the variance and the EIF value at each observation
-  out <- list(psi = psi, var = var_eif, eif = eif)
+  out <- list(psi = psi, var = var_eif, eif = eif, eif_unweighted = eif_unweighted)
   return(out)
 }

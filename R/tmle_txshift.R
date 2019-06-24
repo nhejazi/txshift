@@ -98,7 +98,7 @@ tmle_txshift <- function(data_internal,
   if (ipcw_efficiency & !all(C == 1) & !is.null(V) & !is.null(ipcw_estim)) {
     # Efficient implementation of the IPCW-TMLE
     eif_mean <- Inf
-    conv_res <- replicate(3, rep(NA_real_, max_iter))
+    conv_res <- matrix(replicate(3, rep(NA_real_, max_iter)), nrow = max_iter)
 
     # normalize censoring mechanism weights (to be overwritten)
     cens_weights <- C / ipcw_estim$pi_mech

@@ -111,7 +111,7 @@ ipcw_eif_update <- function(data_in,
     data.table::copy() %>%
     dplyr::select(names(V)) %>%
     data.table::as.data.table() %>%
-    data.table::set(j = "eif", value = eif_eval$eif[C == 1])
+    data.table::set(j = "eif", value = eif_eval$eif_unweighted[C == 1])
 
   # estimate the EIF nuisance regression using HAL
   if (eif_reg_type == "hal") {
