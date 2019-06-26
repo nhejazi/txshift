@@ -1,21 +1,3 @@
-#' Simple Modified Treatment Policy (Shifted Treatment)
-#'
-#' @param A A \code{numeric} vector of observed treatment values.
-#' @param W A \code{numeric} matrix of observed baseline covariate values.
-#' @param delta A \code{numeric} indicating the magnitude of the shift to be
-#'  computed for the treatment \code{A}.
-#'
-#' @keywords internal
-tx_shift <- function(A,
-                     W = NULL,
-                     delta) {
-  # could support more than just additive shifts?
-  shifted_A <- A + delta
-  return(shifted_A)
-}
-
-################################################################################
-
 #' Confidence Intervals for Shifted Treatment Parameters
 #'
 #' Compute confidence intervals for estimates produced by \code{tmle_txshift}
