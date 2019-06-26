@@ -198,8 +198,8 @@ txshift <- function(W,
   } else {
     # if no censoring, we can just use IPC weights that are identically 1
     V_in <- NULL
-    ipcw_estim <- NULL
     cens_weights <- C
+    ipcw_estim <- list(pi_mech = rep(1, length(C)), ipc_weights = C[C == 1])
     data_internal <- data.table::as.data.table(list(W, A = A, Y = Y))
   }
 
@@ -257,7 +257,6 @@ txshift <- function(W,
   # initial estimate of the auxiliary ("clever") covariate
   Hn_estim <- est_Hn(gn = gn_estim)
 
-  #browser()
   # compute targeted maximum likelihood estimator
   if (estimator == "tmle") {
     tmle_fit <- tmle_txshift(
