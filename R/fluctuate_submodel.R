@@ -17,7 +17,6 @@
 #'
 #' @importFrom stats qlogis glm fitted predict as.formula
 #' @importFrom data.table as.data.table setnames
-#' @importFrom dplyr "%>%"
 #'
 #' @export
 fit_fluc <- function(Y,
@@ -32,8 +31,8 @@ fit_fluc <- function(Y,
   )
 
   # bound precision for use of logit transform
-  Qn_scaled_bounded <- apply(Qn_scaled, 2, bound_precision) %>%
-    data.table::as.data.table()
+  Qn_scaled_bounded <- data.table::as.data.table(apply(Qn_scaled, 2,
+                                                       bound_precision))
 
   # extract Q and obtain logit transform
   Qn_noshift_logit <- stats::qlogis(Qn_scaled_bounded$noshift)
@@ -71,8 +70,7 @@ fit_fluc <- function(Y,
   }
 
   # get fitted values from fluctuation model
-  Qn_noshift_star_unit <- stats::fitted(fluctuation_model) %>%
-    as.numeric()
+  Qn_noshift_star_unit <- unname(stats::fitted(fluctuation_model))
   Qn_noshift_star <- scale_to_original(
     scaled_vals = Qn_noshift_star_unit,
     max_orig = max(Y),
@@ -90,23 +88,21 @@ fit_fluc <- function(Y,
     ))
 
     # predict from fluctuation model on Q(d(A,W),W) and Hn(d(A,W))
-    Qn_shift_star_unit <- stats::predict(
+    Qn_shift_star_unit <- unname(stats::predict(
       object = fluctuation_model,
       newdata = Qn_shift_star_data,
       type = "response"
-    ) %>%
-      as.numeric()
+    ))
   } else if (method == "weighted") {
     Qn_shift_star_data <- data.table::as.data.table(Qn_shift_logit)
     data.table::setnames(Qn_shift_star_data, "logit_Qn")
 
     # predict from fluctuation model on Q(d(A,W),W)
-    Qn_shift_star_unit <- stats::predict(
+    Qn_shift_star_unit <- unname(stats::predict(
       object = fluctuation_model,
       newdata = Qn_shift_star_data,
       type = "response"
-    ) %>%
-      as.numeric()
+    ))
   }
 
   Qn_shift_star <- scale_to_original(

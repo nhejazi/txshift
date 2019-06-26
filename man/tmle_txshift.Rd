@@ -17,11 +17,8 @@ tmle_txshift(data_internal, C = rep(1, nrow(data_internal)), V = NULL,
 the targeted maximum likelihood estimator.}
 
 \item{C}{A \code{numeric} binary vector giving information on whether a given
-observation was subject to censoring. This is used to compute an IPCW-TMLE
-in cases where two-stage sampling is performed. The default assumes that no
-censoring was present (i.e., a two-stage design was NOT used). N.B., this is
-equivalent to the term %\Delta in the notation used in the original Rose and
-van der Laan manuscript that introduced/formulated IPCW-TML estimators.}
+observation was subject to censoring, used to compute an IPCW-TMLE in cases
+where two-stage sampling is performed. Default assumes no censoring.}
 
 \item{V}{The covariates that are used in determining the sampling procedure
 that gives rise to censoring. The default is \code{NULL} and corresponds to
@@ -51,8 +48,8 @@ in after being constructed by a call to the internal function \code{est_Hn}.}
 the TMLE computation. The choices are "standard" and "weighted".}
 
 \item{eif_tol}{A \code{numeric} giving the convergence criterion for the TML
-estimator. This is the the maximum mean of the efficient influence function
-(EIF) to be used in declaring convergence (theoretically, should be zero).}
+estimator. This is the maximum mean of the efficient influence function to
+be used in declaring convergence.}
 
 \item{max_iter}{A \code{numeric} integer giving the maximum number of steps
 to be taken in iterating to a solution of the efficient influence function.}

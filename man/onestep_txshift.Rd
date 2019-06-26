@@ -16,11 +16,9 @@ onestep_txshift(data_internal, C = rep(1, nrow(data_internal)),
 the one-step estimator.}
 
 \item{C}{A \code{numeric} binary vector giving information on whether a given
-observation was subject to censoring. This is used to compute an IPCW-AIPW
-estimator in cases where two-stage sampling is performed. Default assumes no
-censoring was present (i.e., a two-stage design was NOT used). N.B., this is
-equivalent to the term %\Delta in the notation used in the original Rose and
-van der Laan manuscript that introduced/formulated IPCW-AIPW estimators.}
+observation was subject to censoring, used to compute an IPC-weighted
+one-step estimator in cases where two-stage sampling is performed. Default
+assumes no censoring.}
 
 \item{V}{The covariates that are used in determining the sampling procedure
 that gives rise to censoring. The default is \code{NULL} and corresponds to
@@ -46,9 +44,9 @@ covariate, constructed from the treatment mechanism and required for
 targeted minimum loss-based estimation. This object object should be passed
 in after being constructed by a call to the internal function \code{est_Hn}.}
 
-\item{eif_tol}{A \code{numeric} giving the convergence criterion for the AIPW
-estimator. This is the the maximum mean of the efficient influence function
-(EIF) to be used in declaring convergence (theoretically, should be zero).}
+\item{eif_tol}{A \code{numeric} giving the convergence criterion for the
+one-step estimator. This is the maximum mean of the efficient influence
+function to be used in declaring convergence.}
 
 \item{eif_reg_type}{Whether a flexible nonparametric function ought to be
 used in the dimension-reduced nuisance regression of the targeting step for
@@ -73,7 +71,7 @@ an IPC-weighted loss rather than the IPC-augment influence function.}
 }
 \value{
 S3 object of class \code{txshift} containing the results of the
- procedure to compute a AIPW estimate of the treatment shift parameter.
+ procedure to compute a one-step estimate of the treatment shift parameter.
 }
 \description{
 Compute One-Step Estimate of Counterfactual Mean Under Stochastically Shifted

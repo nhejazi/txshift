@@ -5,11 +5,9 @@
 #'  \code{txshift}. This contains most of the data elements needed for computing
 #'  the one-step estimator.
 #' @param C A \code{numeric} binary vector giving information on whether a given
-#'  observation was subject to censoring. This is used to compute an IPCW-AIPW
-#'  estimator in cases where two-stage sampling is performed. Default assumes no
-#'  censoring was present (i.e., a two-stage design was NOT used). N.B., this is
-#'  equivalent to the term %\Delta in the notation used in the original Rose and
-#'  van der Laan manuscript that introduced/formulated IPCW-AIPW estimators.
+#'  observation was subject to censoring, used to compute an IPC-weighted
+#'  one-step estimator in cases where two-stage sampling is performed. Default
+#'  assumes no censoring.
 #' @param V The covariates that are used in determining the sampling procedure
 #'  that gives rise to censoring. The default is \code{NULL} and corresponds to
 #'  scenarios in which there is no censoring (in which case all values in the
@@ -29,9 +27,9 @@
 #'  covariate, constructed from the treatment mechanism and required for
 #'  targeted minimum loss-based estimation. This object object should be passed
 #'  in after being constructed by a call to the internal function \code{est_Hn}.
-#' @param eif_tol A \code{numeric} giving the convergence criterion for the AIPW
-#'  estimator. This is the the maximum mean of the efficient influence function
-#'  (EIF) to be used in declaring convergence (theoretically, should be zero).
+#' @param eif_tol A \code{numeric} giving the convergence criterion for the
+#'  one-step estimator. This is the maximum mean of the efficient influence
+#'  function to be used in declaring convergence.
 #' @param eif_reg_type Whether a flexible nonparametric function ought to be
 #'  used in the dimension-reduced nuisance regression of the targeting step for
 #'  the censored data case. By default, the method used is a nonparametric
@@ -57,7 +55,7 @@
 #' @importFrom Rdpack reprompt
 #'
 #' @return S3 object of class \code{txshift} containing the results of the
-#'  procedure to compute a AIPW estimate of the treatment shift parameter.
+#'  procedure to compute a one-step estimate of the treatment shift parameter.
 #'
 #' @export
 onestep_txshift <- function(data_internal,
@@ -71,13 +69,12 @@ onestep_txshift <- function(data_internal,
                             eif_reg_type = c("hal", "glm"),
                             ipcw_fit_args,
                             ipcw_efficiency = TRUE) {
-
   # normalize censoring mechanism weights (to be overwritten)
   cens_weights <- C / ipcw_estim$pi_mech
   cens_weights_norm <- cens_weights / sum(cens_weights)
 
   #browser()
-  # invoke efficient IPCW-AIPW, per Rose & van der Laan (2011), if necessary
+  # invoke efficient IPC-weighted one-step if necessary
   if (ipcw_efficiency & !all(C == 1) & !is.null(V) & !is.null(ipcw_estim)) {
 
     # quantities to be updated in iterative procedure (to be overwritten)

@@ -10,11 +10,8 @@
 #'  \code{txshift}. This contains most of the data elements needed for computing
 #'  the targeted maximum likelihood estimator.
 #' @param C A \code{numeric} binary vector giving information on whether a given
-#'  observation was subject to censoring. This is used to compute an IPCW-TMLE
-#'  in cases where two-stage sampling is performed. The default assumes that no
-#'  censoring was present (i.e., a two-stage design was NOT used). N.B., this is
-#'  equivalent to the term %\Delta in the notation used in the original Rose and
-#'  van der Laan manuscript that introduced/formulated IPCW-TML estimators.
+#'  observation was subject to censoring, used to compute an IPCW-TMLE in cases
+#'  where two-stage sampling is performed. Default assumes no censoring.
 #' @param V The covariates that are used in determining the sampling procedure
 #'  that gives rise to censoring. The default is \code{NULL} and corresponds to
 #'  scenarios in which there is no censoring (in which case all values in the
@@ -37,8 +34,8 @@
 #' @param fluc_method The method to be used in submodel fluctuation step of
 #'  the TMLE computation. The choices are "standard" and "weighted".
 #' @param eif_tol A \code{numeric} giving the convergence criterion for the TML
-#'  estimator. This is the the maximum mean of the efficient influence function
-#'  (EIF) to be used in declaring convergence (theoretically, should be zero).
+#'  estimator. This is the maximum mean of the efficient influence function to
+#'  be used in declaring convergence.
 #' @param max_iter A \code{numeric} integer giving the maximum number of steps
 #'  to be taken in iterating to a solution of the efficient influence function.
 #' @param eif_reg_type Whether a flexible nonparametric function ought to be
@@ -82,7 +79,6 @@ tmle_txshift <- function(data_internal,
                          eif_reg_type = c("hal", "glm"),
                          ipcw_fit_args,
                          ipcw_efficiency = TRUE) {
-
   # initialize counter
   n_steps <- 0
 
@@ -169,7 +165,7 @@ tmle_txshift <- function(data_internal,
       recursive = FALSE
     )
 
-    # standard TMLE of the shift parameter / inefficient IPCW-TMLE
+  # standard TMLE of the shift parameter / inefficient IPCW-TMLE
   } else {
     # fit logistic regression to fluctuate along the sub-model
     fitted_fluc_mod <- fit_fluc(
