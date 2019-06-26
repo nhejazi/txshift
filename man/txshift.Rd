@@ -2,7 +2,7 @@
 % Please edit documentation in R/txshift.R
 \name{txshift}
 \alias{txshift}
-\title{Compute Estimate of the Counterfactual Mean Under Shifted Treatment}
+\title{Estimate Counterfactual Mean Under Stochastically Shifted Treatment}
 \usage{
 txshift(W, A, Y, C = rep(1, length(Y)), V = NULL, delta = 0,
   estimator = c("tmle", "onestep"), fluc_method = c("standard",
@@ -123,5 +123,5 @@ S3 object of class \code{txshift} containing the results of the
  procedure to compute a TML estimate of the treatment shift parameter.
 }
 \description{
-Compute Estimate of the Counterfactual Mean Under Shifted Treatment
+Estimate Counterfactual Mean Under Stochastically Shifted Treatment
 }

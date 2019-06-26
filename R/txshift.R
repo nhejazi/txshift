@@ -1,4 +1,4 @@
-#' Compute Estimate of the Counterfactual Mean Under Shifted Treatment
+#' Estimate Counterfactual Mean Under Stochastically Shifted Treatment
 #'
 #' @param W A \code{matrix}, \code{data.frame}, or similar corresponding to a
 #'  set of baseline covariates.
@@ -193,19 +193,16 @@ txshift <- function(W,
 
     # extract IPC weights for censoring case and normalize weights
     cens_weights <- ipcw_estim$ipc_weights
-    cens_weights_norm <- cens_weights / sum(cens_weights)
 
     # remove column corresponding to indicator for censoring
-    data_internal <- data.table::as.data.table(list(W, A = A, C = C, Y = Y)) %>%
-      dplyr::filter(C == 1) %>%
-      dplyr::select(-C) %>%
-      data.table::as.data.table()
+    data_internal <- data.table::as.data.table(list(W, A = A, C = C, Y = Y))
+    data_internal <- data_internal[C == 1, ]   # subsetting forces copy :(
+    data_internal[, C := NULL]
   } else {
     # if no censoring, we can just use IPC weights that are identically 1
     V_in <- NULL
     ipcw_estim <- NULL
     cens_weights <- C
-    cens_weights_norm <- cens_weights / sum(cens_weights)
     data_internal <- data.table::as.data.table(list(W, A = A, Y = Y))
   }
 
@@ -223,6 +220,7 @@ txshift <- function(W,
     if (g_fit_type == "hal") {
       # since fitting a GLM, can safely remove all args related to SL
       g_fit_args <- g_fit_args[!stringr::str_detect(names(g_fit_args), "sl")]
+
       # reshape args to a list suitable to be passed to do.call
       gn_estim_args <- unlist(
         list(gn_estim_in, std_args = list(g_fit_args)),
@@ -231,9 +229,11 @@ txshift <- function(W,
     } else if (g_fit_type == "sl") {
       # if fitting SL, we can discard all the standard non-sl3 arguments
       g_fit_args <- g_fit_args[stringr::str_detect(names(g_fit_args), "sl")]
+
       # reshapes list of args to make passing to do.call possible
       gn_estim_args <- unlist(list(gn_estim_in, g_fit_args), recursive = FALSE)
     }
+
     # pass the relevant args for computing the propensity score to do.call
     gn_estim <- do.call(est_g, gn_estim_args)
   }
@@ -242,6 +242,7 @@ txshift <- function(W,
   if (!is.null(Qn_fit_spec) & Q_fit_type == "fit_spec") {
     Qn_estim <- Qn_fit_spec
   } else {
+    # generate and reshape args to pass to function for outcome regression
     Qn_estim_in <- list(
       Y = data_internal$Y,
       A = data_internal$A,
@@ -250,8 +251,8 @@ txshift <- function(W,
       ipc_weights = cens_weights,
       fit_type = Q_fit_type
     )
-    # reshape args to pass to the relevant function for the outcome regression
     Qn_estim_args <- unlist(list(Qn_estim_in, Q_fit_args), recursive = FALSE)
+
     # invoke function to estimate outcome regression via do.call
     Qn_estim <- do.call(est_Q, Qn_estim_args)
   }
@@ -259,6 +260,7 @@ txshift <- function(W,
   # initial estimate of the auxiliary ("clever") covariate
   Hn_estim <- est_Hn(gn = gn_estim)
 
+  #browser()
   # compute targeted maximum likelihood estimator
   if (estimator == "tmle") {
     tmle_fit <- tmle_txshift(
@@ -266,8 +268,6 @@ txshift <- function(W,
       C = C,
       V = V_in,
       delta = delta,
-      cens_weights = cens_weights,
-      cens_weights_norm = cens_weights_norm,
       ipcw_estim = ipcw_estim,
       Qn_estim = Qn_estim,
       Hn_estim = Hn_estim,
@@ -290,8 +290,6 @@ txshift <- function(W,
       C = C,
       V = V_in,
       delta = delta,
-      cens_weights = cens_weights,
-      cens_weights_norm = cens_weights_norm,
       ipcw_estim = ipcw_estim,
       Qn_estim = Qn_estim,
       Hn_estim = Hn_estim,
