@@ -81,9 +81,8 @@
 #'  should only be used by advanced users familiar with both the underlying
 #'  theory and this software implementation of said theoretical details.
 #'
-#' @importFrom data.table as.data.table setnames
+#' @importFrom data.table as.data.table setnames ":="
 #' @importFrom stringr str_detect
-#' @importFrom dplyr filter select "%>%"
 #' @importFrom Rdpack reprompt
 #'
 #' @return S3 object of class \code{txshift} containing the results of the
@@ -231,7 +230,7 @@ txshift <- function(W,
       gn_estim_args <- unlist(list(gn_estim_in, g_fit_args), recursive = FALSE)
     }
 
-    # pass the relevant args for computing the propensity score to do.call
+    # pass the relevant args for computing the propensity score
     gn_estim <- do.call(est_g, gn_estim_args)
   }
 
@@ -250,11 +249,11 @@ txshift <- function(W,
     )
     Qn_estim_args <- unlist(list(Qn_estim_in, Q_fit_args), recursive = FALSE)
 
-    # invoke function to estimate outcome regression via do.call
+    # invoke function to estimate outcome regression
     Qn_estim <- do.call(est_Q, Qn_estim_args)
   }
 
-  # initial estimate of the auxiliary ("clever") covariate
+  # initial estimate of the auxiliary covariate
   Hn_estim <- est_Hn(gn = gn_estim)
 
   # compute targeted maximum likelihood estimator

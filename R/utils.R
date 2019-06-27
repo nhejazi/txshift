@@ -20,7 +20,6 @@ confint.txshift <- function(object,
                             parm = seq_len(object$psi),
                             level = 0.95,
                             ...) {
-
   # first, let's get Z_(1 - alpha)
   norm_bounds <- c(-1, 1) * abs(stats::qnorm(p = (1 - level) / 2))
 
@@ -71,7 +70,6 @@ summary.txshift <- function(object,
                             ...,
                             ci_level = 0.95,
                             digits = 4) {
-
   # compute confidence interval using the pre-defined method
   ci <- stats::confint(object, level = ci_level)
 

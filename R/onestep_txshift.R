@@ -69,27 +69,25 @@ onestep_txshift <- function(data_internal,
                             eif_reg_type = c("hal", "glm"),
                             ipcw_fit_args,
                             ipcw_efficiency = TRUE) {
-  # normalize censoring mechanism weights (to be overwritten)
+  # extract and normalize sampling mechanism weights
   cens_weights <- C / ipcw_estim$pi_mech
   cens_weights_norm <- cens_weights / sum(cens_weights)
 
-  #browser()
   # invoke efficient IPC-weighted one-step if necessary
   if (ipcw_efficiency & !all(C == 1) & !is.null(V) & !is.null(ipcw_estim)) {
-
-    # quantities to be updated in iterative procedure (to be overwritten)
+    # quantities to be updated across iterations
     pi_mech_star <- ipcw_estim$pi_mech
     Qn_estim_updated <- Qn_estim
 
     # update sub-model fluctuation, re-compute EIF, and update EIF
-    os_ipcw_eif_out <- ipcw_eif_update(
+    os_ipcw_eif <- ipcw_eif_update(
       data_in = data_internal,
       C = C,
       V = V,
       ipc_mech = pi_mech_star,
       ipc_weights = cens_weights,
       ipc_weights_norm = cens_weights_norm,
-      Qn_estim = Qn_estim_updated,
+      Qn_estim = Qn_estim,
       Hn_estim = Hn_estim,
       estimator = "onestep",
       eif_tol = eif_tol,
@@ -101,48 +99,41 @@ onestep_txshift <- function(data_internal,
       list(
         # NOTE: need to re-scale estimated outcomes values within bounds of Y
         scale_to_unit(
-          vals = os_ipcw_eif_out$Qn_estim$noshift
+          vals = os_ipcw_eif$Qn_estim$noshift
         ),
         scale_to_unit(
-          vals = os_ipcw_eif_out$Qn_estim$upshift
+          vals = os_ipcw_eif$Qn_estim$upshift
         )
       )
     )
     data.table::setnames(Qn_estim_updated, names(Qn_estim))
-    cens_weights <- os_ipcw_eif_out$ipc_weights
-    cens_weights_norm <- os_ipcw_eif_out$ipc_weights_norm
-    pi_mech_star <- os_ipcw_eif_out$pi_mech_star
+    cens_weights <- os_ipcw_eif$ipc_weights
+    cens_weights_norm <- os_ipcw_eif$ipc_weights_norm
+    pi_mech_star <- os_ipcw_eif$pi_mech_star
 
     # compute updated mean of efficient influence function
-    eif_ipcw <- os_ipcw_eif_out$eif_eval$eif - os_ipcw_eif_out$ipcw_eif
+    eif_ipcw <- os_ipcw_eif$eif_eval$eif - os_ipcw_eif$ipcw_eif
     eif_ipcw_var <- var(eif_ipcw) / length(C)
 
     # update the one-step estimator with mean of the 2nd half of augmented EIF
     # NOTE: the 2nd half of the EIF is actually a correction (with a minus sign
     #       in front of it) so the mean ought to be subtracted, not added
-    psi_onestep <- os_ipcw_eif_out$eif_eval$psi - mean(os_ipcw_eif_out$ipcw_eif)
-    conv_results <- list(psi_onestep, eif_ipcw_var, mean(eif_ipcw)) %>%
-      as.matrix() %>%
-      t() %>%
-      data.table::as.data.table()
-    data.table::setnames(conv_results, c("psi", "var", "eif_mean"))
+    psi_onestep <- os_ipcw_eif$eif_eval$psi - mean(os_ipcw_eif$ipcw_eif)
 
     # create output object
     txshift_out <- unlist(
       list(
-        call = call,
-        os_ipcw_eif_out$eif_eval,
+        psi = psi_onestep,
+        var = eif_ipcw_var,
+        eif = list(eif_ipcw),
+        os_ipcw_eif$eif_eval,
+        iter_res = NULL,
         n_iter = 0,
         estimator = "onestep",
         outcome = list(data_internal$Y)
       ),
       recursive = FALSE
     )
-
-    # manually update output object with one-step results
-    txshift_out[["psi"]] <- psi_onestep
-    txshift_out[["var"]] <- eif_ipcw_var
-    txshift_out[["eif"]] <- eif_ipcw
 
   # standard (inefficient) one-step of the shift parameter
   } else {
@@ -161,8 +152,10 @@ onestep_txshift <- function(data_internal,
     # create output object
     txshift_out <- unlist(
       list(
-        call = call,
-        os_eif_out,
+        psi = os_eif_out[["psi"]],
+        var = os_eif_out[["var"]],
+        eif = list(os_eif_out[["eif"]]),
+        iter_res = NULL,
         n_iter = 0,
         estimator = "onestep",
         outcome = list(data_internal$Y)

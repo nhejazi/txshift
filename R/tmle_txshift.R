@@ -82,27 +82,27 @@ tmle_txshift <- function(data_internal,
   # initialize counter
   n_steps <- 0
 
-  # normalize censoring mechanism weights (to be overwritten)
+  # extract and normalize sampling mechanism weights
   cens_weights <- C / ipcw_estim$pi_mech
   cens_weights_norm <- cens_weights / sum(cens_weights)
 
-  # invoke efficient IPCW-TMLE, per Rose & van der Laan (2011), if necessary
+  # invoke efficient IPCW-TMLE if conditions satisfied
   if (ipcw_efficiency & !all(C == 1) & !is.null(V) & !is.null(ipcw_estim)) {
-    # Efficient implementation of the IPCW-TMLE
+    # programmatic bookkeeping
     eif_mean <- Inf
     conv_res <- matrix(replicate(3, rep(NA_real_, max_iter)), nrow = max_iter)
 
-    # quantities to be updated in iterative procedure (to be overwritten)
+    # quantities to be updated across iterations
     pi_mech_star <- ipcw_estim$pi_mech
     Qn_estim_updated <- Qn_estim
 
     # iterate procedure until convergence conditions are satisfied
-    while (abs(eif_mean) > eif_tol & n_steps < max_iter) {
+    while (abs(eif_mean) > eif_tol && n_steps < max_iter) {
       # iterate counter
       n_steps <- n_steps + 1
 
-      # update sub-model fluctuation, re-compute EIF, and update EIF
-      ipcw_tmle_comp <- ipcw_eif_update(
+      # update submodel fluctuation, re-compute EIF, overwrite EIF
+      tmle_ipcw_eif <- ipcw_eif_update(
         data_in = data_internal,
         C = C,
         V = V,
@@ -110,7 +110,7 @@ tmle_txshift <- function(data_internal,
         ipc_weights = cens_weights,
         ipc_weights_norm = cens_weights_norm,
         Qn_estim = Qn_estim_updated,
-        Hn_estim = Hn_estim,
+        Hn_estim = Hn_estim,   # N.B., g_n never gets updated in this procedure
         estimator = "tmle",
         fluc_method = fluc_method,
         eif_tol = eif_tol,
@@ -120,33 +120,31 @@ tmle_txshift <- function(data_internal,
       # overwrite and update quantities to be used in the next iteration
       Qn_estim_updated <- data.table::as.data.table(
         list(
-          # NOTE: need to re-scale estimated outcomes values within bounds of Y
+          # NOTE: need to re-scale estimated Q_n within bounds of Y
           scale_to_unit(
-            vals = ipcw_tmle_comp$fluc_mod_out$Qn_noshift_star
+            vals = tmle_ipcw_eif$fluc_mod_out$Qn_noshift_star
           ),
           scale_to_unit(
-            vals = ipcw_tmle_comp$fluc_mod_out$Qn_shift_star
+            vals = tmle_ipcw_eif$fluc_mod_out$Qn_shift_star
           )
         )
       )
       data.table::setnames(Qn_estim_updated, names(Qn_estim))
-      cens_weights <- ipcw_tmle_comp$ipc_weights
-      cens_weights_norm <- ipcw_tmle_comp$ipc_weights_norm
-      pi_mech_star <- ipcw_tmle_comp$pi_mech_star
+
+      # updated sampling/censoring weights and stabilize
+      cens_weights <- tmle_ipcw_eif$ipc_weights
+      cens_weights <- cens_weights / mean(cens_weights)
+      cens_weights_norm <- tmle_ipcw_eif$ipc_weights_norm
+      pi_mech_star <- tmle_ipcw_eif$pi_mech_star
 
       # compute updated mean of efficient influence function and save
-      eif_mean <- mean(ipcw_tmle_comp$eif_eval$eif - ipcw_tmle_comp$ipcw_eif)
-      eif_var <- var(ipcw_tmle_comp$eif_eval$eif - ipcw_tmle_comp$ipcw_eif) /
-        length(C)
-      conv_res[n_steps, ] <- c(ipcw_tmle_comp$eif_eval$psi, eif_var, eif_mean)
+      eif_ipcw <- tmle_ipcw_eif$eif_eval$eif - tmle_ipcw_eif$ipcw_eif_component
+      eif_mean <- mean(eif_ipcw)
+      eif_var <- var(eif_ipcw) / length(C)
+      conv_res[n_steps, ] <- c(tmle_ipcw_eif$eif_eval$psi, eif_var, eif_mean)
     }
     conv_res <- data.table::as.data.table(conv_res)
     data.table::setnames(conv_res, c("psi", "var", "eif_mean"))
-
-    # replace variance in this object with the updated variance if iterative
-    if (exists("eif_var")) {
-      ipcw_tmle_comp$eif_eval$var <- eif_var
-    }
 
     # return only the useful convergence results
     conv_res <- conv_res[!is.na(rowSums(conv_res)), ]
@@ -154,8 +152,9 @@ tmle_txshift <- function(data_internal,
     # create output object
     txshift_out <- unlist(
       list(
-        call = call,
-        ipcw_tmle_comp$eif_eval,
+        psi = as.numeric(unlist(conv_res[n_steps, "psi"])),
+        var = as.numeric(unlist(conv_res[n_steps, "var"])),
+        eif = list(eif_ipcw),
         iter_res = list(conv_res),
         n_iter = n_steps,
         estimator = "tmle",
@@ -167,13 +166,14 @@ tmle_txshift <- function(data_internal,
   # standard TMLE of the shift parameter / inefficient IPCW-TMLE
   } else {
     # fit logistic regression to fluctuate along the sub-model
-    fitted_fluc_mod <- fit_fluc(
+    fitted_fluc_mod <- fit_fluctuation(
       Y = data_internal$Y,
       Qn_scaled = Qn_estim,
       Hn = Hn_estim,
       ipc_weights = cens_weights[C == 1],
       method = fluc_method
     )
+
     # compute TML estimate and EIF for the treatment shift parameter
     tmle_eif_out <- eif(
       Y = data_internal$Y,
@@ -190,8 +190,10 @@ tmle_txshift <- function(data_internal,
     # create output object
     txshift_out <- unlist(
       list(
-        call = call,
-        tmle_eif_out,
+        psi = tmle_eif_out[["psi"]],
+        var = tmle_eif_out[["var"]],
+        eif = list(tmle_eif_out[["eif"]]),
+        iter_res = NULL,
         n_iter = n_steps,
         estimator = "tmle",
         outcome = list(data_internal$Y)
@@ -228,11 +230,11 @@ tmle_txshift <- function(data_internal,
 #' @importFrom data.table as.data.table setnames
 #'
 #' @export
-fit_fluc <- function(Y,
-                     Qn_scaled,
-                     Hn,
-                     ipc_weights = rep(1, length(Y)),
-                     method = c("standard", "weighted")) {
+fit_fluctuation <- function(Y,
+                            Qn_scaled,
+                            Hn,
+                            ipc_weights = rep(1, length(Y)),
+                            method = c("standard", "weighted")) {
 
   # scale the outcome for the logit transform
   y_star <- scale_to_unit(

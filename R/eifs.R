@@ -24,7 +24,7 @@
 #' @param fluc_mod_out An object giving values of the logistic regression fit to
 #'  traverse the submodel for targeted minimum loss-based estimation. This type
 #'  of object should be the output of the internal routines to perform this
-#'  step of the TMLE computation, as given by \code{fit_fluc}.
+#'  step of the TMLE computation, as given by \code{fit_fluctuation}.
 #' @param eif_tol A \code{numeric} giving the minimum value of the tolerance to
 #'  be used in evaluating whether the computation of the efficient influence
 #'  function has converged.
@@ -60,7 +60,7 @@ eif <- function(Y,
     Qn_noshift <- Qn$noshift
   }
 
-  # compute TMLE of the treatment shift parameter
+  # compute substitution estimator of the stochastic shift parameter
   param_obs_est <- rep(0, length(Delta))
   param_obs_est[Delta == 1] <- ipc_weights_norm * Qn_shift
   psi <- sum(param_obs_est)
@@ -72,8 +72,8 @@ eif <- function(Y,
 
   # this will be the outcome of the extra regression
   eif_unweighted <- rep(0, length(Delta))
-  eif_unweighted[Delta == 1] <- (Hn$noshift * (Y - Qn_noshift) +
-                                 (Qn_shift - psi))
+  eif_unweighted[Delta == 1] <-
+    (Hn$noshift * (Y - Qn_noshift) + (Qn_shift - psi))
 
   # add mean of EIF to parameter estimate if fitting one-step
   # NOTE: the estimate of psi is updated _after_ evaluating the EIF
@@ -171,7 +171,7 @@ ipcw_eif_update <- function(data_in,
   # perform submodel fluctuation if computing TMLE
   if (estimator == "tmle" & !is.null(fluc_method)) {
     # fit logistic regression for submodel fluctuation with updated weights
-    fitted_fluc_mod <- fit_fluc(
+    fitted_fluc_mod <- fit_fluctuation(
       Y = data_in$Y,
       Qn_scaled = Qn_estim,
       Hn = Hn_estim,
@@ -181,9 +181,6 @@ ipcw_eif_update <- function(data_in,
   } else if (estimator == "onestep" & is.null(fluc_method)) {
     fitted_fluc_mod <- NULL
   }
-
-  # NOTE: the augmented EIF estimating equation being solved takes the form
-  # 0 = (C - pi) * \E(f(eif ~ V, subset = (C = 1)) / pi)
 
   # compute EIF using updated weights and updated fluctuation (if TMLE)
   # NOTE: for one-step, this adds the first half of the EIF as the correction
@@ -281,14 +278,14 @@ ipcw_eif_update <- function(data_in,
     ipcw_fluc_reg_data <-
       data.table::as.data.table(
         list(
-          delta = C,
+          Delta = C,
           logit_ipcw = stats::qlogis(bound_precision(ipc_mech)),
-          eif_by_ipcw = (eif_pred / bound_precision(ipc_mech))
+          eif_reg_cov = (eif_pred / bound_precision(ipc_mech))
         )
       )
     # fit fluctuation regression
     ipcw_fluc <- stats::glm(
-      stats::as.formula("delta ~ -1 + offset(logit_ipcw) + eif_by_ipcw"),
+      stats::as.formula("Delta ~ -1 + stats::offset(logit_ipcw) + eif_reg_cov"),
       data = ipcw_fluc_reg_data,
       family = "binomial"
     )
@@ -300,8 +297,9 @@ ipcw_eif_update <- function(data_in,
     ipcw_pred <- ipc_mech
   }
 
-  # this is the mean of the second half of the IPCW-EIF
-  ipcw_eif_out <- (C - ipcw_pred) * (eif_pred / ipcw_pred)
+  # this is the second half of the IPCW-EIF (solved by pi_n fluctuation):
+  # 0 = (C - pi) * \E(f(eif ~ V, subset = (C = 1)) / pi)
+  ipcw_eif_component <- (C - ipcw_pred) * (eif_pred / ipcw_pred)
 
   # so, now we need weights to feed back into the previous steps
   ipc_weights <- C / ipcw_pred
@@ -311,15 +309,25 @@ ipcw_eif_update <- function(data_in,
   # NOTE: since this is meant to update the EIF components based on the TMLE
   #       update steps, it accomplishes _literally_ nothing for the one-step
   if (estimator == "tmle") {
+    # NOTE: update fluctuation with new weights prior to re-computing EIF
+    fitted_fluc_mod <- fit_fluctuation(
+      Y = data_in$Y,
+      Qn_scaled = Qn_estim,
+      Hn = Hn_estim,
+      ipc_weights = ipc_weights[C == 1],
+      method = fluc_method
+    )
+
+    # now, update EIF after re-fitting fluctuation with updated weights
     eif_eval <- eif(
       Y = data_in$Y,
       Qn = Qn_estim,
       Hn = Hn_estim,
       estimator = estimator,
-      fluc_mod_out = fitted_fluc_mod,
+      fluc_mod_out = fitted_fluc_mod,                # updated sicne last call
       Delta = C,
-      ipc_weights = ipc_weights[C == 1],
-      ipc_weights_norm = ipc_weights_norm[C == 1],
+      ipc_weights = ipc_weights[C == 1],             # updated since last call
+      ipc_weights_norm = ipc_weights_norm[C == 1],   # updated since last call
       eif_tol = eif_tol
     )
   }
@@ -332,7 +340,7 @@ ipcw_eif_update <- function(data_in,
     ipc_weights = ipc_weights,
     ipc_weights_norm = ipc_weights_norm,
     eif_eval = eif_eval,
-    ipcw_eif = ipcw_eif_out
+    ipcw_eif_component = ipcw_eif_component
   )
   return(out)
 }
