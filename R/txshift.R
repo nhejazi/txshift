@@ -192,7 +192,7 @@ txshift <- function(W,
 
     # remove column corresponding to indicator for censoring
     data_internal <- data.table::as.data.table(list(W, A = A, C = C, Y = Y))
-    data_internal <- data_internal[C == 1, ]   # subsetting forces copy :(
+    data_internal <- data_internal[C == 1, ] # subsetting forces copy :(
     data_internal[, C := NULL]
   } else {
     # if no censoring, we can just use IPC weights that are identically 1
@@ -278,7 +278,7 @@ txshift <- function(W,
     tmle_fit$call <- call
     return(tmle_fit)
 
-  # compute one-step (augmented inverse probability weighted) estimator
+    # compute one-step (augmented inverse probability weighted) estimator
   } else if (estimator == "onestep") {
     onestep_fit <- onestep_txshift(
       data_internal = data_internal,

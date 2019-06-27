@@ -85,8 +85,10 @@ eif <- function(Y,
   var_eif <- stats::var(eif) / length(Y)
 
   # return the variance and the EIF value at each observation
-  out <- list(psi = psi, var = var_eif, eif = eif,
-              eif_unweighted = eif_unweighted)
+  out <- list(
+    psi = psi, var = var_eif, eif = eif,
+    eif_unweighted = eif_unweighted
+  )
   return(out)
 }
 
@@ -324,10 +326,10 @@ ipcw_eif_update <- function(data_in,
       Qn = Qn_estim,
       Hn = Hn_estim,
       estimator = estimator,
-      fluc_mod_out = fitted_fluc_mod,                # updated sicne last call
+      fluc_mod_out = fitted_fluc_mod, # updated sicne last call
       Delta = C,
-      ipc_weights = ipc_weights[C == 1],             # updated since last call
-      ipc_weights_norm = ipc_weights_norm[C == 1],   # updated since last call
+      ipc_weights = ipc_weights[C == 1], # updated since last call
+      ipc_weights_norm = ipc_weights_norm[C == 1], # updated since last call
       eif_tol = eif_tol
     )
   }

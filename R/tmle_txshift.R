@@ -110,7 +110,7 @@ tmle_txshift <- function(data_internal,
         ipc_weights = cens_weights,
         ipc_weights_norm = cens_weights_norm,
         Qn_estim = Qn_estim_updated,
-        Hn_estim = Hn_estim,   # N.B., g_n never gets updated in this procedure
+        Hn_estim = Hn_estim, # N.B., g_n never gets updated in this procedure
         estimator = "tmle",
         fluc_method = fluc_method,
         eif_tol = eif_tol,
@@ -163,7 +163,7 @@ tmle_txshift <- function(data_internal,
       recursive = FALSE
     )
 
-  # standard TMLE of the shift parameter / inefficient IPCW-TMLE
+    # standard TMLE of the shift parameter / inefficient IPCW-TMLE
   } else {
     # fit logistic regression to fluctuate along the sub-model
     fitted_fluc_mod <- fit_fluctuation(
@@ -242,8 +242,10 @@ fit_fluctuation <- function(Y,
   )
 
   # bound precision for use of logit transform
-  Qn_scaled_bounded <- data.table::as.data.table(apply(Qn_scaled, 2,
-                                                       bound_precision))
+  Qn_scaled_bounded <- data.table::as.data.table(apply(
+    Qn_scaled, 2,
+    bound_precision
+  ))
 
   # extract Q and obtain logit transform
   Qn_noshift_logit <- stats::qlogis(Qn_scaled_bounded$noshift)

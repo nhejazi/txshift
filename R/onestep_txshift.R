@@ -135,7 +135,7 @@ onestep_txshift <- function(data_internal,
       recursive = FALSE
     )
 
-  # standard (inefficient) one-step of the shift parameter
+    # standard (inefficient) one-step of the shift parameter
   } else {
     # compute one-step estimate and EIF for the treatment shift parameter
     os_eif_out <- eif(
