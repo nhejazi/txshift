@@ -86,7 +86,7 @@ tmle_txshift <- function(data_internal,
   cens_weights <- C / ipcw_estim$pi_mech
   cens_weights_norm <- cens_weights / sum(cens_weights)
 
-  # invoke efficient IPCW-TMLE if conditions satisfied
+  # invoke efficient IPCW-TMLE if satisfied; otherwise ineffecient variant
   if (ipcw_efficiency & !all(C == 1) & !is.null(V) & !is.null(ipcw_estim)) {
     # programmatic bookkeeping
     eif_mean <- Inf
@@ -162,8 +162,6 @@ tmle_txshift <- function(data_internal,
       ),
       recursive = FALSE
     )
-
-    # standard TMLE of the shift parameter / inefficient IPCW-TMLE
   } else {
     # fit logistic regression to fluctuate along the sub-model
     fitted_fluc_mod <- fit_fluctuation(

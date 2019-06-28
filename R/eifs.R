@@ -199,7 +199,11 @@ ipcw_eif_update <- function(data_in,
     eif_tol = eif_tol
   )
 
-  # organize EIF data as data.table
+  # NOTE: upon the first run of this procedure, the above two function calls
+  #       have computed only the inefficient IPCW-TMLE, i.e., by fitting the
+  #       initial fluctuation model and updating the EIF accordingly
+
+  # organize EIF data for regression
   eif_data <- data_in %>%
     data.table::copy() %>%
     dplyr::select(names(V)) %>%
@@ -208,74 +212,47 @@ ipcw_eif_update <- function(data_in,
 
   # estimate the EIF nuisance regression using HAL
   if (eif_reg_type == "hal") {
-    # make sl3 task from new data.table
-    # eif_task <- sl3::sl3_Task$new(
-    # data = eif_data,
-    # covariates = names(V),
-    # outcome = "eif",
-    # outcome_type = "continuous"
-    # )
-
-    # train HAL via sl3 learner
-    # hal_lrnr <- sl3::Lrnr_hal9001$new()
-    # fit_eif_hal <- hal_lrnr$train(eif_task)
-
-    # create task of full data (censoring variables only) for prediction
-    # eif_pred_task <- sl3::sl3_Task$new(
-    # data = data.table::set(
-    # data.table::as.data.table(V),
-    # j = "eif",
-    # value = rep(0, unique(lapply(V, length)))
-    # ),
-    # covariates = names(V),
-    # outcome = "eif",
-    # outcome_type = "continuous"
-    # )
-
-    # predict from HAL on full data
-    # eif_pred_hal <- fit_eif_hal$predict(eif_pred_task)
-
     # if flexibility specified, just fit a HAL regression
-    X_in <- eif_data %>%
+    eif_reg_mat <- eif_data %>%
       data.table::copy() %>%
       dplyr::select(names(V)) %>%
       as.matrix()
-    colnames(X_in) <- NULL
+    colnames(eif_reg_mat) <- NULL
 
     # fit HAL with custom arguments to get results similar to halplus
-    # NOTE: this produces a warning that could be leading to serious issues
+    # NOTE: this produces a warning that could be leading to serious issues...
     eif_mod <- hal9001::fit_hal(
-      X = X_in,
+      X = eif_reg_mat,
       Y = as.numeric(eif_data$eif),
       standardize = FALSE,
-      fit_type = "glmnet", # "lassi",
-      lambda = exp(seq(3, -50, length = 2000)),
+      fit_type = "glmnet",
+      lambda.min.ratio = 1e-5,
       return_lasso = TRUE,
       yolo = FALSE
     )
+
     # compute expectation by invoking the predict method
-    V_pred_in <- as.matrix(V)
-    colnames(V_pred_in) <- NULL
-    eif_pred <- stats::predict(
+    eif_pred_mat <- as.matrix(V)
+    colnames(eif_pred_mat) <- NULL
+    eif_pred <- unname(stats::predict(
       eif_mod,
-      new_data = V_pred_in
-    ) %>%
-      as.numeric()
+      new_data = eif_pred_mat
+    ))
   } else if (eif_reg_type == "glm") {
     # NOTE: change of formula to examine interactions (for debugging)
     eif_mod <- stats::glm(
-      stats::as.formula("eif ~ .^2"),
+      stats::as.formula("eif ~ ."),
       data = eif_data
     )
+
     # compute expectation by invoking the predict method
-    eif_pred <- stats::predict(
+    eif_pred <- unname(stats::predict(
       eif_mod,
       newdata = V
-    ) %>%
-      as.numeric()
+    ))
   }
 
-  # TMLE: fit logistic regression to fluctuate along submodel wrt epsilon
+  # IPCW-TMLE: fluctuation regression to update the IPC weights
   if (estimator == "tmle") {
     ipcw_fluc_reg_data <-
       data.table::as.data.table(
@@ -285,23 +262,24 @@ ipcw_eif_update <- function(data_in,
           eif_reg_cov = (eif_pred / bound_precision(ipc_mech))
         )
       )
+
     # fit fluctuation regression
     ipcw_fluc <- stats::glm(
-      stats::as.formula("Delta ~ -1 + stats::offset(logit_ipcw) + eif_reg_cov"),
+      stats::as.formula("Delta ~ -1 + offset(logit_ipcw) + eif_reg_cov"),
       data = ipcw_fluc_reg_data,
       family = "binomial"
     )
+
     # now, we can obtain Pn* from the sub-model fluctuation
-    ipcw_pred <- stats::fitted(ipcw_fluc) %>%
-      as.numeric()
+    ipcw_pred <- unname(stats::fitted(ipcw_fluc))
   } else {
     # just use the initial estimates of censoring probability for one-step
     ipcw_pred <- ipc_mech
   }
 
   # this is the second half of the IPCW-EIF (solved by pi_n fluctuation):
-  # 0 = (C - pi) * \E(f(eif ~ V, subset = (C = 1)) / pi)
-  ipcw_eif_component <- (C - ipcw_pred) * (eif_pred / ipcw_pred)
+  # 0 = ((C - pi_n) / pi_n) E[f(eif ~ V | C = 1)]
+  ipcw_eif_component <- ((C - ipcw_pred) / ipcw_pred) * eif_pred
 
   # so, now we need weights to feed back into the previous steps
   ipc_weights <- C / ipcw_pred
@@ -326,10 +304,10 @@ ipcw_eif_update <- function(data_in,
       Qn = Qn_estim,
       Hn = Hn_estim,
       estimator = estimator,
-      fluc_mod_out = fitted_fluc_mod, # updated sicne last call
+      fluc_mod_out = fitted_fluc_mod,
       Delta = C,
-      ipc_weights = ipc_weights[C == 1], # updated since last call
-      ipc_weights_norm = ipc_weights_norm[C == 1], # updated since last call
+      ipc_weights = ipc_weights[C == 1],
+      ipc_weights_norm = ipc_weights_norm[C == 1],
       eif_tol = eif_tol
     )
   }
