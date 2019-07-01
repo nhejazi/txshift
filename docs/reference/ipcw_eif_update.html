@@ -147,7 +147,7 @@ description of the IPCW-TMLE, please consult Rose and van der Laan (2011)
 
     <pre class="usage"><span class='fu'>ipcw_eif_update</span>(<span class='no'>data_in</span>, <span class='no'>C</span>, <span class='no'>V</span>, <span class='no'>ipc_mech</span>, <span class='no'>ipc_weights</span>, <span class='no'>ipc_weights_norm</span>,
   <span class='no'>Qn_estim</span>, <span class='no'>Hn_estim</span>, <span class='kw'>estimator</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"tmle"</span>, <span class='st'>"onestep"</span>),
-  <span class='kw'>fluc_method</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>eif_tol</span> <span class='kw'>=</span> <span class='fl'>1e-09</span>, <span class='kw'>eif_reg_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"hal"</span>,
+  <span class='kw'>fluctuation</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>eif_tol</span> <span class='kw'>=</span> <span class='fl'>1e-09</span>, <span class='kw'>eif_reg_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"hal"</span>,
   <span class='st'>"glm"</span>))</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -208,10 +208,10 @@ targeted maximum likelihood estimation or <code>"onestep"</code> for a one-step
 or augmented inverse probability weighted (AIPW) estimator.</p></td>
     </tr>
     <tr>
-      <th>fluc_method</th>
+      <th>fluctuation</th>
       <td><p>A <code>character</code> giving the type of regression to be
 used in traversing the fluctuation submodel. The choices are "weighted" and
-"standard" -- please consult the literature for details on the differences.</p></td>
+"standard".</p></td>
     </tr>
     <tr>
       <th>eif_tol</th>

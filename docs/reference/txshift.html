@@ -130,7 +130,7 @@
     </div>
 
     <pre class="usage"><span class='fu'>txshift</span>(<span class='no'>W</span>, <span class='no'>A</span>, <span class='no'>Y</span>, <span class='kw'>C</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>Y</span>)), <span class='kw'>V</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>delta</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>estimator</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"tmle"</span>, <span class='st'>"onestep"</span>), <span class='kw'>fluc_method</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"standard"</span>,
+  <span class='kw'>estimator</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"tmle"</span>, <span class='st'>"onestep"</span>), <span class='kw'>fluctuation</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"standard"</span>,
   <span class='st'>"weighted"</span>), <span class='kw'>eif_tol</span> <span class='kw'>=</span> <span class='fl'>1</span>/<span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>Y</span>), <span class='kw'>max_iter</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
   <span class='kw'>ipcw_fit_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"glm"</span>, <span class='st'>"sl"</span>, <span class='st'>"fit_spec"</span>), <span class='kw'>sl_learners</span>
   <span class='kw'>=</span> <span class='kw'>NULL</span>), <span class='kw'>g_fit_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"hal"</span>, <span class='st'>"sl"</span>, <span class='st'>"fit_spec"</span>),
@@ -189,9 +189,11 @@ the scale of the treatment (A).</p></td>
 targeted maximum likelihood or <code>"onestep"</code> for a one-step estimator.</p></td>
     </tr>
     <tr>
-      <th>fluc_method</th>
-      <td><p>The method to be used in submodel fluctuation step of
-the TMLE computation. The choices are "standard" and "weighted".</p></td>
+      <th>fluctuation</th>
+      <td><p>The method to be used in the submodel fluctuation step
+(targeting step) to compute the TML estimator. The choices are "standard"
+and "weighted" for where to place the auxiliary covariate in the logistic
+tilting regression.</p></td>
     </tr>
     <tr>
       <th>eif_tol</th>

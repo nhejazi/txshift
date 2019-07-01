@@ -64,7 +64,7 @@ tmle_txshift_std <- txshift(
   gn_fit_spec = gn_spec_fitted,
   Qn_fit_spec = Qn_spec_fitted,
   estimator = "tmle",
-  fluc_method = "standard"
+  fluctuation = "standard"
 )
 psi_std <- as.numeric(tmle_txshift_std$psi)
 
@@ -76,7 +76,7 @@ tmle_txshift_wts <- txshift(
   gn_fit_spec = gn_spec_fitted,
   Qn_fit_spec = Qn_spec_fitted,
   estimator = "tmle",
-  fluc_method = "weighted"
+  fluctuation = "weighted"
 )
 psi_wts <- as.numeric(tmle_txshift_wts$psi)
 
@@ -97,7 +97,7 @@ ipcw_tmle_glm_std <- txshift(
   gn_fit_spec = gn_spec_fitted[C == 1, ],
   Qn_fit_spec = Qn_spec_fitted[C == 1, ],
   eif_reg_type = "glm",
-  fluc_method = "standard"
+  fluctuation = "standard"
 )
 psi_ipcw_tmle_glm_std <- as.numeric(ipcw_tmle_glm_std$psi)
 
@@ -112,7 +112,7 @@ ipcw_tmle_glm_wts <- txshift(
   gn_fit_spec = gn_spec_fitted[C == 1, ],
   Qn_fit_spec = Qn_spec_fitted[C == 1, ],
   eif_reg_type = "glm",
-  fluc_method = "weighted"
+  fluctuation = "weighted"
 )
 psi_ipcw_tmle_glm_wts <- as.numeric(ipcw_tmle_glm_wts$psi)
 
@@ -133,7 +133,7 @@ ipcw_tmle_hal_std <- txshift(
   gn_fit_spec = gn_spec_fitted[C == 1, ],
   Qn_fit_spec = Qn_spec_fitted[C == 1, ],
   eif_reg_type = "hal",
-  fluc_method = "standard"
+  fluctuation = "standard"
 )
 psi_ipcw_tmle_hal_std <- as.numeric(ipcw_tmle_hal_std$psi)
 
@@ -148,7 +148,7 @@ ipcw_tmle_hal_wts <- txshift(
   gn_fit_spec = gn_spec_fitted[C == 1, ],
   Qn_fit_spec = Qn_spec_fitted[C == 1, ],
   eif_reg_type = "hal",
-  fluc_method = "weighted"
+  fluctuation = "weighted"
 )
 psi_ipcw_tmle_hal_wts <- as.numeric(ipcw_tmle_hal_wts$psi)
 
