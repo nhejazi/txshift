@@ -25,21 +25,21 @@ r_packages:
   - devtools
   - covr
   - sessioninfo
+  - data.table
+  - origami
 
 r_github_packages:
   - r-lib/covr
   - r-lib/sessioninfo
-  - Rdatatable/data.table
   - osofr/simcausal
   - osofr/condensier
-  - tlverse/origami
+  - tlverse/sl3@v1.2.0
   - tlverse/hal9001
-  - tlverse/sl3
   - nhejazi/haldensify
 
 after_success:
   ## coverage
-  - travis_wait 80 Rscript -e "covr::codecov(line_exclusions = list('R/plots.R', 'R/utils.R'))"
+  - travis_wait 80 Rscript -e "covr::codecov(line_exclusions = list('R/utils.R'))"
 
 on_failure:
   - "./travis-tool.sh dump_logs"
@@ -48,4 +48,3 @@ notifications:
   email:
     on_success: change
     on_failure: change
-

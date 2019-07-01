@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
       </span>
     </div>
 
@@ -130,7 +130,7 @@
 <pre><code>## haldensify v0.0.3: Conditional Density Estimation with the Highly Adaptive Lasso</code></pre>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(sl3)</a>
 <a class="sourceLine" id="cb12-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(txshift)</a></code></pre></div>
-<pre><code>## txshift v0.2.6: Targeted Learning of the Causal Effects of Stochastic Interventions</code></pre>
+<pre><code>## txshift v0.2.7: Targeted Learning of the Causal Effects of Stochastic Interventions</code></pre>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">429153</span>)</a></code></pre></div>
 <hr>
 </div>
@@ -174,7 +174,7 @@
 <div id="estimating-stochastic-interventions-effects-with-generalized-linear-models" class="section level3">
 <h3 class="hasAnchor">
 <a href="#estimating-stochastic-interventions-effects-with-generalized-linear-models" class="anchor"></a>Estimating Stochastic Interventions Effects with Generalized Linear Models</h3>
-<p>The simplest way to compute the TML estimator for the stochastic treatment regime is to fit each of the major constituent parts (nuisance parameters) of the estimator with generalized linear models. To do this, one may merely call the <code>tmle_shifttx</code> function, providing the standard inputs listed below.</p>
+<p>The simplest way to compute the TML estimator for the stochastic treatment regime is to fit each of the major constituent parts (nuisance parameters) of the estimator with generalized linear models. To do this, one may merely call the <code>txshift</code> function, providing the standard inputs listed below.</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">tmle_hal_shift_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw"><a href="../reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y, <span class="dt">delta =</span> delta,</a>
 <a class="sourceLine" id="cb16-2" data-line-number="2">                            <span class="dt">fluc_method =</span> <span class="st">"standard"</span>,</a>
 <a class="sourceLine" id="cb16-3" data-line-number="3">                            <span class="dt">g_fit_args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"hal"</span>,</a>
@@ -213,10 +213,10 @@
 <h3 class="hasAnchor">
 <a href="#interlude-constructing-optimal-stacked-regressions-with-sl3" class="anchor"></a>Interlude: Constructing Optimal Stacked Regressions with <code>sl3</code>
 </h3>
-<p>To easily incorporate ensemble machine learning into the estimation procedure, we rely on the facilities provided in the <a href="https://sl3.tlverse.org"><code>sl3</code> R package</a>. For a complete guide on using the <code>sl3</code> R package, consider consulting <a href="https://sl3.tlverse.org" class="uri">https://sl3.tlverse.org</a>, or <a href="https://tlverse.org" class="uri">https://tlverse.org</a> for the <code>tlverse</code> ecosystem, of which <code>sl3</code> is a major part.</p>
+<p>To easily incorporate ensemble machine learning into the estimation procedure, we rely on the facilities provided in the <a href="https://tlverse.org/sl3"><code>sl3</code> R package</a> <span class="citation">(Coyle et al. 2019)</span>. For a complete guide on using the <code>sl3</code> R package, consider consulting <a href="https://tlverse.org/sl3" class="uri">https://tlverse.org/sl3</a>.</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="co"># SL learners to be used for most fits (e.g., IPCW, outcome regression)</span></a>
 <a class="sourceLine" id="cb20-2" data-line-number="2">lrnr_lib &lt;-<span class="st"> </span><span class="kw"><a href="https://tlverse.org/sl3/reference/make_learner_stack.html">make_learner_stack</a></span>(<span class="st">"Lrnr_mean"</span>, <span class="st">"Lrnr_glm_fast"</span>, <span class="st">"Lrnr_ranger"</span>)</a>
-<a class="sourceLine" id="cb20-3" data-line-number="3">sl_lrn &lt;-<span class="st"> </span>Lrnr_sl<span class="op">$</span><span class="kw">new</span>(<span class="dt">learners =</span> lrnr_lib, <span class="dt">metalearner =</span> Lrnr_nnls<span class="op">$</span><span class="kw">new</span>())</a>
+<a class="sourceLine" id="cb20-3" data-line-number="3">sl_learner &lt;-<span class="st"> </span>Lrnr_sl<span class="op">$</span><span class="kw">new</span>(<span class="dt">learners =</span> lrnr_lib, <span class="dt">metalearner =</span> Lrnr_nnls<span class="op">$</span><span class="kw">new</span>())</a>
 <a class="sourceLine" id="cb20-4" data-line-number="4"></a>
 <a class="sourceLine" id="cb20-5" data-line-number="5"><span class="co"># SL learners for conditional densities to be used for the propensity score fit</span></a>
 <a class="sourceLine" id="cb20-6" data-line-number="6">lrnr_dens_lib &lt;-<span class="st"> </span><span class="kw"><a href="https://tlverse.org/sl3/reference/make_learner_stack.html">make_learner_stack</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="st">"Lrnr_condensier"</span>, <span class="dt">nbins =</span> <span class="dv">35</span>,</a>
@@ -232,44 +232,46 @@
 <a class="sourceLine" id="cb20-16" data-line-number="16">                                          <span class="dt">bin_method =</span> <span class="st">"equal.len"</span>,</a>
 <a class="sourceLine" id="cb20-17" data-line-number="17">                                          <span class="dt">pool =</span> <span class="ot">FALSE</span>)</a>
 <a class="sourceLine" id="cb20-18" data-line-number="18">                                   )</a>
-<a class="sourceLine" id="cb20-19" data-line-number="19">sl_lrn_dens &lt;-<span class="st"> </span>Lrnr_sl<span class="op">$</span><span class="kw">new</span>(<span class="dt">learners =</span> lrnr_dens_lib,</a>
-<a class="sourceLine" id="cb20-20" data-line-number="20">                           <span class="dt">metalearner =</span> Lrnr_solnp_density<span class="op">$</span><span class="kw">new</span>())</a></code></pre></div>
+<a class="sourceLine" id="cb20-19" data-line-number="19">sl_learner_density &lt;-<span class="st"> </span>Lrnr_sl<span class="op">$</span><span class="kw">new</span>(<span class="dt">learners =</span> lrnr_dens_lib,</a>
+<a class="sourceLine" id="cb20-20" data-line-number="20">                                  <span class="dt">metalearner =</span> Lrnr_solnp_density<span class="op">$</span><span class="kw">new</span>())</a></code></pre></div>
 </div>
 <div id="estimating-stochastic-interventions-effects-with-stacked-regressions" class="section level3">
 <h3 class="hasAnchor">
 <a href="#estimating-stochastic-interventions-effects-with-stacked-regressions" class="anchor"></a>Estimating Stochastic Interventions Effects with Stacked Regressions</h3>
-<p>Using the framework provided by the <a href="https://sl3.tlverse.org"><code>sl3</code> package</a>, the nuisance parameters of the TML estimator may be fit with ensemble learning, using the cross-validation framework of the Super Learner algorithm of <span class="citation">(<span class="citeproc-not-found" data-reference-id="vdl2007super"><strong>???</strong></span>)</span>.</p>
+<p>Using the framework provided by the <a href="https://tlverse.org/sl3"><code>sl3</code> package</a>, the nuisance parameters of the TML estimator may be fit with ensemble learning, using the cross-validation framework of the Super Learner algorithm of <span class="citation">(<span class="citeproc-not-found" data-reference-id="vdl2007super"><strong>???</strong></span>)</span>.</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">tmle_sl_shift_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw"><a href="../reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y, <span class="dt">delta =</span> delta,</a>
 <a class="sourceLine" id="cb21-2" data-line-number="2">                           <span class="dt">fluc_method =</span> <span class="st">"standard"</span>,</a>
 <a class="sourceLine" id="cb21-3" data-line-number="3">                           <span class="dt">g_fit_args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"sl"</span>,</a>
-<a class="sourceLine" id="cb21-4" data-line-number="4">                                             <span class="dt">sl_lrnrs =</span> sl_lrn_dens),</a>
-<a class="sourceLine" id="cb21-5" data-line-number="5">                           <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"sl"</span>,</a>
-<a class="sourceLine" id="cb21-6" data-line-number="6">                                             <span class="dt">sl_lrnrs =</span> sl_lrn)</a>
-<a class="sourceLine" id="cb21-7" data-line-number="7">                          )</a></code></pre></div>
+<a class="sourceLine" id="cb21-4" data-line-number="4">                                             <span class="dt">sl_learners_density =</span></a>
+<a class="sourceLine" id="cb21-5" data-line-number="5">                                               sl_learner_density),</a>
+<a class="sourceLine" id="cb21-6" data-line-number="6">                           <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"sl"</span>,</a>
+<a class="sourceLine" id="cb21-7" data-line-number="7">                                             <span class="dt">sl_learners =</span> sl_learner)</a>
+<a class="sourceLine" id="cb21-8" data-line-number="8">                          )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 3367.7264     Pars:  0.70286367 0.00000105 0.29713528
-## Iter: 2 fn: 3367.7264     Pars:  0.7028640612 0.0000001514 0.2971357874
+## Iter: 1 fn: 3365.4304     Pars:  0.699662456 0.000001238 0.300336304
+## Iter: 2 fn: 3365.4304     Pars:  0.6996626518 0.0000007995 0.3003365487
 ## solnp--&gt; Completed in 2 iterations</code></pre>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(tmle_sl_shift_<span class="dv">1</span>)</a></code></pre></div>
 <pre><code>##      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-##       2.386      2.5242      2.6623       0.005 -1.6236e-16        tmle 
+##      2.3853      2.5235      2.6616       0.005 -3.3558e-17        tmle 
 ##      n_iter 
 ##           0</code></pre>
 <p>As before, we may vary the regression for the submodel fluctuation procedure by weighting each observation by the value of the so-called clever covariate rather than using such an auxiliary covariate directly in the regression procedure:</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1">tmle_sl_shift_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw"><a href="../reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y, <span class="dt">delta =</span> delta,</a>
 <a class="sourceLine" id="cb25-2" data-line-number="2">                           <span class="dt">fluc_method =</span> <span class="st">"weighted"</span>,</a>
 <a class="sourceLine" id="cb25-3" data-line-number="3">                           <span class="dt">g_fit_args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"sl"</span>,</a>
-<a class="sourceLine" id="cb25-4" data-line-number="4">                                             <span class="dt">sl_lrnrs =</span> sl_lrn_dens),</a>
-<a class="sourceLine" id="cb25-5" data-line-number="5">                           <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"sl"</span>,</a>
-<a class="sourceLine" id="cb25-6" data-line-number="6">                                             <span class="dt">sl_lrnrs =</span> sl_lrn)</a>
-<a class="sourceLine" id="cb25-7" data-line-number="7">                          )</a></code></pre></div>
+<a class="sourceLine" id="cb25-4" data-line-number="4">                                             <span class="dt">sl_learners_density =</span></a>
+<a class="sourceLine" id="cb25-5" data-line-number="5">                                               sl_learner_density),</a>
+<a class="sourceLine" id="cb25-6" data-line-number="6">                           <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"sl"</span>,</a>
+<a class="sourceLine" id="cb25-7" data-line-number="7">                                             <span class="dt">sl_learners =</span> sl_learner)</a>
+<a class="sourceLine" id="cb25-8" data-line-number="8">                          )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 3889.2299     Pars:  0.7297425382 0.0000004768 0.2702569837
-## Iter: 2 fn: 3889.2299     Pars:  0.7297426326 0.0000002935 0.2702570739
+## Iter: 1 fn: 3588.7606     Pars:  0.65688 0.01667 0.32645
+## Iter: 2 fn: 3588.7606     Pars:  0.65689 0.01664 0.32647
 ## solnp--&gt; Completed in 2 iterations</code></pre>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(tmle_sl_shift_<span class="dv">2</span>)</a></code></pre></div>
 <pre><code>##     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator 
-##     1.9311      2.058      2.185     0.0042 2.2389e-11       tmle 
+##     1.9305     2.0573     2.1842     0.0042 2.1913e-11       tmle 
 ##     n_iter 
 ##          0</code></pre>
 </div>
@@ -289,7 +291,7 @@
 <p><span class="math display">\[\sigma_n^2 = \frac{1}{n} \sum_{i = 1}^{n} D^2(\bar{Q}_n^*, g_n)(O_i)\]</span></p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1">(ci_shift &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/confint.html">confint</a></span>(tmle_sl_shift_<span class="dv">1</span>))</a></code></pre></div>
 <pre><code>##   lwr_ci      est   upr_ci 
-## 2.385994 2.524153 2.662313</code></pre>
+## 2.385330 2.523483 2.661636</code></pre>
 </div>
 </div>
 <div id="advanced-usage-user-specified-regressions" class="section level2">
@@ -339,6 +341,9 @@
 <h2 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h2>
 <div id="refs" class="references">
+<div id="ref-coyle2019sl3">
+<p>Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2019. “sl3: Modern Pipelines for Machine Learning and Super Learning.” <a href="https://github.com/tlverse/sl3" class="uri">https://github.com/tlverse/sl3</a>. <a href="https://doi.org/10.5281/zenodo.3251138" class="uri">https://doi.org/10.5281/zenodo.3251138</a>.</p>
+</div>
 <div id="ref-diaz2012population">
 <p>Díaz, Iván, and Mark J van der Laan. 2012. “Population Intervention Causal Effects Based on Stochastic Interventions.” <em>Biometrics</em> 68 (2). Wiley Online Library: 541–49.</p>
 </div>
