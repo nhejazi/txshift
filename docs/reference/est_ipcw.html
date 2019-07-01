@@ -129,7 +129,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>est_ipcw</span>(<span class='no'>V</span>, <span class='no'>Delta</span>, <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"sl"</span>, <span class='st'>"glm"</span>), <span class='kw'>sl_lrnrs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>est_ipcw</span>(<span class='no'>V</span>, <span class='no'>Delta</span>, <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"sl"</span>, <span class='st'>"glm"</span>), <span class='kw'>sl_learners</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -149,12 +149,12 @@ function corresponding to the censoring mechanism.</p></td>
       <th>fit_type</th>
       <td><p>A <code>character</code> indicating whether to perform the fit
 using GLMs or a Super Learner. If use of Super Learner is desired, then the
-argument <code>sl_lrnrs</code> must be provided.</p></td>
+argument <code>sl_learners</code> must be provided.</p></td>
     </tr>
     <tr>
-      <th>sl_lrnrs</th>
-      <td><p>An <code>R6</code> object of class <code>Lrnr_sl</code>, a Super Learner
-object created externally using the <code>sl3</code> package.</p></td>
+      <th>sl_learners</th>
+      <td><p>An object of class <code>Lrnr_sl</code>, a Super Learner created
+externally using the <code>sl3</code> package.</p></td>
     </tr>
     </table>
     

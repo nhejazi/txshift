@@ -7,14 +7,14 @@
 txshift(W, A, Y, C = rep(1, length(Y)), V = NULL, delta = 0,
   estimator = c("tmle", "onestep"), fluc_method = c("standard",
   "weighted"), eif_tol = 1/length(Y), max_iter = 1000,
-  ipcw_fit_args = list(fit_type = c("glm", "sl", "fit_spec"), sl_lrnrs =
-  NULL), g_fit_args = list(fit_type = c("hal", "sl", "fit_spec"), n_bins
-  = c(10, 25), grid_type = c("equal_range", "equal_mass"), lambda_seq =
-  exp(seq(-1, -13, length = 300)), use_future = FALSE, sl_lrnrs_dens =
-  NULL), Q_fit_args = list(fit_type = c("glm", "sl", "fit_spec"),
-  glm_formula = "Y ~ .", sl_lrnrs = NULL), eif_reg_type = c("hal",
-  "glm"), ipcw_efficiency = TRUE, ipcw_fit_spec = NULL,
-  gn_fit_spec = NULL, Qn_fit_spec = NULL)
+  ipcw_fit_args = list(fit_type = c("glm", "sl", "fit_spec"), sl_learners
+  = NULL), g_fit_args = list(fit_type = c("hal", "sl", "fit_spec"),
+  n_bins = c(10, 25), grid_type = c("equal_range", "equal_mass"),
+  lambda_seq = exp(seq(-1, -13, length = 300)), use_future = FALSE,
+  sl_learners_density = NULL), Q_fit_args = list(fit_type = c("glm",
+  "sl", "fit_spec"), glm_formula = "Y ~ .", sl_learners = NULL),
+  eif_reg_type = c("hal", "glm"), ipcw_efficiency = TRUE,
+  ipcw_fit_spec = NULL, gn_fit_spec = NULL, Qn_fit_spec = NULL)
 }
 \arguments{
 \item{W}{A \code{matrix}, \code{data.frame}, or similar corresponding to a

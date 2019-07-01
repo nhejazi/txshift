@@ -4,7 +4,7 @@
 \alias{est_ipcw}
 \title{Estimate Inverse Probability of Censoring Weights}
 \usage{
-est_ipcw(V, Delta, fit_type = c("sl", "glm"), sl_lrnrs = NULL)
+est_ipcw(V, Delta, fit_type = c("sl", "glm"), sl_learners = NULL)
 }
 \arguments{
 \item{V}{A \code{numeric} vector, \code{matrix}, \code{data.frame} or similar
@@ -16,10 +16,10 @@ function corresponding to the censoring mechanism.}
 
 \item{fit_type}{A \code{character} indicating whether to perform the fit
 using GLMs or a Super Learner. If use of Super Learner is desired, then the
-argument \code{sl_lrnrs} must be provided.}
+argument \code{sl_learners} must be provided.}
 
-\item{sl_lrnrs}{An \code{R6} object of class \code{Lrnr_sl}, a Super Learner
-object created externally using the \code{sl3} package.}
+\item{sl_learners}{An object of class \code{Lrnr_sl}, a Super Learner created
+externally using the \code{sl3} package.}
 }
 \value{
 A \code{list} containing a \code{numeric} vector corresponding to the

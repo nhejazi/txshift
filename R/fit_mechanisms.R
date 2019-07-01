@@ -13,8 +13,8 @@
 #'  \code{estimate-ipc_weights}.
 #' @param fit_type A \code{character} specifying whether to use Super Learner or
 #'  the Highly Adaptive Lasso to estimate the conditional treatment density.
-#' @param sl_lrnrs_dens An object containing a set of instantiated learners from
-#'  the \code{sl3} package, to be used in fitting an ensemble model.
+#' @param sl_learners_density Object containing a set of instantiated learners
+#'  from the \code{sl3} package, to be used in fitting an ensemble model.
 #' @param std_args A \code{list} of arguments to be passed to \code{haldensify}
 #'  from the \code{haldensify} package when the argument \code{fit_type} is set
 #'  to \code{"hal"}. Note that this invokes HAL instead of Super Learner and is
@@ -31,7 +31,7 @@ est_g <- function(A,
                   delta = 0,
                   ipc_weights = rep(1, length(A)),
                   fit_type = c("sl", "hal"),
-                  sl_lrnrs_dens = NULL,
+                  sl_learners_density = NULL,
                   std_args = list(
                     n_bins = c(10, 25),
                     grid_type = c("equal_range", "equal_mass"),
@@ -67,7 +67,7 @@ est_g <- function(A,
   ##############################################################################
   # if fitting sl3 density make sl3 tasks from the data
   ##############################################################################
-  if (fit_type == "sl" & !is.null(sl_lrnrs_dens)) {
+  if (fit_type == "sl" & !is.null(sl_learners_density)) {
     # sl3 task for data with treatment UNSHIFTED
     sl_task <- sl3::sl3_Task$new(
       data = data_in,
@@ -104,7 +104,7 @@ est_g <- function(A,
   ##############################################################################
   # fit conditional densities with haldensify
   ##############################################################################
-  if (fit_type == "hal" & is.null(sl_lrnrs_dens)) {
+  if (fit_type == "hal" & is.null(sl_learners_density)) {
     fit_args <- unlist(
       list(
         A = list(A), W = list(W),
@@ -114,23 +114,23 @@ est_g <- function(A,
       recursive = FALSE
     )
     fit_g_dens_hal <- do.call(haldensify::haldensify, fit_args)
-  } else if (fit_type == "sl" & !is.null(sl_lrnrs_dens)) {
+  } else if (fit_type == "sl" & !is.null(sl_learners_density)) {
     suppressMessages(
-      fit_g_dens_sl <- sl_lrnrs_dens$train(sl_task)
+      fit_g_dens_sl <- sl_learners_density$train(sl_task)
     )
   }
 
   ##############################################################################
   # predict probabilities for the UNSHIFTED data (A = a)
   ##############################################################################
-  if (fit_type == "hal" & is.null(sl_lrnrs_dens)) {
+  if (fit_type == "hal" & is.null(sl_learners_density)) {
     pred_g_A_noshift <-
       stats::predict(
         object = fit_g_dens_hal,
         new_A = as.numeric(data_in$A),
         new_W = as.matrix(data_in[, colnames(W), with = FALSE])
       )
-  } else if (fit_type == "sl" & !is.null(sl_lrnrs_dens)) {
+  } else if (fit_type == "sl" & !is.null(sl_learners_density)) {
     suppressMessages(
       pred_g_A_noshift <- fit_g_dens_sl$predict()
     )
@@ -139,14 +139,14 @@ est_g <- function(A,
   ##############################################################################
   # predict probabilities for the DOWNSHIFTED data (A = a - delta)
   ##############################################################################
-  if (fit_type == "hal" & is.null(sl_lrnrs_dens)) {
+  if (fit_type == "hal" & is.null(sl_learners_density)) {
     pred_g_A_downshifted <-
       stats::predict(
         object = fit_g_dens_hal,
         new_A = as.numeric(data_in_downshifted$A),
         new_W = as.matrix(data_in[, colnames(W), with = FALSE])
       )
-  } else if (fit_type == "sl" & !is.null(sl_lrnrs_dens)) {
+  } else if (fit_type == "sl" & !is.null(sl_learners_density)) {
     suppressMessages(
       pred_g_A_downshifted <- fit_g_dens_sl$predict(sl_task_downshifted)
     )
@@ -155,14 +155,14 @@ est_g <- function(A,
   ##############################################################################
   # predict probabilities for the UPSHIFTED data (A = a + delta)
   ##############################################################################
-  if (fit_type == "hal" & is.null(sl_lrnrs_dens)) {
+  if (fit_type == "hal" & is.null(sl_learners_density)) {
     pred_g_A_upshifted <-
       stats::predict(
         object = fit_g_dens_hal,
         new_A = as.numeric(data_in_upshifted$A),
         new_W = as.matrix(data_in[, colnames(W), with = FALSE])
       )
-  } else if (fit_type == "sl" & !is.null(sl_lrnrs_dens)) {
+  } else if (fit_type == "sl" & !is.null(sl_learners_density)) {
     suppressMessages(
       pred_g_A_upshifted <- fit_g_dens_sl$predict(sl_task_upshifted)
     )
@@ -171,14 +171,14 @@ est_g <- function(A,
   ##############################################################################
   # predict probabilities for the UPSHIFTED data (A = a + 2*delta)
   ##############################################################################
-  if (fit_type == "hal" & is.null(sl_lrnrs_dens)) {
+  if (fit_type == "hal" & is.null(sl_learners_density)) {
     pred_g_A_upupshifted <-
       stats::predict(
         object = fit_g_dens_hal,
         new_A = as.numeric(data_in_upupshifted$A),
         new_W = as.matrix(data_in[, colnames(W), with = FALSE])
       )
-  } else if (fit_type == "sl" & !is.null(sl_lrnrs_dens)) {
+  } else if (fit_type == "sl" & !is.null(sl_learners_density)) {
     suppressMessages(
       pred_g_A_upupshifted <- fit_g_dens_sl$predict(sl_task_upupshifted)
     )
@@ -218,19 +218,18 @@ est_g <- function(A,
 #'  Learner to fit the outcome regression. If the option "glm" is selected, the
 #'  argument \code{glm_formula} must NOT be \code{NULL}, instead containing a
 #'  model formula (in the style of \code{stats::glm}) as a \code{character}. If
-#'  the option "sl" is selected, the argument \code{sl_lrnrs} must NOT be
+#'  the option "sl" is selected, the argument \code{sl_learners} must NOT be
 #'  \code{NULL}, instead being a pre-defined object of class \code{Lrnr_sl},
 #'  specifying learners and a metalearner for the Super Learner fit. Consult the
 #'  documentation of the \code{sl3} package for details on Super Learner fits.
 #' @param glm_formula A \code{character} corresponding to a \code{formula} to be
 #'  used in fitting a generalized linear model via \code{stats::glm}.
-#' @param sl_lrnrs An object containing a set of instantiated learners from the
+#' @param sl_learners Object containing a set of instantiated learners from the
 #'  \code{sl3} package, to be used in fitting an ensemble model.
 #'
 #' @importFrom stats glm as.formula predict
 #' @importFrom data.table as.data.table setnames copy set
 #' @importFrom stringr str_detect
-#' @importFrom dplyr "%>%"
 #' @importFrom sl3 sl3_Task
 #'
 #' @export
@@ -242,7 +241,7 @@ est_Q <- function(Y,
                   ipc_weights = rep(1, length(Y)),
                   fit_type = c("sl", "glm"),
                   glm_formula = "Y ~ .",
-                  sl_lrnrs = NULL) {
+                  sl_learners = NULL) {
   ##############################################################################
   # make data objects from inputs but using the outcome y_star instead of y
   ##############################################################################
@@ -281,26 +280,24 @@ est_Q <- function(Y,
     )
 
     # predict Qn for the un-shifted data (A = a)
-    pred_star_Qn <- stats::predict(
+    pred_star_Qn <- unname(stats::predict(
       object = fit_Qn,
       newdata = data_in,
       type = "response"
-    ) %>%
-      as.numeric()
+    ))
 
     # predict Qn for the shifted data (A = a + delta)
-    pred_star_Qn_shifted <- stats::predict(
+    pred_star_Qn_shifted <- unname(stats::predict(
       object = fit_Qn,
       newdata = data_in_shifted,
       type = "response"
-    ) %>%
-      as.numeric()
+    ))
   }
 
   ##############################################################################
   # fit a binary Super Learner and get the predicted probabilities
   ##############################################################################
-  if (fit_type == "sl" & !is.null(sl_lrnrs)) {
+  if (fit_type == "sl" & !is.null(sl_learners)) {
     # make sl3 task for original data
     task_noshift <- sl3::sl3_Task$new(
       data = data_in,
@@ -320,7 +317,7 @@ est_Q <- function(Y,
     )
 
     # fit new Super Learner to the no-shift data and predict
-    sl_fit_noshift <- sl_lrnrs$train(task_noshift)
+    sl_fit_noshift <- sl_learners$train(task_noshift)
     pred_star_Qn <- sl_fit_noshift$predict()
 
     # predict with Super Learner from unshifted data on the shifted data
@@ -351,13 +348,12 @@ est_Q <- function(Y,
 #'  function corresponding to the censoring mechanism.
 #' @param fit_type A \code{character} indicating whether to perform the fit
 #'  using GLMs or a Super Learner. If use of Super Learner is desired, then the
-#'  argument \code{sl_lrnrs} must be provided.
-#' @param sl_lrnrs An \code{R6} object of class \code{Lrnr_sl}, a Super Learner
-#'  object created externally using the \code{sl3} package.
+#'  argument \code{sl_learners} must be provided.
+#' @param sl_learners An object of class \code{Lrnr_sl}, a Super Learner created
+#'  externally using the \code{sl3} package.
 #'
 #' @importFrom stats glm predict binomial
 #' @importFrom data.table as.data.table setnames
-#' @importFrom dplyr "%>%"
 #' @importFrom sl3 sl3_Task
 #'
 #' @return A \code{list} containing a \code{numeric} vector corresponding to the
@@ -372,7 +368,7 @@ est_Q <- function(Y,
 est_ipcw <- function(V,
                      Delta,
                      fit_type = c("sl", "glm"),
-                     sl_lrnrs = NULL) {
+                     sl_learners = NULL) {
   ##############################################################################
   # make data objects from inputs
   ##############################################################################
@@ -385,7 +381,7 @@ est_ipcw <- function(V,
   ##############################################################################
   # make sl3 tasks from the data if fitting Super Learners
   ##############################################################################
-  if (fit_type == "sl" & !is.null(sl_lrnrs)) {
+  if (fit_type == "sl" & !is.null(sl_learners)) {
     sl_task <- sl3::sl3_Task$new(
       data = data_in,
       covariates = names_V,
@@ -397,22 +393,20 @@ est_ipcw <- function(V,
   ##############################################################################
   # fit logistic regression or binomial SL to get class probabilities for IPCW
   ##############################################################################
-  if (fit_type == "glm" & is.null(sl_lrnrs)) {
+  if (fit_type == "glm" & is.null(sl_learners)) {
     ipcw_reg <- stats::glm(
       as.formula("Delta ~ ."),
       family = stats::binomial(),
       data = data_in
     )
-    ipcw_probs <- stats::predict(
+    ipcw_probs <- unname(stats::predict(
       object = ipcw_reg,
       newdata = data_in,
       type = "response"
-    ) %>%
-      as.numeric()
-  } else if (fit_type == "sl" & !is.null(sl_lrnrs)) {
-    sl_fit <- sl_lrnrs$train(sl_task)
-    ipcw_probs <- sl_fit$predict() %>%
-      as.numeric()
+    ))
+  } else if (fit_type == "sl" & !is.null(sl_learners)) {
+    sl_fit <- sl_learners$train(sl_task)
+    ipcw_probs <- as.numeric(sl_fit$predict())
   }
 
   # compute the inverse weights as Delta/Pi_n and return this vector

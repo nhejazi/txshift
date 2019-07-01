@@ -101,7 +101,7 @@ txshift <- function(W,
                     max_iter = 1e3,
                     ipcw_fit_args = list(
                       fit_type = c("glm", "sl", "fit_spec"),
-                      sl_lrnrs = NULL
+                      sl_learners = NULL
                     ),
                     g_fit_args = list(
                       fit_type = c("hal", "sl", "fit_spec"),
@@ -109,12 +109,12 @@ txshift <- function(W,
                       grid_type = c("equal_range", "equal_mass"),
                       lambda_seq = exp(seq(-1, -13, length = 300)),
                       use_future = FALSE,
-                      sl_lrnrs_dens = NULL
+                      sl_learners_density = NULL
                     ),
                     Q_fit_args = list(
                       fit_type = c("glm", "sl", "fit_spec"),
                       glm_formula = "Y ~ .",
-                      sl_lrnrs = NULL
+                      sl_learners = NULL
                     ),
                     eif_reg_type = c("hal", "glm"),
                     ipcw_efficiency = TRUE,

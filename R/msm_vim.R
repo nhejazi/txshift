@@ -32,8 +32,8 @@
 #'  each parameter estimate separately.
 #' @param ... Additional arguments to be passed to \code{txshift}.
 #'
-#' @importFrom tibble as_tibble
 #' @importFrom assertthat assert_that
+#' @importFrom data.table as.data.table
 #' @importFrom stats cov qnorm pnorm
 #' @importFrom mvtnorm qmvnorm
 #'
@@ -132,25 +132,24 @@ msm_vimshift <- function(Y,
   pval_msm_param <- 2 * stats::pnorm(-abs(msm_param / msm_se))
 
   # summarize output of individual shift-specific estimates
-  vimshift_out <-
+  vimshift_out <- data.table::as.data.table(
     list(
       delta = delta_grid,
       ci_low = psi_vec + ci_mult[1] * sqrt(diag(stats::cov(eif_mat))),
       psi = psi_vec,
       ci_high = psi_vec + ci_mult[2] * sqrt(diag(stats::cov(eif_mat)))
-    ) %>%
-    tibble::as_tibble()
+    )
+  )
 
   # create summary table for MSM estimates
-  msm_out <- list(
+  msm_out <- data.table::as.data.table(list(
     param = names(msm_se),
     ci_low = ci_msm_param[, 1],
     param_est = msm_param,
     ci_high = ci_msm_param[, 2],
     param_se = msm_se,
     p_value = pval_msm_param
-  ) %>%
-    tibble::as_tibble()
+  ))
 
   # complete output for MSM
   out <- list(

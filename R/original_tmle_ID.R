@@ -16,14 +16,8 @@
 #'
 #' @importFrom stats var
 #'
-#' @author Iván Díaz
-#' @author Nima Hejazi
-#'
-#' @keywords internal
-#'
-#' @export
-#'
 #' @examples
+#' \dontrun{
 #' n <- 100
 #' W <- data.frame(W1 = runif(n), W2 = rbinom(n, 1, 0.7))
 #' A <- rpois(n, lambda = exp(3 + 0.3 * log(W$W1) - 0.2 * exp(W$W1) * W$W2))
@@ -46,13 +40,20 @@
 #'     type = "response"
 #'   )
 #' }
-#' tmle00 <- tmle_shift_orig(
+#' tmle00 <- tmle_shift_original_ID(
 #'   Y = Y, A = A, W = W, Qn = Qn.0, gn = gn.0, delta = 2,
 #'   tol = 1e-4, iter_max = 5, A_val = seq(1, 60, 1)
 #' )
-tmle_shift_orig <- function(Y, A, W,
-                            Qn, gn,
-                            delta, tol = 1e-5, iter_max = 5, A_val) {
+#' }
+#'
+#' @author Iván Díaz
+#' @author Nima Hejazi
+#'
+#' @keywords internal
+#
+tmle_shift_original_ID <- function(Y, A, W,
+                                   Qn, gn,
+                                   delta, tol = 1e-5, iter_max = 5, A_val) {
 
   # interval partition length, A_val assumed equally spaced
   h_int <- A_val[3] - A_val[2]

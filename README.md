@@ -27,28 +27,30 @@ Benkeser](https://www.benkeserstatistics.com/)
 
 ## What’s `txshift`?
 
-The `txshift` R package is designed to compute semiparametric-efficient
-estimates of the counterfactual mean of an outcome under stochastic
-mechanisms for treatment assignment and causal quantities defined
-through such quantities (Díaz and van der Laan 2012). In particular,
-`txshift` implements and builds upon a simplified algorithm for the
-targeted maximum likelihood (TML) estimator of such a counterfactual
-mean, originally proposed in Díaz and van der Laan (2018), and uses the
-same machinery to compute a one-step estimator (Pfanzagl and Wefelmeyer
-1985).
+The `txshift` R package is designed to provide facilities for the
+construction of efficient estimators of a causal parameter defined as
+the counterfactual mean of an outcome under stochastic mechanisms for
+treatment assignment (Díaz and van der Laan 2012). `txshift` implements
+and builds upon a simplified algorithm for the targeted maximum
+likelihood (TML) estimator of such a counterfactual mean, originally
+proposed in Díaz and van der Laan (2018) and makes use of analogous
+machinery to compute an efficient one-step estimator (Pfanzagl and
+Wefelmeyer 1985). `txshift` integrates with the [`sl3` R
+package](https://github.com/tlverse/sl3) (Coyle et al. 2019) to allow
+constructed estimators to leverage machine learning in the estimation of
+nuisance parameters.
 
-For many practical applications (e.g., vaccine efficacy trials), it is
-often the case that the observed data structure is generated under a
-two-phase sampling mechanism (i.e., through the use of a two-stage
-design). In such cases, semiparametric-efficient estimators (both of
-both the TML and one-step varieties) must be augmented to exhibit
-efficiency in spite of the challenges induced by the sampling process.
-An appropriate augmentation procedure was given by Rose and van der Laan
-(2011), who proposed the use of inverse probability of censoring weights
-(IPCW) alongside an augmentation of the efficient influence function.
-`txshift` extends this approach to computing IPC-weighted one-step and
-TML estimators of the counterfactual mean under a stochastic treatment
-regime.
+For many practical applications (e.g., vaccine efficacy trials),
+observed data is often subject to a two-phase sampling mechanism (i.e.,
+through the use of a two-stage design). In such cases, efficient
+estimators (of both varieties) must be augmented to construct unbiased
+estimates of the population-level causal parameter. Based on an
+augmentation procedure given by Rose and van der Laan (2011), inverse
+probability of censoring (IPC) weights may be applied directly to an
+appropriate loss function or to the efficient influence function
+estimating equation. `txshift` extends this approach to compute
+IPC-weighted one-step and TML estimators of the counterfactual mean
+under a stochastic treatment regime.
 
 -----
 
@@ -259,6 +261,15 @@ See below for details:
 ## References
 
 <div id="refs" class="references">
+
+<div id="ref-coyle2019sl3">
+
+Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2019.
+“sl3: Modern Pipelines for Machine Learning and Super Learning.”
+<https://github.com/tlverse/sl3>.
+<https://doi.org/10.5281/zenodo.3251138>.
+
+</div>
 
 <div id="ref-diaz2019causal">
 

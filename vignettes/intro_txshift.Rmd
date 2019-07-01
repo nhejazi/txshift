@@ -107,7 +107,7 @@ delta <- 0.5
 The simplest way to compute the TML estimator for the stochastic treatment
 regime is to fit each of the major constituent parts (nuisance parameters) of
 the estimator with generalized linear models. To do this, one may merely call
-the `tmle_shifttx` function, providing the standard inputs listed below.
+the `txshift` function, providing the standard inputs listed below.
 
 ```{r}
 tmle_hal_shift_1 <- txshift(W = W, A = A, Y = Y, delta = delta,
@@ -150,14 +150,13 @@ summary(tmle_hal_shift_2)
 
 To easily incorporate ensemble machine learning into the estimation procedure,
 we rely on the facilities provided in the [`sl3` R
-package](https://sl3.tlverse.org). For a complete guide on using the `sl3` R
-package, consider consulting https://sl3.tlverse.org, or https://tlverse.org for
-the `tlverse` ecosystem, of which `sl3` is a major part.
+package](https://tlverse.org/sl3) [@coyle2019sl3]. For a complete guide on
+using the `sl3` R package, consider consulting https://tlverse.org/sl3.
 
 ```{r}
 # SL learners to be used for most fits (e.g., IPCW, outcome regression)
 lrnr_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm_fast", "Lrnr_ranger")
-sl_lrn <- Lrnr_sl$new(learners = lrnr_lib, metalearner = Lrnr_nnls$new())
+sl_learner <- Lrnr_sl$new(learners = lrnr_lib, metalearner = Lrnr_nnls$new())
 
 # SL learners for conditional densities to be used for the propensity score fit
 lrnr_dens_lib <- make_learner_stack(list("Lrnr_condensier", nbins = 35,
@@ -173,13 +172,13 @@ lrnr_dens_lib <- make_learner_stack(list("Lrnr_condensier", nbins = 35,
                                           bin_method = "equal.len",
                                           pool = FALSE)
                                    )
-sl_lrn_dens <- Lrnr_sl$new(learners = lrnr_dens_lib,
-                           metalearner = Lrnr_solnp_density$new())
+sl_learner_density <- Lrnr_sl$new(learners = lrnr_dens_lib,
+                                  metalearner = Lrnr_solnp_density$new())
 ```
 
 ### Estimating Stochastic Interventions Effects with Stacked Regressions
 
-Using the framework provided by the [`sl3` package](https://sl3.tlverse.org),
+Using the framework provided by the [`sl3` package](https://tlverse.org/sl3),
 the nuisance parameters of the TML estimator may be fit with ensemble learning,
 using the cross-validation framework of the Super Learner algorithm of
 @vdl2007super.
@@ -188,9 +187,10 @@ using the cross-validation framework of the Super Learner algorithm of
 tmle_sl_shift_1 <- txshift(W = W, A = A, Y = Y, delta = delta,
                            fluc_method = "standard",
                            g_fit_args = list(fit_type = "sl",
-                                             sl_lrnrs = sl_lrn_dens),
+                                             sl_learners_density =
+                                               sl_learner_density),
                            Q_fit_args = list(fit_type = "sl",
-                                             sl_lrnrs = sl_lrn)
+                                             sl_learners = sl_learner)
                           )
 summary(tmle_sl_shift_1)
 ```
@@ -203,9 +203,10 @@ than using such an auxiliary covariate directly in the regression procedure:
 tmle_sl_shift_2 <- txshift(W = W, A = A, Y = Y, delta = delta,
                            fluc_method = "weighted",
                            g_fit_args = list(fit_type = "sl",
-                                             sl_lrnrs = sl_lrn_dens),
+                                             sl_learners_density =
+                                               sl_learner_density),
                            Q_fit_args = list(fit_type = "sl",
-                                             sl_lrnrs = sl_lrn)
+                                             sl_learners = sl_learner)
                           )
 summary(tmle_sl_shift_2)
 ```

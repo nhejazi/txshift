@@ -5,7 +5,7 @@
 \title{Estimate the Treatment Mechanism (Propensity Score)}
 \usage{
 est_g(A, W, delta = 0, ipc_weights = rep(1, length(A)),
-  fit_type = c("sl", "hal"), sl_lrnrs_dens = NULL,
+  fit_type = c("sl", "hal"), sl_learners_density = NULL,
   std_args = list(n_bins = c(10, 25), grid_type = c("equal_range",
   "equal_mass"), lambda_seq = exp(seq(-1, -13, length = 300)), use_future =
   FALSE))
@@ -25,8 +25,8 @@ produced by the internal procedure to estimate the censoring mechanism
 \item{fit_type}{A \code{character} specifying whether to use Super Learner or
 the Highly Adaptive Lasso to estimate the conditional treatment density.}
 
-\item{sl_lrnrs_dens}{An object containing a set of instantiated learners from
-the \code{sl3} package, to be used in fitting an ensemble model.}
+\item{sl_learners_density}{Object containing a set of instantiated learners
+from the \code{sl3} package, to be used in fitting an ensemble model.}
 
 \item{std_args}{A \code{list} of arguments to be passed to \code{haldensify}
 from the \code{haldensify} package when the argument \code{fit_type} is set

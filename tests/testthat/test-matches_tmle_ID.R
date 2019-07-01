@@ -1,6 +1,5 @@
 context("tmle_shift_orig agrees with Diaz and van der Laan (2012)")
-library(tibble)
-library(dplyr)
+library(data.table)
 set.seed(73294)
 
 ################################################################################
@@ -103,7 +102,7 @@ tmle_shift_2012 <- tmle.shift(
 )
 tmle_2012_psi <- as.numeric(tmle_shift_2012[1])
 
-tmle_shift_new <- tmle_shift_orig(
+tmle_shift_new <- txshift:::tmle_shift_original_ID(
   Y = Y, A = A, W = W, Qn = Qn.0, gn = gn.0,
   delta = delta_shift, tol = 1e-4, iter_max = 5,
   A_val = seq(1, 60, 1)
@@ -117,23 +116,23 @@ test_that("Revised tmle_shift procedure matches code from 2012 manuscript", {
 
 # run the new txshift implementation of TMLE
 # NOTE: should use true density like Ivan does since condensier misspecified
-gn_spec_fitted <-
+gn_spec_fitted <- as.data.table(
   lapply(
     c(-delta_shift, 0, delta_shift, 2 * delta_shift),
     function(shift_value) {
       gn_out <- gn.0(A = A + shift_value, W = W)
     }
-  ) %>%
-  bind_cols()
-colnames(gn_spec_fitted) <- c("downshift", "noshift", "upshift", "upupshift")
+  )
+)
+setnames(gn_spec_fitted, c("downshift", "noshift", "upshift", "upupshift"))
 
 # NOTE: should also use true Q for good measure (truth includes interactions)
-Qn_spec_fitted <-
+Qn_spec_fitted <- as.data.table(
   lapply(c(0, delta_shift), function(shift_value) {
     Qn_out <- Qn.0(A = A + shift_value, W = W)
-  }) %>%
-  bind_cols()
-colnames(Qn_spec_fitted) <- c("noshift", "upshift")
+  })
+)
+setnames(Qn_spec_fitted, c("noshift", "upshift"))
 
 # fit TMLE
 tmle_txshift <- txshift(

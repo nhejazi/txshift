@@ -1,3 +1,5 @@
+utils::globalVariables(c("..v_names"))
+
 #' Compute the Shift Parameter Estimate and the Efficient Influence Function
 #'
 #' Computes the value of the treatment shift parameter as well as statistical
@@ -30,7 +32,6 @@
 #'  function has converged.
 #'
 #' @importFrom stats var
-#' @importFrom dplyr if_else
 #'
 #' @keywords internal
 #'
@@ -149,7 +150,6 @@ eif <- function(Y,
 #' @importFrom stats var glm qlogis fitted predict as.formula
 #' @importFrom data.table as.data.table set copy
 #' @importFrom assertthat assert_that
-#' @importFrom dplyr "%>%" select
 #' @importFrom hal9001 fit_hal
 #'
 #' @keywords internal
@@ -170,6 +170,9 @@ ipcw_eif_update <- function(data_in,
                             fluc_method = NULL,
                             eif_tol = 1e-9,
                             eif_reg_type = c("hal", "glm")) {
+  # get names of columns in sampling mechanism
+  v_names <- names(V)
+
   # perform submodel fluctuation if computing TMLE
   if (estimator == "tmle" & !is.null(fluc_method)) {
     # fit logistic regression for submodel fluctuation with updated weights
@@ -204,19 +207,14 @@ ipcw_eif_update <- function(data_in,
   #       initial fluctuation model and updating the EIF accordingly
 
   # organize EIF data for regression
-  eif_data <- data_in %>%
-    data.table::copy() %>%
-    dplyr::select(names(V)) %>%
-    data.table::as.data.table() %>%
-    data.table::set(j = "eif", value = eif_eval$eif_unweighted[C == 1])
+  eif_data <- data.table::copy(data_in)
+  eif_data <- eif_data[, ..v_names]
+  data.table::set(eif_data, j = "eif", value = eif_eval$eif_unweighted[C == 1])
 
   # estimate the EIF nuisance regression using HAL
   if (eif_reg_type == "hal") {
     # if flexibility specified, just fit a HAL regression
-    eif_reg_mat <- eif_data %>%
-      data.table::copy() %>%
-      dplyr::select(names(V)) %>%
-      as.matrix()
+    eif_reg_mat <- as.matrix(data.table::copy(eif_data)[, ..v_names])
     colnames(eif_reg_mat) <- NULL
 
     # fit HAL with somewhat customized arguments
