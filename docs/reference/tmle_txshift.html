@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Compute Targeted Minimum Loss-Based Estimate of Counterfactual Mean Under
-Shifted Treatment — tmle_txshift • txshift</title>
+Stochastically Shifted Treatment — tmle_txshift • txshift</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -17,7 +17,8 @@ Shifted Treatment — tmle_txshift • txshift</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
@@ -32,7 +33,7 @@ Shifted Treatment — tmle_txshift • txshift</title>
 
 
 <meta property="og:title" content="Compute Targeted Minimum Loss-Based Estimate of Counterfactual Mean Under
-Shifted Treatment — tmle_txshift" />
+Stochastically Shifted Treatment — tmle_txshift" />
 
 <meta property="og:description" content="This is the primary user-facing wrapper function to be used in invoking the
 procedure to obtain targeted maximum likelihood / targeted minimum loss-based
@@ -68,7 +69,7 @@ estimates (TMLE) of the causal parameter discussed in Díaz and van der Laan
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.6</span>
       </span>
     </div>
 
@@ -76,7 +77,7 @@ estimates (TMLE) of the causal parameter discussed in Díaz and van der Laan
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -106,7 +107,7 @@ estimates (TMLE) of the causal parameter discussed in Díaz and van der Laan
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/nhejazi/txshift">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -123,7 +124,7 @@ estimates (TMLE) of the causal parameter discussed in Díaz and van der Laan
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Compute Targeted Minimum Loss-Based Estimate of Counterfactual Mean Under
-Shifted Treatment</h1>
+Stochastically Shifted Treatment</h1>
     <small class="dont-index">Source: <a href='https://github.com/nhejazi/txshift/blob/master/R/tmle_txshift.R'><code>R/tmle_txshift.R</code></a></small>
     <div class="hidden name"><code>tmle_txshift.Rd</code></div>
     </div>
@@ -137,11 +138,10 @@ estimates (TMLE) of the causal parameter discussed in Díaz and van der Laan
     
     </div>
 
-    <pre class="usage"><span class='fu'>tmle_txshift</span>(<span class='no'>data_internal</span>, <span class='kw'>C</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>nrow</a></span>(<span class='no'>data_internal</span>)), <span class='kw'>V</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='no'>delta</span>, <span class='no'>cens_weights</span>, <span class='no'>cens_weights_norm</span>, <span class='no'>ipcw_estim</span>, <span class='no'>Qn_estim</span>, <span class='no'>Hn_estim</span>,
-  <span class='kw'>fluc_method</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"standard"</span>, <span class='st'>"weighted"</span>),
-  <span class='kw'>eif_tol</span> <span class='kw'>=</span> <span class='fl'>1</span>/<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>nrow</a></span>(<span class='no'>data_internal</span>), <span class='kw'>max_iter</span> <span class='kw'>=</span> <span class='fl'>10000</span>,
-  <span class='kw'>eif_reg_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"hal"</span>, <span class='st'>"glm"</span>), <span class='no'>ipcw_fit_args</span>, <span class='no'>ipcw_fit_type</span>,
+    <pre class="usage"><span class='fu'>tmle_txshift</span>(<span class='no'>data_internal</span>, <span class='kw'>C</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>data_internal</span>)), <span class='kw'>V</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='no'>delta</span>, <span class='no'>ipcw_estim</span>, <span class='no'>Qn_estim</span>, <span class='no'>Hn_estim</span>, <span class='kw'>fluc_method</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"standard"</span>,
+  <span class='st'>"weighted"</span>), <span class='kw'>eif_tol</span> <span class='kw'>=</span> <span class='fl'>1</span>/<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>data_internal</span>), <span class='kw'>max_iter</span> <span class='kw'>=</span> <span class='fl'>10000</span>,
+  <span class='kw'>eif_reg_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"hal"</span>, <span class='st'>"glm"</span>), <span class='no'>ipcw_fit_args</span>,
   <span class='kw'>ipcw_efficiency</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -156,11 +156,8 @@ the targeted maximum likelihood estimator.</p></td>
     <tr>
       <th>C</th>
       <td><p>A <code>numeric</code> binary vector giving information on whether a given
-observation was subject to censoring. This is used to compute an IPCW-TMLE
-in cases where two-stage sampling is performed. The default assumes that no
-censoring was present (i.e., a two-stage design was NOT used). N.B., this is
-equivalent to the term <!-- %\Delta in the notation used in the original Rose and -->
-van der Laan manuscript that introduced/formulated IPCW-TML estimators.</p></td>
+observation was subject to censoring, used to compute an IPCW-TMLE in cases
+where two-stage sampling is performed. Default assumes no censoring.</p></td>
     </tr>
     <tr>
       <th>V</th>
@@ -176,18 +173,6 @@ have played a role in defining the sampling/censoring mechanism (C).</p></td>
       <td><p>A <code>numeric</code> value indicating the shift in the treatment to
 be used in defining the target parameter. This is defined with respect to
 the scale of the treatment (A).</p></td>
-    </tr>
-    <tr>
-      <th>cens_weights</th>
-      <td><p>A <code>numeric</code> vector that gives inverse probability of
-censoring weights for each observation. These are generated by invoking the
-routines for estimating the censoring mechanism.</p></td>
-    </tr>
-    <tr>
-      <th>cens_weights_norm</th>
-      <td><p>A normalized version of the preceding argument
-<code>cens_weights</code>, wherein the weights are scaled such that they sum to
-the unit value.</p></td>
     </tr>
     <tr>
       <th>ipcw_estim</th>
@@ -216,8 +201,8 @@ the TMLE computation. The choices are "standard" and "weighted".</p></td>
     <tr>
       <th>eif_tol</th>
       <td><p>A <code>numeric</code> giving the convergence criterion for the TML
-estimator. This is the the maximum mean of the efficient influence function
-(EIF) to be used in declaring convergence (theoretically, should be zero).</p></td>
+estimator. This is the maximum mean of the efficient influence function to
+be used in declaring convergence.</p></td>
     </tr>
     <tr>
       <th>max_iter</th>
@@ -245,19 +230,11 @@ produced by <code>est_ipcw</code>. NOTE THAT this first argument is not passed t
 <code>est_ipcw</code>.</p></td>
     </tr>
     <tr>
-      <th>ipcw_fit_type</th>
-      <td><p>A <code>character</code> providing the type of regression to
-be fit in estimating the relationship between the variables composing the
-censoring mechanism and the efficient influence function. Choose "glm" for
-generalized linear models or "sl" for use of the Super Learner algorithm. If
-selecting the latter, the final argument <code>sl_lrnrs</code> must be provided.</p></td>
-    </tr>
-    <tr>
       <th>ipcw_efficiency</th>
       <td><p>Whether to invoke an augmentation of the IPCW-TMLE
 procedure that performs an iterative process to ensure efficiency of the
-resulting estimate. The default is <code>TRUE</code>; only set to <code>FALSE</code> if
-possible inefficiency of the IPCW-TMLE is not a concern.</p></td>
+resulting estimate. The default is <code>TRUE</code>; set to <code>FALSE</code> to use
+an IPC-weighted loss rather than the IPC-augment influence function.</p></td>
     </tr>
     </table>
     
@@ -285,7 +262,7 @@ possible inefficiency of the IPCW-TMLE is not a concern.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.9000.</p>
 </div>
       </footer>
    </div>

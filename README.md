@@ -79,7 +79,10 @@ W <- replicate(2, rbinom(n_obs, 1, 0.5))
 A <- rnorm(n_obs, mean = 2 * W, sd = 1)
 Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
 
-# fit the TMLE
+# now, let's introduce a a two-stage sampling process
+C <- rbinom(n_obs, 1, plogis(W + Y))
+
+# fit the full-data TMLE (ignoring two-phase sampling)
 tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                 estimator = "tmle",
                 g_fit_args = list(fit_type = "hal",
@@ -91,11 +94,11 @@ tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                )
 summary(tmle)
 #>     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator 
-#>     0.7474     0.7783     0.8063      2e-04 8.1032e-10       tmle 
+#>     0.7474     0.7782     0.8062      2e-04 6.7562e-10       tmle 
 #>     n_iter 
 #>          0
 
-# fit a one-step estimator for comparison
+# fit a full-data one-step estimator for comparison (again, no sampling)
 os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
               estimator = "onestep",
               g_fit_args = list(fit_type = "hal",
@@ -107,14 +110,11 @@ os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
              )
 summary(os)
 #>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-#>      0.7472      0.7779      0.8059       2e-04 -1.6543e-03     onestep 
+#>      0.7471      0.7779      0.8059       2e-04 -1.6925e-03     onestep 
 #>      n_iter 
 #>           0
 
-# now, let's introduce a censoring process (for two-stage sampling)
-C <- rbinom(n_obs, 1, plogis(W + Y))
-
-# fit an IPCW-TMLE to account for this censoring process:
+# fit an IPCW-TMLE to account for the two-phase sampling process
 ipcw_tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                      C = C, V = c("W", "Y"),
                      estimator = "tmle",
@@ -131,15 +131,14 @@ ipcw_tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                     )
 summary(ipcw_tmle)
 #>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-#>      0.7566      0.7921      0.8237       3e-04 -4.7687e-06        tmle 
+#>      0.7435      0.7765      0.8063       3e-04 -4.0325e-05        tmle 
 #>      n_iter 
 #>           1
 
-# compare with an IPCW-agumented one-step estimator under censoring:
+# compare with an IPCW-agumented one-step estimator under two-phase sampling
 ipcw_os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                    C = C, V = c("W", "Y"),
                    estimator = "onestep",
-                   ipcw_efficiency = FALSE,
                    ipcw_fit_args = list(fit_type = "glm"),
                    g_fit_args = list(fit_type = "hal",
                                      n_bins = 5,
@@ -151,10 +150,10 @@ ipcw_os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                    eif_reg_type = "glm"
                   )
 summary(ipcw_os)
-#>     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator 
-#>     0.7481      0.794     0.8334      5e-04 1.0652e-02    onestep 
-#>     n_iter 
-#>          0
+#>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
+#>      0.7427      0.7758      0.8058       3e-04 -2.0727e-03     onestep 
+#>      n_iter 
+#>           0
 ```
 
 -----
@@ -186,7 +185,7 @@ After using the `txshift` R package, please cite the following:
         Stochastic Interventions in {R}},
       year  = {2019},
       url = {https://github.com/nhejazi/txshift},
-      note = {R package version 0.2.4}
+      note = {R package version 0.2.6}
     }
 ```
 
@@ -296,8 +295,8 @@ Springer Science & Business Media.
 <div id="ref-pfanzagl1985contributions">
 
 Pfanzagl, J, and W Wefelmeyer. 1985. “Contributions to a General
-Asymptotic Statistical Theory.” *Statistics & Risk Modeling* 3 (3-4).
-OLDENBOURG WISSENSCHAFTSVERLAG: 379–88.
+Asymptotic Statistical Theory.” *Statistics & Risk Modeling* 3 (3-4):
+379–88.
 
 </div>
 

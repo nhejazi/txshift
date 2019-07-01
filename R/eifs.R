@@ -219,8 +219,7 @@ ipcw_eif_update <- function(data_in,
       as.matrix()
     colnames(eif_reg_mat) <- NULL
 
-    # fit HAL with custom arguments to get results similar to halplus
-    # NOTE: this produces a warning that could be leading to serious issues...
+    # fit HAL with somewhat customized arguments
     eif_mod <- hal9001::fit_hal(
       X = eif_reg_mat,
       Y = as.numeric(eif_data$eif),
@@ -239,7 +238,6 @@ ipcw_eif_update <- function(data_in,
       new_data = eif_pred_mat
     ))
   } else if (eif_reg_type == "glm") {
-    # NOTE: change of formula to examine interactions (for debugging)
     eif_mod <- stats::glm(
       stats::as.formula("eif ~ ."),
       data = eif_data
