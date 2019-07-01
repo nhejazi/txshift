@@ -48,19 +48,19 @@ est_g <- function(A,
 
   # need a data set with the treatment stochastically shifted DOWNWARDS A-delta
   data_in_downshifted <- data.table::copy(data_in)
-  data.table::set(data_in_downshifted, j = "A", value = tx_shift(
+  data.table::set(data_in_downshifted, j = "A", value = shift_additive(
     A = data_in$A, delta = -delta
   ))
 
   # need a data set with the treatment stochastically shifted UPWARDS A+delta
   data_in_upshifted <- data.table::copy(data_in)
-  data.table::set(data_in_upshifted, j = "A", value = tx_shift(
+  data.table::set(data_in_upshifted, j = "A", value = shift_additive(
     A = data_in$A, delta = delta
   ))
 
   # need a data set with the treatment stochastically shifted UPWARDS A+2delta
   data_in_upupshifted <- data.table::copy(data_in)
-  data.table::set(data_in_upupshifted, j = "A", value = tx_shift(
+  data.table::set(data_in_upupshifted, j = "A", value = shift_additive(
     A = data_in$A, delta = 2 * delta
   ))
 
@@ -210,7 +210,7 @@ est_g <- function(A,
 #' @param W A \code{numeric} matrix of observed baseline covariate values.
 #' @param delta A \code{numeric} indicating the magnitude of the shift to be
 #'  computed for the treatment \code{A}. This is passed directly to the internal
-#'  function \code{tx_shift} and is currently limited to additive shifts.
+#'  function \code{shift_additive} and is currently limited to additive shifts.
 #' @param ipc_weights A \code{numeric} vector of observation-level weights, as
 #'  produced by the internal procedure to estimate the censoring mechanism
 #'  \code{estimate-ipc_weights}.
@@ -258,7 +258,7 @@ est_Q <- function(Y,
 
   # need a data set with the treatment stochastically shifted UPWARDS...
   data_in_shifted <- data.table::copy(data_in)
-  data.table::set(data_in_shifted, j = "A", value = tx_shift(
+  data.table::set(data_in_shifted, j = "A", value = shift_additive(
     A = data_in$A, delta = delta
   ))
 
