@@ -23,8 +23,10 @@
 #'  the scale of the treatment (A).
 #' @param estimator The type of estimator to be fit, either \code{"tmle"} for
 #'  targeted maximum likelihood or \code{"onestep"} for a one-step estimator.
-#' @param fluc_method The method to be used in submodel fluctuation step of
-#'  the TMLE computation. The choices are "standard" and "weighted".
+#' @param fluctuation The method to be used in the submodel fluctuation step
+#'  (targeting step) to compute the TML estimator. The choices are "standard"
+#'  and "weighted" for where to place the auxiliary covariate in the logistic
+#'  tilting regression.
 #' @param eif_tol A \code{numeric} giving the convergence criterion for the TML
 #'  estimator. This is the the maximum mean of the efficient influence function
 #'  (EIF) to be used in declaring convergence.
@@ -96,7 +98,7 @@ txshift <- function(W,
                     V = NULL,
                     delta = 0,
                     estimator = c("tmle", "onestep"),
-                    fluc_method = c("standard", "weighted"),
+                    fluctuation = c("standard", "weighted"),
                     eif_tol = 1 / length(Y),
                     max_iter = 1e3,
                     ipcw_fit_args = list(
@@ -124,7 +126,7 @@ txshift <- function(W,
   # check arguments and set up some objects for programmatic convenience
   call <- match.call(expand.dots = TRUE)
   estimator <- match.arg(estimator)
-  fluc_method <- match.arg(fluc_method)
+  fluctuation <- match.arg(fluctuation)
   eif_reg_type <- match.arg(eif_reg_type)
 
   # dissociate fit type from other arguments to simplify passing to do.call
@@ -266,7 +268,7 @@ txshift <- function(W,
       ipcw_estim = ipcw_estim,
       Qn_estim = Qn_estim,
       Hn_estim = Hn_estim,
-      fluc_method = fluc_method,
+      fluctuation = fluctuation,
       eif_tol = eif_tol,
       max_iter = max_iter,
       eif_reg_type = eif_reg_type,

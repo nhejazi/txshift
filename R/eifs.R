@@ -134,9 +134,9 @@ eif <- function(Y,
 #' @param estimator The type of estimator to be fit, either \code{"tmle"} for
 #'  targeted maximum likelihood estimation or \code{"onestep"} for a one-step
 #'  or augmented inverse probability weighted (AIPW) estimator.
-#' @param fluc_method A \code{character} giving the type of regression to be
+#' @param fluctuation A \code{character} giving the type of regression to be
 #'  used in traversing the fluctuation submodel. The choices are "weighted" and
-#'  "standard" -- please consult the literature for details on the differences.
+#'  "standard".
 #' @param eif_tol A \code{numeric} providing the largest value to be tolerated
 #'  as the mean of the efficient influence function.
 #' @param eif_reg_type Whether a flexible nonparametric function ought to be
@@ -167,23 +167,23 @@ ipcw_eif_update <- function(data_in,
                             Qn_estim,
                             Hn_estim,
                             estimator = c("tmle", "onestep"),
-                            fluc_method = NULL,
+                            fluctuation = NULL,
                             eif_tol = 1e-9,
                             eif_reg_type = c("hal", "glm")) {
   # get names of columns in sampling mechanism
   v_names <- names(V)
 
   # perform submodel fluctuation if computing TMLE
-  if (estimator == "tmle" & !is.null(fluc_method)) {
+  if (estimator == "tmle" & !is.null(fluctuation)) {
     # fit logistic regression for submodel fluctuation with updated weights
     fitted_fluc_mod <- fit_fluctuation(
       Y = data_in$Y,
       Qn_scaled = Qn_estim,
       Hn = Hn_estim,
       ipc_weights = ipc_weights[C == 1],
-      method = fluc_method
+      method = fluctuation
     )
-  } else if (estimator == "onestep" & is.null(fluc_method)) {
+  } else if (estimator == "onestep" & is.null(fluctuation)) {
     fitted_fluc_mod <- NULL
   }
 
@@ -291,7 +291,7 @@ ipcw_eif_update <- function(data_in,
       Qn_scaled = Qn_estim,
       Hn = Hn_estim,
       ipc_weights = ipc_weights[C == 1],
-      method = fluc_method
+      method = fluctuation
     )
 
     # now, update EIF after re-fitting fluctuation with updated weights

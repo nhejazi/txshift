@@ -6,7 +6,7 @@
 \usage{
 ipcw_eif_update(data_in, C, V, ipc_mech, ipc_weights, ipc_weights_norm,
   Qn_estim, Hn_estim, estimator = c("tmle", "onestep"),
-  fluc_method = NULL, eif_tol = 1e-09, eif_reg_type = c("hal",
+  fluctuation = NULL, eif_tol = 1e-09, eif_reg_type = c("hal",
   "glm"))
 }
 \arguments{
@@ -46,9 +46,9 @@ by invoking the internal function \code{est_Hn}.}
 targeted maximum likelihood estimation or \code{"onestep"} for a one-step
 or augmented inverse probability weighted (AIPW) estimator.}
 
-\item{fluc_method}{A \code{character} giving the type of regression to be
+\item{fluctuation}{A \code{character} giving the type of regression to be
 used in traversing the fluctuation submodel. The choices are "weighted" and
-"standard" -- please consult the literature for details on the differences.}
+"standard".}
 
 \item{eif_tol}{A \code{numeric} providing the largest value to be tolerated
 as the mean of the efficient influence function.}

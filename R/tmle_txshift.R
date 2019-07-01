@@ -31,8 +31,10 @@
 #'  covariate, constructed from the treatment mechanism and required for
 #'  targeted minimum loss-based estimation. This object object should be passed
 #'  in after being constructed by a call to the internal function \code{est_Hn}.
-#' @param fluc_method The method to be used in submodel fluctuation step of
-#'  the TMLE computation. The choices are "standard" and "weighted".
+#' @param fluctuation The method to be used in the submodel fluctuation step
+#'  (targeting step) to compute the TML estimator. The choices are "standard"
+#'  and "weighted" for where to place the auxiliary covariate in the logistic
+#'  tilting regression.
 #' @param eif_tol A \code{numeric} giving the convergence criterion for the TML
 #'  estimator. This is the maximum mean of the efficient influence function to
 #'  be used in declaring convergence.
@@ -72,7 +74,7 @@ tmle_txshift <- function(data_internal,
                          ipcw_estim,
                          Qn_estim,
                          Hn_estim,
-                         fluc_method = c("standard", "weighted"),
+                         fluctuation = c("standard", "weighted"),
                          eif_tol = 1 / nrow(data_internal),
                          max_iter = 1e4,
                          eif_reg_type = c("hal", "glm"),
@@ -111,7 +113,7 @@ tmle_txshift <- function(data_internal,
         Qn_estim = Qn_estim_updated,
         Hn_estim = Hn_estim, # N.B., g_n never gets updated in this procedure
         estimator = "tmle",
-        fluc_method = fluc_method,
+        fluctuation = fluctuation,
         eif_tol = eif_tol,
         eif_reg_type = eif_reg_type
       )
@@ -168,7 +170,7 @@ tmle_txshift <- function(data_internal,
       Qn_scaled = Qn_estim,
       Hn = Hn_estim,
       ipc_weights = cens_weights[C == 1],
-      method = fluc_method
+      method = fluctuation
     )
 
     # compute TML estimate and EIF for the treatment shift parameter

@@ -41,7 +41,9 @@ gn_spec_fitted <- as.data.table(
     c(-delta_shift, 0, delta_shift, 2 * delta_shift),
     function(delta) {
       txshift:::shift_additive(A = A, delta = delta)
-    }))
+    }
+  )
+)
 setnames(gn_spec_fitted, c("downshift", "noshift", "upshift", "upupshift"))
 
 test_that("Simple shifting function shifts downward by magnitude delta", {

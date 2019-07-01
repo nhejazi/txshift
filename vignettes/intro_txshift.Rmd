@@ -111,7 +111,7 @@ the `txshift` function, providing the standard inputs listed below.
 
 ```{r}
 tmle_hal_shift_1 <- txshift(W = W, A = A, Y = Y, delta = delta,
-                            fluc_method = "standard",
+                            fluctuation = "standard",
                             g_fit_args = list(fit_type = "hal",
                                               n_bins = 5,
                                               grid_type = "equal_mass",
@@ -133,7 +133,7 @@ such a covariate directly in the submodel regression fit.
 
 ```{r}
 tmle_hal_shift_2 <- txshift(W = W, A = A, Y = Y, delta = delta,
-                            fluc_method = "weighted",
+                            fluctuation = "weighted",
                             g_fit_args = list(fit_type = "hal",
                                               n_bins = 5,
                                               grid_type = "equal_mass",
@@ -185,7 +185,7 @@ using the cross-validation framework of the Super Learner algorithm of
 
 ```{r}
 tmle_sl_shift_1 <- txshift(W = W, A = A, Y = Y, delta = delta,
-                           fluc_method = "standard",
+                           fluctuation = "standard",
                            g_fit_args = list(fit_type = "sl",
                                              sl_learners_density =
                                                sl_learner_density),
@@ -201,7 +201,7 @@ than using such an auxiliary covariate directly in the regression procedure:
 
 ```{r}
 tmle_sl_shift_2 <- txshift(W = W, A = A, Y = Y, delta = delta,
-                           fluc_method = "weighted",
+                           fluctuation = "weighted",
                            g_fit_args = list(fit_type = "sl",
                                              sl_learners_density =
                                                sl_learner_density),
@@ -288,7 +288,7 @@ setnames(Qn_out, c("noshift", "upshift"))
 
 # invoke the wrapper function only to apply the targeting step
 tmle_shift_spec <- txshift(W = W, A = A, Y = Y, delta = delta,
-                           fluc_method = "standard",
+                           fluctuation = "standard",
                            ipcw_fit_args = NULL,
                            g_fit_args = list(fit_type = "fit_spec"),
                            Q_fit_args = list(fit_type = "fit_spec"),

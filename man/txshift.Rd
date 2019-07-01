@@ -5,7 +5,7 @@
 \title{Estimate Counterfactual Mean Under Stochastically Shifted Treatment}
 \usage{
 txshift(W, A, Y, C = rep(1, length(Y)), V = NULL, delta = 0,
-  estimator = c("tmle", "onestep"), fluc_method = c("standard",
+  estimator = c("tmle", "onestep"), fluctuation = c("standard",
   "weighted"), eif_tol = 1/length(Y), max_iter = 1000,
   ipcw_fit_args = list(fit_type = c("glm", "sl", "fit_spec"), sl_learners
   = NULL), g_fit_args = list(fit_type = c("hal", "sl", "fit_spec"),
@@ -47,8 +47,10 @@ the scale of the treatment (A).}
 \item{estimator}{The type of estimator to be fit, either \code{"tmle"} for
 targeted maximum likelihood or \code{"onestep"} for a one-step estimator.}
 
-\item{fluc_method}{The method to be used in submodel fluctuation step of
-the TMLE computation. The choices are "standard" and "weighted".}
+\item{fluctuation}{The method to be used in the submodel fluctuation step
+(targeting step) to compute the TML estimator. The choices are "standard"
+and "weighted" for where to place the auxiliary covariate in the logistic
+tilting regression.}
 
 \item{eif_tol}{A \code{numeric} giving the convergence criterion for the TML
 estimator. This is the the maximum mean of the efficient influence function

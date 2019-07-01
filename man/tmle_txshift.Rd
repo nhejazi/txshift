@@ -6,7 +6,7 @@
 Stochastically Shifted Treatment}
 \usage{
 tmle_txshift(data_internal, C = rep(1, nrow(data_internal)), V = NULL,
-  delta, ipcw_estim, Qn_estim, Hn_estim, fluc_method = c("standard",
+  delta, ipcw_estim, Qn_estim, Hn_estim, fluctuation = c("standard",
   "weighted"), eif_tol = 1/nrow(data_internal), max_iter = 10000,
   eif_reg_type = c("hal", "glm"), ipcw_fit_args,
   ipcw_efficiency = TRUE)
@@ -44,8 +44,10 @@ covariate, constructed from the treatment mechanism and required for
 targeted minimum loss-based estimation. This object object should be passed
 in after being constructed by a call to the internal function \code{est_Hn}.}
 
-\item{fluc_method}{The method to be used in submodel fluctuation step of
-the TMLE computation. The choices are "standard" and "weighted".}
+\item{fluctuation}{The method to be used in the submodel fluctuation step
+(targeting step) to compute the TML estimator. The choices are "standard"
+and "weighted" for where to place the auxiliary covariate in the logistic
+tilting regression.}
 
 \item{eif_tol}{A \code{numeric} giving the convergence criterion for the TML
 estimator. This is the maximum mean of the efficient influence function to
