@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Iterative Fluctuation — f_iter • txshift</title>
+<title>Simple Additive Modified Treatment Policy — shift_additive • txshift</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -31,9 +31,9 @@
 
 
 
-<meta property="og:title" content="Iterative Fluctuation — f_iter" />
+<meta property="og:title" content="Simple Additive Modified Treatment Policy — shift_additive" />
 
-<meta property="og:description" content="Iterative Fluctuation" />
+<meta property="og:description" content="Simple Additive Modified Treatment Policy" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -118,72 +118,34 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Iterative Fluctuation</h1>
-    <small class="dont-index">Source: <a href='https://github.com/nhejazi/txshift/blob/master/R/original_tmle_ID.R'><code>R/original_tmle_ID.R</code></a></small>
-    <div class="hidden name"><code>f_iter.Rd</code></div>
+    <h1>Simple Additive Modified Treatment Policy</h1>
+    <small class="dont-index">Source: <a href='https://github.com/nhejazi/txshift/blob/master/R/shift_methods.R'><code>R/shift_methods.R</code></a></small>
+    <div class="hidden name"><code>shift_additive.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Iterative Fluctuation</p>
+    <p>Simple Additive Modified Treatment Policy</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>f_iter</span>(<span class='no'>Qn</span>, <span class='no'>gn</span>, <span class='kw'>gn0d</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>prev_sum</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>first</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='no'>h_int</span>, <span class='no'>Y</span>, <span class='no'>A</span>,
-  <span class='no'>W</span>, <span class='no'>delta</span>, <span class='no'>A_val</span>)</pre>
+    <pre class="usage"><span class='fu'>shift_additive</span>(<span class='no'>A</span>, <span class='kw'>W</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>delta</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>Qn</th>
-      <td><p>Function to compute the outcome regression: Q(A, W) = E(Y | A, W).</p></td>
-    </tr>
-    <tr>
-      <th>gn</th>
-      <td><p>Function to compute the propensity score: g(A, W) = density(A | W).</p></td>
-    </tr>
-    <tr>
-      <th>gn0d</th>
-      <td><p>A <code>Numeric</code> computed for the propensity score (gn) from the
-first iteration only.</p></td>
-    </tr>
-    <tr>
-      <th>prev_sum</th>
-      <td><p>The sum computed from this fluctuation step in the previous
-iteration.</p></td>
-    </tr>
-    <tr>
-      <th>first</th>
-      <td><p>A <code>logical</code> for whether this is the first iteration of the
-iterative fluctutation step.</p></td>
-    </tr>
-    <tr>
-      <th>h_int</th>
-      <td><p>???</p></td>
-    </tr>
-    <tr>
-      <th>Y</th>
-      <td><p>A <code>numeric</code> vector of observed outcomes.</p></td>
-    </tr>
-    <tr>
       <th>A</th>
-      <td><p>A <code>numeric</code> vector of observed treatments.</p></td>
+      <td><p>A <code>numeric</code> vector of observed treatment values.</p></td>
     </tr>
     <tr>
       <th>W</th>
-      <td><p>A <code>matrix</code> or <code>data.frame</code> of baseline covariates.</p></td>
+      <td><p>A <code>numeric</code> matrix of observed baseline covariate values.</p></td>
     </tr>
     <tr>
       <th>delta</th>
-      <td><p>A <code>numeric</code> for the shift to be placed on the treatment of
-interest (i.e., the effect of shifting treatment <code>A</code> by delta units).</p></td>
-    </tr>
-    <tr>
-      <th>A_val</th>
-      <td><p>A <code>vector</code> of <code>numeric</code> values for the points in the
-range of the treatment <code>A</code> to approximate integrals by Riemmann sums.
-Note that these must be equally spaced along a grid.</p></td>
+      <td><p>A <code>numeric</code> indicating the magnitude of the shift to be
+computed for the treatment <code>A</code>.</p></td>
     </tr>
     </table>
     
@@ -195,9 +157,6 @@ Note that these must be equally spaced along a grid.</p></td>
       <li><a href="#arguments">Arguments</a></li>
                 </ul>
 
-    <h2>Author</h2>
-    <p>Iván Díaz</p>
-<p>Nima Hejazi</p>
   </div>
 </div>
 

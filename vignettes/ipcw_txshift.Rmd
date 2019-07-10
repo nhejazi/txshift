@@ -132,7 +132,7 @@ with HAL; however, this is significantly slower than simple using a GLM.
 tmle_hal_shift_1 <- txshift(W = W, A = A, Y = Y,
                             C = C, V = c("W", "Y"),
                             delta = delta,
-                            fluc_method = "standard",
+                            fluctuation = "standard",
                             max_iter = 2,
                             ipcw_fit_args = list(fit_type = "glm"),
                             g_fit_args = list(fit_type = "hal",
@@ -159,7 +159,7 @@ such a covariate directly in the submodel regression fit.
 tmle_hal_shift_2 <- txshift(W = W, A = A, Y = Y,
                             C = C, V = c("W", "Y"),
                             delta = delta,
-                            fluc_method = "weighted",
+                            fluctuation = "weighted",
                             max_iter = 2,
                             ipcw_fit_args = list(fit_type = "glm"),
                             g_fit_args = list(fit_type = "hal",
@@ -179,14 +179,13 @@ summary(tmle_hal_shift_2)
 
 To easily incorporate ensemble machine learning into the estimation procedure,
 we rely on the facilities provided in the [`sl3` R
-package](https://sl3.tlverse.org). For a complete guide on using the `sl3` R
-package, consider consulting https://sl3.tlverse.org, or https://tlverse.org for
-the `tlverse` ecosystem, of which `sl3` is a major part.
+package](https://sl3.tlverse.org) [@coyle2019sl3]. For a complete guide on
+using the `sl3` R package, consider consulting https://tlverse.org/sl3.
 
 ```{r make_sl}
 # SL learners to be used for most fits (e.g., IPCW, outcome regression)
 lrnr_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm_fast", "Lrnr_xgboost")
-sl_lrn <- Lrnr_sl$new(learners = lrnr_lib, metalearner = Lrnr_nnls$new())
+sl_learner <- Lrnr_sl$new(learners = lrnr_lib, metalearner = Lrnr_nnls$new())
 
 # SL learners for conditional densities to be used for the propensity score fit
 lrnr_dens_lib <- make_learner_stack(list("Lrnr_haldensify", n_bins = 5,
@@ -202,13 +201,13 @@ lrnr_dens_lib <- make_learner_stack(list("Lrnr_haldensify", n_bins = 5,
                                           lambda_seq = exp(seq(-1, -9,
                                                                length = 300)))
                                    )
-sl_lrn_dens <- Lrnr_sl$new(learners = lrnr_dens_lib,
-                           metalearner = Lrnr_solnp_density$new())
+sl_learner_density <- Lrnr_sl$new(learners = lrnr_dens_lib,
+                                  metalearner = Lrnr_solnp_density$new())
 ```
 
 ### Estimating the IPCW-TMLE with Optimal Stacked Regressions
 
-Using the framework provided by the [`sl3` package](https://sl3.tlverse.org),
+Using the framework provided by the [`sl3` package](https://tlverse.org/sl3),
 the nuisance parameters of the TML estimator may be fit with ensemble learning,
 using the cross-validation framework of the Super Learner algorithm of
 @vdl2007super. In principal, it would be desirable to estimate the parameter
@@ -223,14 +222,15 @@ for the sake of saving time in this vignette.
 tmle_sl_shift_1 <- txshift(W = W, A = A, Y = Y,
                            C = C, V = c("W", "Y"),
                            delta = delta,
-                           fluc_method = "standard",
+                           fluctuation = "standard",
                            max_iter = 2,
                            ipcw_fit_args = list(fit_type = "sl",
-                                                sl_lrnrs = sl_lrn),
+                                                sl_learnrs = sl_learner),
                            g_fit_args = list(fit_type = "sl",
-                                             sl_lrnrs = sl_lrn_dens),
+                                             sl_learners_density =
+                                               sl_learner_density),
                            Q_fit_args = list(fit_type = "sl",
-                                             sl_lrnrs = sl_lrn),
+                                             sl_learners = sl_learner),
                            eif_reg_type = "glm"
                           )
 summary(tmle_sl_shift_1)
@@ -246,10 +246,10 @@ in this vignette.
 tmle_sl_shift_2 <- txshift(W = W, A = A, Y = Y,
                            C = C, V = c("W", "Y"),
                            delta = delta,
-                           fluc_method = "weighted",
+                           fluctuation = "weighted",
                            max_iter = 2,
                            ipcw_fit_args = list(fit_type = "sl",
-                                                sl_lrnrs = sl_lrn),
+                                                sl_learners = sl_learner),
                            g_fit_args = list(fit_type = "hal",
                                              n_bins = 5,
                                              grid_type = "equal_mass",
@@ -257,7 +257,7 @@ tmle_sl_shift_2 <- txshift(W = W, A = A, Y = Y,
                                                exp(seq(-1, -9,
                                                        length = 300))),
                            Q_fit_args = list(fit_type = "sl",
-                                             sl_lrnrs = sl_lrn),
+                                             sl_learners = sl_learner),
                            eif_reg_type = "glm"
                           )
 summary(tmle_sl_shift_2)
@@ -279,9 +279,9 @@ the `ipcw_efficiency` argument to `FALSE` like so
 tmle_sl_ineffic <- txshift(W = W, A = A, Y = Y,
                            C = C, V = c("W", "Y"),
                            delta = delta,
-                           fluc_method = "standard",
+                           fluctuation = "standard",
                            ipcw_fit_args = list(fit_type = "sl",
-                                                sl_lrnrs = sl_lrn),
+                                                sl_learners = sl_learner),
                            g_fit_args = list(fit_type = "hal",
                                              n_bins = 5,
                                              grid_type = "equal_mass",
@@ -289,7 +289,7 @@ tmle_sl_ineffic <- txshift(W = W, A = A, Y = Y,
                                                exp(seq(-1, -9,
                                                        length = 300))),
                            Q_fit_args = list(fit_type = "sl",
-                                             sl_lrnrs = sl_lrn),
+                                             sl_learners = sl_learner),
                            ipcw_efficiency = FALSE
                           )
 summary(tmle_sl_ineffic)
@@ -353,7 +353,7 @@ setnames(Qn_out, c("noshift", "upshift"))
 # invoke the wrapper function only to apply the targeting step
 tmle_shift_spec <- txshift(W = W, A = A, Y = Y, delta = delta,
                            C = C, V = c("W", "Y"),
-                           fluc_method = "standard",
+                           fluctuation = "standard",
                            max_iter = 2,
                            ipcw_fit_args = list(fit_type = "fit_spec"),
                            g_fit_args = list(fit_type = "fit_spec"),

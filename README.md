@@ -27,28 +27,30 @@ Benkeser](https://www.benkeserstatistics.com/)
 
 ## What’s `txshift`?
 
-The `txshift` R package is designed to compute semiparametric-efficient
-estimates of the counterfactual mean of an outcome under stochastic
-mechanisms for treatment assignment and causal quantities defined
-through such quantities (Díaz and van der Laan 2012). In particular,
-`txshift` implements and builds upon a simplified algorithm for the
-targeted maximum likelihood (TML) estimator of such a counterfactual
-mean, originally proposed in Díaz and van der Laan (2018), and uses the
-same machinery to compute a one-step estimator (Pfanzagl and Wefelmeyer
-1985).
+The `txshift` R package is designed to provide facilities for the
+construction of efficient estimators of a causal parameter defined as
+the counterfactual mean of an outcome under stochastic mechanisms for
+treatment assignment (Díaz and van der Laan 2012). `txshift` implements
+and builds upon a simplified algorithm for the targeted maximum
+likelihood (TML) estimator of such a counterfactual mean, originally
+proposed in Díaz and van der Laan (2018) and makes use of analogous
+machinery to compute an efficient one-step estimator (Pfanzagl and
+Wefelmeyer 1985). `txshift` integrates with the [`sl3` R
+package](https://github.com/tlverse/sl3) (Coyle et al. 2019) to allow
+constructed estimators to leverage machine learning in the estimation of
+nuisance parameters.
 
-For many practical applications (e.g., vaccine efficacy trials), it is
-often the case that the observed data structure is generated under a
-two-phase sampling mechanism (i.e., through the use of a two-stage
-design). In such cases, semiparametric-efficient estimators (both of
-both the TML and one-step varieties) must be augmented to exhibit
-efficiency in spite of the challenges induced by the sampling process.
-An appropriate augmentation procedure was given by Rose and van der Laan
-(2011), who proposed the use of inverse probability of censoring weights
-(IPCW) alongside an augmentation of the efficient influence function.
-`txshift` extends this approach to computing IPC-weighted one-step and
-TML estimators of the counterfactual mean under a stochastic treatment
-regime.
+For many practical applications (e.g., vaccine efficacy trials),
+observed data is often subject to a two-phase sampling mechanism (i.e.,
+through the use of a two-stage design). In such cases, efficient
+estimators (of both varieties) must be augmented to construct unbiased
+estimates of the population-level causal parameter. Based on an
+augmentation procedure given by Rose and van der Laan (2011), inverse
+probability of censoring (IPC) weights may be applied directly to an
+appropriate loss function or to the efficient influence function
+estimating equation. `txshift` extends this approach to compute
+IPC-weighted one-step and TML estimators of the counterfactual mean
+under a stochastic treatment regime.
 
 -----
 
@@ -79,7 +81,10 @@ W <- replicate(2, rbinom(n_obs, 1, 0.5))
 A <- rnorm(n_obs, mean = 2 * W, sd = 1)
 Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
 
-# fit the TMLE
+# now, let's introduce a a two-stage sampling process
+C <- rbinom(n_obs, 1, plogis(W + Y))
+
+# fit the full-data TMLE (ignoring two-phase sampling)
 tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                 estimator = "tmle",
                 g_fit_args = list(fit_type = "hal",
@@ -91,11 +96,11 @@ tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                )
 summary(tmle)
 #>     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator 
-#>     0.7474     0.7783     0.8063      2e-04 8.1032e-10       tmle 
+#>     0.7474     0.7782     0.8062      2e-04 6.7562e-10       tmle 
 #>     n_iter 
 #>          0
 
-# fit a one-step estimator for comparison
+# fit a full-data one-step estimator for comparison (again, no sampling)
 os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
               estimator = "onestep",
               g_fit_args = list(fit_type = "hal",
@@ -107,14 +112,11 @@ os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
              )
 summary(os)
 #>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-#>      0.7472      0.7779      0.8059       2e-04 -1.6543e-03     onestep 
+#>      0.7471      0.7779      0.8059       2e-04 -1.6925e-03     onestep 
 #>      n_iter 
 #>           0
 
-# now, let's introduce a censoring process (for two-stage sampling)
-C <- rbinom(n_obs, 1, plogis(W + Y))
-
-# fit an IPCW-TMLE to account for this censoring process:
+# fit an IPCW-TMLE to account for the two-phase sampling process
 ipcw_tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                      C = C, V = c("W", "Y"),
                      estimator = "tmle",
@@ -131,15 +133,14 @@ ipcw_tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                     )
 summary(ipcw_tmle)
 #>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-#>      0.7566      0.7921      0.8237       3e-04 -4.7687e-06        tmle 
+#>      0.7435      0.7765      0.8063       3e-04 -4.0325e-05        tmle 
 #>      n_iter 
 #>           1
 
-# compare with an IPCW-agumented one-step estimator under censoring:
+# compare with an IPCW-agumented one-step estimator under two-phase sampling
 ipcw_os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                    C = C, V = c("W", "Y"),
                    estimator = "onestep",
-                   ipcw_efficiency = FALSE,
                    ipcw_fit_args = list(fit_type = "glm"),
                    g_fit_args = list(fit_type = "hal",
                                      n_bins = 5,
@@ -151,10 +152,10 @@ ipcw_os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                    eif_reg_type = "glm"
                   )
 summary(ipcw_os)
-#>     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator 
-#>     0.7481      0.794     0.8334      5e-04 1.0652e-02    onestep 
-#>     n_iter 
-#>          0
+#>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
+#>      0.7427      0.7758      0.8058       3e-04 -2.0727e-03     onestep 
+#>      n_iter 
+#>           0
 ```
 
 -----
@@ -186,7 +187,7 @@ After using the `txshift` R package, please cite the following:
         Stochastic Interventions in {R}},
       year  = {2019},
       url = {https://github.com/nhejazi/txshift},
-      note = {R package version 0.2.4}
+      note = {R package version 0.2.6}
     }
 ```
 
@@ -261,6 +262,15 @@ See below for details:
 
 <div id="refs" class="references">
 
+<div id="ref-coyle2019sl3">
+
+Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2019.
+“sl3: Modern Pipelines for Machine Learning and Super Learning.”
+<https://github.com/tlverse/sl3>.
+<https://doi.org/10.5281/zenodo.3251138>.
+
+</div>
+
 <div id="ref-diaz2019causal">
 
 Díaz, Iván, and Nima S Hejazi. 2019. “Causal Mediation Analysis for
@@ -296,8 +306,8 @@ Springer Science & Business Media.
 <div id="ref-pfanzagl1985contributions">
 
 Pfanzagl, J, and W Wefelmeyer. 1985. “Contributions to a General
-Asymptotic Statistical Theory.” *Statistics & Risk Modeling* 3 (3-4).
-OLDENBOURG WISSENSCHAFTSVERLAG: 379–88.
+Asymptotic Statistical Theory.” *Statistics & Risk Modeling* 3 (3-4):
+379–88.
 
 </div>
 

@@ -5,7 +5,8 @@
 \title{Estimate the Outcome Regression}
 \usage{
 est_Q(Y, A, W, delta = 0, ipc_weights = rep(1, length(Y)),
-  fit_type = c("sl", "glm"), glm_formula = "Y ~ .", sl_lrnrs = NULL)
+  fit_type = c("sl", "glm"), glm_formula = "Y ~ .",
+  sl_learners = NULL)
 }
 \arguments{
 \item{Y}{A \code{numeric} vector of observed outcomes.}
@@ -16,7 +17,7 @@ est_Q(Y, A, W, delta = 0, ipc_weights = rep(1, length(Y)),
 
 \item{delta}{A \code{numeric} indicating the magnitude of the shift to be
 computed for the treatment \code{A}. This is passed directly to the internal
-function \code{tx_shift} and is currently limited to additive shifts.}
+function \code{shift_additive} and is currently limited to additive shifts.}
 
 \item{ipc_weights}{A \code{numeric} vector of observation-level weights, as
 produced by the internal procedure to estimate the censoring mechanism
@@ -26,7 +27,7 @@ produced by the internal procedure to estimate the censoring mechanism
 Learner to fit the outcome regression. If the option "glm" is selected, the
 argument \code{glm_formula} must NOT be \code{NULL}, instead containing a
 model formula (in the style of \code{stats::glm}) as a \code{character}. If
-the option "sl" is selected, the argument \code{sl_lrnrs} must NOT be
+the option "sl" is selected, the argument \code{sl_learners} must NOT be
 \code{NULL}, instead being a pre-defined object of class \code{Lrnr_sl},
 specifying learners and a metalearner for the Super Learner fit. Consult the
 documentation of the \code{sl3} package for details on Super Learner fits.}
@@ -34,7 +35,7 @@ documentation of the \code{sl3} package for details on Super Learner fits.}
 \item{glm_formula}{A \code{character} corresponding to a \code{formula} to be
 used in fitting a generalized linear model via \code{stats::glm}.}
 
-\item{sl_lrnrs}{An object containing a set of instantiated learners from the
+\item{sl_learners}{Object containing a set of instantiated learners from the
 \code{sl3} package, to be used in fitting an ensemble model.}
 }
 \description{

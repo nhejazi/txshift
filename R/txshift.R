@@ -1,4 +1,4 @@
-#' Compute Estimate of the Counterfactual Mean Under Shifted Treatment
+#' Estimate Counterfactual Mean Under Stochastically Shifted Treatment
 #'
 #' @param W A \code{matrix}, \code{data.frame}, or similar corresponding to a
 #'  set of baseline covariates.
@@ -6,28 +6,30 @@
 #'  parameter of interest is defined as a location shift of this quantity.
 #' @param Y A \code{numeric} vector of the observed outcomes.
 #' @param C A \code{numeric} binary vector giving information on whether a given
-#'  observation was subject to censoring. This is used to compute an IPCW-TMLE
-#'  in cases where two-stage sampling is performed. The default assumes that no
-#'  censoring was present (i.e., a two-stage design was NOT used). N.B., this is
-#'  equivalent to the term %\Delta in the notation used in the original Rose and
-#'  van der Laan manuscript that introduced/formulated IPCW-TML estimators.
+#'  observation was subject to censoring, used to compute an IPC-weighted
+#'  estimator in cases where two-stage sampling is performed. Default assumes no
+#'  censoring (i.e., a two-stage design was NOT used).
 #' @param V The covariates that are used in determining the sampling procedure
 #'  that gives rise to censoring. The default is \code{NULL} and corresponds to
 #'  scenarios in which there is no censoring (in which case all values in the
-#'  preceding argument \code{C} must be uniquely 1. To specify this, pass in a
-#'  NAMED \code{list} identifying variables amongst W, A, Y that are thought to
-#'  have played a role in defining the sampling/censoring mechanism (C).
+#'  preceding argument \code{C} must be uniquely 1). To specify this, pass in a
+#'  \code{character} vector identifying variables amongst W, A, Y thought to
+#'  have played a role in defining the sampling/censoring mechanism (C). This
+#'  argument also accepts a \code{data.table} (or similar) object composed of
+#'  combinations of the variables W, A, Y; use of this option is NOT recommended
+#'  and should be selected only with care.
 #' @param delta A \code{numeric} value indicating the shift in the treatment to
 #'  be used in defining the target parameter. This is defined with respect to
 #'  the scale of the treatment (A).
 #' @param estimator The type of estimator to be fit, either \code{"tmle"} for
-#'  targeted maximum likelihood estimation or \code{"onestep"} for a one-step
-#'  augmented inverse probability weighted (AIPW) estimator.
-#' @param fluc_method The method to be used in submodel fluctuation step of
-#'  the TMLE computation. The choices are "standard" and "weighted".
+#'  targeted maximum likelihood or \code{"onestep"} for a one-step estimator.
+#' @param fluctuation The method to be used in the submodel fluctuation step
+#'  (targeting step) to compute the TML estimator. The choices are "standard"
+#'  and "weighted" for where to place the auxiliary covariate in the logistic
+#'  tilting regression.
 #' @param eif_tol A \code{numeric} giving the convergence criterion for the TML
 #'  estimator. This is the the maximum mean of the efficient influence function
-#'  (EIF) to be used in declaring convergence (theoretically, should be zero).
+#'  (EIF) to be used in declaring convergence.
 #' @param max_iter A \code{numeric} integer giving the maximum number of steps
 #'  to be taken in iterating to a solution of the efficient influence function.
 #' @param ipcw_fit_args A \code{list} of arguments, all but one of which are
@@ -81,9 +83,8 @@
 #'  should only be used by advanced users familiar with both the underlying
 #'  theory and this software implementation of said theoretical details.
 #'
-#' @importFrom data.table as.data.table setnames
+#' @importFrom data.table as.data.table setnames ":="
 #' @importFrom stringr str_detect
-#' @importFrom dplyr filter select "%>%"
 #' @importFrom Rdpack reprompt
 #'
 #' @return S3 object of class \code{txshift} containing the results of the
@@ -97,12 +98,12 @@ txshift <- function(W,
                     V = NULL,
                     delta = 0,
                     estimator = c("tmle", "onestep"),
-                    fluc_method = c("standard", "weighted"),
+                    fluctuation = c("standard", "weighted"),
                     eif_tol = 1 / length(Y),
-                    max_iter = 1e4,
+                    max_iter = 1e3,
                     ipcw_fit_args = list(
                       fit_type = c("glm", "sl", "fit_spec"),
-                      sl_lrnrs = NULL
+                      sl_learners = NULL
                     ),
                     g_fit_args = list(
                       fit_type = c("hal", "sl", "fit_spec"),
@@ -110,12 +111,12 @@ txshift <- function(W,
                       grid_type = c("equal_range", "equal_mass"),
                       lambda_seq = exp(seq(-1, -13, length = 300)),
                       use_future = FALSE,
-                      sl_lrnrs_dens = NULL
+                      sl_learners_density = NULL
                     ),
                     Q_fit_args = list(
                       fit_type = c("glm", "sl", "fit_spec"),
                       glm_formula = "Y ~ .",
-                      sl_lrnrs = NULL
+                      sl_learners = NULL
                     ),
                     eif_reg_type = c("hal", "glm"),
                     ipcw_efficiency = TRUE,
@@ -125,7 +126,7 @@ txshift <- function(W,
   # check arguments and set up some objects for programmatic convenience
   call <- match.call(expand.dots = TRUE)
   estimator <- match.arg(estimator)
-  fluc_method <- match.arg(fluc_method)
+  fluctuation <- match.arg(fluctuation)
   eif_reg_type <- match.arg(eif_reg_type)
 
   # dissociate fit type from other arguments to simplify passing to do.call
@@ -152,18 +153,23 @@ txshift <- function(W,
 
   # perform sub-setting of data and implement IPC weighting if required
   if (!all(C == 1) & !is.null(V)) {
-    # combine censoring node information
-    V_in <- data.table::as.data.table(mget(V))
-    # NOTE: resolves downstream naming error
-    V_names <- lapply(seq_along(V), function(j) {
-      node <- mget(V[j], inherits = TRUE)[[1]]
-      if (!is.null(dim(node))) {
-        colnames(node)
-      } else {
-        V[j]
-      }
-    })
-    colnames(V_in) <- do.call(c, V_names)
+    if (is.character(V)) {
+      # combine censoring node information
+      V_in <- data.table::as.data.table(mget(V))
+      # NOTE: resolves downstream naming error
+      V_names <- lapply(seq_along(V), function(j) {
+        node <- mget(V[j], inherits = TRUE)[[1]]
+        if (!is.null(dim(node))) {
+          colnames(node)
+        } else {
+          V[j]
+        }
+      })
+      colnames(V_in) <- do.call(c, V_names)
+    } else {
+      # assume V is a given matrix-type object with correctly set names
+      V_in <- V
+    }
 
     ipcw_estim_in <- list(
       V = V_in, Delta = C,
@@ -185,19 +191,16 @@ txshift <- function(W,
 
     # extract IPC weights for censoring case and normalize weights
     cens_weights <- ipcw_estim$ipc_weights
-    cens_weights_norm <- cens_weights / sum(cens_weights)
 
     # remove column corresponding to indicator for censoring
-    data_internal <- data.table::as.data.table(list(W, A = A, C = C, Y = Y)) %>%
-      dplyr::filter(C == 1) %>%
-      dplyr::select(-C) %>%
-      data.table::as.data.table()
+    data_internal <- data.table::as.data.table(list(W, A = A, C = C, Y = Y))
+    data_internal <- data_internal[C == 1, ] # subsetting forces copy :(
+    data_internal[, C := NULL]
   } else {
     # if no censoring, we can just use IPC weights that are identically 1
     V_in <- NULL
-    ipcw_estim <- NULL
     cens_weights <- C
-    cens_weights_norm <- cens_weights / sum(cens_weights)
+    ipcw_estim <- list(pi_mech = rep(1, length(C)), ipc_weights = C[C == 1])
     data_internal <- data.table::as.data.table(list(W, A = A, Y = Y))
   }
 
@@ -215,6 +218,7 @@ txshift <- function(W,
     if (g_fit_type == "hal") {
       # since fitting a GLM, can safely remove all args related to SL
       g_fit_args <- g_fit_args[!stringr::str_detect(names(g_fit_args), "sl")]
+
       # reshape args to a list suitable to be passed to do.call
       gn_estim_args <- unlist(
         list(gn_estim_in, std_args = list(g_fit_args)),
@@ -223,10 +227,12 @@ txshift <- function(W,
     } else if (g_fit_type == "sl") {
       # if fitting SL, we can discard all the standard non-sl3 arguments
       g_fit_args <- g_fit_args[stringr::str_detect(names(g_fit_args), "sl")]
+
       # reshapes list of args to make passing to do.call possible
       gn_estim_args <- unlist(list(gn_estim_in, g_fit_args), recursive = FALSE)
     }
-    # pass the relevant args for computing the propensity score to do.call
+
+    # pass the relevant args for computing the propensity score
     gn_estim <- do.call(est_g, gn_estim_args)
   }
 
@@ -234,6 +240,7 @@ txshift <- function(W,
   if (!is.null(Qn_fit_spec) & Q_fit_type == "fit_spec") {
     Qn_estim <- Qn_fit_spec
   } else {
+    # generate and reshape args to pass to function for outcome regression
     Qn_estim_in <- list(
       Y = data_internal$Y,
       A = data_internal$A,
@@ -242,58 +249,50 @@ txshift <- function(W,
       ipc_weights = cens_weights,
       fit_type = Q_fit_type
     )
-    # reshape args to pass to the relevant function for the outcome regression
     Qn_estim_args <- unlist(list(Qn_estim_in, Q_fit_args), recursive = FALSE)
-    # invoke function to estimate outcome regression via do.call
+
+    # invoke function to estimate outcome regression
     Qn_estim <- do.call(est_Q, Qn_estim_args)
   }
 
-  # initial estimate of the auxiliary ("clever") covariate
+  # initial estimate of the auxiliary covariate
   Hn_estim <- est_Hn(gn = gn_estim)
 
-  ##############################################################################
-  # compute the TML or one-step/AIPW estimator
-  ##############################################################################
+  # compute targeted maximum likelihood estimator
   if (estimator == "tmle") {
-    # compute targeted maximum likelihood estimator
     tmle_fit <- tmle_txshift(
       data_internal = data_internal,
       C = C,
       V = V_in,
       delta = delta,
-      cens_weights = cens_weights,
-      cens_weights_norm = cens_weights_norm,
       ipcw_estim = ipcw_estim,
       Qn_estim = Qn_estim,
       Hn_estim = Hn_estim,
-      fluc_method = fluc_method,
+      fluctuation = fluctuation,
       eif_tol = eif_tol,
       max_iter = max_iter,
       eif_reg_type = eif_reg_type,
       ipcw_fit_args = ipcw_fit_args,
-      ipcw_fit_type = ipcw_fit_type,
       ipcw_efficiency = ipcw_efficiency
     )
 
     # return output object created by TML estimation routine
     tmle_fit$call <- call
     return(tmle_fit)
+
+    # compute one-step (augmented inverse probability weighted) estimator
   } else if (estimator == "onestep") {
-    # compute augmented inverse probability weighted estimator
     onestep_fit <- onestep_txshift(
       data_internal = data_internal,
       C = C,
       V = V_in,
       delta = delta,
-      cens_weights = cens_weights,
-      cens_weights_norm = cens_weights_norm,
       ipcw_estim = ipcw_estim,
       Qn_estim = Qn_estim,
       Hn_estim = Hn_estim,
       eif_tol = eif_tol,
       eif_reg_type = eif_reg_type,
       ipcw_fit_args = ipcw_fit_args,
-      ipcw_fit_type = ipcw_fit_type,
       ipcw_efficiency = ipcw_efficiency
     )
 

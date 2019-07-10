@@ -1,6 +1,6 @@
 Package: txshift
 Title: Targeted Learning of the Causal Effects of Stochastic Interventions
-Version: 0.2.4
+Version: 0.2.7
 Authors@R: c(
     person("Nima", "Hejazi", email = "nh@nimahejazi.org",
            role = c("aut", "cre", "cph"),
@@ -19,22 +19,20 @@ Authors@R: c(
            comment = c(ORCID = "0000-0003-1432-5511"))
   )
 Maintainer: Nima Hejazi <nh@nimahejazi.org>
-Description: Computation of targeted maximum likelihood (TML) estimates of the
-    population-level causal effect of a continuous-valued intervention based on
-    a simple stochastic treatment assignment mechanism, defined as the
-    counterfactual mean of the outcome of interest under an additive shift of
-    the observed (natural) value of the intervention. To accommodate settings in
-    which two-phase sampling is employed, an inverse probability of censoring
-    weighted (IPCW) TML estimator for the counterfactual mean under the
-    stochastic intervention is available, alongside procedures facilitating
-    robust estimation of nuisance parameters in a manner ensuring nonparametric
-    efficiency of the IPCW-TML estimator of the causal parameter.
+Description: Efficient estimation of the population-level causal effects of
+    stochastic interventions on a continuous-valued treatment node. Both
+    one-step and targeted maximum likelihood (TML) estimators are implemented
+    for a causal parameter defined as the counterfactual mean of the outcome of
+    interest under a stochastic intervention that may depend on the natural
+    value of the treatment (i.e., a modified treatment policy). To accommodate
+    settings in which two-phase sampling is employed, procedures for making use
+    of inverse probability of censoring (IPC) weights to build inefficient and
+    efficient TML and one-step estimator variants of the population-level
+    parameter are provided.
 Depends: R (>= 3.2.0)
 Imports:
     stats,
-    dplyr,
     stringr,
-    tibble,
     assertthat,
     data.table,
     mvtnorm,
@@ -61,8 +59,7 @@ Suggests:
 Remotes:
     github::osofr/simcausal@master,
     github::osofr/condensier@master,
-    github::tlverse/origami@master,
-    github::tlverse/sl3@master,
+    github::tlverse/sl3@v1.2.0,
     github::tlverse/hal9001@master,
     github::nhejazi/haldensify@master
 License: MIT + file LICENSE

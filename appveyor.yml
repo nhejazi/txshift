@@ -34,12 +34,10 @@ build_script:
   - travis-tool.sh install_deps
   - travis-tool.sh install_github r-lib/covr
   - travis-tool.sh install_github r-lib/sessioninfo
-  - travis-tool.sh install_github Rdatatable/data.table
   - travis-tool.sh install_github osofr/simcausal
   - travis-tool.sh install_github osofr/condensier
-  - travis-tool.sh install_github tlverse/origami
+  - travis-tool.sh install_github tlverse/sl3@v1.2.0
   - travis-tool.sh install_github tlverse/hal9001
-  - travis-tool.sh install_github tlverse/sl3
   - travis-tool.sh install_github nhejazi/haldensify
 
 test_script:
@@ -50,7 +48,7 @@ on_failure:
   - appveyor PushArtifact failure.zip
 
 on_success:
-  - Rscript -e "covr::codecov(line_exclusions = list('R/plots.R', 'R/utils.R'))"
+  - Rscript -e "covr::codecov(line_exclusions = list('R/utils.R'))"
 
 artifacts:
   - path: '*.Rcheck\**\*.log'
@@ -80,4 +78,3 @@ notifications:
    on_build_success: true
    on_build_failure: true
    on_build_status_changed: true
-
