@@ -32,22 +32,22 @@ construction of efficient estimators of a causal parameter defined as
 the counterfactual mean of an outcome under stochastic mechanisms for
 treatment assignment (Díaz and van der Laan 2012). `txshift` implements
 and builds upon a simplified algorithm for the targeted maximum
-likelihood (TML) estimator of such a counterfactual mean, originally
-proposed in Díaz and van der Laan (2018) and makes use of analogous
+likelihood (TML) estimator of such a causal parameter, originally
+proposed by Díaz and van der Laan (2018), and makes use of analogous
 machinery to compute an efficient one-step estimator (Pfanzagl and
-Wefelmeyer 1985). `txshift` integrates with the [`sl3` R
+Wefelmeyer 1985). `txshift` integrates with the [`sl3`
 package](https://github.com/tlverse/sl3) (Coyle et al. 2019) to allow
-constructed estimators to leverage machine learning in the estimation of
-nuisance parameters.
+for (ensemble) machine learning to be leveraged in the estimation
+procedure.
 
 For many practical applications (e.g., vaccine efficacy trials),
 observed data is often subject to a two-phase sampling mechanism (i.e.,
 through the use of a two-stage design). In such cases, efficient
 estimators (of both varieties) must be augmented to construct unbiased
-estimates of the population-level causal parameter. Based on an
-augmentation procedure given by Rose and van der Laan (2011), inverse
-probability of censoring (IPC) weights may be applied directly to an
-appropriate loss function or to the efficient influence function
+estimates of the population-level causal parameter. Rose and van der
+Laan (2011) first introduced an augmentation procedure that relies on
+introducing inverse probability of censoring (IPC) weights directly to
+an appropriate loss function or to the efficient influence function
 estimating equation. `txshift` extends this approach to compute
 IPC-weighted one-step and TML estimators of the counterfactual mean
 under a stochastic treatment regime.
@@ -187,7 +187,7 @@ After using the `txshift` R package, please cite the following:
         Stochastic Interventions in {R}},
       year  = {2019},
       url = {https://github.com/nhejazi/txshift},
-      note = {R package version 0.2.6}
+      note = {R package version 0.2.7}
     }
 ```
 

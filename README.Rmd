@@ -38,21 +38,20 @@ The `txshift` R package is designed to provide facilities for the construction
 of efficient estimators of a causal parameter defined as the counterfactual mean
 of an outcome under stochastic mechanisms for treatment assignment
 [@diaz2012population]. `txshift ` implements and builds upon a simplified
-algorithm for the targeted maximum likelihood (TML) estimator of such
-a counterfactual mean, originally proposed in @diaz2018stochastic and makes use
-of analogous machinery to compute an efficient one-step estimator
-[@pfanzagl1985contributions]. `txshift` integrates with the [`sl3` R
-package](https://github.com/tlverse/sl3) [@coyle2019sl3] to allow
-constructed estimators to leverage machine learning in the estimation of
-nuisance parameters.
+algorithm for the targeted maximum likelihood (TML) estimator of such a causal
+parameter, originally proposed by @diaz2018stochastic, and makes use of
+analogous machinery to compute an efficient one-step estimator
+[@pfanzagl1985contributions]. `txshift` integrates with the [`sl3`
+package](https://github.com/tlverse/sl3) [@coyle2019sl3] to allow for (ensemble)
+machine learning to be leveraged in the estimation procedure.
 
 For many practical applications (e.g., vaccine efficacy trials), observed data
 is often subject to a two-phase sampling mechanism (i.e., through the use of a
 two-stage design). In such cases, efficient estimators (of both varieties) must
 be augmented to construct unbiased estimates of the population-level causal
-parameter. Based on an augmentation procedure given by @rose2011targeted2sd,
-inverse probability of censoring (IPC) weights may be applied directly to an
-appropriate loss function or to the efficient influence function estimating
+parameter. @rose2011targeted2sd first introduced an augmentation procedure that
+relies on introducing inverse probability of censoring (IPC) weights directly to
+an appropriate loss function or to the efficient influence function estimating
 equation. `txshift` extends this approach to compute IPC-weighted one-step and
 TML estimators of the counterfactual mean under a stochastic treatment regime.
 
@@ -174,7 +173,7 @@ After using the `txshift` R package, please cite the following:
             Stochastic Interventions in {R}},
           year  = {2019},
           url = {https://github.com/nhejazi/txshift},
-          note = {R package version 0.2.6}
+          note = {R package version 0.2.7}
         }
 
 ---

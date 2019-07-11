@@ -110,8 +110,8 @@
 <div id="whats-txshift" class="section level2">
 <h2 class="hasAnchor">
 <a href="#whats-txshift" class="anchor"></a>What’s <code>txshift</code>?</h2>
-<p>The <code>txshift</code> R package is designed to provide facilities for the construction of efficient estimators of a causal parameter defined as the counterfactual mean of an outcome under stochastic mechanisms for treatment assignment <span class="citation">(Díaz and van der Laan 2012)</span>. <code>txshift</code> implements and builds upon a simplified algorithm for the targeted maximum likelihood (TML) estimator of such a counterfactual mean, originally proposed in <span class="citation">Díaz and van der Laan (2018)</span> and makes use of analogous machinery to compute an efficient one-step estimator <span class="citation">(Pfanzagl and Wefelmeyer 1985)</span>. <code>txshift</code> integrates with the <a href="https://github.com/tlverse/sl3"><code>sl3</code> R package</a> <span class="citation">(Coyle et al. 2019)</span> to allow constructed estimators to leverage machine learning in the estimation of nuisance parameters.</p>
-<p>For many practical applications (e.g., vaccine efficacy trials), observed data is often subject to a two-phase sampling mechanism (i.e., through the use of a two-stage design). In such cases, efficient estimators (of both varieties) must be augmented to construct unbiased estimates of the population-level causal parameter. Based on an augmentation procedure given by <span class="citation">Rose and van der Laan (2011)</span>, inverse probability of censoring (IPC) weights may be applied directly to an appropriate loss function or to the efficient influence function estimating equation. <code>txshift</code> extends this approach to compute IPC-weighted one-step and TML estimators of the counterfactual mean under a stochastic treatment regime.</p>
+<p>The <code>txshift</code> R package is designed to provide facilities for the construction of efficient estimators of a causal parameter defined as the counterfactual mean of an outcome under stochastic mechanisms for treatment assignment <span class="citation">(Díaz and van der Laan 2012)</span>. <code>txshift</code> implements and builds upon a simplified algorithm for the targeted maximum likelihood (TML) estimator of such a causal parameter, originally proposed by <span class="citation">Díaz and van der Laan (2018)</span>, and makes use of analogous machinery to compute an efficient one-step estimator <span class="citation">(Pfanzagl and Wefelmeyer 1985)</span>. <code>txshift</code> integrates with the <a href="https://github.com/tlverse/sl3"><code>sl3</code> package</a> <span class="citation">(Coyle et al. 2019)</span> to allow for (ensemble) machine learning to be leveraged in the estimation procedure.</p>
+<p>For many practical applications (e.g., vaccine efficacy trials), observed data is often subject to a two-phase sampling mechanism (i.e., through the use of a two-stage design). In such cases, efficient estimators (of both varieties) must be augmented to construct unbiased estimates of the population-level causal parameter. <span class="citation">Rose and van der Laan (2011)</span> first introduced an augmentation procedure that relies on introducing inverse probability of censoring (IPC) weights directly to an appropriate loss function or to the efficient influence function estimating equation. <code>txshift</code> extends this approach to compute IPC-weighted one-step and TML estimators of the counterfactual mean under a stochastic treatment regime.</p>
 <hr>
 </div>
 <div id="installation" class="section level2">
@@ -234,7 +234,7 @@
         Stochastic Interventions in {R}},
       year  = {2019},
       url = {https://github.com/nhejazi/txshift},
-      note = {R package version 0.2.6}
+      note = {R package version 0.2.7}
     }</code></pre>
 <hr>
 </div>
