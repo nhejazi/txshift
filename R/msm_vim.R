@@ -29,7 +29,9 @@
 #'  confidence interval to be computed.
 #' @param ci_type Whether to construct a simultaneous confidence band covering
 #'  all parameter estimates at once or marginal confidence intervals covering
-#'  each parameter estimate separately.
+#'  each parameter estimate separately. The default is to construct marginal
+#'  confidence intervals for each parameter estimate rather than simultaneous
+#'  confidence bands.
 #' @param ... Additional arguments to be passed to \code{txshift}.
 #'
 #' @importFrom assertthat assert_that
@@ -69,7 +71,7 @@ msm_vimshift <- function(Y,
                          estimator = c("tmle", "onestep"),
                          weighting = c("variance", "identity"),
                          ci_level = 0.95,
-                         ci_type = c("simultaneous", "marginal"),
+                         ci_type = c("marginal", "simultaneous"),
                          ...) {
   # set default values of arguments
   estimator <- match.arg(estimator)
