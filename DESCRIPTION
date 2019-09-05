@@ -1,6 +1,6 @@
 Package: txshift
 Title: Targeted Learning of the Causal Effects of Stochastic Interventions
-Version: 0.2.7
+Version: 0.2.8
 Authors@R: c(
     person("Nima", "Hejazi", email = "nh@nimahejazi.org",
            role = c("aut", "cre", "cph"),
@@ -52,13 +52,9 @@ Suggests:
     Rsolnp,
     nnls,
     origami,
-    simcausal,
-    condensier,
     xgboost,
     ranger
 Remotes:
-    github::osofr/simcausal@master,
-    github::osofr/condensier@master,
     github::tlverse/sl3@v1.2.0,
     github::tlverse/hal9001@master,
     github::nhejazi/haldensify@master

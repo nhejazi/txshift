@@ -6,8 +6,8 @@
 \usage{
 ipcw_eif_update(data_in, C, V, ipc_mech, ipc_weights, ipc_weights_norm,
   Qn_estim, Hn_estim, estimator = c("tmle", "onestep"),
-  fluctuation = NULL, eif_tol = 1e-09, eif_reg_type = c("hal",
-  "glm"))
+  fluctuation = NULL, flucmod_tol = 1000, eif_tol = 1e-09,
+  eif_reg_type = c("hal", "glm"))
 }
 \arguments{
 \item{data_in}{A \code{data.table} containing variables and observations that
@@ -50,7 +50,10 @@ or augmented inverse probability weighted (AIPW) estimator.}
 used in traversing the fluctuation submodel. The choices are "weighted" and
 "standard".}
 
-\item{eif_tol}{A \code{numeric} providing the largest value to be tolerated
+\item{flucmod_tol}{A \code{numeric} indicating the largest value to be
+tolerated in the fluctuation model for the targeted minimum loss estimator.}
+
+\item{eif_tol}{A \code{numeric} indicating the largest value to be tolerated
 as the mean of the efficient influence function.}
 
 \item{eif_reg_type}{Whether a flexible nonparametric function ought to be

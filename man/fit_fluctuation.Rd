@@ -5,7 +5,7 @@
 \title{Fit Logistic Regression to Traverse the Fluctuation Submodel}
 \usage{
 fit_fluctuation(Y, Qn_scaled, Hn, ipc_weights = rep(1, length(Y)),
-  method = c("standard", "weighted"))
+  method = c("standard", "weighted"), flucmod_tol = 1000)
 }
 \arguments{
 \item{Y}{A \code{numeric} vector corresponding to an outcome variable.}
@@ -26,6 +26,9 @@ routines for estimating the censoring mechanism.}
 \item{method}{A \code{character} giving the type of regression to be used in
 traversing the fluctuation sub-model. Choices are "weighted" and "standard".
 Please consult the literature for details on the differences.}
+
+\item{flucmod_tol}{A \code{numeric} indicating the largest value to be
+tolerated in the fluctuation model for the targeted minimum loss estimator.}
 }
 \description{
 Fit Logistic Regression to Traverse the Fluctuation Submodel
