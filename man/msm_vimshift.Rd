@@ -7,7 +7,7 @@
 msm_vimshift(Y, A, W, C = rep(1, length(Y)), V = NULL,
   delta_grid = seq(-0.5, 0.5, 0.5), estimator = c("tmle", "onestep"),
   weighting = c("variance", "identity"), ci_level = 0.95,
-  ci_type = c("simultaneous", "marginal"), ...)
+  ci_type = c("marginal", "simultaneous"), ...)
 }
 \arguments{
 \item{Y}{A \code{numeric} vector of the observed outcomes.}
@@ -48,7 +48,9 @@ confidence interval to be computed.}
 
 \item{ci_type}{Whether to construct a simultaneous confidence band covering
 all parameter estimates at once or marginal confidence intervals covering
-each parameter estimate separately.}
+each parameter estimate separately. The default is to construct marginal
+confidence intervals for each parameter estimate rather than simultaneous
+confidence bands.}
 
 \item{...}{Additional arguments to be passed to \code{txshift}.}
 }

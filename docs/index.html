@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>txshift • txshift</title>
+<title>Targeted Learning of the Causal Effects of Stochastic Interventions • txshift</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/readable/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="txshift">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
+<script src="pkgdown.js"></script><meta property="og:title" content="Targeted Learning of the Causal Effects of Stochastic Interventions">
 <meta property="og:description" content="Efficient estimation of the population-level causal effects of
     stochastic interventions on a continuous-valued treatment node. Both
     one-step and targeted maximum likelihood (TML) estimators are implemented
@@ -28,7 +28,7 @@
 <![endif]-->
 </head>
 <body>
-    <div class="container template-article">
+    <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8</span>
       </span>
     </div>
 
@@ -90,13 +90,9 @@
 <!--/.navbar -->
 
       
-      </header><div class="row">
-  <div class="col-md-9 contents">
-    
 
-    
-    
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+      </header><div class="row">
+  <div class="contents col-md-9">
 <div id="rtxshift" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#rtxshift" class="anchor"></a>R/<code>txshift</code>
@@ -110,8 +106,8 @@
 <div id="whats-txshift" class="section level2">
 <h2 class="hasAnchor">
 <a href="#whats-txshift" class="anchor"></a>What’s <code>txshift</code>?</h2>
-<p>The <code>txshift</code> R package is designed to provide facilities for the construction of efficient estimators of a causal parameter defined as the counterfactual mean of an outcome under stochastic mechanisms for treatment assignment <span class="citation">(Díaz and van der Laan 2012)</span>. <code>txshift</code> implements and builds upon a simplified algorithm for the targeted maximum likelihood (TML) estimator of such a causal parameter, originally proposed by <span class="citation">Díaz and van der Laan (2018)</span>, and makes use of analogous machinery to compute an efficient one-step estimator <span class="citation">(Pfanzagl and Wefelmeyer 1985)</span>. <code>txshift</code> integrates with the <a href="https://github.com/tlverse/sl3"><code>sl3</code> package</a> <span class="citation">(Coyle et al. 2019)</span> to allow for (ensemble) machine learning to be leveraged in the estimation procedure.</p>
-<p>For many practical applications (e.g., vaccine efficacy trials), observed data is often subject to a two-phase sampling mechanism (i.e., through the use of a two-stage design). In such cases, efficient estimators (of both varieties) must be augmented to construct unbiased estimates of the population-level causal parameter. <span class="citation">Rose and van der Laan (2011)</span> first introduced an augmentation procedure that relies on introducing inverse probability of censoring (IPC) weights directly to an appropriate loss function or to the efficient influence function estimating equation. <code>txshift</code> extends this approach to compute IPC-weighted one-step and TML estimators of the counterfactual mean under a stochastic treatment regime.</p>
+<p>The <code>txshift</code> R package is designed to provide facilities for the construction of efficient estimators of a causal parameter defined as the counterfactual mean of an outcome under stochastic mechanisms for treatment assignment (Díaz and van der Laan 2012). <code>txshift</code> implements and builds upon a simplified algorithm for the targeted maximum likelihood (TML) estimator of such a causal parameter, originally proposed by Díaz and van der Laan (2018), and makes use of analogous machinery to compute an efficient one-step estimator (Pfanzagl and Wefelmeyer 1985). <code>txshift</code> integrates with the <a href="https://github.com/tlverse/sl3"><code>sl3</code> package</a> (Coyle et al. 2019) to allow for (ensemble) machine learning to be leveraged in the estimation procedure.</p>
+<p>For many practical applications (e.g., vaccine efficacy trials), observed data is often subject to a two-phase sampling mechanism (i.e., through the use of a two-stage design). In such cases, efficient estimators (of both varieties) must be augmented to construct unbiased estimates of the population-level causal parameter. Rose and van der Laan (2011) first introduced an augmentation procedure that relies on introducing inverse probability of censoring (IPC) weights directly to an appropriate loss function or to the efficient influence function estimating equation. <code>txshift</code> extends this approach to compute IPC-weighted one-step and TML estimators of the counterfactual mean under a stochastic treatment regime.</p>
 <hr>
 </div>
 <div id="installation" class="section level2">
@@ -150,7 +146,7 @@
 <a class="sourceLine" id="cb2-23" data-line-number="23">               )</a>
 <a class="sourceLine" id="cb2-24" data-line-number="24"><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(tmle)</a>
 <a class="sourceLine" id="cb2-25" data-line-number="25"><span class="co">#&gt;     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator </span></a>
-<a class="sourceLine" id="cb2-26" data-line-number="26"><span class="co">#&gt;     0.7474     0.7782     0.8062      2e-04 6.7562e-10       tmle </span></a>
+<a class="sourceLine" id="cb2-26" data-line-number="26"><span class="co">#&gt;     0.7474     0.7782     0.8062      2e-04 6.7628e-11       tmle </span></a>
 <a class="sourceLine" id="cb2-27" data-line-number="27"><span class="co">#&gt;     n_iter </span></a>
 <a class="sourceLine" id="cb2-28" data-line-number="28"><span class="co">#&gt;          0</span></a>
 <a class="sourceLine" id="cb2-29" data-line-number="29"></a>
@@ -187,7 +183,7 @@
 <a class="sourceLine" id="cb2-60" data-line-number="60">                    )</a>
 <a class="sourceLine" id="cb2-61" data-line-number="61"><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(ipcw_tmle)</a>
 <a class="sourceLine" id="cb2-62" data-line-number="62"><span class="co">#&gt;      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator </span></a>
-<a class="sourceLine" id="cb2-63" data-line-number="63"><span class="co">#&gt;      0.7435      0.7765      0.8063       3e-04 -4.0325e-05        tmle </span></a>
+<a class="sourceLine" id="cb2-63" data-line-number="63"><span class="co">#&gt;      0.7435      0.7765      0.8063       3e-04 -4.0324e-05        tmle </span></a>
 <a class="sourceLine" id="cb2-64" data-line-number="64"><span class="co">#&gt;      n_iter </span></a>
 <a class="sourceLine" id="cb2-65" data-line-number="65"><span class="co">#&gt;           1</span></a>
 <a class="sourceLine" id="cb2-66" data-line-number="66"></a>
@@ -243,8 +239,8 @@
 <a href="#related" class="anchor"></a>Related</h2>
 <ul>
 <li><p><a href="https://github.com/tlverse/tmle3shift">R/<code>tmle3shift</code></a> - An R package providing an independent implementation of the same core routines for the TML estimation procedure and statistical methodology as is made available here, through reliance on a unified interface for Targeted Learning provided by the <a href="https://github.com/tlverse/tmle3"><code>tmle3</code></a> engine of the <a href="https://github.com/tlverse"><code>tlverse</code> ecosystem</a>.</p></li>
-<li><p><a href="https://github.com/nhejazi/medshift">R/<code>medshift</code></a> - An R package providing facilities to estimate the causal effect of stochastic treatment regimes in the mediation setting, including classical (IPW) and augmented double robust (one-step) estimators. This is an implementation of the methodology explored in <span class="citation">Díaz and Hejazi (2019)</span>.</p></li>
-<li><p><a href="https://github.com/nhejazi/haldensify">R/<code>haldensify</code></a> - A minimal package for estimating the conditional density treatment mechanism component of this parameter based on using the <a href="https://github.com/tlverse/hal9001">highly adaptive lasso</a> in combination with a pooled hazard regression. This package implements the methodology proposed in <span class="citation">Díaz and van der Laan (2011)</span>.</p></li>
+<li><p><a href="https://github.com/nhejazi/medshift">R/<code>medshift</code></a> - An R package providing facilities to estimate the causal effect of stochastic treatment regimes in the mediation setting, including classical (IPW) and augmented double robust (one-step) estimators. This is an implementation of the methodology explored in Díaz and Hejazi (2019).</p></li>
+<li><p><a href="https://github.com/nhejazi/haldensify">R/<code>haldensify</code></a> - A minimal package for estimating the conditional density treatment mechanism component of this parameter based on using the <a href="https://github.com/tlverse/hal9001">highly adaptive lasso</a> in combination with a pooled hazard regression. This package implements the methodology proposed in Díaz and van der Laan (2011).</p></li>
 </ul>
 <hr>
 </div>
@@ -259,54 +255,93 @@
 <a href="#license" class="anchor"></a>License</h2>
 <p>© 2017-2019 <a href="https://nimahejazi.org">Nima S. Hejazi</a></p>
 <p>The contents of this repository are distributed under the MIT license. See below for details:</p>
-<pre><code>MIT License
-
-Copyright (c) 2017-2019 Nima S. Hejazi
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">MIT License</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">Copyright</span> (c) <span class="dv">2017-2019</span> Nima S. Hejazi</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">Permission is hereby granted, free of charge, to any person obtaining a copy</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">of this software and associated documentation <span class="kw"><a href="https://rdrr.io/r/base/files.html">files</a></span> (the <span class="st">"Software"</span>), to deal</a>
+<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="cf">in</span> the Software without restriction, including without limitation the rights</a>
+<a class="sourceLine" id="cb4-8" data-line-number="8">to use, copy, modify, merge, publish, distribute, sublicense, and<span class="op">/</span>or sell</a>
+<a class="sourceLine" id="cb4-9" data-line-number="9">copies of the Software, and to permit persons to whom the Software is</a>
+<a class="sourceLine" id="cb4-10" data-line-number="10">furnished to do so, subject to the following conditions<span class="op">:</span></a>
+<a class="sourceLine" id="cb4-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb4-12" data-line-number="12">The above copyright notice and this permission notice shall be included <span class="cf">in</span> all</a>
+<a class="sourceLine" id="cb4-13" data-line-number="13">copies or substantial portions of the Software.</a>
+<a class="sourceLine" id="cb4-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb4-15" data-line-number="15">THE SOFTWARE IS PROVIDED <span class="st">"AS IS"</span>, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</a>
+<a class="sourceLine" id="cb4-16" data-line-number="16">IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</a>
+<a class="sourceLine" id="cb4-17" data-line-number="17">FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</a>
+<a class="sourceLine" id="cb4-18" data-line-number="18">AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</a>
+<a class="sourceLine" id="cb4-19" data-line-number="19">LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</a>
+<a class="sourceLine" id="cb4-20" data-line-number="20">OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</a>
+<a class="sourceLine" id="cb4-21" data-line-number="21">SOFTWARE.</a></code></pre></div>
 <hr>
 </div>
-<div id="references" class="section level2 unnumbered">
+<div id="references" class="section level2">
 <h2 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h2>
 <div id="refs" class="references">
+
 <div id="ref-coyle2019sl3">
-<p>Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2019. “sl3: Modern Pipelines for Machine Learning and Super Learning.” <a href="https://github.com/tlverse/sl3" class="uri">https://github.com/tlverse/sl3</a>. <a href="https://doi.org/10.5281/zenodo.3251138" class="uri">https://doi.org/10.5281/zenodo.3251138</a>.</p>
+
+Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2019.
+“sl3: Modern Pipelines for Machine Learning and Super Learning.”
+<https:>.
+<https:>.
+
+</https:></https:>
 </div>
+
 <div id="ref-diaz2019causal">
-<p>Díaz, Iván, and Nima S Hejazi. 2019. “Causal Mediation Analysis for Stochastic Interventions.” <em>Submitted</em>. <a href="https://arxiv.org/abs/1901.02776" class="uri">https://arxiv.org/abs/1901.02776</a>.</p>
+
+Díaz, Iván, and Nima S Hejazi. 2019. “Causal Mediation Analysis for
+Stochastic Interventions.” *Submitted*.
+<https:>.
+
+</https:>
 </div>
+
 <div id="ref-diaz2011super">
-<p>Díaz, Iván, and Mark J van der Laan. 2011. “Super Learner Based Conditional Density Estimation with Application to Marginal Structural Models.” <em>The International Journal of Biostatistics</em> 7 (1). De Gruyter: 1–20.</p>
+
+Díaz, Iván, and Mark J van der Laan. 2011. “Super Learner Based
+Conditional Density Estimation with Application to Marginal Structural
+Models.” *The International Journal of Biostatistics* 7 (1). De Gruyter:
+1–20.
+
 </div>
+
 <div id="ref-diaz2012population">
-<p>———. 2012. “Population Intervention Causal Effects Based on Stochastic Interventions.” <em>Biometrics</em> 68 (2). Wiley Online Library: 541–49.</p>
+
+———. 2012. “Population Intervention Causal Effects Based on Stochastic
+Interventions.” *Biometrics* 68 (2). Wiley Online Library: 541–49.
+
 </div>
+
 <div id="ref-diaz2018stochastic">
-<p>———. 2018. “Stochastic Treatment Regimes.” In <em>Targeted Learning in Data Science: Causal Inference for Complex Longitudinal Studies</em>, 167–80. Springer Science &amp; Business Media.</p>
+
+———. 2018. “Stochastic Treatment Regimes.” In *Targeted Learning in Data
+Science: Causal Inference for Complex Longitudinal Studies*, 167–80.
+Springer Science &amp; Business Media.
+
 </div>
+
 <div id="ref-pfanzagl1985contributions">
-<p>Pfanzagl, J, and W Wefelmeyer. 1985. “Contributions to a General Asymptotic Statistical Theory.” <em>Statistics &amp; Risk Modeling</em> 3 (3-4): 379–88.</p>
+
+Pfanzagl, J, and W Wefelmeyer. 1985. “Contributions to a General
+Asymptotic Statistical Theory.” *Statistics &amp; Risk Modeling* 3 (3-4):
+379–88.
+
 </div>
+
 <div id="ref-rose2011targeted2sd">
-<p>Rose, Sherri, and Mark J van der Laan. 2011. “A Targeted Maximum Likelihood Estimator for Two-Stage Designs.” <em>The International Journal of Biostatistics</em> 7 (1): 1–21.</p>
+
+Rose, Sherri, and Mark J van der Laan. 2011. “A Targeted Maximum
+Likelihood Estimator for Two-Stage Designs.” *The International Journal
+of Biostatistics* 7 (1): 1–21.
+
 </div>
+
 </div>
 </div>
 </div>
@@ -330,16 +365,22 @@ SOFTWARE.</code></pre>
 </li>
 </ul>
 </div>
+<div class="community">
+<h2>Community</h2>
+<ul class="list-unstyled">
+<li><a href="CONTRIBUTING.html">Contributing guide</a></li>
+</ul>
+</div>
 <div class="developers">
 <h2>Developers</h2>
 <ul class="list-unstyled">
-<li>Nima Hejazi <br><small class="roles"> Author, maintainer, copyright holder </small> <a href="https://orcid.org/0000-0002-7127-2789" target="orcid.widget"><img src="https://members.orcid.org/sites/default/files/vector_iD_icon.svg" class="orcid" alt="ORCID" height="16"></a> </li>
-<li>David Benkeser <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-1019-8343" target="orcid.widget"><img src="https://members.orcid.org/sites/default/files/vector_iD_icon.svg" class="orcid" alt="ORCID" height="16"></a> </li>
+<li>Nima Hejazi <br><small class="roles"> Author, maintainer, copyright holder </small> <a href="https://orcid.org/0000-0002-7127-2789" target="orcid.widget"><img src="https://members.orcid.org/sites/default/files/vector_iD_icon.svg" class="orcid" alt="ORCID"></a> </li>
+<li>David Benkeser <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-1019-8343" target="orcid.widget"><img src="https://members.orcid.org/sites/default/files/vector_iD_icon.svg" class="orcid" alt="ORCID"></a> </li>
 <li><a href="authors.html">All authors...</a></li>
 </ul>
 </div>
 
-      <div class="dev-status">
+  <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://travis-ci.org/nhejazi/txshift"><img src="https://travis-ci.org/nhejazi/txshift.svg?branch=master" alt="Travis-CI Build Status"></a></li>
@@ -352,7 +393,6 @@ SOFTWARE.</code></pre>
 </ul>
 </div>
 </div>
-
 </div>
 
 
@@ -361,12 +401,14 @@ SOFTWARE.</code></pre>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.0.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>

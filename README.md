@@ -96,7 +96,7 @@ tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                )
 summary(tmle)
 #>     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator 
-#>     0.7474     0.7782     0.8062      2e-04 6.7562e-10       tmle 
+#>     0.7474     0.7782     0.8062      2e-04 6.7628e-11       tmle 
 #>     n_iter 
 #>          0
 
@@ -133,7 +133,7 @@ ipcw_tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                     )
 summary(ipcw_tmle)
 #>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-#>      0.7435      0.7765      0.8063       3e-04 -4.0325e-05        tmle 
+#>      0.7435      0.7765      0.8063       3e-04 -4.0324e-05        tmle 
 #>      n_iter 
 #>           1
 
