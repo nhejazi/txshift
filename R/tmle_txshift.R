@@ -224,8 +224,10 @@ tmle_txshift <- function(data_internal,
 #' @param method A \code{character} giving the type of regression to be used in
 #'  traversing the fluctuation sub-model. Choices are "weighted" and "standard".
 #'  Please consult the literature for details on the differences.
+#' @param flucmod_tol A \code{numeric} indicating the largest value to be
+#'  tolerated in the fluctuation model for the targeted minimum loss estimator.
 #'
-#' @importFrom stats qlogis glm fitted predict as.formula
+#' @importFrom stats qlogis glm fitted predict as.formula coef
 #' @importFrom data.table as.data.table setnames
 #'
 #' @export
@@ -233,7 +235,8 @@ fit_fluctuation <- function(Y,
                             Qn_scaled,
                             Hn,
                             ipc_weights = rep(1, length(Y)),
-                            method = c("standard", "weighted")) {
+                            method = c("standard", "weighted"),
+                            flucmod_tol = 1e3) {
 
   # scale the outcome for the logit transform
   y_star <- scale_to_unit(
@@ -263,9 +266,26 @@ fit_fluctuation <- function(Y,
           logit_Qn = Qn_noshift_logit,
           Hn = Hn$noshift
         )),
-        family = "binomial"
+        family = "binomial",
+        start = 0
       )
     )
+    coefs_fluc <- stats::coef(fluctuation_model)
+
+    # check covergence of fluctuation model and sanity of estimates
+    if (!fluctuation_model$converged || abs(max(coefs_fluc)) > flucmod_tol) {
+      suppressWarnings(
+        fluctuation_model <- stats::glm(
+          formula = stats::as.formula("y_star ~ offset(logit_Qn)"),
+          data = data.table::as.data.table(list(
+            y_star = y_star,
+            logit_Qn = Qn_noshift_logit
+          )),
+          weights = as.numeric(Hn$noshift * ipc_weights),
+          family = "binomial"
+        )
+      )
+    }
   } else if (method == "weighted") {
     # note that epsilon_n will be the intercept term here
     suppressWarnings(
@@ -276,9 +296,26 @@ fit_fluctuation <- function(Y,
           logit_Qn = Qn_noshift_logit
         )),
         weights = as.numeric(Hn$noshift * ipc_weights),
-        family = "binomial"
+        family = "binomial",
+        start = 0
       )
     )
+    coefs_fluc <- stats::coef(fluctuation_model)
+
+    # check covergence of fluctuation model and sanity of estimates
+    if (!fluctuation_model$converged || abs(max(coefs_fluc)) > flucmod_tol) {
+      suppressWarnings(
+        fluctuation_model <- stats::glm(
+          formula = stats::as.formula("y_star ~ offset(logit_Qn)"),
+          data = data.table::as.data.table(list(
+            y_star = y_star,
+            logit_Qn = Qn_noshift_logit
+          )),
+          weights = as.numeric(Hn$noshift * ipc_weights),
+          family = "binomial"
+        )
+      )
+    }
   }
 
   # get fitted values from fluctuation model

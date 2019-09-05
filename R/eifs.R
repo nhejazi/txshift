@@ -137,7 +137,9 @@ eif <- function(Y,
 #' @param fluctuation A \code{character} giving the type of regression to be
 #'  used in traversing the fluctuation submodel. The choices are "weighted" and
 #'  "standard".
-#' @param eif_tol A \code{numeric} providing the largest value to be tolerated
+#' @param flucmod_tol A \code{numeric} indicating the largest value to be
+#'  tolerated in the fluctuation model for the targeted minimum loss estimator.
+#' @param eif_tol A \code{numeric} indicating the largest value to be tolerated
 #'  as the mean of the efficient influence function.
 #' @param eif_reg_type Whether a flexible nonparametric function ought to be
 #'  used in the dimension-reduced nuisance regression of the targeting step for
@@ -147,7 +149,7 @@ eif <- function(Y,
 #'  In this step, the efficient influence function (EIF) is regressed against
 #'  covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).
 #'
-#' @importFrom stats var glm qlogis fitted predict as.formula
+#' @importFrom stats var glm qlogis fitted predict as.formula coef
 #' @importFrom data.table as.data.table set copy
 #' @importFrom assertthat assert_that
 #' @importFrom hal9001 fit_hal
@@ -168,6 +170,7 @@ ipcw_eif_update <- function(data_in,
                             Hn_estim,
                             estimator = c("tmle", "onestep"),
                             fluctuation = NULL,
+                            flucmod_tol = 1e3,
                             eif_tol = 1e-9,
                             eif_reg_type = c("hal", "glm")) {
   # get names of columns in sampling mechanism
@@ -260,13 +263,30 @@ ipcw_eif_update <- function(data_in,
       )
 
     # fit fluctuation regression
-    ipcw_fluc <- stats::glm(
-      stats::as.formula("Delta ~ -1 + offset(logit_ipcw) + eif_reg_cov"),
-      data = ipcw_fluc_reg_data,
-      family = "binomial"
+    # NOTE: set `start` to zero to ensure updates are not too large
+    suppressWarnings(
+      ipcw_fluc <- stats::glm(
+        stats::as.formula("Delta ~ -1 + offset(logit_ipcw) + eif_reg_cov"),
+        data = ipcw_fluc_reg_data,
+        family = "binomial",
+        start = 0
+      )
     )
+    coefs_fluc <- stats::coef(ipcw_fluc)
 
-    # now, we can obtain Pn* from the sub-model fluctuation
+    # safety checks for ensuring sanity of the fluctuation model fit
+    if (!ipcw_fluc$converged || abs(max(coefs_fluc)) > flucmod_tol) {
+      # if convergence fails or tolerance is violated, fit without `start`
+      suppressWarnings(
+        ipcw_fluc <- stats::glm(
+          stats::as.formula("Delta ~ -1 + offset(logit_ipcw) + eif_reg_cov"),
+          data = ipcw_fluc_reg_data,
+          family = "binomial"
+        )
+      )
+    }
+
+    # fitted values following submodel fluctuation
     ipcw_pred <- unname(stats::fitted(ipcw_fluc))
   } else {
     # just use the initial estimates of censoring probability for one-step
