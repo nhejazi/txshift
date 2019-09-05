@@ -155,12 +155,12 @@ using the `sl3` R package, consider consulting https://tlverse.org/sl3.
 
 ```{r}
 # SL learners to be used for most fits (e.g., IPCW, outcome regression)
-lrnr_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm_fast", "Lrnr_ranger")
+lrnr_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm", "Lrnr_ranger")
 sl_learner <- Lrnr_sl$new(learners = lrnr_lib, metalearner = Lrnr_nnls$new())
 
 # SL learners for conditional densities to be used for the propensity score fit
 lrnr_dens_lib <- make_learner_stack(list("Lrnr_condensier", nbins = 35,
-                                          bin_estimator = Lrnr_glm_fast$new(),
+                                          bin_estimator = Lrnr_glm$new(),
                                           bin_method = "equal.len",
                                           pool = FALSE),
                                     list("Lrnr_condensier", nbins = 30,

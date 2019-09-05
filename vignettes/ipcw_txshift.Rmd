@@ -26,7 +26,7 @@ when a censoring process is introduced into the observed data structure. In this
 case the observed data structure may be denoted $O = (W, \Delta A, Y)$, where
 $W$ is a set of baseline covariates, $A$ is a continuous-valued treatment or
 intervention, $Y$ is an outcome of interest, and $\Delta$ is an indicator of
-missingness ($1$ corresponding to being observed, $0$ to being missing). Perhaps
+censoring ($1$ corresponding to being observed, $0$ to being missing). Perhaps
 the best way to appreciate the utilities provided for computing IPCW-TMLEs in
 this R package is to work through examples, so let's simply jump to that.
 
@@ -184,7 +184,7 @@ using the `sl3` R package, consider consulting https://tlverse.org/sl3.
 
 ```{r make_sl}
 # SL learners to be used for most fits (e.g., IPCW, outcome regression)
-lrnr_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm_fast", "Lrnr_xgboost")
+lrnr_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm", "Lrnr_xgboost")
 sl_learner <- Lrnr_sl$new(learners = lrnr_lib, metalearner = Lrnr_nnls$new())
 
 # SL learners for conditional densities to be used for the propensity score fit
@@ -211,7 +211,7 @@ Using the framework provided by the [`sl3` package](https://tlverse.org/sl3),
 the nuisance parameters of the TML estimator may be fit with ensemble learning,
 using the cross-validation framework of the Super Learner algorithm of
 @vdl2007super. In principal, it would be desirable to estimate the parameter
-using data-adaptive stacked regressions for the samplign mechanism (via
+using data-adaptive stacked regressions for the sampling mechanism (via
 `ipcw_fit_args`, the treatment mechanism (via `g_fit_args`), and the outcome
 mechanism (via `Q_fit_args`). This could be done with a call to the `txshift`
 function like the following; however, we avoid running the following code chunk
