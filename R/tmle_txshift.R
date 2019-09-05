@@ -227,7 +227,7 @@ tmle_txshift <- function(data_internal,
 #' @param flucmod_tol A \code{numeric} indicating the largest value to be
 #'  tolerated in the fluctuation model for the targeted minimum loss estimator.
 #'
-#' @importFrom stats qlogis glm fitted predict as.formula
+#' @importFrom stats qlogis glm fitted predict as.formula coef
 #' @importFrom data.table as.data.table setnames
 #'
 #' @export
