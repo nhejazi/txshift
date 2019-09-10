@@ -234,7 +234,7 @@
 <div id="estimating-stochastic-interventions-effects-with-stacked-regressions" class="section level3">
 <h3 class="hasAnchor">
 <a href="#estimating-stochastic-interventions-effects-with-stacked-regressions" class="anchor"></a>Estimating Stochastic Interventions Effects with Stacked Regressions</h3>
-<p>Using the framework provided by the <a href="https://tlverse.org/sl3"><code>sl3</code> package</a>, the nuisance parameters of the TML estimator may be fit with ensemble learning, using the cross-validation framework of the Super Learner algorithm of <span class="citation">(<span class="citeproc-not-found" data-reference-id="vdl2007super"><strong>???</strong></span>)</span>.</p>
+<p>Using the framework provided by the <a href="https://tlverse.org/sl3"><code>sl3</code> package</a>, the nuisance parameters of the TML estimator may be fit with ensemble learning, using the cross-validation framework of the Super Learner algorithm of <span class="citation">van der Laan, Polley, and Hubbard (2007)</span>.</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">tmle_sl_shift_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw"><a href="../reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y, <span class="dt">delta =</span> delta,</a>
 <a class="sourceLine" id="cb20-2" data-line-number="2">                           <span class="dt">fluctuation =</span> <span class="st">"standard"</span>,</a>
 <a class="sourceLine" id="cb20-3" data-line-number="3">                           <span class="dt">g_fit_args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"sl"</span>,</a>
@@ -248,12 +248,12 @@
 <pre><code>## Warning: `mut_node_cdr()` is deprecated as of rlang 0.2.0.
 ## This warning is displayed once per session.</code></pre>
 <pre><code>## 
-## Iter: 1 fn: 3366.7280     Pars:  0.7021780895 0.0000004081 0.2978215024
-## Iter: 2 fn: 3366.7280     Pars:  0.7021781606 0.0000002626 0.2978215768
+## Iter: 1 fn: 3367.1983     Pars:  0.703297624 0.000001554 0.296700822
+## Iter: 2 fn: 3367.1983     Pars:  0.7032979308 0.0000008734 0.2967011957
 ## solnp--&gt; Completed in 2 iterations</code></pre>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(tmle_sl_shift_<span class="dv">1</span>)</a></code></pre></div>
 <pre><code>##     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator 
-##     2.3848      2.523     2.6611      0.005 6.4346e-14       tmle 
+##     2.3847     2.5229     2.6611      0.005 1.0419e-13       tmle 
 ##     n_iter 
 ##          0</code></pre>
 <p>As before, we may vary the regression for the submodel fluctuation procedure by weighting each observation by the value of the so-called clever covariate rather than using such an auxiliary covariate directly in the regression procedure:</p>
@@ -266,12 +266,12 @@
 <a class="sourceLine" id="cb26-7" data-line-number="7">                                             <span class="dt">sl_learners =</span> sl_learner)</a>
 <a class="sourceLine" id="cb26-8" data-line-number="8">                          )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 3665.6100     Pars:  0.6736071160 0.0000005196 0.3263923634
-## Iter: 2 fn: 3665.6100     Pars:  0.673607209 0.000000333 0.326392458
+## Iter: 1 fn: 3671.3885     Pars:  0.6736524249 0.0000003618 0.3263472123
+## Iter: 2 fn: 3671.3885     Pars:  0.6736524898 0.0000002323 0.3263472779
 ## solnp--&gt; Completed in 2 iterations</code></pre>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(tmle_sl_shift_<span class="dv">2</span>)</a></code></pre></div>
 <pre><code>##     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator 
-##      1.931     2.0578     2.1847     0.0042 9.3198e-16       tmle 
+##     1.9311      2.058     2.1849     0.0042 1.5285e-15       tmle 
 ##     n_iter 
 ##          0</code></pre>
 </div>
@@ -291,7 +291,7 @@
 <p><span class="math display">\[\sigma_n^2 = \frac{1}{n} \sum_{i = 1}^{n} D^2(\bar{Q}_n^*, g_n)(O_i)\]</span></p>
 <div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1">(ci_shift &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/confint.html">confint</a></span>(tmle_sl_shift_<span class="dv">1</span>))</a></code></pre></div>
 <pre><code>##   lwr_ci      est   upr_ci 
-## 2.384780 2.522961 2.661143</code></pre>
+## 2.384683 2.522878 2.661073</code></pre>
 </div>
 </div>
 <div id="advanced-usage-user-specified-regressions" class="section level2">
@@ -349,6 +349,9 @@
 </div>
 <div id="ref-diaz2018stochastic">
 <p>———. 2018. “Stochastic Treatment Regimes.” In <em>Targeted Learning in Data Science: Causal Inference for Complex Longitudinal Studies</em>, 167–80. Springer Science &amp; Business Media.</p>
+</div>
+<div id="ref-vdl2007super">
+<p>van der Laan, Mark J, Eric C Polley, and Alan E Hubbard. 2007. “Super Learner.” <em>Statistical Applications in Genetics and Molecular Biology</em> 6 (1).</p>
 </div>
 <div id="ref-vdl2011targeted">
 <p>van der Laan, Mark J, and Sherri Rose. 2011. <em>Targeted Learning: Causal Inference for Observational and Experimental Data</em>. Springer Science &amp; Business Media.</p>
