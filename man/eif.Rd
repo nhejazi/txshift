@@ -46,9 +46,4 @@ inference for the parameter based on the efficient influence function of the
 target parameter, which takes the following form:
 %D(P)(o) = H(a,w)(y - \bar{Q}(a,w)) + \bar{Q}(d(a,w)) - \psi(P)
 }
-\author{
-Nima Hejazi
-
-David Benkeser
-}
 \keyword{internal}

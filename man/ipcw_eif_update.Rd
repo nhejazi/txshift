@@ -6,7 +6,7 @@
 \usage{
 ipcw_eif_update(data_in, C, V, ipc_mech, ipc_weights, ipc_weights_norm,
   Qn_estim, Hn_estim, estimator = c("tmle", "onestep"),
-  fluctuation = NULL, flucmod_tol = 1000, eif_tol = 1e-09,
+  fluctuation = NULL, flucmod_tol = 100, eif_tol = 1e-09,
   eif_reg_type = c("hal", "glm"))
 }
 \arguments{
@@ -74,10 +74,5 @@ this function until convergence criteria defined over the efficient influence
 function are satisfied (e.g., a mean of very nearly zero). For a detailed
 description of the IPCW-TMLE, please consult Rose and van der Laan (2011)
 <doi:10.2202/1557-4679.1217>. INTERNAL USE ONLY.
-}
-\author{
-Nima Hejazi
-
-David Benkeser
 }
 \keyword{internal}

@@ -36,9 +36,6 @@ utils::globalVariables(c("..v_names"))
 #' @keywords internal
 #'
 #' @export
-#'
-#' @author Nima Hejazi
-#' @author David Benkeser
 eif <- function(Y,
                 Qn,
                 Hn,
@@ -157,9 +154,6 @@ eif <- function(Y,
 #' @keywords internal
 #'
 #' @export
-#'
-#' @author Nima Hejazi
-#' @author David Benkeser
 ipcw_eif_update <- function(data_in,
                             C,
                             V,
@@ -170,7 +164,7 @@ ipcw_eif_update <- function(data_in,
                             Hn_estim,
                             estimator = c("tmle", "onestep"),
                             fluctuation = NULL,
-                            flucmod_tol = 1e3,
+                            flucmod_tol = 100,
                             eif_tol = 1e-9,
                             eif_reg_type = c("hal", "glm")) {
   # get names of columns in sampling mechanism
@@ -284,6 +278,11 @@ ipcw_eif_update <- function(data_in,
           family = "binomial"
         )
       )
+      # if the fluctuation model hasn't converged or is unstable, simply set
+      # the coefficients to disable updating, i.e., coef(eif_reg_cov) := 0
+      if (!ipcw_fluc$converged || abs(max(coefs_fluc)) > flucmod_tol) {
+        ipcw_fluc$coefficients <- 0
+      }
     }
 
     # fitted values following submodel fluctuation

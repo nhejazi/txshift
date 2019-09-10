@@ -7,7 +7,6 @@
 #'
 #' @keywords internal
 shift_additive <- function(A, W = NULL, delta) {
-  # could support more than just additive shifts?
   shifted_treatment <- A + delta
   return(shifted_treatment)
 }

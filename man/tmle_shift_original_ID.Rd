@@ -66,7 +66,5 @@ tmle00 <- tmle_shift_original_ID(
 }
 \author{
 Iván Díaz
-
-Nima Hejazi
 }
 \keyword{internal}

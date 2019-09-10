@@ -6,7 +6,7 @@
 \usage{
 msm_vimshift(Y, A, W, C = rep(1, length(Y)), V = NULL,
   delta_grid = seq(-0.5, 0.5, 0.5), estimator = c("tmle", "onestep"),
-  weighting = c("variance", "identity"), ci_level = 0.95,
+  weighting = c("identity", "variance"), ci_level = 0.95,
   ci_type = c("marginal", "simultaneous"), ...)
 }
 \arguments{
@@ -41,7 +41,8 @@ augmented inverse probability weighted (AIPW) estimator.}
 
 \item{weighting}{Whether to weight each parameter estimate by the inverse of
 its variance (in order to improve stability of the resultant MSM fit) or to
-simply weight all parameter estimates equally.}
+simply weight all parameter estimates equally. The default is the option
+\code{"identity"}, weighting all estimates identically.}
 
 \item{ci_level}{A \code{numeric} indicating the desired coverage level of the
 confidence interval to be computed.}
@@ -49,8 +50,8 @@ confidence interval to be computed.}
 \item{ci_type}{Whether to construct a simultaneous confidence band covering
 all parameter estimates at once or marginal confidence intervals covering
 each parameter estimate separately. The default is to construct marginal
-confidence intervals for each parameter estimate rather than simultaneous
-confidence bands.}
+confidence intervals for each parameter estimate rather than a simultaneous
+confidence band.}
 
 \item{...}{Additional arguments to be passed to \code{txshift}.}
 }

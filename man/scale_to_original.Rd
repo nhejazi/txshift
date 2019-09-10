@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{scale_to_original}
 \alias{scale_to_original}
-\title{Scale transformed values in the unit interval to the original scale}
+\title{Transform values from the unit interval back to their original scale}
 \usage{
 scale_to_original(scaled_vals, max_orig, min_orig)
 }
@@ -17,6 +17,6 @@ values on the original scale.}
 values on the original scale.}
 }
 \description{
-Scale transformed values in the unit interval to the original scale
+Transform values from the unit interval back to their original scale
 }
 \keyword{internal}

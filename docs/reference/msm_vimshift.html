@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.9</span>
       </span>
     </div>
 
@@ -134,7 +134,7 @@
 
     <pre class="usage"><span class='fu'>msm_vimshift</span>(<span class='no'>Y</span>, <span class='no'>A</span>, <span class='no'>W</span>, <span class='kw'>C</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>Y</span>)), <span class='kw'>V</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>delta_grid</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(-<span class='fl'>0.5</span>, <span class='fl'>0.5</span>, <span class='fl'>0.5</span>), <span class='kw'>estimator</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"tmle"</span>, <span class='st'>"onestep"</span>),
-  <span class='kw'>weighting</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"variance"</span>, <span class='st'>"identity"</span>), <span class='kw'>ci_level</span> <span class='kw'>=</span> <span class='fl'>0.95</span>,
+  <span class='kw'>weighting</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"identity"</span>, <span class='st'>"variance"</span>), <span class='kw'>ci_level</span> <span class='kw'>=</span> <span class='fl'>0.95</span>,
   <span class='kw'>ci_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"marginal"</span>, <span class='st'>"simultaneous"</span>), <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -187,7 +187,8 @@ augmented inverse probability weighted (AIPW) estimator.</p></td>
       <th>weighting</th>
       <td><p>Whether to weight each parameter estimate by the inverse of
 its variance (in order to improve stability of the resultant MSM fit) or to
-simply weight all parameter estimates equally.</p></td>
+simply weight all parameter estimates equally. The default is the option
+<code>"identity"</code>, weighting all estimates identically.</p></td>
     </tr>
     <tr>
       <th>ci_level</th>
@@ -199,8 +200,8 @@ confidence interval to be computed.</p></td>
       <td><p>Whether to construct a simultaneous confidence band covering
 all parameter estimates at once or marginal confidence intervals covering
 each parameter estimate separately. The default is to construct marginal
-confidence intervals for each parameter estimate rather than simultaneous
-confidence bands.</p></td>
+confidence intervals for each parameter estimate rather than a simultaneous
+confidence band.</p></td>
     </tr>
     <tr>
       <th>...</th>
