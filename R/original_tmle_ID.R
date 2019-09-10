@@ -47,10 +47,8 @@
 #' }
 #'
 #' @author Iván Díaz
-#' @author Nima Hejazi
 #'
 #' @keywords internal
-#
 tmle_shift_original_ID <- function(Y, A, W,
                                    Qn, gn,
                                    delta, tol = 1e-5, iter_max = 5, A_val) {
@@ -79,8 +77,12 @@ tmle_shift_original_ID <- function(Y, A, W,
     )
     ini.out <- new.out
   }
-  Qnd <- t(sapply(seq_len(nrow(W)), function(i) ini.out$Qn(A_val + delta, W[i, ])))
-  gnd <- t(sapply(seq_len(nrow(W)), function(i) ini.out$gn(A_val, W[i, ])))
+  Qnd <- t(sapply(seq_len(nrow(W)), function(i) {
+                    ini.out$Qn(A_val + delta, W[i, ])
+                  }))
+  gnd <- t(sapply(seq_len(nrow(W)), function(i) {
+                    ini.out$gn(A_val, W[i, ])
+                  }))
   gnd <- gnd / rowSums(gnd)
 
   # plug in tmle
@@ -104,8 +106,8 @@ tmle_shift_original_ID <- function(Y, A, W,
 #' @param prev_sum The sum computed from this fluctuation step in the previous
 #'  iteration.
 #' @param first A \code{logical} for whether this is the first iteration of the
-#'  iterative fluctutation step.
-#' @param h_int ???
+#'  iterative fluctuation step.
+#' @param h_int Auxiliary (clever) covariate?
 #' @param Y A \code{numeric} vector of observed outcomes.
 #' @param A A \code{numeric} vector of observed treatments.
 #' @param W A \code{matrix} or \code{data.frame} of baseline covariates.
@@ -118,10 +120,8 @@ tmle_shift_original_ID <- function(Y, A, W,
 #' @importFrom stats uniroot
 #'
 #' @author Iván Díaz
-#' @author Nima Hejazi
 #'
 #' @keywords internal
-#
 f_iter <- function(Qn, gn, gn0d = NULL, prev_sum = 0, first = FALSE, h_int,
                    Y, A, W, delta, A_val) {
 
@@ -160,15 +160,16 @@ f_iter <- function(Qn, gn, gn0d = NULL, prev_sum = 0, first = FALSE, h_int,
 
 #' Estimating Equation
 #'
-#' @param eps ...
+#' @param eps Fluctuation parameter.
 #' @param Qn Function to compute the outcome regression: Q(A, W) = E(Y | A, W).
-#' @param QnAW ...
-#' @param EQnd ...
+#' @param QnAW Estimated outcome mechnism.
+#' @param EQnd Parameter estimate (expectation of Estimated outcome mechanism
+#'  under the proposed shift).
 #' @param gn0d A \code{Numeric} computed for the propensity score (gn) from the
 #'  first iteration only.
 #' @param H1 Ratio obtained from comparing the propensity score (gn) before and
 #'  after application of the shift \code{delta}.
-#' @param D2 ...
+#' @param D2 ???
 #' @param prev_sum The sum computed from this fluctuation step in the previous
 #'  iteration.
 #' @param Y A \code{numeric} vector of observed outcomes.
@@ -178,10 +179,8 @@ f_iter <- function(Qn, gn, gn0d = NULL, prev_sum = 0, first = FALSE, h_int,
 #'  interest (i.e., the effect of shifting treatment \code{A} by delta units).
 #'
 #' @author Iván Díaz
-#' @author Nima Hejazi
 #'
 #' @keywords internal
-#
 est_eqn <- function(eps, QnAW, Qn, H1, gn0d, EQnd, D2, prev_sum, Y, A, W,
                     delta) {
   sum((Y - (QnAW + eps * H1)) * H1 + (Qn(A + delta, W) - EQnd) -

@@ -102,7 +102,7 @@ tmle_txshift <- function(data_internal,
       # iterate counter
       n_steps <- n_steps + 1
 
-      # update submodel fluctuation, re-compute EIF, overwrite EIF
+      # update fluctuation model, re-compute EIF, overwrite EIF
       tmle_ipcw_eif <- ipcw_eif_update(
         data_in = data_internal,
         C = C,

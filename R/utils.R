@@ -141,7 +141,7 @@ bound_propensity <- function(vals) {
 
 ################################################################################
 
-#' Scale values to the unit interval [0, 1]
+#' Transform values by scaling to the unit interval
 #'
 #' @param vals A \code{numeric} vector corresponding to the observed values of
 #'  the variable of interest, to be re-scaled to the unit interval [0, 1].
@@ -155,7 +155,7 @@ scale_to_unit <- function(vals) {
 
 ################################################################################
 
-#' Scale transformed values in the unit interval to the original scale
+#' Transform values from the unit interval back to their original scale
 #'
 #' @param scaled_vals A \code{numeric} vector corresponding to re-scaled values
 #'  in the unit interval, to be re-scaled to the original interval.

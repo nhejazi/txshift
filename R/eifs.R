@@ -36,9 +36,6 @@ utils::globalVariables(c("..v_names"))
 #' @keywords internal
 #'
 #' @export
-#'
-#' @author Nima Hejazi
-#' @author David Benkeser
 eif <- function(Y,
                 Qn,
                 Hn,
@@ -157,9 +154,6 @@ eif <- function(Y,
 #' @keywords internal
 #'
 #' @export
-#'
-#' @author Nima Hejazi
-#' @author David Benkeser
 ipcw_eif_update <- function(data_in,
                             C,
                             V,

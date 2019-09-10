@@ -233,7 +233,6 @@ est_g <- function(A,
 #' @importFrom sl3 sl3_Task
 #'
 #' @export
-#
 est_Q <- function(Y,
                   A,
                   W,
@@ -242,9 +241,6 @@ est_Q <- function(Y,
                   fit_type = c("sl", "glm"),
                   glm_formula = "Y ~ .",
                   sl_learners = NULL) {
-  ##############################################################################
-  # make data objects from inputs but using the outcome y_star instead of y
-  ##############################################################################
   # scale the outcome for logit transform
   y_star <- scale_to_unit(vals = Y)
 
@@ -261,9 +257,7 @@ est_Q <- function(Y,
     A = data_in$A, delta = delta
   ))
 
-  ##############################################################################
   # fit a logistic regression and extract the predicted probabilities
-  ##############################################################################
   if (fit_type == "glm" & !is.null(glm_formula)) {
     # need to remove IPCW column from input data.table object for GLM fits
     data.table::set(data_in, j = "ipc_weights", value = NULL)
@@ -294,9 +288,7 @@ est_Q <- function(Y,
     ))
   }
 
-  ##############################################################################
   # fit a binary Super Learner and get the predicted probabilities
-  ##############################################################################
   if (fit_type == "sl" & !is.null(sl_learners)) {
     # make sl3 task for original data
     task_noshift <- sl3::sl3_Task$new(
@@ -324,9 +316,7 @@ est_Q <- function(Y,
     pred_star_Qn_shifted <- sl_fit_noshift$predict(task_shifted)
   }
 
-  ##############################################################################
-  # clean up predictions and generate output
-  ##############################################################################
+  # NOTE: clean up predictions and generate output
   # avoid values that are exactly 0 or 1 in the scaled Qn and Qn_shifted
   pred_star_Qn <- bound_precision(vals = pred_star_Qn)
   pred_star_Qn_shifted <- bound_precision(vals = pred_star_Qn_shifted)
@@ -364,23 +354,18 @@ est_Q <- function(Y,
 #'  class as computed using standard logistic regression.
 #'
 #' @export
-#
 est_ipcw <- function(V,
                      Delta,
                      fit_type = c("sl", "glm"),
                      sl_learners = NULL) {
-  ##############################################################################
   # make data objects from inputs
-  ##############################################################################
   fit_type <- match.arg(fit_type)
   data_in <- data.table::as.data.table(cbind(Delta, V))
   if (!is.matrix(V)) V <- as.matrix(V)
   names_V <- paste0("V", seq_len(ncol(V)))
   data.table::setnames(data_in, c("Delta", names_V))
 
-  ##############################################################################
   # make sl3 tasks from the data if fitting Super Learners
-  ##############################################################################
   if (fit_type == "sl" & !is.null(sl_learners)) {
     sl_task <- sl3::sl3_Task$new(
       data = data_in,
@@ -390,9 +375,7 @@ est_ipcw <- function(V,
     )
   }
 
-  ##############################################################################
   # fit logistic regression or binomial SL to get class probabilities for IPCW
-  ##############################################################################
   if (fit_type == "glm" & is.null(sl_learners)) {
     ipcw_reg <- stats::glm(
       as.formula("Delta ~ ."),
@@ -428,7 +411,6 @@ est_ipcw <- function(V,
 #' @importFrom data.table as.data.table setnames
 #'
 #' @export
-#
 est_Hn <- function(gn, a = NULL, w = NULL) {
   # set any g(a|w) = 0 values to a very small value above zero
   gn$noshift <- bound_propensity(gn$noshift)
