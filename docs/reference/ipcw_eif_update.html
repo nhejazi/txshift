@@ -77,7 +77,7 @@ description of the IPCW-TMLE, please consult Rose and van der Laan (2011)
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.9</span>
       </span>
     </div>
 
@@ -150,7 +150,7 @@ description of the IPCW-TMLE, please consult Rose and van der Laan (2011)
 
     <pre class="usage"><span class='fu'>ipcw_eif_update</span>(<span class='no'>data_in</span>, <span class='no'>C</span>, <span class='no'>V</span>, <span class='no'>ipc_mech</span>, <span class='no'>ipc_weights</span>, <span class='no'>ipc_weights_norm</span>,
   <span class='no'>Qn_estim</span>, <span class='no'>Hn_estim</span>, <span class='kw'>estimator</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"tmle"</span>, <span class='st'>"onestep"</span>),
-  <span class='kw'>fluctuation</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>flucmod_tol</span> <span class='kw'>=</span> <span class='fl'>1000</span>, <span class='kw'>eif_tol</span> <span class='kw'>=</span> <span class='fl'>1e-09</span>,
+  <span class='kw'>fluctuation</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>flucmod_tol</span> <span class='kw'>=</span> <span class='fl'>100</span>, <span class='kw'>eif_tol</span> <span class='kw'>=</span> <span class='fl'>1e-09</span>,
   <span class='kw'>eif_reg_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"hal"</span>, <span class='st'>"glm"</span>))</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -246,9 +246,6 @@ covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).</p><
       <li><a href="#arguments">Arguments</a></li>
     </ul>
 
-    <h2>Author</h2>
-    <p>Nima Hejazi</p>
-<p>David Benkeser</p>
   </div>
 </div>
 

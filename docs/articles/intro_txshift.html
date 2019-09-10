@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.9</span>
       </span>
     </div>
 
@@ -90,7 +90,7 @@
 <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://www.benkeserstatistics.com/">David Benkeser</a>
 </h4>
             
-            <h4 class="date">2019-09-04</h4>
+            <h4 class="date">2019-09-10</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nhejazi/txshift/blob/master/vignettes/intro_txshift.Rmd"><code>vignettes/intro_txshift.Rmd</code></a></small>
       <div class="hidden name"><code>intro_txshift.Rmd</code></div>
@@ -126,7 +126,7 @@
 <pre><code>## haldensify v0.0.3: Conditional Density Estimation with the Highly Adaptive Lasso</code></pre>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(sl3)</a>
 <a class="sourceLine" id="cb11-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(txshift)</a></code></pre></div>
-<pre><code>## txshift v0.2.8: Targeted Learning of the Causal Effects of Stochastic Interventions</code></pre>
+<pre><code>## txshift v0.2.9: Targeted Learning of the Causal Effects of Stochastic Interventions</code></pre>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">429153</span>)</a></code></pre></div>
 <hr>
 </div>
@@ -248,12 +248,12 @@
 <pre><code>## Warning: `mut_node_cdr()` is deprecated as of rlang 0.2.0.
 ## This warning is displayed once per session.</code></pre>
 <pre><code>## 
-## Iter: 1 fn: 3366.6245     Pars:  0.7039264454 0.0000004343 0.2960731204
-## Iter: 2 fn: 3366.6245     Pars:  0.7039265015 0.0000002795 0.2960732190
+## Iter: 1 fn: 3366.7280     Pars:  0.7021780895 0.0000004081 0.2978215024
+## Iter: 2 fn: 3366.7280     Pars:  0.7021781606 0.0000002626 0.2978215768
 ## solnp--&gt; Completed in 2 iterations</code></pre>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(tmle_sl_shift_<span class="dv">1</span>)</a></code></pre></div>
 <pre><code>##     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator 
-##     2.3843     2.5225     2.6607      0.005 1.7835e-13       tmle 
+##     2.3848      2.523     2.6611      0.005 6.4346e-14       tmle 
 ##     n_iter 
 ##          0</code></pre>
 <p>As before, we may vary the regression for the submodel fluctuation procedure by weighting each observation by the value of the so-called clever covariate rather than using such an auxiliary covariate directly in the regression procedure:</p>
@@ -266,12 +266,12 @@
 <a class="sourceLine" id="cb26-7" data-line-number="7">                                             <span class="dt">sl_learners =</span> sl_learner)</a>
 <a class="sourceLine" id="cb26-8" data-line-number="8">                          )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 3663.9670     Pars:  0.6740703504 0.0000005705 0.3259290781
-## Iter: 2 fn: 3663.9670     Pars:  0.6740704384 0.0000003668 0.3259291948
+## Iter: 1 fn: 3665.6100     Pars:  0.6736071160 0.0000005196 0.3263923634
+## Iter: 2 fn: 3665.6100     Pars:  0.673607209 0.000000333 0.326392458
 ## solnp--&gt; Completed in 2 iterations</code></pre>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(tmle_sl_shift_<span class="dv">2</span>)</a></code></pre></div>
 <pre><code>##     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator 
-##     1.9309     2.0578     2.1847     0.0042 1.0535e-15       tmle 
+##      1.931     2.0578     2.1847     0.0042 9.3198e-16       tmle 
 ##     n_iter 
 ##          0</code></pre>
 </div>
@@ -291,7 +291,7 @@
 <p><span class="math display">\[\sigma_n^2 = \frac{1}{n} \sum_{i = 1}^{n} D^2(\bar{Q}_n^*, g_n)(O_i)\]</span></p>
 <div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1">(ci_shift &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/confint.html">confint</a></span>(tmle_sl_shift_<span class="dv">1</span>))</a></code></pre></div>
 <pre><code>##   lwr_ci      est   upr_ci 
-## 2.384267 2.522495 2.660723</code></pre>
+## 2.384780 2.522961 2.661143</code></pre>
 </div>
 </div>
 <div id="advanced-usage-user-specified-regressions" class="section level2">

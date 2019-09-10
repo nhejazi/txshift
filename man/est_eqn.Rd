@@ -7,9 +7,9 @@
 est_eqn(eps, QnAW, Qn, H1, gn0d, EQnd, D2, prev_sum, Y, A, W, delta)
 }
 \arguments{
-\item{eps}{...}
+\item{eps}{Fluctuation parameter.}
 
-\item{QnAW}{...}
+\item{QnAW}{Estimated outcome mechnism.}
 
 \item{Qn}{Function to compute the outcome regression: Q(A, W) = E(Y | A, W).}
 
@@ -19,9 +19,10 @@ after application of the shift \code{delta}.}
 \item{gn0d}{A \code{Numeric} computed for the propensity score (gn) from the
 first iteration only.}
 
-\item{EQnd}{...}
+\item{EQnd}{Parameter estimate (expectation of Estimated outcome mechanism
+under the proposed shift).}
 
-\item{D2}{...}
+\item{D2}{???}
 
 \item{prev_sum}{The sum computed from this fluctuation step in the previous
 iteration.}
@@ -40,7 +41,5 @@ Estimating Equation
 }
 \author{
 Iván Díaz
-
-Nima Hejazi
 }
 \keyword{internal}

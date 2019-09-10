@@ -19,9 +19,9 @@ first iteration only.}
 iteration.}
 
 \item{first}{A \code{logical} for whether this is the first iteration of the
-iterative fluctutation step.}
+iterative fluctuation step.}
 
-\item{h_int}{???}
+\item{h_int}{Auxiliary (clever) covariate?}
 
 \item{Y}{A \code{numeric} vector of observed outcomes.}
 
@@ -41,7 +41,5 @@ Iterative Fluctuation
 }
 \author{
 Iván Díaz
-
-Nima Hejazi
 }
 \keyword{internal}

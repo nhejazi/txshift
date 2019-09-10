@@ -78,11 +78,11 @@ tmle_shift_original_ID <- function(Y, A, W,
     ini.out <- new.out
   }
   Qnd <- t(sapply(seq_len(nrow(W)), function(i) {
-                    ini.out$Qn(A_val + delta, W[i, ])
-                  }))
+    ini.out$Qn(A_val + delta, W[i, ])
+  }))
   gnd <- t(sapply(seq_len(nrow(W)), function(i) {
-                    ini.out$gn(A_val, W[i, ])
-                  }))
+    ini.out$gn(A_val, W[i, ])
+  }))
   gnd <- gnd / rowSums(gnd)
 
   # plug in tmle
