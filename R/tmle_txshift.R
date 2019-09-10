@@ -260,31 +260,37 @@ fit_fluctuation <- function(Y,
         formula = stats::as.formula(
           "y_star ~ -1 + offset(logit_Qn) + Hn"
         ),
-        weights = ipc_weights,
         data = data.table::as.data.table(list(
           y_star = y_star,
           logit_Qn = Qn_noshift_logit,
           Hn = Hn$noshift
         )),
+        weights = ipc_weights,
         family = "binomial",
         start = 0
       )
     )
     coefs_fluc <- stats::coef(fluctuation_model)
 
-    # check covergence of fluctuation model and sanity of estimates
+    # check convergence of fluctuation model and sanity of estimates
     if (!fluctuation_model$converged || abs(max(coefs_fluc)) > flucmod_tol) {
       suppressWarnings(
         fluctuation_model <- stats::glm(
-          formula = stats::as.formula("y_star ~ offset(logit_Qn)"),
+          formula = stats::as.formula("y_star ~ -1 + offset(logit_Qn) + Hn"),
           data = data.table::as.data.table(list(
             y_star = y_star,
-            logit_Qn = Qn_noshift_logit
+            logit_Qn = Qn_noshift_logit,
+            Hn = Hn$noshift
           )),
-          weights = as.numeric(Hn$noshift * ipc_weights),
+          weights = ipc_weights,
           family = "binomial"
         )
       )
+      # if the fluctuation model hasn't converged or is unstable, simply set
+      # the coefficients to disable updating, i.e., coef(Hn) := 0
+      if (!fluctuation_model$converged | abs(max(coefs_fluc)) > flucmod_tol) {
+        fluctuation_model$coefficients <- 0
+      }
     }
   } else if (method == "weighted") {
     # note that epsilon_n will be the intercept term here
@@ -315,6 +321,11 @@ fit_fluctuation <- function(Y,
           family = "binomial"
         )
       )
+      # if the updated fluctuation model hasn't converged or is unstable,
+      # simply set the coefficient to zero to disable updating
+      if (!fluctuation_model$converged | abs(max(coefs_fluc)) > flucmod_tol) {
+        fluctuation_model$coefficients <- 0
+      }
     }
   }
 

@@ -284,6 +284,11 @@ ipcw_eif_update <- function(data_in,
           family = "binomial"
         )
       )
+      # if the fluctuation model hasn't converged or is unstable, simply set
+      # the coefficients to disable updating, i.e., coef(eif_reg_cov) := 0
+      if (!ipcw_fluc$converged || abs(max(coefs_fluc)) > flucmod_tol) {
+        ipcw_fluc$coefficients <- 0
+      }
     }
 
     # fitted values following submodel fluctuation
