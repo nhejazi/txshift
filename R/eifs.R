@@ -170,7 +170,7 @@ ipcw_eif_update <- function(data_in,
                             Hn_estim,
                             estimator = c("tmle", "onestep"),
                             fluctuation = NULL,
-                            flucmod_tol = 1e3,
+                            flucmod_tol = 100,
                             eif_tol = 1e-9,
                             eif_reg_type = c("hal", "glm")) {
   # get names of columns in sampling mechanism

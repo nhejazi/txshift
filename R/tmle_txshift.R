@@ -236,7 +236,7 @@ fit_fluctuation <- function(Y,
                             Hn,
                             ipc_weights = rep(1, length(Y)),
                             method = c("standard", "weighted"),
-                            flucmod_tol = 1e3) {
+                            flucmod_tol = 100) {
 
   # scale the outcome for the logit transform
   y_star <- scale_to_unit(
