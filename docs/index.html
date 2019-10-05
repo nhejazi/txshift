@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -101,12 +101,12 @@
 <blockquote>
 <p>Targeted Learning of the Causal Effects of Stochastic Interventions</p>
 </blockquote>
-<p><strong>Authors:</strong> <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://www.benkeserstatistics.com/">David Benkeser</a></p>
+<p><strong>Authors:</strong> <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://www.sph.emory.edu/faculty/profile/#!dbenkes">David Benkeser</a></p>
 <hr>
 <div id="whats-txshift" class="section level2">
 <h2 class="hasAnchor">
 <a href="#whats-txshift" class="anchor"></a>What’s <code>txshift</code>?</h2>
-<p>The <code>txshift</code> R package is designed to provide facilities for the construction of efficient estimators of a causal parameter defined as the counterfactual mean of an outcome under stochastic mechanisms for treatment assignment (Díaz and van der Laan 2012). <code>txshift</code> implements and builds upon a simplified algorithm for the targeted maximum likelihood (TML) estimator of such a causal parameter, originally proposed by Díaz and van der Laan (2018), and makes use of analogous machinery to compute an efficient one-step estimator (Pfanzagl and Wefelmeyer 1985). <code>txshift</code> integrates with the <a href="https://github.com/tlverse/sl3"><code>sl3</code> package</a> (Coyle et al. 2019) to allow for (ensemble) machine learning to be leveraged in the estimation procedure.</p>
+<p>The <code>txshift</code> R package is designed to provide facilities for the construction of efficient estimators of a causal parameter defined as the counterfactual mean of an outcome under stochastic mechanisms for treatment assignment (Díaz and van der Laan 2012). <code>txshift</code> implements and builds upon a simplified algorithm for the targeted maximum likelihood (TML) estimator of such a causal parameter, originally proposed by Díaz and van der Laan (2018), and makes use of analogous machinery to compute an efficient one-step estimator (Pfanzagl and Wefelmeyer 1985). <code>txshift</code> integrates with the <a href="https://github.com/tlverse/sl3"><code>sl3</code> package</a> (Coyle et al. 2019) to allow for ensemble machine learning to be leveraged in the estimation procedure.</p>
 <p>For many practical applications (e.g., vaccine efficacy trials), observed data is often subject to a two-phase sampling mechanism (i.e., through the use of a two-stage design). In such cases, efficient estimators (of both varieties) must be augmented to construct unbiased estimates of the population-level causal parameter. Rose and van der Laan (2011) first introduced an augmentation procedure that relies on introducing inverse probability of censoring (IPC) weights directly to an appropriate loss function or to the efficient influence function estimating equation. <code>txshift</code> extends this approach to compute IPC-weighted one-step and TML estimators of the counterfactual mean under a stochastic treatment regime.</p>
 <hr>
 </div>
@@ -114,7 +114,7 @@
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p>Install the most recent <em>stable release</em> from GitHub via <a href="https://www.rstudio.com/products/rpackages/devtools/"><code>devtools</code></a>:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/devtools/man/reexports.html">install_github</a></span>(<span class="st">"nhejazi/txshift"</span>, <span class="dt">build_vignettes =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html">install_github</a></span>(<span class="st">"nhejazi/txshift"</span>, <span class="dt">build_vignettes =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
 <hr>
 </div>
 <div id="example" class="section level2">
@@ -224,10 +224,25 @@
 <h2 class="hasAnchor">
 <a href="#citation" class="anchor"></a>Citation</h2>
 <p>After using the <code>txshift</code> R package, please cite the following:</p>
-<pre><code>    @manual{hejazi2019txshift,
+<pre><code>    @article{hejazi2019generally,
+      author = {Hejazi, Nima S and {van der Laan}, Mark J and Benkeser,
+        David C},
+      title = {Generally efficient nonparametric inference under two-phase
+        sampling, with applications to vaccine efficacy trials},
+      year  = {2019+},
+      url = {},
+      doi = {},
+      journal={},
+      volume={},
+      number={},
+      pages={},
+      publisher={}
+    }
+
+    @manual{hejazi2019txshift,
       author = {Hejazi, Nima S and Benkeser, David C},
-      title = {txshift: {Targeted Learning} of the Causal Effects of
-        Stochastic Interventions in {R}},
+      title = {{txshift}: {Targeted Learning} of the Causal Effects of
+        Stochastic Interventions},
       year  = {2019},
       url = {https://github.com/nhejazi/txshift},
       note = {R package version 0.2.9}
@@ -286,7 +301,7 @@
 <div id="ref-coyle2019sl3">
 
 Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2019.
-“sl3: Modern Pipelines for Machine Learning and Super Learning.”
+*sl3: Modern Pipelines for Machine Learning and Super Learning*.
 <https:>.
 <https:>.
 
@@ -371,6 +386,12 @@ of Biostatistics* 7 (1): 1–21.
 <li><a href="CONTRIBUTING.html">Contributing guide</a></li>
 </ul>
 </div>
+<div class="citation">
+<h2>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html">Citing txshift</a></li>
+</ul>
+</div>
 <div class="developers">
 <h2>Developers</h2>
 <ul class="list-unstyled">
@@ -401,7 +422,7 @@ of Biostatistics* 7 (1): 1–21.
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
 
       </footer>

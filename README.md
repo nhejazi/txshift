@@ -21,7 +21,7 @@ license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://openso
 > Targeted Learning of the Causal Effects of Stochastic Interventions
 
 **Authors:** [Nima Hejazi](https://nimahejazi.org) and [David
-Benkeser](https://www.benkeserstatistics.com/)
+Benkeser](https://www.sph.emory.edu/faculty/profile/#!dbenkes)
 
 -----
 
@@ -37,7 +37,7 @@ proposed by Díaz and van der Laan (2018), and makes use of analogous
 machinery to compute an efficient one-step estimator (Pfanzagl and
 Wefelmeyer 1985). `txshift` integrates with the [`sl3`
 package](https://github.com/tlverse/sl3) (Coyle et al. 2019) to allow
-for (ensemble) machine learning to be leveraged in the estimation
+for ensemble machine learning to be leveraged in the estimation
 procedure.
 
 For many practical applications (e.g., vaccine efficacy trials),
@@ -181,10 +181,25 @@ prior to submitting a pull request.
 After using the `txshift` R package, please cite the following:
 
 ``` 
+    @article{hejazi2019generally,
+      author = {Hejazi, Nima S and {van der Laan}, Mark J and Benkeser,
+        David C},
+      title = {Generally efficient nonparametric inference under two-phase
+        sampling, with applications to vaccine efficacy trials},
+      year  = {2019+},
+      url = {},
+      doi = {},
+      journal={},
+      volume={},
+      number={},
+      pages={},
+      publisher={}
+    }
+
     @manual{hejazi2019txshift,
       author = {Hejazi, Nima S and Benkeser, David C},
-      title = {txshift: {Targeted Learning} of the Causal Effects of
-        Stochastic Interventions in {R}},
+      title = {{txshift}: {Targeted Learning} of the Causal Effects of
+        Stochastic Interventions},
       year  = {2019},
       url = {https://github.com/nhejazi/txshift},
       note = {R package version 0.2.9}
@@ -265,7 +280,7 @@ See below for details:
 <div id="ref-coyle2019sl3">
 
 Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2019.
-“sl3: Modern Pipelines for Machine Learning and Super Learning.”
+*sl3: Modern Pipelines for Machine Learning and Super Learning*.
 <https://github.com/tlverse/sl3>.
 <https://doi.org/10.5281/zenodo.3251138>.
 
