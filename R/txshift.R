@@ -83,7 +83,7 @@
 #'  should only be used by advanced users familiar with both the underlying
 #'  theory and this software implementation of said theoretical details.
 #'
-#' @importFrom data.table as.data.table setnames ":="
+#' @importFrom data.table data.table as.data.table setnames ":="
 #' @importFrom stringr str_detect
 #' @importFrom Rdpack reprompt
 #'
@@ -193,15 +193,15 @@ txshift <- function(W,
     cens_weights <- ipcw_estim$ipc_weights
 
     # remove column corresponding to indicator for censoring
-    data_internal <- data.table::as.data.table(list(W, A = A, C = C, Y = Y))
-    data_internal <- data_internal[C == 1, ] # subsetting forces copy :(
+    data_internal <- data.table::data.table(W, A, C, Y)
+    data_internal <- data_internal[C == 1, ]  # NOTE: subset forces copying :(
     data_internal[, C := NULL]
   } else {
     # if no censoring, we can just use IPC weights that are identically 1
     V_in <- NULL
     cens_weights <- C
     ipcw_estim <- list(pi_mech = rep(1, length(C)), ipc_weights = C[C == 1])
-    data_internal <- data.table::as.data.table(list(W, A = A, Y = Y))
+    data_internal <- data.table::data.table(W, A, Y)
   }
 
   # initial estimate of the treatment mechanism (propensity score)

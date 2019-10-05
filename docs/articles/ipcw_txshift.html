@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -90,7 +90,7 @@
 <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://www.benkeserstatistics.com/">David Benkeser</a>
 </h4>
             
-            <h4 class="date">2019-09-10</h4>
+            <h4 class="date">2019-10-04</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nhejazi/txshift/blob/master/vignettes/ipcw_txshift.Rmd"><code>vignettes/ipcw_txshift.Rmd</code></a></small>
       <div class="hidden name"><code>ipcw_txshift.Rmd</code></div>
@@ -108,7 +108,7 @@
 <pre><code>## ── Attaching packages ────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
 <pre><code>## ✔ ggplot2 3.2.1     ✔ purrr   0.3.2
 ## ✔ tibble  2.1.3     ✔ dplyr   0.8.3
-## ✔ tidyr   0.8.3     ✔ stringr 1.4.0
+## ✔ tidyr   1.0.0     ✔ stringr 1.4.0
 ## ✔ readr   1.3.1     ✔ forcats 0.4.0</code></pre>
 <pre><code>## ── Conflicts ───────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
@@ -126,14 +126,14 @@
 <pre><code>## haldensify v0.0.3: Conditional Density Estimation with the Highly Adaptive Lasso</code></pre>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(sl3)</a>
 <a class="sourceLine" id="cb11-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(txshift)</a></code></pre></div>
-<pre><code>## txshift v0.2.9: Targeted Learning of the Causal Effects of Stochastic Interventions</code></pre>
+<pre><code>## txshift v0.3.0: Targeted Learning of the Causal Effects of Stochastic Interventions</code></pre>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">429153</span>)</a></code></pre></div>
 <hr>
 </div>
 <div id="data-and-notation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#data-and-notation" class="anchor"></a>Data and Notation</h2>
-<p>Consider <span class="math inline">\(n\)</span> observed units <span class="math inline">\(O_1, \ldots, O_n\)</span>, where each random variable <span class="math inline">\(O = (W, A, Y)\)</span> corresponds to a single observational unit. Let <span class="math inline">\(W\)</span> denote baseline covariates (e.g., age, sex, education level), <span class="math inline">\(A\)</span> an intervention variable of interest (e.g., nutritional supplements), <span class="math inline">\(Y\)</span> an outcome of interest (e.g., disease status), and <span class="math inline">\(\Delta\)</span> a sampling process that masks the full data structure. Though it need not be the case, let <span class="math inline">\(A\)</span> be continuous-valued, i.e. <span class="math inline">\(A \in \mathbb{R}\)</span>. Let <span class="math inline">\(O_i \sim \mathcal{P} \in \mathcal{M}\)</span>, where <span class="math inline">\(\mathcal{M}\)</span> is the nonparametric statistical model defined as the set of continuous densities on <span class="math inline">\(O\)</span> with respect to some dominating measure. To formalize the definition of stochastic interventions and their corresponding causal effects, we introduce a nonparametric structural equation model (NPSEM), based on <span class="citation">(<span class="citeproc-not-found" data-reference-id="pearl2000causality"><strong>???</strong></span>)</span>, to define how the system changes under posited interventions: <span class="math display">\[\begin{align*}\label{eqn:npsem}
+<p>Consider <span class="math inline">\(n\)</span> observed units <span class="math inline">\(O_1, \ldots, O_n\)</span>, where each random variable <span class="math inline">\(O = (W, A, Y)\)</span> corresponds to a single observational unit. Let <span class="math inline">\(W\)</span> denote baseline covariates (e.g., age, sex, education level), <span class="math inline">\(A\)</span> an intervention variable of interest (e.g., nutritional supplements), <span class="math inline">\(Y\)</span> an outcome of interest (e.g., disease status), and <span class="math inline">\(\Delta\)</span> a sampling process that masks the full data structure. Though it need not be the case, let <span class="math inline">\(A\)</span> be continuous-valued, i.e. <span class="math inline">\(A \in \mathbb{R}\)</span>. Let <span class="math inline">\(O_i \sim \mathcal{P} \in \mathcal{M}\)</span>, where <span class="math inline">\(\mathcal{M}\)</span> is the nonparametric statistical model defined as the set of continuous densities on <span class="math inline">\(O\)</span> with respect to some dominating measure. To formalize the definition of stochastic interventions and their corresponding causal effects, we introduce a nonparametric structural equation model (NPSEM), based on <span class="citation">Pearl (2000)</span>, to define how the system changes under posited interventions: <span class="math display">\[\begin{align*}\label{eqn:npsem}
   W &amp;= f_W(U_W) \\ \Delta &amp;= f_{\Delta}(W, U_{\Delta}) \\ A &amp;= f_A(W, U_A) \\
   Y &amp;= f_Y(A, W, U_Y),
 \end{align*}\]</span> We denote the observed data structure <span class="math inline">\(O = (W, \Delta, \Delta A, Y)\)</span>, in which some observations are missing — for now, let us consider a simple case-control sampling mechanism wherein the treatment is partially censored. The sampling mechanism <span class="math inline">\(\Delta \in \{0, 1\}\)</span> allows units assigned <span class="math inline">\(1\)</span> to be observed and forces those assigned <span class="math inline">\(0\)</span> to be censored.</p>
@@ -343,9 +343,9 @@
 <a class="sourceLine" id="cb29-13" data-line-number="13">## then, initialize and produce the un-shifted treatment data</a>
 <a class="sourceLine" id="cb29-14" data-line-number="14">gn_noshift &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/Normal.html">dnorm</a></span>(A, <span class="dt">mean =</span> tx_mult <span class="op">*</span><span class="st"> </span>W, <span class="dt">sd =</span> <span class="dv">1</span>)</a>
 <a class="sourceLine" id="cb29-15" data-line-number="15">## finally, put it all together into an object like what's produced internally</a>
-<a class="sourceLine" id="cb29-16" data-line-number="16">gn_out &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/data.table/man/as.data.table.html">as.data.table</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(gn_downshift, gn_noshift, gn_upshift,</a>
+<a class="sourceLine" id="cb29-16" data-line-number="16">gn_out &lt;-<span class="st"> </span><span class="kw"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html">as.data.table</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(gn_downshift, gn_noshift, gn_upshift,</a>
 <a class="sourceLine" id="cb29-17" data-line-number="17">                              gn_upupshift))[C <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, ]</a>
-<a class="sourceLine" id="cb29-18" data-line-number="18"><span class="kw"><a href="https://rdrr.io/pkg/data.table/man/setattr.html">setnames</a></span>(gn_out, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"downshift"</span>, <span class="st">"noshift"</span>, <span class="st">"upshift"</span>, <span class="st">"upupshift"</span>))</a>
+<a class="sourceLine" id="cb29-18" data-line-number="18"><span class="kw"><a href="https://Rdatatable.gitlab.io/data.table/reference/setattr.html">setnames</a></span>(gn_out, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"downshift"</span>, <span class="st">"noshift"</span>, <span class="st">"upshift"</span>, <span class="st">"upupshift"</span>))</a>
 <a class="sourceLine" id="cb29-19" data-line-number="19"></a>
 <a class="sourceLine" id="cb29-20" data-line-number="20"><span class="co"># compute outcome regression externally</span></a>
 <a class="sourceLine" id="cb29-21" data-line-number="21">Qn_noshift &lt;-<span class="st"> </span>(W <span class="op">+</span><span class="st"> </span>A <span class="op">-</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span>(Y)) <span class="op">/</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/diff.html">diff</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/range.html">range</a></span>(Y))</a>
@@ -354,8 +354,8 @@
 <a class="sourceLine" id="cb29-24" data-line-number="24">Qn_noshift[Qn_noshift <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>] &lt;-<span class="st"> </span><span class="dv">1</span> <span class="op">-</span><span class="st"> </span>.Machine<span class="op">$</span>double.neg.eps</a>
 <a class="sourceLine" id="cb29-25" data-line-number="25">Qn_upshift[Qn_upshift <span class="op">&lt;</span><span class="st"> </span><span class="dv">0</span>] &lt;-<span class="st"> </span>.Machine<span class="op">$</span>double.neg.eps</a>
 <a class="sourceLine" id="cb29-26" data-line-number="26">Qn_upshift[Qn_upshift <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>] &lt;-<span class="st"> </span><span class="dv">1</span> <span class="op">-</span><span class="st"> </span>.Machine<span class="op">$</span>double.neg.eps</a>
-<a class="sourceLine" id="cb29-27" data-line-number="27">Qn_out &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/data.table/man/as.data.table.html">as.data.table</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(Qn_noshift, Qn_upshift))[C <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, ]</a>
-<a class="sourceLine" id="cb29-28" data-line-number="28"><span class="kw"><a href="https://rdrr.io/pkg/data.table/man/setattr.html">setnames</a></span>(Qn_out, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"noshift"</span>, <span class="st">"upshift"</span>))</a>
+<a class="sourceLine" id="cb29-27" data-line-number="27">Qn_out &lt;-<span class="st"> </span><span class="kw"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html">as.data.table</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span>(Qn_noshift, Qn_upshift))[C <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, ]</a>
+<a class="sourceLine" id="cb29-28" data-line-number="28"><span class="kw"><a href="https://Rdatatable.gitlab.io/data.table/reference/setattr.html">setnames</a></span>(Qn_out, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"noshift"</span>, <span class="st">"upshift"</span>))</a>
 <a class="sourceLine" id="cb29-29" data-line-number="29"></a>
 <a class="sourceLine" id="cb29-30" data-line-number="30"><span class="co"># invoke the wrapper function only to apply the targeting step</span></a>
 <a class="sourceLine" id="cb29-31" data-line-number="31">tmle_shift_spec &lt;-<span class="st"> </span><span class="kw"><a href="../reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y, <span class="dt">delta =</span> delta,</a>
@@ -381,10 +381,13 @@
 <a href="#references" class="anchor"></a>References</h2>
 <div id="refs" class="references">
 <div id="ref-coyle2019sl3">
-<p>Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2019. “sl3: Modern Pipelines for Machine Learning and Super Learning.” <a href="https://github.com/tlverse/sl3" class="uri">https://github.com/tlverse/sl3</a>. <a href="https://doi.org/10.5281/zenodo.3251138" class="uri">https://doi.org/10.5281/zenodo.3251138</a>.</p>
+<p>Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2019. <em>sl3: Modern Pipelines for Machine Learning and Super Learning</em>. <a href="https://github.com/tlverse/sl3" class="uri">https://github.com/tlverse/sl3</a>. <a href="https://doi.org/10.5281/zenodo.3251138" class="uri">https://doi.org/10.5281/zenodo.3251138</a>.</p>
 </div>
 <div id="ref-diaz2018stochastic">
 <p>Díaz, Iván, and Mark J van der Laan. 2018. “Stochastic Treatment Regimes.” In <em>Targeted Learning in Data Science: Causal Inference for Complex Longitudinal Studies</em>, 167–80. Springer Science &amp; Business Media.</p>
+</div>
+<div id="ref-pearl2000causality">
+<p>Pearl, Judea. 2000. <em>Causality</em>. Cambridge university press.</p>
 </div>
 <div id="ref-rose2011targeted2sd">
 <p>Rose, Sherri, and Mark J van der Laan. 2011. “A Targeted Maximum Likelihood Estimator for Two-Stage Designs.” <em>The International Journal of Biostatistics</em> 7 (1): 1–21.</p>
@@ -420,7 +423,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
 
       </footer>
