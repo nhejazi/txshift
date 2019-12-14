@@ -1,6 +1,6 @@
 Package: txshift
 Title: Targeted Learning of the Causal Effects of Stochastic Interventions
-Version: 0.3.0
+Version: 0.3.1
 Authors@R: c(
     person("Nima", "Hejazi", email = "nh@nimahejazi.org",
            role = c("aut", "cre", "cph"),
@@ -24,11 +24,10 @@ Description: Efficient estimation of the population-level causal effects of
     one-step and targeted maximum likelihood (TML) estimators are implemented
     for a causal parameter defined as the counterfactual mean of the outcome of
     interest under a stochastic intervention that may depend on the natural
-    value of the treatment (i.e., a modified treatment policy). To accommodate
-    settings in which two-phase sampling is employed, procedures for making use
-    of inverse probability of censoring (IPC) weights to build inefficient and
-    efficient TML and one-step estimator variants of the population-level
-    parameter are provided.
+    value of the treatment. To accommodate settings in which two-phase sampling
+    is employed, procedures for making use of inverse probability of censoring
+    weights are provided to facilitate construction of inefficient and efficient
+    one-step and TML estimators.
 Depends: R (>= 3.2.0)
 Imports:
     stats,
@@ -55,9 +54,9 @@ Suggests:
     xgboost,
     ranger
 Remotes:
-    github::tlverse/sl3@v1.2.0,
-    github::tlverse/hal9001@master,
-    github::nhejazi/haldensify@master
+    github::tlverse/hal9001,
+    github::tlverse/sl3,
+    github::nhejazi/haldensify
 License: MIT + file LICENSE
 URL: https://github.com/nhejazi/txshift
 BugReports: https://github.com/nhejazi/txshift/issues
