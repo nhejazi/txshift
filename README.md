@@ -179,19 +179,13 @@ prior to submitting a pull request.
 After using the `txshift` R package, please cite the following:
 
 ``` 
-    @article{hejazi2019generally,
-      author = {Hejazi, Nima S and {van der Laan}, Mark J and Benkeser,
-        David C},
-      title = {Generally efficient nonparametric inference under two-phase
-        sampling, with applications to vaccine efficacy trials},
-      year  = {2019+},
-      url = {},
-      doi = {},
-      journal={},
-      volume={},
-      number={},
-      pages={},
-      publisher={}
+    @article{hejazi2020efficient,
+      author = {Hejazi, Nima S and {van der Laan}, Mark J and Janes, Holly
+        E and Gilbert, Peter B and Benkeser, David C},
+      title = {Efficient nonparametric inference on the effects of
+        stochastic interventions under two-phase sampling, with
+        applications to vaccine efficacy trials},
+      year  = {2020+}
     }
 
     @manual{hejazi2019txshift,
@@ -200,7 +194,7 @@ After using the `txshift` R package, please cite the following:
         Stochastic Interventions},
       year  = {2019},
       url = {https://github.com/nhejazi/txshift},
-      note = {R package version 0.2.9}
+      note = {R package version 0.3.1}
     }
 ```
 
@@ -242,14 +236,14 @@ LM012417-02](https://projectreporter.nih.gov/project_info_description.cfm?aid=92
 
 ## License
 
-© 2017-2019 [Nima S. Hejazi](https://nimahejazi.org)
+© 2017-2020 [Nima S. Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the MIT license.
 See below for details:
 
     MIT License
     
-    Copyright (c) 2017-2019 Nima S. Hejazi
+    Copyright (c) 2017-2020 Nima S. Hejazi
     
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -280,7 +274,7 @@ See below for details:
 Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2019.
 *sl3: Modern Pipelines for Machine Learning and Super Learning*.
 <https://github.com/tlverse/sl3>.
-<https://doi.org/10.5281/zenodo.3251138>.
+<https://doi.org/10.5281/zenodo.3558317>.
 
 </div>
 
