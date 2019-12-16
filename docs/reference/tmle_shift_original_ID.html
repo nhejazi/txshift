@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
       </span>
     </div>
 
@@ -132,8 +132,17 @@
     <p>TML Estimate of the Effect of a Continuous Treatment</p>
     </div>
 
-    <pre class="usage"><span class='fu'>tmle_shift_original_ID</span>(<span class='no'>Y</span>, <span class='no'>A</span>, <span class='no'>W</span>, <span class='no'>Qn</span>, <span class='no'>gn</span>, <span class='no'>delta</span>, <span class='kw'>tol</span> <span class='kw'>=</span> <span class='fl'>1e-05</span>,
-  <span class='kw'>iter_max</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='no'>A_val</span>)</pre>
+    <pre class="usage"><span class='fu'>tmle_shift_original_ID</span>(
+  <span class='no'>Y</span>,
+  <span class='no'>A</span>,
+  <span class='no'>W</span>,
+  <span class='no'>Qn</span>,
+  <span class='no'>gn</span>,
+  <span class='no'>delta</span>,
+  <span class='kw'>tol</span> <span class='kw'>=</span> <span class='fl'>1e-05</span>,
+  <span class='kw'>iter_max</span> <span class='kw'>=</span> <span class='fl'>5</span>,
+  <span class='no'>A_val</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">

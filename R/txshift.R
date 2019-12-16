@@ -190,7 +190,7 @@ txshift <- function(W,
 
     # remove column corresponding to indicator for censoring
     data_internal <- data.table::data.table(W, A, C, Y)
-    data_internal <- data_internal[C == 1, ]  # NOTE: subset forces copying :(
+    data_internal <- data_internal[C == 1, ] # NOTE: subset forces copying :(
     data_internal[, C := NULL]
   } else {
     # if no censoring, we can just use IPC weights that are identically 1

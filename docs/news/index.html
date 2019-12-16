@@ -67,7 +67,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
       </span>
     </div>
 
@@ -125,12 +125,143 @@
       <small>Source: <a href='https://github.com/nhejazi/txshift/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="txshift-0-3-1" class="section level1">
+<h1 class="page-header">
+<a href="#txshift-0-3-1" class="anchor"></a>txshift 0.3.1</h1>
+<p>As of December 2019:</p>
+<ul>
+<li>Changes arguments of <code><a href="https://rdrr.io/pkg/hal9001/man/fit_hal.html">hal9001::fit_hal</a></code> in pseudo-outcome regression for efficient estimation by explicitly including <code>max_degree = NULL</code>.</li>
+<li>Change to TMLE convergence criterion: use a less strict criterion such that | Pn D | \leq sigma / (sqrt(n) \cdot max(10, log(n))) instead of \leq 1/n. Empirical studies suggest this curbs issues addressed by over-agressive updates from the targeting step.</li>
+<li>Remove pinning of <code>sl3</code> dependency to a specific tag (formerly v1.2.0).</li>
+<li>Lock dependency version: <code>sl3</code> &gt;= v1.3.6 and <code>hal9001</code> &gt;= v0.2.5.</li>
+</ul>
+</div>
+    <div id="txshift-0-3-0" class="section level1">
+<h1 class="page-header">
+<a href="#txshift-0-3-0" class="anchor"></a>txshift 0.3.0</h1>
+<p>As of October 2019:</p>
+<ul>
+<li>Change use of <code>as.data.table</code> to <code>data.table</code> in internal functions to catch up with changes in dependencies.</li>
+</ul>
+</div>
+    <div id="txshift-0-2-9" class="section level1">
+<h1 class="page-header">
+<a href="#txshift-0-2-9" class="anchor"></a>txshift 0.2.9</h1>
+<p>As of September 2019:</p>
+<ul>
+<li>Remove errant intercept term and lower iterations for fluctuation models.</li>
+<li>Change weighting scheme in marginal structural model summarization to weight all estimates identically rather than by inverse variance as a default.</li>
+<li>Updates to documentation.</li>
+</ul>
+</div>
+    <div id="txshift-0-2-8" class="section level1">
+<h1 class="page-header">
+<a href="#txshift-0-2-8" class="anchor"></a>txshift 0.2.8</h1>
+<p>As of September 2019:</p>
+<ul>
+<li>Add safety checks for convergence of fluctuation regressions based on those appearing in <code>drtmle</code> and/or <code>survtmle</code>.</li>
+<li>Change default confidence interval type to use marginal CIs across multiple parameters instead of a simultaneous confidence band.</li>
+<li>Switch internal parametric regressions to use <code><a href="https://tlverse.org/sl3/reference/Lrnr_glm.html">sl3::Lrnr_glm</a></code> instead of <code><a href="https://tlverse.org/sl3/reference/Lrnr_glm_fast.html">sl3::Lrnr_glm_fast</a></code>.</li>
+</ul>
+</div>
+    <div id="txshift-0-2-7" class="section level1">
+<h1 class="page-header">
+<a href="#txshift-0-2-7" class="anchor"></a>txshift 0.2.7</h1>
+<p>As of July 2019:</p>
+<ul>
+<li>Improve argument names for clarity and update documentation.</li>
+<li>Addition of tighter unit tests for both one-step and TML estimators.</li>
+</ul>
+<p>As of June 2019:</p>
+<ul>
+<li>Pin <code>sl3</code> dependency to version 1.2.0 of that package for stability.</li>
+</ul>
+</div>
+    <div id="txshift-0-2-6" class="section level1">
+<h1 class="page-header">
+<a href="#txshift-0-2-6" class="anchor"></a>txshift 0.2.6</h1>
+<p>As of June 2019:</p>
+<ul>
+<li>Changes to arguments of <code><a href="https://rdrr.io/pkg/hal9001/man/fit_hal.html">hal9001::fit_hal</a></code> for pseudo-outcome EIF regression.</li>
+<li>Addition of clarifying notes to core internal functions.</li>
+<li>Removal of outdated (and commented out) code in core internal functions.</li>
+<li>Clarifying alterations to internal function and argument names.</li>
+<li>Renaming internal function <code>tx_shift</code> to <code>shift_additive</code>.</li>
+</ul>
+</div>
+    <div id="txshift-0-2-5" class="section level1">
+<h1 class="page-header">
+<a href="#txshift-0-2-5" class="anchor"></a>txshift 0.2.5</h1>
+<p>As of June 2019:</p>
+<ul>
+<li>Remove inverse weights from estimated efficient influence function necessary for pseudo-outcome regression for efficient IPCW-augmented estimators.</li>
+<li>Reduce use of redundant variables across core functions, reorganize functions across files, clarify documentation.</li>
+<li>Tweak arguments for fitting pseudo-outcome regression with HAL in order to diagnose performance issues revealed by simulation.</li>
+<li>Fix how inverse weights are passed to full-data estimators.</li>
+<li>Pare down arguments for the one-step estimation routine.</li>
+</ul>
+</div>
+    <div id="txshift-0-2-4" class="section level1">
+<h1 class="page-header">
+<a href="#txshift-0-2-4" class="anchor"></a>txshift 0.2.4</h1>
+<p>As of June 2019:</p>
+<ul>
+<li>Introduce <code>bound_propensity</code> function to bound the propensity score away from zero by a factor 1/n, rather than to numerical precision.</li>
+</ul>
+<p>As of April 2019:</p>
+<ul>
+<li>Minor improvements to documentation and vignettes.</li>
+<li>Fix a bug in the output of the IPCW one-step estimator.</li>
+<li>Pare down packages listed in imports, moving several to suggests.</li>
+<li>Introduce option to compute simultaneous confidence band for working MSMs.</li>
+<li>Fix a bug introduced by newly added imputation functionality in <code>sl3</code>.</li>
+</ul>
+</div>
+    <div id="txshift-0-2-3" class="section level1">
+<h1 class="page-header">
+<a href="#txshift-0-2-3" class="anchor"></a>txshift 0.2.3</h1>
+<p>As of March 2019:</p>
+<ul>
+<li>Introduce functionality for computing one-step estimators to complement the the available TMLEs.</li>
+<li>Add initial functionality for summarizing estimated effects across a grid of shifts via working marginal structural models (MSMs).</li>
+</ul>
+</div>
+    <div id="txshift-0-2-2" class="section level1">
+<h1 class="page-header">
+<a href="#txshift-0-2-2" class="anchor"></a>txshift 0.2.2</h1>
+<p>As of February 2019:</p>
+<ul>
+<li>Added helper functions and caught edge cases in auxiliary covariate for TMLE fluctuation models.</li>
+<li>Fixed a bug in how the auxiliary covariate for TMLEs is computed by keeping track of an extra shift g(a+2*delta|w).</li>
+<li>Revised inference machinery to create confidence intervals on the logit scale in the case of binary outcomes.</li>
+</ul>
+</div>
+    <div id="txshift-0-2-0" class="section level1">
+<h1 class="page-header">
+<a href="#txshift-0-2-0" class="anchor"></a>txshift 0.2.0</h1>
+<p>As of May 2018:</p>
+<ul>
+<li>An initial public release of this package, version 0.2.0.</li>
+<li>This version including complete functionality for both standard TML and IPCW-TML estimators.</li>
+</ul>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <div id="tocnav">
       <h2>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
+        <li><a href="#txshift-0-3-1">0.3.1</a></li>
+        <li><a href="#txshift-0-3-0">0.3.0</a></li>
+        <li><a href="#txshift-0-2-9">0.2.9</a></li>
+        <li><a href="#txshift-0-2-8">0.2.8</a></li>
+        <li><a href="#txshift-0-2-7">0.2.7</a></li>
+        <li><a href="#txshift-0-2-6">0.2.6</a></li>
+        <li><a href="#txshift-0-2-5">0.2.5</a></li>
+        <li><a href="#txshift-0-2-4">0.2.4</a></li>
+        <li><a href="#txshift-0-2-3">0.2.3</a></li>
+        <li><a href="#txshift-0-2-2">0.2.2</a></li>
+        <li><a href="#txshift-0-2-0">0.2.0</a></li>
       </ul>
     </div>
   </div>
