@@ -27,9 +27,6 @@ utils::globalVariables(c("..v_names"))
 #'  traverse the submodel for targeted minimum loss-based estimation. This type
 #'  of object should be the output of the internal routines to perform this
 #'  step of the TMLE computation, as given by \code{fit_fluctuation}.
-#' @param eif_tol A \code{numeric} giving the minimum value of the tolerance to
-#'  be used in evaluating whether the computation of the efficient influence
-#'  function has converged.
 #'
 #' @importFrom stats var
 #'
@@ -43,8 +40,7 @@ eif <- function(Y,
                 fluc_mod_out = NULL,
                 Delta = rep(1, length(Y)),
                 ipc_weights = rep(1, length(Y)),
-                ipc_weights_norm = rep(1, length(Y)),
-                eif_tol = 1e-7) {
+                ipc_weights_norm = rep(1, length(Y))) {
 
   # set TMLE as default estimator type
   estimator <- match.arg(estimator)
@@ -136,8 +132,6 @@ eif <- function(Y,
 #'  "standard".
 #' @param flucmod_tol A \code{numeric} indicating the largest value to be
 #'  tolerated in the fluctuation model for the targeted minimum loss estimator.
-#' @param eif_tol A \code{numeric} indicating the largest value to be tolerated
-#'  as the mean of the efficient influence function.
 #' @param eif_reg_type Whether a flexible nonparametric function ought to be
 #'  used in the dimension-reduced nuisance regression of the targeting step for
 #'  the censored data case. By default, the method used is a nonparametric
@@ -165,7 +159,6 @@ ipcw_eif_update <- function(data_in,
                             estimator = c("tmle", "onestep"),
                             fluctuation = NULL,
                             flucmod_tol = 100,
-                            eif_tol = 1e-9,
                             eif_reg_type = c("hal", "glm")) {
   # get names of columns in sampling mechanism
   v_names <- names(V)
@@ -195,8 +188,7 @@ ipcw_eif_update <- function(data_in,
     fluc_mod_out = fitted_fluc_mod,
     Delta = C,
     ipc_weights = ipc_weights[C == 1],
-    ipc_weights_norm = ipc_weights_norm[C == 1],
-    eif_tol = eif_tol
+    ipc_weights_norm = ipc_weights_norm[C == 1]
   )
 
   # NOTE: upon the first run of this procedure, the above two function calls
@@ -322,8 +314,7 @@ ipcw_eif_update <- function(data_in,
       fluc_mod_out = fitted_fluc_mod,
       Delta = C,
       ipc_weights = ipc_weights[C == 1],
-      ipc_weights_norm = ipc_weights_norm[C == 1],
-      eif_tol = eif_tol
+      ipc_weights_norm = ipc_weights_norm[C == 1]
     )
   }
 

@@ -4,8 +4,14 @@
 \alias{fit_fluctuation}
 \title{Fit Logistic Regression to Traverse the Fluctuation Submodel}
 \usage{
-fit_fluctuation(Y, Qn_scaled, Hn, ipc_weights = rep(1, length(Y)),
-  method = c("standard", "weighted"), flucmod_tol = 100)
+fit_fluctuation(
+  Y,
+  Qn_scaled,
+  Hn,
+  ipc_weights = rep(1, length(Y)),
+  method = c("standard", "weighted"),
+  flucmod_tol = 100
+)
 }
 \arguments{
 \item{Y}{A \code{numeric} vector corresponding to an outcome variable.}

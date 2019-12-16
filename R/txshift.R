@@ -27,9 +27,6 @@
 #'  (targeting step) to compute the TML estimator. The choices are "standard"
 #'  and "weighted" for where to place the auxiliary covariate in the logistic
 #'  tilting regression.
-#' @param eif_tol A \code{numeric} giving the convergence criterion for the TML
-#'  estimator. This is the the maximum mean of the efficient influence function
-#'  (EIF) to be used in declaring convergence.
 #' @param max_iter A \code{numeric} integer giving the maximum number of steps
 #'  to be taken in iterating to a solution of the efficient influence function.
 #' @param ipcw_fit_args A \code{list} of arguments, all but one of which are
@@ -99,7 +96,6 @@ txshift <- function(W,
                     delta = 0,
                     estimator = c("tmle", "onestep"),
                     fluctuation = c("standard", "weighted"),
-                    eif_tol = 1 / length(Y),
                     max_iter = 1e3,
                     ipcw_fit_args = list(
                       fit_type = c("glm", "sl", "fit_spec"),
@@ -269,7 +265,6 @@ txshift <- function(W,
       Qn_estim = Qn_estim,
       Hn_estim = Hn_estim,
       fluctuation = fluctuation,
-      eif_tol = eif_tol,
       max_iter = max_iter,
       eif_reg_type = eif_reg_type,
       ipcw_fit_args = ipcw_fit_args,
@@ -290,7 +285,6 @@ txshift <- function(W,
       ipcw_estim = ipcw_estim,
       Qn_estim = Qn_estim,
       Hn_estim = Hn_estim,
-      eif_tol = eif_tol,
       eif_reg_type = eif_reg_type,
       ipcw_fit_args = ipcw_fit_args,
       ipcw_efficiency = ipcw_efficiency

@@ -4,9 +4,16 @@
 \alias{est_Q}
 \title{Estimate the Outcome Regression}
 \usage{
-est_Q(Y, A, W, delta = 0, ipc_weights = rep(1, length(Y)),
-  fit_type = c("sl", "glm"), glm_formula = "Y ~ .",
-  sl_learners = NULL)
+est_Q(
+  Y,
+  A,
+  W,
+  delta = 0,
+  ipc_weights = rep(1, length(Y)),
+  fit_type = c("sl", "glm"),
+  glm_formula = "Y ~ .",
+  sl_learners = NULL
+)
 }
 \arguments{
 \item{Y}{A \code{numeric} vector of observed outcomes.}

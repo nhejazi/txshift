@@ -4,10 +4,19 @@
 \alias{msm_vimshift}
 \title{Marginal structural model for the causal effects of a grid of interventions}
 \usage{
-msm_vimshift(Y, A, W, C = rep(1, length(Y)), V = NULL,
-  delta_grid = seq(-0.5, 0.5, 0.5), estimator = c("tmle", "onestep"),
-  weighting = c("identity", "variance"), ci_level = 0.95,
-  ci_type = c("marginal", "simultaneous"), ...)
+msm_vimshift(
+  Y,
+  A,
+  W,
+  C = rep(1, length(Y)),
+  V = NULL,
+  delta_grid = seq(-0.5, 0.5, 0.5),
+  estimator = c("tmle", "onestep"),
+  weighting = c("identity", "variance"),
+  ci_level = 0.95,
+  ci_type = c("marginal", "simultaneous"),
+  ...
+)
 }
 \arguments{
 \item{Y}{A \code{numeric} vector of the observed outcomes.}

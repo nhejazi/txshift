@@ -1,5 +1,5 @@
-#' Compute One-Step Estimate of Counterfactual Mean Under Stochastically Shifted
-#' Treatment
+#' Compute One-Step Estimate of Counterfactual Mean Under Stochastic Shift
+#' Intervention
 #'
 #' @param data_internal A \code{data.table} constructed internally by a call to
 #'  \code{txshift}. This contains most of the data elements needed for computing
@@ -27,9 +27,6 @@
 #'  covariate, constructed from the treatment mechanism and required for
 #'  targeted minimum loss-based estimation. This object object should be passed
 #'  in after being constructed by a call to the internal function \code{est_Hn}.
-#' @param eif_tol A \code{numeric} giving the convergence criterion for the
-#'  one-step estimator. This is the maximum mean of the efficient influence
-#'  function to be used in declaring convergence.
 #' @param eif_reg_type Whether a flexible nonparametric function ought to be
 #'  used in the dimension-reduced nuisance regression of the targeting step for
 #'  the censored data case. By default, the method used is a nonparametric
@@ -64,7 +61,6 @@ onestep_txshift <- function(data_internal,
                             ipcw_estim,
                             Qn_estim,
                             Hn_estim,
-                            eif_tol = 1 / nrow(data_internal),
                             eif_reg_type = c("hal", "glm"),
                             ipcw_fit_args,
                             ipcw_efficiency = TRUE) {
@@ -89,7 +85,6 @@ onestep_txshift <- function(data_internal,
       Qn_estim = Qn_estim,
       Hn_estim = Hn_estim,
       estimator = "onestep",
-      eif_tol = eif_tol,
       eif_reg_type = eif_reg_type
     )
 
@@ -144,8 +139,7 @@ onestep_txshift <- function(data_internal,
       estimator = "onestep",
       Delta = C,
       ipc_weights = cens_weights[C == 1],
-      ipc_weights_norm = cens_weights_norm[C == 1],
-      eif_tol = eif_tol
+      ipc_weights_norm = cens_weights_norm[C == 1]
     )
 
     # create output object

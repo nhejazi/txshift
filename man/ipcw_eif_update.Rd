@@ -4,10 +4,20 @@
 \alias{ipcw_eif_update}
 \title{Iterative IPCW Update Procedure of Efficient Influence Function}
 \usage{
-ipcw_eif_update(data_in, C, V, ipc_mech, ipc_weights, ipc_weights_norm,
-  Qn_estim, Hn_estim, estimator = c("tmle", "onestep"),
-  fluctuation = NULL, flucmod_tol = 100, eif_tol = 1e-09,
-  eif_reg_type = c("hal", "glm"))
+ipcw_eif_update(
+  data_in,
+  C,
+  V,
+  ipc_mech,
+  ipc_weights,
+  ipc_weights_norm,
+  Qn_estim,
+  Hn_estim,
+  estimator = c("tmle", "onestep"),
+  fluctuation = NULL,
+  flucmod_tol = 100,
+  eif_reg_type = c("hal", "glm")
+)
 }
 \arguments{
 \item{data_in}{A \code{data.table} containing variables and observations that
@@ -52,9 +62,6 @@ used in traversing the fluctuation submodel. The choices are "weighted" and
 
 \item{flucmod_tol}{A \code{numeric} indicating the largest value to be
 tolerated in the fluctuation model for the targeted minimum loss estimator.}
-
-\item{eif_tol}{A \code{numeric} indicating the largest value to be tolerated
-as the mean of the efficient influence function.}
 
 \item{eif_reg_type}{Whether a flexible nonparametric function ought to be
 used in the dimension-reduced nuisance regression of the targeting step for
