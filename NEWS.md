@@ -1,12 +1,14 @@
 # txshift 0.3.1
 
 As of December 2019:
-* Changes to arguments of `hal9001::fit_hal`
+* Changes arguments of `hal9001::fit_hal` in pseudo-outcome regression for
+    efficient estimation by explicitly including `max_degree = NULL`.
 * Change to TMLE convergence criterion: use a less strict criterion such that
-     |Pn D| \leq sigma / (sqrt(n) \cdot max(10, log(n))) instead of \leq 1/n.
+     | Pn D | \leq sigma / (sqrt(n) \cdot max(10, log(n))) instead of \leq 1/n.
     Empirical studies suggest this curbs issues addressed by over-agressive
-    targeting updates.
-* Remove pinning of `sl3` dependency to a specific version (formerly v1.2.0).
+    updates from the targeting step.
+* Remove pinning of `sl3` dependency to a specific tag (formerly v1.2.0).
+* Lock dependency version: `sl3` >= v1.3.6 and `hal9001` >= v0.2.5.
 
 # txshift 0.3.0
 

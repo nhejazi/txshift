@@ -36,8 +36,8 @@ Imports:
     data.table,
     mvtnorm,
     Rdpack,
-    sl3,
-    hal9001,
+    sl3 (>= 1.3.6),
+    hal9001 (>= 0.2.5),
     haldensify
 Suggests:
     testthat,

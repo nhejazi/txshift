@@ -210,10 +210,12 @@ ipcw_eif_update <- function(data_in,
     eif_mod <- hal9001::fit_hal(
       X = eif_reg_mat,
       Y = as.numeric(eif_data$eif),
-      standardize = FALSE,
+      max_degree = NULL,
       fit_type = "glmnet",
-      lambda.min.ratio = 1e-5,
+      family = "gaussian",
       return_lasso = TRUE,
+      standardize = FALSE,
+      lambda.min.ratio = 1e-5,
       yolo = FALSE
     )
 
