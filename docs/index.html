@@ -16,11 +16,10 @@
     one-step and targeted maximum likelihood (TML) estimators are implemented
     for a causal parameter defined as the counterfactual mean of the outcome of
     interest under a stochastic intervention that may depend on the natural
-    value of the treatment (i.e., a modified treatment policy). To accommodate
-    settings in which two-phase sampling is employed, procedures for making use
-    of inverse probability of censoring (IPC) weights to build inefficient and
-    efficient TML and one-step estimator variants of the population-level
-    parameter are provided.">
+    value of the treatment. To accommodate settings in which two-phase sampling
+    is employed, procedures for making use of inverse probability of censoring
+    weights are provided to facilitate construction of inefficient and efficient
+    one-step and TML estimators.">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -40,7 +39,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
       </span>
     </div>
 
@@ -145,67 +144,65 @@
 <a class="sourceLine" id="cb2-22" data-line-number="22">                                  <span class="dt">glm_formula =</span> <span class="st">"Y ~ ."</span>)</a>
 <a class="sourceLine" id="cb2-23" data-line-number="23">               )</a>
 <a class="sourceLine" id="cb2-24" data-line-number="24"><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(tmle)</a>
-<a class="sourceLine" id="cb2-25" data-line-number="25"><span class="co">#&gt;     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator </span></a>
-<a class="sourceLine" id="cb2-26" data-line-number="26"><span class="co">#&gt;     0.7474     0.7782     0.8062      2e-04 6.7628e-11       tmle </span></a>
-<a class="sourceLine" id="cb2-27" data-line-number="27"><span class="co">#&gt;     n_iter </span></a>
-<a class="sourceLine" id="cb2-28" data-line-number="28"><span class="co">#&gt;          0</span></a>
-<a class="sourceLine" id="cb2-29" data-line-number="29"></a>
-<a class="sourceLine" id="cb2-30" data-line-number="30"><span class="co"># fit a full-data one-step estimator for comparison (again, no sampling)</span></a>
-<a class="sourceLine" id="cb2-31" data-line-number="31">os &lt;-<span class="st"> </span><span class="kw"><a href="reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y, <span class="dt">delta =</span> <span class="fl">0.5</span>,</a>
-<a class="sourceLine" id="cb2-32" data-line-number="32">              <span class="dt">estimator =</span> <span class="st">"onestep"</span>,</a>
-<a class="sourceLine" id="cb2-33" data-line-number="33">              <span class="dt">g_fit_args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"hal"</span>,</a>
-<a class="sourceLine" id="cb2-34" data-line-number="34">                                <span class="dt">n_bins =</span> <span class="dv">5</span>,</a>
-<a class="sourceLine" id="cb2-35" data-line-number="35">                                <span class="dt">grid_type =</span> <span class="st">"equal_mass"</span>,</a>
-<a class="sourceLine" id="cb2-36" data-line-number="36">                                <span class="dt">lambda_seq =</span> <span class="kw"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">-9</span>, <span class="dt">length =</span> <span class="dv">300</span>))),</a>
-<a class="sourceLine" id="cb2-37" data-line-number="37">              <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>,</a>
-<a class="sourceLine" id="cb2-38" data-line-number="38">                                <span class="dt">glm_formula =</span> <span class="st">"Y ~ ."</span>)</a>
-<a class="sourceLine" id="cb2-39" data-line-number="39">             )</a>
-<a class="sourceLine" id="cb2-40" data-line-number="40"><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(os)</a>
-<a class="sourceLine" id="cb2-41" data-line-number="41"><span class="co">#&gt;      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator </span></a>
-<a class="sourceLine" id="cb2-42" data-line-number="42"><span class="co">#&gt;      0.7471      0.7779      0.8059       2e-04 -1.6925e-03     onestep </span></a>
-<a class="sourceLine" id="cb2-43" data-line-number="43"><span class="co">#&gt;      n_iter </span></a>
-<a class="sourceLine" id="cb2-44" data-line-number="44"><span class="co">#&gt;           0</span></a>
-<a class="sourceLine" id="cb2-45" data-line-number="45"></a>
-<a class="sourceLine" id="cb2-46" data-line-number="46"><span class="co"># fit an IPCW-TMLE to account for the two-phase sampling process</span></a>
-<a class="sourceLine" id="cb2-47" data-line-number="47">ipcw_tmle &lt;-<span class="st"> </span><span class="kw"><a href="reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y, <span class="dt">delta =</span> <span class="fl">0.5</span>,</a>
-<a class="sourceLine" id="cb2-48" data-line-number="48">                     <span class="dt">C =</span> C, <span class="dt">V =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"W"</span>, <span class="st">"Y"</span>),</a>
-<a class="sourceLine" id="cb2-49" data-line-number="49">                     <span class="dt">estimator =</span> <span class="st">"tmle"</span>,</a>
-<a class="sourceLine" id="cb2-50" data-line-number="50">                     <span class="dt">max_iter =</span> <span class="dv">5</span>,</a>
-<a class="sourceLine" id="cb2-51" data-line-number="51">                     <span class="dt">ipcw_fit_args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>),</a>
-<a class="sourceLine" id="cb2-52" data-line-number="52">                     <span class="dt">g_fit_args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"hal"</span>,</a>
-<a class="sourceLine" id="cb2-53" data-line-number="53">                                       <span class="dt">n_bins =</span> <span class="dv">5</span>,</a>
-<a class="sourceLine" id="cb2-54" data-line-number="54">                                       <span class="dt">grid_type =</span> <span class="st">"equal_mass"</span>,</a>
-<a class="sourceLine" id="cb2-55" data-line-number="55">                                       <span class="dt">lambda_seq =</span></a>
-<a class="sourceLine" id="cb2-56" data-line-number="56">                                         <span class="kw"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">-9</span>, <span class="dt">length =</span> <span class="dv">300</span>))),</a>
-<a class="sourceLine" id="cb2-57" data-line-number="57">                     <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>,</a>
-<a class="sourceLine" id="cb2-58" data-line-number="58">                                       <span class="dt">glm_formula =</span> <span class="st">"Y ~ ."</span>),</a>
-<a class="sourceLine" id="cb2-59" data-line-number="59">                     <span class="dt">eif_reg_type =</span> <span class="st">"glm"</span></a>
-<a class="sourceLine" id="cb2-60" data-line-number="60">                    )</a>
-<a class="sourceLine" id="cb2-61" data-line-number="61"><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(ipcw_tmle)</a>
-<a class="sourceLine" id="cb2-62" data-line-number="62"><span class="co">#&gt;      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator </span></a>
-<a class="sourceLine" id="cb2-63" data-line-number="63"><span class="co">#&gt;      0.7435      0.7765      0.8063       3e-04 -4.0324e-05        tmle </span></a>
-<a class="sourceLine" id="cb2-64" data-line-number="64"><span class="co">#&gt;      n_iter </span></a>
-<a class="sourceLine" id="cb2-65" data-line-number="65"><span class="co">#&gt;           1</span></a>
-<a class="sourceLine" id="cb2-66" data-line-number="66"></a>
-<a class="sourceLine" id="cb2-67" data-line-number="67"><span class="co"># compare with an IPCW-agumented one-step estimator under two-phase sampling</span></a>
-<a class="sourceLine" id="cb2-68" data-line-number="68">ipcw_os &lt;-<span class="st"> </span><span class="kw"><a href="reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y, <span class="dt">delta =</span> <span class="fl">0.5</span>,</a>
-<a class="sourceLine" id="cb2-69" data-line-number="69">                   <span class="dt">C =</span> C, <span class="dt">V =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"W"</span>, <span class="st">"Y"</span>),</a>
-<a class="sourceLine" id="cb2-70" data-line-number="70">                   <span class="dt">estimator =</span> <span class="st">"onestep"</span>,</a>
-<a class="sourceLine" id="cb2-71" data-line-number="71">                   <span class="dt">ipcw_fit_args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>),</a>
-<a class="sourceLine" id="cb2-72" data-line-number="72">                   <span class="dt">g_fit_args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"hal"</span>,</a>
-<a class="sourceLine" id="cb2-73" data-line-number="73">                                     <span class="dt">n_bins =</span> <span class="dv">5</span>,</a>
-<a class="sourceLine" id="cb2-74" data-line-number="74">                                     <span class="dt">grid_type =</span> <span class="st">"equal_mass"</span>,</a>
-<a class="sourceLine" id="cb2-75" data-line-number="75">                                     <span class="dt">lambda_seq =</span></a>
-<a class="sourceLine" id="cb2-76" data-line-number="76">                                       <span class="kw"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">-9</span>, <span class="dt">length =</span> <span class="dv">300</span>))),</a>
-<a class="sourceLine" id="cb2-77" data-line-number="77">                   <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>,</a>
-<a class="sourceLine" id="cb2-78" data-line-number="78">                                     <span class="dt">glm_formula =</span> <span class="st">"Y ~ ."</span>),</a>
-<a class="sourceLine" id="cb2-79" data-line-number="79">                   <span class="dt">eif_reg_type =</span> <span class="st">"glm"</span></a>
-<a class="sourceLine" id="cb2-80" data-line-number="80">                  )</a>
-<a class="sourceLine" id="cb2-81" data-line-number="81"><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(ipcw_os)</a>
-<a class="sourceLine" id="cb2-82" data-line-number="82"><span class="co">#&gt;      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator </span></a>
-<a class="sourceLine" id="cb2-83" data-line-number="83"><span class="co">#&gt;      0.7427      0.7758      0.8058       3e-04 -2.0727e-03     onestep </span></a>
-<a class="sourceLine" id="cb2-84" data-line-number="84"><span class="co">#&gt;      n_iter </span></a>
-<a class="sourceLine" id="cb2-85" data-line-number="85"><span class="co">#&gt;           0</span></a></code></pre></div>
+<a class="sourceLine" id="cb2-25" data-line-number="25"><span class="co">#&gt;     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator     n_iter </span></a>
+<a class="sourceLine" id="cb2-26" data-line-number="26"><span class="co">#&gt;     0.7474     0.7782     0.8062      2e-04 6.7628e-11       tmle          0</span></a>
+<a class="sourceLine" id="cb2-27" data-line-number="27"></a>
+<a class="sourceLine" id="cb2-28" data-line-number="28"><span class="co"># fit a full-data one-step estimator for comparison (again, no sampling)</span></a>
+<a class="sourceLine" id="cb2-29" data-line-number="29">os &lt;-<span class="st"> </span><span class="kw"><a href="reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y, <span class="dt">delta =</span> <span class="fl">0.5</span>,</a>
+<a class="sourceLine" id="cb2-30" data-line-number="30">              <span class="dt">estimator =</span> <span class="st">"onestep"</span>,</a>
+<a class="sourceLine" id="cb2-31" data-line-number="31">              <span class="dt">g_fit_args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"hal"</span>,</a>
+<a class="sourceLine" id="cb2-32" data-line-number="32">                                <span class="dt">n_bins =</span> <span class="dv">5</span>,</a>
+<a class="sourceLine" id="cb2-33" data-line-number="33">                                <span class="dt">grid_type =</span> <span class="st">"equal_mass"</span>,</a>
+<a class="sourceLine" id="cb2-34" data-line-number="34">                                <span class="dt">lambda_seq =</span> <span class="kw"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">-9</span>, <span class="dt">length =</span> <span class="dv">300</span>))),</a>
+<a class="sourceLine" id="cb2-35" data-line-number="35">              <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>,</a>
+<a class="sourceLine" id="cb2-36" data-line-number="36">                                <span class="dt">glm_formula =</span> <span class="st">"Y ~ ."</span>)</a>
+<a class="sourceLine" id="cb2-37" data-line-number="37">             )</a>
+<a class="sourceLine" id="cb2-38" data-line-number="38"><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(os)</a>
+<a class="sourceLine" id="cb2-39" data-line-number="39"><span class="co">#&gt;      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator </span></a>
+<a class="sourceLine" id="cb2-40" data-line-number="40"><span class="co">#&gt;      0.7472      0.7779      0.8059       2e-04 -1.6543e-03     onestep </span></a>
+<a class="sourceLine" id="cb2-41" data-line-number="41"><span class="co">#&gt;      n_iter </span></a>
+<a class="sourceLine" id="cb2-42" data-line-number="42"><span class="co">#&gt;           0</span></a>
+<a class="sourceLine" id="cb2-43" data-line-number="43"></a>
+<a class="sourceLine" id="cb2-44" data-line-number="44"><span class="co"># fit an IPCW-TMLE to account for the two-phase sampling process</span></a>
+<a class="sourceLine" id="cb2-45" data-line-number="45">ipcw_tmle &lt;-<span class="st"> </span><span class="kw"><a href="reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y, <span class="dt">delta =</span> <span class="fl">0.5</span>,</a>
+<a class="sourceLine" id="cb2-46" data-line-number="46">                     <span class="dt">C =</span> C, <span class="dt">V =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"W"</span>, <span class="st">"Y"</span>),</a>
+<a class="sourceLine" id="cb2-47" data-line-number="47">                     <span class="dt">estimator =</span> <span class="st">"tmle"</span>,</a>
+<a class="sourceLine" id="cb2-48" data-line-number="48">                     <span class="dt">max_iter =</span> <span class="dv">5</span>,</a>
+<a class="sourceLine" id="cb2-49" data-line-number="49">                     <span class="dt">ipcw_fit_args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>),</a>
+<a class="sourceLine" id="cb2-50" data-line-number="50">                     <span class="dt">g_fit_args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"hal"</span>,</a>
+<a class="sourceLine" id="cb2-51" data-line-number="51">                                       <span class="dt">n_bins =</span> <span class="dv">5</span>,</a>
+<a class="sourceLine" id="cb2-52" data-line-number="52">                                       <span class="dt">grid_type =</span> <span class="st">"equal_mass"</span>,</a>
+<a class="sourceLine" id="cb2-53" data-line-number="53">                                       <span class="dt">lambda_seq =</span></a>
+<a class="sourceLine" id="cb2-54" data-line-number="54">                                         <span class="kw"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">-9</span>, <span class="dt">length =</span> <span class="dv">300</span>))),</a>
+<a class="sourceLine" id="cb2-55" data-line-number="55">                     <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>,</a>
+<a class="sourceLine" id="cb2-56" data-line-number="56">                                       <span class="dt">glm_formula =</span> <span class="st">"Y ~ ."</span>),</a>
+<a class="sourceLine" id="cb2-57" data-line-number="57">                     <span class="dt">eif_reg_type =</span> <span class="st">"glm"</span></a>
+<a class="sourceLine" id="cb2-58" data-line-number="58">                    )</a>
+<a class="sourceLine" id="cb2-59" data-line-number="59"><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(ipcw_tmle)</a>
+<a class="sourceLine" id="cb2-60" data-line-number="60"><span class="co">#&gt;      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator </span></a>
+<a class="sourceLine" id="cb2-61" data-line-number="61"><span class="co">#&gt;      0.7435      0.7765      0.8063       3e-04 -4.0361e-05        tmle </span></a>
+<a class="sourceLine" id="cb2-62" data-line-number="62"><span class="co">#&gt;      n_iter </span></a>
+<a class="sourceLine" id="cb2-63" data-line-number="63"><span class="co">#&gt;           1</span></a>
+<a class="sourceLine" id="cb2-64" data-line-number="64"></a>
+<a class="sourceLine" id="cb2-65" data-line-number="65"><span class="co"># compare with an IPCW-agumented one-step estimator under two-phase sampling</span></a>
+<a class="sourceLine" id="cb2-66" data-line-number="66">ipcw_os &lt;-<span class="st"> </span><span class="kw"><a href="reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y, <span class="dt">delta =</span> <span class="fl">0.5</span>,</a>
+<a class="sourceLine" id="cb2-67" data-line-number="67">                   <span class="dt">C =</span> C, <span class="dt">V =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"W"</span>, <span class="st">"Y"</span>),</a>
+<a class="sourceLine" id="cb2-68" data-line-number="68">                   <span class="dt">estimator =</span> <span class="st">"onestep"</span>,</a>
+<a class="sourceLine" id="cb2-69" data-line-number="69">                   <span class="dt">ipcw_fit_args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>),</a>
+<a class="sourceLine" id="cb2-70" data-line-number="70">                   <span class="dt">g_fit_args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"hal"</span>,</a>
+<a class="sourceLine" id="cb2-71" data-line-number="71">                                     <span class="dt">n_bins =</span> <span class="dv">5</span>,</a>
+<a class="sourceLine" id="cb2-72" data-line-number="72">                                     <span class="dt">grid_type =</span> <span class="st">"equal_mass"</span>,</a>
+<a class="sourceLine" id="cb2-73" data-line-number="73">                                     <span class="dt">lambda_seq =</span></a>
+<a class="sourceLine" id="cb2-74" data-line-number="74">                                       <span class="kw"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">-9</span>, <span class="dt">length =</span> <span class="dv">300</span>))),</a>
+<a class="sourceLine" id="cb2-75" data-line-number="75">                   <span class="dt">Q_fit_args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">fit_type =</span> <span class="st">"glm"</span>,</a>
+<a class="sourceLine" id="cb2-76" data-line-number="76">                                     <span class="dt">glm_formula =</span> <span class="st">"Y ~ ."</span>),</a>
+<a class="sourceLine" id="cb2-77" data-line-number="77">                   <span class="dt">eif_reg_type =</span> <span class="st">"glm"</span></a>
+<a class="sourceLine" id="cb2-78" data-line-number="78">                  )</a>
+<a class="sourceLine" id="cb2-79" data-line-number="79"><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(ipcw_os)</a>
+<a class="sourceLine" id="cb2-80" data-line-number="80"><span class="co">#&gt;      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator </span></a>
+<a class="sourceLine" id="cb2-81" data-line-number="81"><span class="co">#&gt;      0.7427      0.7758      0.8058       3e-04 -2.0617e-03     onestep </span></a>
+<a class="sourceLine" id="cb2-82" data-line-number="82"><span class="co">#&gt;      n_iter </span></a>
+<a class="sourceLine" id="cb2-83" data-line-number="83"><span class="co">#&gt;           0</span></a></code></pre></div>
 <hr>
 </div>
 <div id="issues" class="section level2">
@@ -224,19 +221,13 @@
 <h2 class="hasAnchor">
 <a href="#citation" class="anchor"></a>Citation</h2>
 <p>After using the <code>txshift</code> R package, please cite the following:</p>
-<pre><code>    @article{hejazi2019generally,
-      author = {Hejazi, Nima S and {van der Laan}, Mark J and Benkeser,
-        David C},
-      title = {Generally efficient nonparametric inference under two-phase
-        sampling, with applications to vaccine efficacy trials},
-      year  = {2019+},
-      url = {},
-      doi = {},
-      journal={},
-      volume={},
-      number={},
-      pages={},
-      publisher={}
+<pre><code>    @article{hejazi2020efficient,
+      author = {Hejazi, Nima S and {van der Laan}, Mark J and Janes, Holly
+        E and Gilbert, Peter B and Benkeser, David C},
+      title = {Efficient nonparametric inference on the effects of
+        stochastic interventions under two-phase sampling, with
+        applications to vaccine efficacy trials},
+      year  = {2020+}
     }
 
     @manual{hejazi2019txshift,
@@ -245,7 +236,7 @@
         Stochastic Interventions},
       year  = {2019},
       url = {https://github.com/nhejazi/txshift},
-      note = {R package version 0.2.9}
+      note = {R package version 0.3.1}
     }</code></pre>
 <hr>
 </div>
@@ -268,11 +259,11 @@
 <div id="license" class="section level2">
 <h2 class="hasAnchor">
 <a href="#license" class="anchor"></a>License</h2>
-<p>© 2017-2019 <a href="https://nimahejazi.org">Nima S. Hejazi</a></p>
+<p>© 2017-2020 <a href="https://nimahejazi.org">Nima S. Hejazi</a></p>
 <p>The contents of this repository are distributed under the MIT license. See below for details:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">MIT License</a>
 <a class="sourceLine" id="cb4-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">Copyright</span> (c) <span class="dv">2017-2019</span> Nima S. Hejazi</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">Copyright</span> (c) <span class="dv">2017-2020</span> Nima S. Hejazi</a>
 <a class="sourceLine" id="cb4-4" data-line-number="4"></a>
 <a class="sourceLine" id="cb4-5" data-line-number="5">Permission is hereby granted, free of charge, to any person obtaining a copy</a>
 <a class="sourceLine" id="cb4-6" data-line-number="6">of this software and associated documentation <span class="kw"><a href="https://rdrr.io/r/base/files.html">files</a></span> (the <span class="st">"Software"</span>), to deal</a>

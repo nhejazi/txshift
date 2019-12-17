@@ -155,24 +155,22 @@ using the `sl3` R package, consider consulting https://tlverse.org/sl3.
 
 ```{r}
 # SL learners to be used for most fits (e.g., IPCW, outcome regression)
-lrnr_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm", "Lrnr_ranger")
-sl_learner <- Lrnr_sl$new(learners = lrnr_lib, metalearner = Lrnr_nnls$new())
+mean_learner <- Lrnr_mean$new()
+glm_learner <- Lrnr_glm$new()
+rf_learner <- Lrnr_ranger$new()
+Q_lib <- Stack$new(mean_learner, glm_learner, rf_learner)
+sl_learner <- Lrnr_sl$new(learners = Q_lib, metalearner = Lrnr_nnls$new())
 
-# SL learners for conditional densities to be used for the propensity score fit
-lrnr_dens_lib <- make_learner_stack(list("Lrnr_condensier", nbins = 35,
-                                          bin_estimator = Lrnr_glm$new(),
-                                          bin_method = "equal.len",
-                                          pool = FALSE),
-                                    list("Lrnr_condensier", nbins = 30,
-                                          bin_estimator = Lrnr_ranger$new(),
-                                          bin_method = "equal.len",
-                                          pool = FALSE),
-                                    list("Lrnr_condensier", nbins = 25,
-                                          bin_estimator = Lrnr_ranger$new(),
-                                          bin_method = "equal.len",
-                                          pool = FALSE)
-                                   )
-sl_learner_density <- Lrnr_sl$new(learners = lrnr_dens_lib,
+# SL learners for fitting the generalized propensity score fit
+hse_learner <- make_learner(Lrnr_density_semiparametric,
+  mean_learner = glm_learner
+)
+mvd_learner <- make_learner(Lrnr_density_semiparametric,
+  mean_learner = rf_learner,
+  var_learner = glm_learner
+)
+g_lib <- Stack$new(hse_learner, mvd_learner)
+sl_learner_density <- Lrnr_sl$new(learners = g_lib,
                                   metalearner = Lrnr_solnp_density$new())
 ```
 
@@ -218,15 +216,15 @@ thoroughly:
 $$\psi_n - \psi_0 = (P_n - P_0) \cdot D(\bar{Q}_n^*, g_n) + R(\hat{P}^*, P_0),$$
 which, provided the following two conditions:
 
-1. If $D(\bar{Q}_n^*, g_n)$ converges to $D(P_0)$ in $L_2(P_0)$ norm, and
-2. the size of the class of functions considered for estimation of $\bar{Q}_n^*$
-   and $g_n$ is bounded (technically, $\exists \mathcal{F}$ st
-   $D(\bar{Q}_n^*, g_n) \in \mathcal{F}$ *__whp__*, where $\mathcal{F}$ is a
-   Donsker class),
+1. If $D(\bar{Q}_n^{\star}, g_n)$ converges to $D(P_0)$ in $L_2(P_0)$ norm, and
+2. the size of the class of functions considered for estimation of
+   $\bar{Q}_n^{\star}$ and $g_n$ is bounded (technically, $\exists \mathcal{F}$
+   st $D(\bar{Q}_n^{\star}, g_n) \in \mathcal{F}$ *__whp__*, where $\mathcal{F}$
+   is a Donsker class),
 readily admits the conclusion that
-$\psi_n - \psi_0 = (P_n - P_0) \cdot D(P_0) + R(\hat{P}^*, P_0)$.
+$\psi_n - \psi_0 = (P_n - P_0) \cdot D(P_0) + R(\hat{P}^{\star}, P_0)$.
 
-Under the additional condition that the remainder term $R(\hat{P}^*, P_0)$
+Under the additional condition that the remainder term $R(\hat{P}^{\star}, P_0)$
 decays as $o_P \left( \frac{1}{\sqrt{n}} \right),$ we have that
 $$\psi_n - \psi_0 = (P_n - P_0) \cdot D(P_0) + o_P \left( \frac{1}{\sqrt{n}}
  \right),$$
@@ -246,7 +244,7 @@ $$\psi_n \pm z_{\alpha} \cdot \frac{\sigma_n}{\sqrt{n}},$$
 where $\sigma_n^2$ is an estimator of $V(D(P_0))$. The estimator $\sigma_n^2$
 may be obtained using the bootstrap or computed directly via the following
 
-$$\sigma_n^2 = \frac{1}{n} \sum_{i = 1}^{n} D^2(\bar{Q}_n^*, g_n)(O_i)$$
+$$\sigma_n^2 = \frac{1}{n} \sum_{i = 1}^{n} D^2(\bar{Q}_n^{\star}, g_n)(O_i)$$
 
 ```{r}
 (ci_shift <- confint(tmle_sl_shift_1))

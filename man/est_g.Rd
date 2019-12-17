@@ -4,11 +4,16 @@
 \alias{est_g}
 \title{Estimate the Treatment Mechanism (Propensity Score)}
 \usage{
-est_g(A, W, delta = 0, ipc_weights = rep(1, length(A)),
-  fit_type = c("sl", "hal"), sl_learners_density = NULL,
-  std_args = list(n_bins = c(10, 25), grid_type = c("equal_range",
-  "equal_mass"), lambda_seq = exp(seq(-1, -13, length = 300)), use_future =
-  FALSE))
+est_g(
+  A,
+  W,
+  delta = 0,
+  ipc_weights = rep(1, length(A)),
+  fit_type = c("sl", "hal"),
+  sl_learners_density = NULL,
+  std_args = list(n_bins = c(10, 25), grid_type = c("equal_range", "equal_mass"),
+    lambda_seq = exp(seq(-1, -13, length = 300)), use_future = FALSE)
+)
 }
 \arguments{
 \item{A}{A \code{numeric} vector of observed treatment values.}

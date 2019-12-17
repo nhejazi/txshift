@@ -2,13 +2,21 @@
 % Please edit documentation in R/onestep_txshift.R
 \name{onestep_txshift}
 \alias{onestep_txshift}
-\title{Compute One-Step Estimate of Counterfactual Mean Under Stochastically Shifted
-Treatment}
+\title{Compute One-Step Estimate of Counterfactual Mean Under Stochastic Shift
+Intervention}
 \usage{
-onestep_txshift(data_internal, C = rep(1, nrow(data_internal)),
-  V = NULL, delta, ipcw_estim, Qn_estim, Hn_estim,
-  eif_tol = 1/nrow(data_internal), eif_reg_type = c("hal", "glm"),
-  ipcw_fit_args, ipcw_efficiency = TRUE)
+onestep_txshift(
+  data_internal,
+  C = rep(1, nrow(data_internal)),
+  V = NULL,
+  delta,
+  ipcw_estim,
+  Qn_estim,
+  Hn_estim,
+  eif_reg_type = c("hal", "glm"),
+  ipcw_fit_args,
+  ipcw_efficiency = TRUE
+)
 }
 \arguments{
 \item{data_internal}{A \code{data.table} constructed internally by a call to
@@ -44,10 +52,6 @@ covariate, constructed from the treatment mechanism and required for
 targeted minimum loss-based estimation. This object object should be passed
 in after being constructed by a call to the internal function \code{est_Hn}.}
 
-\item{eif_tol}{A \code{numeric} giving the convergence criterion for the
-one-step estimator. This is the maximum mean of the efficient influence
-function to be used in declaring convergence.}
-
 \item{eif_reg_type}{Whether a flexible nonparametric function ought to be
 used in the dimension-reduced nuisance regression of the targeting step for
 the censored data case. By default, the method used is a nonparametric
@@ -74,6 +78,6 @@ S3 object of class \code{txshift} containing the results of the
  procedure to compute a one-step estimate of the treatment shift parameter.
 }
 \description{
-Compute One-Step Estimate of Counterfactual Mean Under Stochastically Shifted
-Treatment
+Compute One-Step Estimate of Counterfactual Mean Under Stochastic Shift
+Intervention
 }

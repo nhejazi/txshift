@@ -115,7 +115,7 @@ test_that("Revised tmle_shift procedure matches code from 2012 manuscript", {
 })
 
 # run the new txshift implementation of TMLE
-# NOTE: should use true density like Ivan does since condensier misspecified
+# NOTE: using true density like Ivan does
 gn_spec_fitted <- as.data.table(
   lapply(
     c(-delta_shift, 0, delta_shift, 2 * delta_shift),

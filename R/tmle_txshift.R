@@ -1,5 +1,5 @@
-#' Compute Targeted Minimum Loss-Based Estimate of Counterfactual Mean Under
-#' Stochastically Shifted Treatment
+#' Compute Targeted Minimum Loss Estimate of Counterfactual Mean Under
+#' Stochastic Shift Intervention
 #'
 #' This is the primary user-facing wrapper function to be used in invoking the
 #' procedure to obtain targeted maximum likelihood / targeted minimum loss-based
@@ -35,9 +35,6 @@
 #'  (targeting step) to compute the TML estimator. The choices are "standard"
 #'  and "weighted" for where to place the auxiliary covariate in the logistic
 #'  tilting regression.
-#' @param eif_tol A \code{numeric} giving the convergence criterion for the TML
-#'  estimator. This is the maximum mean of the efficient influence function to
-#'  be used in declaring convergence.
 #' @param max_iter A \code{numeric} integer giving the maximum number of steps
 #'  to be taken in iterating to a solution of the efficient influence function.
 #' @param eif_reg_type Whether a flexible nonparametric function ought to be
@@ -75,7 +72,6 @@ tmle_txshift <- function(data_internal,
                          Qn_estim,
                          Hn_estim,
                          fluctuation = c("standard", "weighted"),
-                         eif_tol = 1 / nrow(data_internal),
                          max_iter = 1e4,
                          eif_reg_type = c("hal", "glm"),
                          ipcw_fit_args,
@@ -91,6 +87,7 @@ tmle_txshift <- function(data_internal,
   if (ipcw_efficiency & !all(C == 1) & !is.null(V) & !is.null(ipcw_estim)) {
     # programmatic bookkeeping
     eif_mean <- Inf
+    eif_tol <- 1 / length(cens_weights)
     conv_res <- matrix(replicate(3, rep(NA_real_, max_iter)), nrow = max_iter)
 
     # quantities to be updated across iterations
@@ -114,7 +111,6 @@ tmle_txshift <- function(data_internal,
         Hn_estim = Hn_estim, # N.B., g_n never gets updated in this procedure
         estimator = "tmle",
         fluctuation = fluctuation,
-        eif_tol = eif_tol,
         eif_reg_type = eif_reg_type
       )
 
@@ -141,8 +137,12 @@ tmle_txshift <- function(data_internal,
       # compute updated mean of efficient influence function and save
       eif_ipcw <- tmle_ipcw_eif$eif_eval$eif - tmle_ipcw_eif$ipcw_eif_component
       eif_mean <- mean(eif_ipcw)
-      eif_var <- var(eif_ipcw) / length(C)
+      eif_var <- var(eif_ipcw) / length(cens_weights)
       conv_res[n_steps, ] <- c(tmle_ipcw_eif$eif_eval$psi, eif_var, eif_mean)
+
+      # TMLE convergence criterion based on re-scaled standard error
+      tol_scaling <- 1 / (max(10, log(length(cens_weights))))
+      eif_tol <- sqrt(eif_var) * tol_scaling
     }
     conv_res <- data.table::as.data.table(conv_res)
     data.table::setnames(conv_res, c("psi", "var", "eif_mean"))
@@ -182,8 +182,7 @@ tmle_txshift <- function(data_internal,
       fluc_mod_out = fitted_fluc_mod,
       Delta = C,
       ipc_weights = cens_weights[C == 1],
-      ipc_weights_norm = cens_weights_norm[C == 1],
-      eif_tol = eif_tol
+      ipc_weights_norm = cens_weights_norm[C == 1]
     )
 
     # create output object

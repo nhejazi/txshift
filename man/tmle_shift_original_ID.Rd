@@ -4,8 +4,17 @@
 \alias{tmle_shift_original_ID}
 \title{TML Estimate of the Effect of a Continuous Treatment}
 \usage{
-tmle_shift_original_ID(Y, A, W, Qn, gn, delta, tol = 1e-05,
-  iter_max = 5, A_val)
+tmle_shift_original_ID(
+  Y,
+  A,
+  W,
+  Qn,
+  gn,
+  delta,
+  tol = 1e-05,
+  iter_max = 5,
+  A_val
+)
 }
 \arguments{
 \item{Y}{A \code{numeric} vector of observed outcomes.}

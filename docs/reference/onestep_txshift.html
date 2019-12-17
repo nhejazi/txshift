@@ -6,8 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Compute One-Step Estimate of Counterfactual Mean Under Stochastically Shifted
-Treatment — onestep_txshift • txshift</title>
+<title>Compute One-Step Estimate of Counterfactual Mean Under Stochastic Shift
+Intervention — onestep_txshift • txshift</title>
 
 
 <!-- jquery -->
@@ -36,10 +36,10 @@ Treatment — onestep_txshift • txshift</title>
 
 
 
-<meta property="og:title" content="Compute One-Step Estimate of Counterfactual Mean Under Stochastically Shifted
-Treatment — onestep_txshift" />
-<meta property="og:description" content="Compute One-Step Estimate of Counterfactual Mean Under Stochastically Shifted
-Treatment" />
+<meta property="og:title" content="Compute One-Step Estimate of Counterfactual Mean Under Stochastic Shift
+Intervention — onestep_txshift" />
+<meta property="og:description" content="Compute One-Step Estimate of Counterfactual Mean Under Stochastic Shift
+Intervention" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -72,7 +72,7 @@ Treatment" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
       </span>
     </div>
 
@@ -126,21 +126,29 @@ Treatment" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Compute One-Step Estimate of Counterfactual Mean Under Stochastically Shifted
-Treatment</h1>
+    <h1>Compute One-Step Estimate of Counterfactual Mean Under Stochastic Shift
+Intervention</h1>
     <small class="dont-index">Source: <a href='https://github.com/nhejazi/txshift/blob/master/R/onestep_txshift.R'><code>R/onestep_txshift.R</code></a></small>
     <div class="hidden name"><code>onestep_txshift.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Compute One-Step Estimate of Counterfactual Mean Under Stochastically Shifted
-Treatment</p>
+    <p>Compute One-Step Estimate of Counterfactual Mean Under Stochastic Shift
+Intervention</p>
     </div>
 
-    <pre class="usage"><span class='fu'>onestep_txshift</span>(<span class='no'>data_internal</span>, <span class='kw'>C</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>data_internal</span>)),
-  <span class='kw'>V</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>delta</span>, <span class='no'>ipcw_estim</span>, <span class='no'>Qn_estim</span>, <span class='no'>Hn_estim</span>,
-  <span class='kw'>eif_tol</span> <span class='kw'>=</span> <span class='fl'>1</span>/<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>data_internal</span>), <span class='kw'>eif_reg_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"hal"</span>, <span class='st'>"glm"</span>),
-  <span class='no'>ipcw_fit_args</span>, <span class='kw'>ipcw_efficiency</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>onestep_txshift</span>(
+  <span class='no'>data_internal</span>,
+  <span class='kw'>C</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>data_internal</span>)),
+  <span class='kw'>V</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='no'>delta</span>,
+  <span class='no'>ipcw_estim</span>,
+  <span class='no'>Qn_estim</span>,
+  <span class='no'>Hn_estim</span>,
+  <span class='kw'>eif_reg_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"hal"</span>, <span class='st'>"glm"</span>),
+  <span class='no'>ipcw_fit_args</span>,
+  <span class='kw'>ipcw_efficiency</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -191,12 +199,6 @@ constructed by a call to the internal function <code>est_Q</code>.</p></td>
 covariate, constructed from the treatment mechanism and required for
 targeted minimum loss-based estimation. This object object should be passed
 in after being constructed by a call to the internal function <code>est_Hn</code>.</p></td>
-    </tr>
-    <tr>
-      <th>eif_tol</th>
-      <td><p>A <code>numeric</code> giving the convergence criterion for the
-one-step estimator. This is the maximum mean of the efficient influence
-function to be used in declaring convergence.</p></td>
     </tr>
     <tr>
       <th>eif_reg_type</th>

@@ -6,8 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Compute Targeted Minimum Loss-Based Estimate of Counterfactual Mean Under
-Stochastically Shifted Treatment — tmle_txshift • txshift</title>
+<title>Compute Targeted Minimum Loss Estimate of Counterfactual Mean Under
+Stochastic Shift Intervention — tmle_txshift • txshift</title>
 
 
 <!-- jquery -->
@@ -36,8 +36,8 @@ Stochastically Shifted Treatment — tmle_txshift • txshift</title>
 
 
 
-<meta property="og:title" content="Compute Targeted Minimum Loss-Based Estimate of Counterfactual Mean Under
-Stochastically Shifted Treatment — tmle_txshift" />
+<meta property="og:title" content="Compute Targeted Minimum Loss Estimate of Counterfactual Mean Under
+Stochastic Shift Intervention — tmle_txshift" />
 <meta property="og:description" content="This is the primary user-facing wrapper function to be used in invoking the
 procedure to obtain targeted maximum likelihood / targeted minimum loss-based
 estimates (TMLE) of the causal parameter discussed in Díaz and van der Laan
@@ -74,7 +74,7 @@ estimates (TMLE) of the causal parameter discussed in Díaz and van der Laan
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
       </span>
     </div>
 
@@ -128,8 +128,8 @@ estimates (TMLE) of the causal parameter discussed in Díaz and van der Laan
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Compute Targeted Minimum Loss-Based Estimate of Counterfactual Mean Under
-Stochastically Shifted Treatment</h1>
+    <h1>Compute Targeted Minimum Loss Estimate of Counterfactual Mean Under
+Stochastic Shift Intervention</h1>
     <small class="dont-index">Source: <a href='https://github.com/nhejazi/txshift/blob/master/R/tmle_txshift.R'><code>R/tmle_txshift.R</code></a></small>
     <div class="hidden name"><code>tmle_txshift.Rd</code></div>
     </div>
@@ -141,11 +141,20 @@ estimates (TMLE) of the causal parameter discussed in Díaz and van der Laan
 (2013) and Díaz and van der Laan (2018).</p>
     </div>
 
-    <pre class="usage"><span class='fu'>tmle_txshift</span>(<span class='no'>data_internal</span>, <span class='kw'>C</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>data_internal</span>)), <span class='kw'>V</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='no'>delta</span>, <span class='no'>ipcw_estim</span>, <span class='no'>Qn_estim</span>, <span class='no'>Hn_estim</span>, <span class='kw'>fluctuation</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"standard"</span>,
-  <span class='st'>"weighted"</span>), <span class='kw'>eif_tol</span> <span class='kw'>=</span> <span class='fl'>1</span>/<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>data_internal</span>), <span class='kw'>max_iter</span> <span class='kw'>=</span> <span class='fl'>10000</span>,
-  <span class='kw'>eif_reg_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"hal"</span>, <span class='st'>"glm"</span>), <span class='no'>ipcw_fit_args</span>,
-  <span class='kw'>ipcw_efficiency</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>tmle_txshift</span>(
+  <span class='no'>data_internal</span>,
+  <span class='kw'>C</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>data_internal</span>)),
+  <span class='kw'>V</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='no'>delta</span>,
+  <span class='no'>ipcw_estim</span>,
+  <span class='no'>Qn_estim</span>,
+  <span class='no'>Hn_estim</span>,
+  <span class='kw'>fluctuation</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"standard"</span>, <span class='st'>"weighted"</span>),
+  <span class='kw'>max_iter</span> <span class='kw'>=</span> <span class='fl'>10000</span>,
+  <span class='kw'>eif_reg_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"hal"</span>, <span class='st'>"glm"</span>),
+  <span class='no'>ipcw_fit_args</span>,
+  <span class='kw'>ipcw_efficiency</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -202,12 +211,6 @@ in after being constructed by a call to the internal function <code>est_Hn</code
 (targeting step) to compute the TML estimator. The choices are "standard"
 and "weighted" for where to place the auxiliary covariate in the logistic
 tilting regression.</p></td>
-    </tr>
-    <tr>
-      <th>eif_tol</th>
-      <td><p>A <code>numeric</code> giving the convergence criterion for the TML
-estimator. This is the maximum mean of the efficient influence function to
-be used in declaring convergence.</p></td>
     </tr>
     <tr>
       <th>max_iter</th>

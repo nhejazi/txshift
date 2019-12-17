@@ -4,17 +4,28 @@
 \alias{txshift}
 \title{Estimate Counterfactual Mean Under Stochastically Shifted Treatment}
 \usage{
-txshift(W, A, Y, C = rep(1, length(Y)), V = NULL, delta = 0,
-  estimator = c("tmle", "onestep"), fluctuation = c("standard",
-  "weighted"), eif_tol = 1/length(Y), max_iter = 1000,
-  ipcw_fit_args = list(fit_type = c("glm", "sl", "fit_spec"), sl_learners
-  = NULL), g_fit_args = list(fit_type = c("hal", "sl", "fit_spec"),
-  n_bins = c(10, 25), grid_type = c("equal_range", "equal_mass"),
-  lambda_seq = exp(seq(-1, -13, length = 300)), use_future = FALSE,
-  sl_learners_density = NULL), Q_fit_args = list(fit_type = c("glm",
-  "sl", "fit_spec"), glm_formula = "Y ~ .", sl_learners = NULL),
-  eif_reg_type = c("hal", "glm"), ipcw_efficiency = TRUE,
-  ipcw_fit_spec = NULL, gn_fit_spec = NULL, Qn_fit_spec = NULL)
+txshift(
+  W,
+  A,
+  Y,
+  C = rep(1, length(Y)),
+  V = NULL,
+  delta = 0,
+  estimator = c("tmle", "onestep"),
+  fluctuation = c("standard", "weighted"),
+  max_iter = 1000,
+  ipcw_fit_args = list(fit_type = c("glm", "sl", "fit_spec"), sl_learners = NULL),
+  g_fit_args = list(fit_type = c("hal", "sl", "fit_spec"), n_bins = c(10, 25), grid_type
+    = c("equal_range", "equal_mass"), lambda_seq = exp(seq(-1, -13, length = 300)),
+    use_future = FALSE, sl_learners_density = NULL),
+  Q_fit_args = list(fit_type = c("glm", "sl", "fit_spec"), glm_formula = "Y ~ .",
+    sl_learners = NULL),
+  eif_reg_type = c("hal", "glm"),
+  ipcw_efficiency = TRUE,
+  ipcw_fit_spec = NULL,
+  gn_fit_spec = NULL,
+  Qn_fit_spec = NULL
+)
 }
 \arguments{
 \item{W}{A \code{matrix}, \code{data.frame}, or similar corresponding to a
@@ -51,10 +62,6 @@ targeted maximum likelihood or \code{"onestep"} for a one-step estimator.}
 (targeting step) to compute the TML estimator. The choices are "standard"
 and "weighted" for where to place the auxiliary covariate in the logistic
 tilting regression.}
-
-\item{eif_tol}{A \code{numeric} giving the convergence criterion for the TML
-estimator. This is the the maximum mean of the efficient influence function
-(EIF) to be used in declaring convergence.}
 
 \item{max_iter}{A \code{numeric} integer giving the maximum number of steps
 to be taken in iterating to a solution of the efficient influence function.}

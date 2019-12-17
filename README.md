@@ -95,10 +95,8 @@ tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                                   glm_formula = "Y ~ .")
                )
 summary(tmle)
-#>     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator 
-#>     0.7474     0.7782     0.8062      2e-04 6.7628e-11       tmle 
-#>     n_iter 
-#>          0
+#>     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator     n_iter 
+#>     0.7474     0.7782     0.8062      2e-04 6.7628e-11       tmle          0
 
 # fit a full-data one-step estimator for comparison (again, no sampling)
 os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
@@ -112,7 +110,7 @@ os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
              )
 summary(os)
 #>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-#>      0.7471      0.7779      0.8059       2e-04 -1.6925e-03     onestep 
+#>      0.7472      0.7779      0.8059       2e-04 -1.6543e-03     onestep 
 #>      n_iter 
 #>           0
 
@@ -133,7 +131,7 @@ ipcw_tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                     )
 summary(ipcw_tmle)
 #>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-#>      0.7435      0.7765      0.8063       3e-04 -4.0324e-05        tmle 
+#>      0.7435      0.7765      0.8063       3e-04 -4.0361e-05        tmle 
 #>      n_iter 
 #>           1
 
@@ -153,7 +151,7 @@ ipcw_os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                   )
 summary(ipcw_os)
 #>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-#>      0.7427      0.7758      0.8058       3e-04 -2.0727e-03     onestep 
+#>      0.7427      0.7758      0.8058       3e-04 -2.0617e-03     onestep 
 #>      n_iter 
 #>           0
 ```
@@ -181,19 +179,13 @@ prior to submitting a pull request.
 After using the `txshift` R package, please cite the following:
 
 ``` 
-    @article{hejazi2019generally,
-      author = {Hejazi, Nima S and {van der Laan}, Mark J and Benkeser,
-        David C},
-      title = {Generally efficient nonparametric inference under two-phase
-        sampling, with applications to vaccine efficacy trials},
-      year  = {2019+},
-      url = {},
-      doi = {},
-      journal={},
-      volume={},
-      number={},
-      pages={},
-      publisher={}
+    @article{hejazi2020efficient,
+      author = {Hejazi, Nima S and {van der Laan}, Mark J and Janes, Holly
+        E and Gilbert, Peter B and Benkeser, David C},
+      title = {Efficient nonparametric inference on the effects of
+        stochastic interventions under two-phase sampling, with
+        applications to vaccine efficacy trials},
+      year  = {2020+}
     }
 
     @manual{hejazi2019txshift,
@@ -202,7 +194,7 @@ After using the `txshift` R package, please cite the following:
         Stochastic Interventions},
       year  = {2019},
       url = {https://github.com/nhejazi/txshift},
-      note = {R package version 0.2.9}
+      note = {R package version 0.3.1}
     }
 ```
 
@@ -244,14 +236,14 @@ LM012417-02](https://projectreporter.nih.gov/project_info_description.cfm?aid=92
 
 ## License
 
-© 2017-2019 [Nima S. Hejazi](https://nimahejazi.org)
+© 2017-2020 [Nima S. Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the MIT license.
 See below for details:
 
     MIT License
     
-    Copyright (c) 2017-2019 Nima S. Hejazi
+    Copyright (c) 2017-2020 Nima S. Hejazi
     
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -282,7 +274,7 @@ See below for details:
 Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2019.
 *sl3: Modern Pipelines for Machine Learning and Super Learning*.
 <https://github.com/tlverse/sl3>.
-<https://doi.org/10.5281/zenodo.3251138>.
+<https://doi.org/10.5281/zenodo.3558317>.
 
 </div>
 

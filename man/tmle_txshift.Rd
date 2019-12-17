@@ -2,14 +2,23 @@
 % Please edit documentation in R/tmle_txshift.R
 \name{tmle_txshift}
 \alias{tmle_txshift}
-\title{Compute Targeted Minimum Loss-Based Estimate of Counterfactual Mean Under
-Stochastically Shifted Treatment}
+\title{Compute Targeted Minimum Loss Estimate of Counterfactual Mean Under
+Stochastic Shift Intervention}
 \usage{
-tmle_txshift(data_internal, C = rep(1, nrow(data_internal)), V = NULL,
-  delta, ipcw_estim, Qn_estim, Hn_estim, fluctuation = c("standard",
-  "weighted"), eif_tol = 1/nrow(data_internal), max_iter = 10000,
-  eif_reg_type = c("hal", "glm"), ipcw_fit_args,
-  ipcw_efficiency = TRUE)
+tmle_txshift(
+  data_internal,
+  C = rep(1, nrow(data_internal)),
+  V = NULL,
+  delta,
+  ipcw_estim,
+  Qn_estim,
+  Hn_estim,
+  fluctuation = c("standard", "weighted"),
+  max_iter = 10000,
+  eif_reg_type = c("hal", "glm"),
+  ipcw_fit_args,
+  ipcw_efficiency = TRUE
+)
 }
 \arguments{
 \item{data_internal}{A \code{data.table} constructed internally by a call to
@@ -48,10 +57,6 @@ in after being constructed by a call to the internal function \code{est_Hn}.}
 (targeting step) to compute the TML estimator. The choices are "standard"
 and "weighted" for where to place the auxiliary covariate in the logistic
 tilting regression.}
-
-\item{eif_tol}{A \code{numeric} giving the convergence criterion for the TML
-estimator. This is the maximum mean of the efficient influence function to
-be used in declaring convergence.}
 
 \item{max_iter}{A \code{numeric} integer giving the maximum number of steps
 to be taken in iterating to a solution of the efficient influence function.}
