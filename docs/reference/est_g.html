@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Estimate the Treatment Mechanism (Propensity Score) — est_g • txshift</title>
+<title>Estimate the Treatment Mechanism (Generalized Propensity Score) — est_g • txshift</title>
 
 
 <!-- jquery -->
@@ -35,10 +35,8 @@
 
 
 
-<meta property="og:title" content="Estimate the Treatment Mechanism (Propensity Score) — est_g" />
-<meta property="og:description" content="Compute the propensity score (treatment mechanism) for the observed data,
-including the shift. This returns the propensity score for the observed data
-(at A) and the shift of interest (at A - delta)." />
+<meta property="og:title" content="Estimate the Treatment Mechanism (Generalized Propensity Score) — est_g" />
+<meta property="og:description" content="Estimate the Treatment Mechanism (Generalized Propensity Score)" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -71,7 +69,7 @@ including the shift. This returns the propensity score for the observed data
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.2</span>
       </span>
     </div>
 
@@ -125,15 +123,13 @@ including the shift. This returns the propensity score for the observed data
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Estimate the Treatment Mechanism (Propensity Score)</h1>
+    <h1>Estimate the Treatment Mechanism (Generalized Propensity Score)</h1>
     <small class="dont-index">Source: <a href='https://github.com/nhejazi/txshift/blob/master/R/fit_mechanisms.R'><code>R/fit_mechanisms.R</code></a></small>
     <div class="hidden name"><code>est_g.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Compute the propensity score (treatment mechanism) for the observed data,
-including the shift. This returns the propensity score for the observed data
-(at A) and the shift of interest (at A - delta).</p>
+    <p>Estimate the Treatment Mechanism (Generalized Propensity Score)</p>
     </div>
 
     <pre class="usage"><span class='fu'>est_g</span>(
@@ -160,8 +156,8 @@ including the shift. This returns the propensity score for the observed data
     </tr>
     <tr>
       <th>delta</th>
-      <td><p>A <code>numeric</code> value identifying a shift in the observed value
-of the treatment under which observations are to be evaluated.</p></td>
+      <td><p>A <code>numeric</code> value identifying a shift in the observed
+value of the treatment under which observations are to be evaluated.</p></td>
     </tr>
     <tr>
       <th>ipc_weights</th>
@@ -171,29 +167,40 @@ produced by the internal procedure to estimate the censoring mechanism
     </tr>
     <tr>
       <th>fit_type</th>
-      <td><p>A <code>character</code> specifying whether to use Super Learner or
-the Highly Adaptive Lasso to estimate the conditional treatment density.</p></td>
+      <td><p>A <code>character</code> specifying whether to use Super Learner
+(from <span class="pkg">sl3</span>) or the Highly Adaptive Lasso (from <span class="pkg">hal9001</span>) to
+estimate the conditional treatment density.</p></td>
     </tr>
     <tr>
       <th>sl_learners_density</th>
       <td><p>Object containing a set of instantiated learners
-from the <code>sl3</code> package, to be used in fitting an ensemble model.</p></td>
+from <span class="pkg">sl3</span>, to be used in fitting an ensemble model.</p></td>
     </tr>
     <tr>
       <th>std_args</th>
       <td><p>A <code>list</code> of arguments to be passed to <code>haldensify</code>
-from the <code>haldensify</code> package when the argument <code>fit_type</code> is set
-to <code>"hal"</code>. Note that this invokes HAL instead of Super Learner and is
-thus only feasible for relatively small data sets (n &lt; 2000).</p></td>
+from <span class="pkg">haldensify</span> when the argument <code>fit_type</code> is set to
+<code>"hal"</code>. Note that this invokes HAL instead of Super Learner and is
+thus only feasible for relatively small data sets.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>TODO</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Compute the propensity score (treatment mechanism) for the observed
+ data, including the shift. This gives the propensity score for the observed
+ data (at the observed A) and the shift (at A - delta).</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
+      <li><a href="#value">Value</a></li>
+      <li><a href="#details">Details</a></li>
     </ul>
 
   </div>

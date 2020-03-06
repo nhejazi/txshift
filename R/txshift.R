@@ -89,7 +89,6 @@
 #'
 #' @examples
 #' # TODO
-#'
 #' @export
 txshift <- function(W,
                     A,

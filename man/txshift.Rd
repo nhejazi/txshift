@@ -134,5 +134,4 @@ TODO
 }
 \examples{
 # TODO
-
 }

@@ -38,10 +38,8 @@ Stochastic Shift Intervention — tmle_txshift • txshift</title>
 
 <meta property="og:title" content="Compute Targeted Minimum Loss Estimate of Counterfactual Mean Under
 Stochastic Shift Intervention — tmle_txshift" />
-<meta property="og:description" content="This is the primary user-facing wrapper function to be used in invoking the
-procedure to obtain targeted maximum likelihood / targeted minimum loss-based
-estimates (TMLE) of the causal parameter discussed in Díaz and van der Laan
-(2013) and Díaz and van der Laan (2018)." />
+<meta property="og:description" content="Compute Targeted Minimum Loss Estimate of Counterfactual Mean Under
+Stochastic Shift Intervention" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -74,7 +72,7 @@ estimates (TMLE) of the causal parameter discussed in Díaz and van der Laan
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.2</span>
       </span>
     </div>
 
@@ -135,10 +133,8 @@ Stochastic Shift Intervention</h1>
     </div>
 
     <div class="ref-description">
-    <p>This is the primary user-facing wrapper function to be used in invoking the
-procedure to obtain targeted maximum likelihood / targeted minimum loss-based
-estimates (TMLE) of the causal parameter discussed in Díaz and van der Laan
-(2013) and Díaz and van der Laan (2018).</p>
+    <p>Compute Targeted Minimum Loss Estimate of Counterfactual Mean Under
+Stochastic Shift Intervention</p>
     </div>
 
     <pre class="usage"><span class='fu'>tmle_txshift</span>(
@@ -162,14 +158,14 @@ estimates (TMLE) of the causal parameter discussed in Díaz and van der Laan
     <tr>
       <th>data_internal</th>
       <td><p>A <code>data.table</code> constructed internally by a call to
-<code>txshift</code>. This contains most of the data elements needed for computing
-the targeted maximum likelihood estimator.</p></td>
+<code><a href='txshift.html'>txshift</a></code>. This contains most of the data for computing the TML
+estimator.</p></td>
     </tr>
     <tr>
       <th>C</th>
-      <td><p>A <code>numeric</code> binary vector giving information on whether a given
-observation was subject to censoring, used to compute an IPCW-TMLE in cases
-where two-stage sampling is performed. Default assumes no censoring.</p></td>
+      <td><p>A <code>numeric</code> indicator for whether a given observation was
+subject to censoring, used to compute an IPCW-TMLE in cases where two-stage
+sampling is performed. Default assumes no censoring.</p></td>
     </tr>
     <tr>
       <th>V</th>
@@ -190,20 +186,20 @@ the scale of the treatment (A).</p></td>
       <th>ipcw_estim</th>
       <td><p>An object providing the value of the censoring mechanism
 evaluated across the full data. This object is passed in after being
-constructed by a call to the internal function <code>est_ipcw</code>.</p></td>
+constructed by a call to the internal function <code><a href='est_ipcw.html'>est_ipcw</a></code>.</p></td>
     </tr>
     <tr>
       <th>Qn_estim</th>
       <td><p>An object providing the value of the outcome evaluated after
 imposing a shift in the treatment. This object is passed in after being
-constructed by a call to the internal function <code>est_Q</code>.</p></td>
+constructed by a call to the internal function <code><a href='est_Q.html'>est_Q</a></code>.</p></td>
     </tr>
     <tr>
       <th>Hn_estim</th>
       <td><p>An object providing values of the auxiliary ("clever")
 covariate, constructed from the treatment mechanism and required for
 targeted minimum loss-based estimation. This object object should be passed
-in after being constructed by a call to the internal function <code>est_Hn</code>.</p></td>
+in after being constructed by a call to <code><a href='est_Hn.html'>est_Hn</a></code>.</p></td>
     </tr>
     <tr>
       <th>fluctuation</th>
@@ -222,7 +218,7 @@ to be taken in iterating to a solution of the efficient influence function.</p><
       <td><p>Whether a flexible nonparametric function ought to be
 used in the dimension-reduced nuisance regression of the targeting step for
 the censored data case. By default, the method used is a nonparametric
-regression based on the Highly Adaptive Lasso (from package <code>hal9001</code>).
+regression based on the Highly Adaptive Lasso (from <span class="pkg">hal9001</span>).
 Set this to <code>"glm"</code> to instead use a simple linear regression model.
 In this step, the efficient influence function (EIF) is regressed against
 covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).</p></td>
@@ -230,12 +226,12 @@ covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).</p><
     <tr>
       <th>ipcw_fit_args</th>
       <td><p>A <code>list</code> of arguments, all but one of which are
-passed to <code>est_ipcw</code>. For details, please consult the documentation for
-<code>est_ipcw</code>. The first element of this (i.e., <code>fit_type</code>) is used
-to determine how this regression is fit: "glm" for generalized linear model,
-"sl" for a Super Learner, and "fit_spec" a user-specified input of the form
-produced by <code>est_ipcw</code>. NOTE THAT this first argument is not passed to
-<code>est_ipcw</code>.</p></td>
+passed to <code><a href='est_ipcw.html'>est_ipcw</a></code>. For details, consult the documentation
+for <code><a href='est_ipcw.html'>est_ipcw</a></code>. The first element (i.e., <code>fit_type</code>) is
+used to determine how this regression is fit: "glm" for generalized linear
+model, "sl" for a Super Learner, and "fit_spec" a user-specified input of
+the form produced by <code><a href='est_ipcw.html'>est_ipcw</a></code>. NOTE THAT this first argument
+is not passed to <code><a href='est_ipcw.html'>est_ipcw</a></code>.</p></td>
     </tr>
     <tr>
       <th>ipcw_efficiency</th>
@@ -250,13 +246,22 @@ an IPC-weighted loss rather than the IPC-augment influence function.</p></td>
 
     <p>S3 object of class <code>txshift</code> containing the results of the
  procedure to compute a TML estimate of the treatment shift parameter.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
+    <p>Invokes the procedure to obtain targeted minimum loss estimates
+ (TMLE) of the counterfactual mean under a modified treatment policy.</p>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'># TODO
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
+      <li><a href="#details">Details</a></li>
+      <li><a href="#examples">Examples</a></li>
     </ul>
 
   </div>

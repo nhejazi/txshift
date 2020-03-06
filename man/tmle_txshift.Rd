@@ -96,5 +96,4 @@ Invokes the procedure to obtain targeted minimum loss estimates
 }
 \examples{
 # TODO
-
 }

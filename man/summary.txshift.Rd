@@ -31,5 +31,4 @@ Print a convenient summary for objects computed using
 }
 \examples{
 # TODO
-
 }

@@ -9,16 +9,13 @@ Status](https://travis-ci.org/nhejazi/txshift.svg?branch=master)](https://travis
 Status](https://ci.appveyor.com/api/projects/status/github/nhejazi/txshift?branch=master&svg=true)](https://ci.appveyor.com/project/nhejazi/txshift)
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/nhejazi/txshift/master.svg)](https://codecov.io/github/nhejazi/txshift?branch=master)
-[![CRAN](http://www.r-pkg.org/badges/version/txshift)](http://www.r-pkg.org/pkg/txshift)
-[![CRAN
-downloads](https://cranlogs.r-pkg.org/badges/txshift)](https://CRAN.R-project.org/package=txshift)
 [![Project Status: Active – The project has reached a stable, usable
 state and is being actively
 developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![MIT
 license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
-> Targeted Learning of the Causal Effects of Stochastic Interventions
+> Efficient Estimation of the Causal Effects of Stochastic Interventions
 
 **Authors:** [Nima Hejazi](https://nimahejazi.org) and [David
 Benkeser](https://www.sph.emory.edu/faculty/profile/#!dbenkes)
@@ -36,7 +33,7 @@ likelihood (TML) estimator of such a causal parameter, originally
 proposed by Díaz and van der Laan (2018), and makes use of analogous
 machinery to compute an efficient one-step estimator (Pfanzagl and
 Wefelmeyer 1985). `txshift` integrates with the [`sl3`
-package](https://github.com/tlverse/sl3) (Coyle et al. 2019) to allow
+package](https://github.com/tlverse/sl3) (Coyle et al. 2020) to allow
 for ensemble machine learning to be leveraged in the estimation
 procedure.
 
@@ -185,16 +182,16 @@ After using the `txshift` R package, please cite the following:
       title = {Efficient nonparametric inference on the effects of
         stochastic interventions under two-phase sampling, with
         applications to vaccine efficacy trials},
-      year  = {2020+}
+      year  = {2020}
     }
 
-    @manual{hejazi2019txshift,
+    @manual{hejazi2020txshift,
       author = {Hejazi, Nima S and Benkeser, David C},
-      title = {{txshift}: {Targeted Learning} of the Causal Effects of
+      title = {{txshift}: Efficient Estimation of the Causal Effects of
         Stochastic Interventions},
-      year  = {2019},
+      year  = {2020},
       url = {https://github.com/nhejazi/txshift},
-      note = {R package version 0.3.1}
+      note = {R package version 0.3.2}
     }
 ```
 
@@ -214,15 +211,16 @@ After using the `txshift` R package, please cite the following:
     providing facilities to estimate the causal effect of stochastic
     treatment regimes in the mediation setting, including classical
     (IPW) and augmented double robust (one-step) estimators. This is an
-    implementation of the methodology explored in Díaz and Hejazi
-    (2019).
+    implementation of the methodology explored by Díaz and Hejazi
+    (2020).
 
   - [R/`haldensify`](https://github.com/nhejazi/haldensify) - A minimal
     package for estimating the conditional density treatment mechanism
     component of this parameter based on using the [highly adaptive
-    lasso](https://github.com/tlverse/hal9001) in combination with a
-    pooled hazard regression. This package implements the methodology
-    proposed in Díaz and van der Laan (2011).
+    lasso](https://github.com/tlverse/hal9001) (Coyle, Hejazi, and van
+    der Laan 2019) in combination with a pooled hazard regression. This
+    package implements the methodology proposed by Díaz and van der Laan
+    (2011).
 
 -----
 
@@ -269,20 +267,30 @@ See below for details:
 
 <div id="refs" class="references">
 
-<div id="ref-coyle2019sl3">
+<div id="ref-coyle2020sl3">
 
-Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2019.
+Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2020.
 *sl3: Modern Pipelines for Machine Learning and Super Learning*.
 <https://github.com/tlverse/sl3>.
-<https://doi.org/10.5281/zenodo.3558317>.
+<https://doi.org/10.5281/zenodo.1342293>.
 
 </div>
 
-<div id="ref-diaz2019causal">
+<div id="ref-coyle2019hal9001">
 
-Díaz, Iván, and Nima S Hejazi. 2019. “Causal Mediation Analysis for
-Stochastic Interventions.” *Submitted*.
-<https://arxiv.org/abs/1901.02776>.
+Coyle, Jeremy R, Nima S Hejazi, and Mark J van der Laan. 2019. *hal9001:
+The Scalable Highly Adaptive Lasso*.
+<https://github.com/tlverse/hal9001>.
+<https://doi.org/10.5281/zenodo.3558313>.
+
+</div>
+
+<div id="ref-diaz2020causal">
+
+Díaz, Iván, and Nima S Hejazi. 2020. “Causal Mediation Analysis for
+Stochastic Interventions.” *Journal of the Royal Statistical Society:
+Series B (Statistical Methodology)*. Wiley Online Library.
+<https://doi.org/10.1111/rssb.12362>.
 
 </div>
 

@@ -31,5 +31,4 @@ Compute confidence intervals for estimates produced by
 }
 \examples{
 # TODO
-
 }

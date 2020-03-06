@@ -90,5 +90,4 @@ msm <- msm_vimshift(
     glm_formula = "Y ~ ."
   )
 )
-
 }

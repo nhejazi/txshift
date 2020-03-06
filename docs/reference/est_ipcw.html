@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.2</span>
       </span>
     </div>
 
@@ -139,9 +139,9 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>V</th>
-      <td><p>A <code>numeric</code> vector, <code>matrix</code>, <code>data.frame</code> or similar
-object giving the observed values of the covariates known to potentially
-inform the censoring mechanism.</p></td>
+      <td><p>A <code>numeric</code> vector, <code>matrix</code>, <code>data.frame</code> or
+similar object giving the observed values of the covariates known to
+potentially inform the censoring mechanism.</p></td>
     </tr>
     <tr>
       <th>Delta</th>
@@ -156,19 +156,22 @@ argument <code>sl_learners</code> must be provided.</p></td>
     </tr>
     <tr>
       <th>sl_learners</th>
-      <td><p>An object of class <code>Lrnr_sl</code>, a Super Learner created
-externally using the <code>sl3</code> package.</p></td>
+      <td><p>An <code><a href='https://tlverse.org/sl3/reference/Lrnr_sl.html'>Lrnr_sl</a></code> object, a Super Learner
+instantiated externally using <span class="pkg">sl3</span>.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A <code>list</code> containing a <code>numeric</code> vector corresponding to the
- inverse probability of censoring weights that are required for computing an
+    <p>A <code>list</code> containing a <code>numeric</code> vector corresponding to
+ the inverse probability of censoring weights required for computing an
  IPCW-TMLE and <code>numeric</code> vector of the estimated missingness mechanism.
  Formally, the former is nothing more than <!-- %\frac{\Delta}{\Pi_n}, where the -->
  term <!-- %\Pi_n is simply the predicted probability of belonging to a censoring -->
  class as computed using standard logistic regression.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>TODO</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -176,6 +179,7 @@ externally using the <code>sl3</code> package.</p></td>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
+      <li><a href="#details">Details</a></li>
     </ul>
 
   </div>

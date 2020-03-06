@@ -22,5 +22,4 @@ The \code{print} method for objects of class \code{txshift}.
 }
 \examples{
 # TODO
-
 }

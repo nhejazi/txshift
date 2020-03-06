@@ -86,5 +86,4 @@ TODO
 }
 \examples{
 # TODO
-
 }

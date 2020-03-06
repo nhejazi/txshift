@@ -63,7 +63,6 @@
 #'
 #' @examples
 #' # TODO
-#'
 #' @export
 tmle_txshift <- function(data_internal,
                          C = rep(1, nrow(data_internal)),

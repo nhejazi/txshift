@@ -20,7 +20,6 @@
 #'
 #' @examples
 #' # TODO
-#'
 #' @export
 confint.txshift <- function(object,
                             parm = seq_len(object$psi),
@@ -76,7 +75,6 @@ confint.txshift <- function(object,
 #'
 #' @examples
 #' # TODO
-#'
 #' @export
 summary.txshift <- function(object,
                             ...,
@@ -115,7 +113,6 @@ summary.txshift <- function(object,
 #'
 #' @examples
 #' # TODO
-#'
 #' @export
 print.txshift <- function(x, ...) {
   print(x[c("psi", "var", "estimator", "n_iter")])
