@@ -1,11 +1,13 @@
 #' Compute One-Step Estimate of Counterfactual Mean Under Stochastic Shift
 #' Intervention
 #'
+#' @details TODO
+#'
 #' @param data_internal A \code{data.table} constructed internally by a call to
-#'  \code{txshift}. This contains most of the data elements needed for computing
+#'  \code{\link{txshift}}. This contains the data elements needed for computing
 #'  the one-step estimator.
-#' @param C A \code{numeric} binary vector giving information on whether a given
-#'  observation was subject to censoring, used to compute an IPC-weighted
+#' @param C A \code{numeric} indicator for whether a given observation censored
+#'  in the two-phase sampling procedure, used to compute an IPC-weighted
 #'  one-step estimator in cases where two-stage sampling is performed. Default
 #'  assumes no censoring.
 #' @param V The covariates that are used in determining the sampling procedure
@@ -25,22 +27,22 @@
 #'  constructed by a call to the internal function \code{est_Q}.
 #' @param Hn_estim An object providing values of the auxiliary ("clever")
 #'  covariate, constructed from the treatment mechanism and required for
-#'  targeted minimum loss-based estimation. This object object should be passed
-#'  in after being constructed by a call to the internal function \code{est_Hn}.
+#'  targeted minimum loss estimation. This object object should be passed in
+#'  after being constructed by a call to the internal function \code{est_Hn}.
 #' @param eif_reg_type Whether a flexible nonparametric function ought to be
 #'  used in the dimension-reduced nuisance regression of the targeting step for
 #'  the censored data case. By default, the method used is a nonparametric
-#'  regression based on the Highly Adaptive Lasso (from package \code{hal9001}).
-#'  Set this to \code{"glm"} to instead use a simple linear regression model.
+#'  regression based on the Highly Adaptive Lasso (from \pkg{hal9001}). Set
+#'  this to \code{"glm"} to instead use a simple linear regression model.
 #'  In this step, the efficient influence function (EIF) is regressed against
 #'  covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).
 #' @param ipcw_fit_args A \code{list} of arguments, all but one of which are
-#'  passed to \code{est_ipcw}. For details, please consult the documentation for
-#'  \code{est_ipcw}. The first element of this (i.e., \code{fit_type}) is used
-#'  to determine how this regression is fit: "glm" for generalized linear model,
-#'  "sl" for a Super Learner, and "fit_spec" a user-specified input of the form
-#'  produced by \code{est_ipcw}. NOTE THAT this first argument is not passed to
-#'  \code{est_ipcw}.
+#'  passed to \code{\link{est_ipcw}}. For details, consult the documentation
+#'  for \code{\link{est_ipcw}}. The first element (i.e., \code{fit_type}) is
+#'  used to determine how this regression is fit: "glm" for generalized linear
+#'  model, "sl" for a Super Learner, and "fit_spec" a user-specified input of
+#'  the form produced by \code{\link{est_ipcw}}. NOTE THAT this first argument
+#'  is not passed to \code{\link{est_ipcw}}.
 #' @param ipcw_efficiency Whether to invoke an augmentation of the IPCW-TMLE
 #'  procedure that performs an iterative process to ensure efficiency of the
 #'  resulting estimate. The default is \code{TRUE}; set to \code{FALSE} to use
@@ -52,6 +54,9 @@
 #'
 #' @return S3 object of class \code{txshift} containing the results of the
 #'  procedure to compute a one-step estimate of the treatment shift parameter.
+#'
+#' @examples
+#' # TODO
 #'
 #' @export
 onestep_txshift <- function(data_internal,

@@ -1,19 +1,25 @@
 #' Confidence Intervals for Shifted Treatment Parameters
 #'
-#' Compute confidence intervals for estimates produced by \code{tmle_txshift}
+#' @details Compute confidence intervals for estimates produced by
+#'  \code{\link{tmle_txshift}}.
 #'
 #' @param object An object of class \code{txshift}, as produced by invoking
 #'  the function \code{tmle_txshift}, for which a confidence interval is to be
 #'  computed.
 #' @param parm A \code{numeric} vector indicating indices of \code{object$est}
 #'  for which to return confidence intervals.
-#' @param level A \code{numeric} indicating the level of the confidence interval
-#'  to be computed.
+#' @param level A \code{numeric} indicating the level of the confidence
+#'  interval to be computed.
 #' @param ... Other arguments. Not currently used.
 #'
 #' @importFrom stats qnorm plogis qlogis
 #'
 #' @method confint txshift
+#'
+#' @return TODO
+#'
+#' @examples
+#' # TODO
 #'
 #' @export
 confint.txshift <- function(object,
@@ -50,7 +56,8 @@ confint.txshift <- function(object,
 
 #' Summary for Shifted Treatment Parameter Objects
 #'
-#' Print a convenient summary for objects computed using \code{tmle_txshift}.
+#' @details Print a convenient summary for objects computed using
+#'  \code{\link{tmle_txshift}}.
 #'
 #' @param object An object of class \code{txshift}, as produced by invoking
 #'  the function \code{tmle_txshift}, for which a confidence interval is to be
@@ -64,6 +71,11 @@ confint.txshift <- function(object,
 #' @importFrom stats confint
 #'
 #' @method summary txshift
+#'
+#' @return TODO
+#'
+#' @examples
+#' # TODO
 #'
 #' @export
 summary.txshift <- function(object,
@@ -92,14 +104,19 @@ summary.txshift <- function(object,
 
 #' Print Method for txshift Objects
 #'
-#' The \code{print} method for objects of class \code{txshift}.
+#' @details The \code{print} method for objects of class \code{txshift}.
 #'
 #' @param x An object of class \code{txshift}.
 #' @param ... Other options (not currently used).
 #'
-#' @export
-#'
 #' @method print txshift
+#'
+#' @return TODO
+#'
+#' @examples
+#' # TODO
+#'
+#' @export
 print.txshift <- function(x, ...) {
   print(x[c("psi", "var", "estimator", "n_iter")])
 }
@@ -108,6 +125,8 @@ print.txshift <- function(x, ...) {
 
 #' Bound Precision
 #'
+#' @details TODO
+#'
 #' @param vals \code{numeric} vector of values in the interval [0, 1] to be
 #'  bounded within arbitrary machine precision. The most common use of this
 #'  functionality is to avoid indeterminate or non-finite values after the
@@ -115,7 +134,7 @@ print.txshift <- function(x, ...) {
 #'
 #' @importFrom assertthat assert_that
 #'
-#' @keywords internal
+#' @return TODO
 bound_precision <- function(vals) {
   assertthat::assert_that(!(max(vals) > 1 | min(vals) < 0))
   vals[vals == 0] <- .Machine$double.neg.eps
@@ -125,13 +144,15 @@ bound_precision <- function(vals) {
 
 ################################################################################
 
-#' Bound Propensity Score (Density)
+#' Bound Generalized Propensity Score (Conditional Density)
+#'
+#' @details TODO
 #'
 #' @param vals \code{numeric} vector of propensity score estimate values. Note
 #'  that, for this parameter, the propensity score is (conditional) density and
 #'  so it ought not be bounded from above.
 #'
-#' @keywords internal
+#' @return TODO
 bound_propensity <- function(vals) {
   # bound likelihood component g(a|w) away from 0 only
   propensity_bound <- 1 / length(vals)
@@ -143,10 +164,12 @@ bound_propensity <- function(vals) {
 
 #' Transform values by scaling to the unit interval
 #'
-#' @param vals A \code{numeric} vector corresponding to the observed values of
-#'  the variable of interest, to be re-scaled to the unit interval [0, 1].
+#' @details TODO
 #'
-#' @keywords internal
+#' @param vals A \code{numeric} vector corresponding to the observed values of
+#'  the variable of interest, to be re-scaled to the unit interval [0,1].
+#'
+#' @return TODO
 scale_to_unit <- function(vals) {
   # compute re-scaled value in interval [0,1]
   scaled_vals <- (vals - min(vals)) / (max(vals) - min(vals))
@@ -157,6 +180,8 @@ scale_to_unit <- function(vals) {
 
 #' Transform values from the unit interval back to their original scale
 #'
+#' @details TODO
+#'
 #' @param scaled_vals A \code{numeric} vector corresponding to re-scaled values
 #'  in the unit interval, to be re-scaled to the original interval.
 #' @param max_orig A \code{numeric} scalar value giving the maximum of the
@@ -164,7 +189,7 @@ scale_to_unit <- function(vals) {
 #' @param min_orig A \code{numeric} scalar value giving the minimum of the
 #'  values on the original scale.
 #'
-#' @keywords internal
+#' @return TODO
 scale_to_original <- function(scaled_vals, max_orig, min_orig) {
   scaled_orig <- scaled_vals * (max_orig - min_orig) + min_orig
   return(scaled_orig)

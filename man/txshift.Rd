@@ -2,7 +2,7 @@
 % Please edit documentation in R/txshift.R
 \name{txshift}
 \alias{txshift}
-\title{Estimate Counterfactual Mean Under Stochastically Shifted Treatment}
+\title{Estimate Counterfactual Mean Under Stochastic Shift in Exposure}
 \usage{
 txshift(
   W,
@@ -28,18 +28,17 @@ txshift(
 )
 }
 \arguments{
-\item{W}{A \code{matrix}, \code{data.frame}, or similar corresponding to a
-set of baseline covariates.}
+\item{W}{A \code{matrix}, \code{data.frame}, or similar containing a set of
+baseline covariates.}
 
 \item{A}{A \code{numeric} vector corresponding to a treatment variable. The
 parameter of interest is defined as a location shift of this quantity.}
 
 \item{Y}{A \code{numeric} vector of the observed outcomes.}
 
-\item{C}{A \code{numeric} binary vector giving information on whether a given
-observation was subject to censoring, used to compute an IPC-weighted
-estimator in cases where two-stage sampling is performed. Default assumes no
-censoring (i.e., a two-stage design was NOT used).}
+\item{C}{A \code{numeric} indicator for whether a given observation was
+subject to censoring, used to compute an IPC-weighted estimator in cases
+where two-stage sampling is performed. The default assumes no censoring.}
 
 \item{V}{The covariates that are used in determining the sampling procedure
 that gives rise to censoring. The default is \code{NULL} and corresponds to
@@ -48,8 +47,7 @@ preceding argument \code{C} must be uniquely 1). To specify this, pass in a
 \code{character} vector identifying variables amongst W, A, Y thought to
 have played a role in defining the sampling/censoring mechanism (C). This
 argument also accepts a \code{data.table} (or similar) object composed of
-combinations of the variables W, A, Y; use of this option is NOT recommended
-and should be selected only with care.}
+combinations of variables W, A, Y; use of this option is NOT recommended.}
 
 \item{delta}{A \code{numeric} value indicating the shift in the treatment to
 be used in defining the target parameter. This is defined with respect to
@@ -67,38 +65,38 @@ tilting regression.}
 to be taken in iterating to a solution of the efficient influence function.}
 
 \item{ipcw_fit_args}{A \code{list} of arguments, all but one of which are
-passed to \code{est_ipcw}. For details, please consult the documentation for
-\code{est_ipcw}. The first element of this (i.e., \code{fit_type}) is used
-to determine how this regression is fit: "glm" for generalized linear model,
-"sl" for a Super Learner, and "fit_spec" a user-specified input of the form
-produced by \code{est_ipcw}. NOTE THAT this first argument is not passed to
-\code{est_ipcw}.}
+passed to \code{\link{est_ipcw}}. For details, consult the documentation of
+\code{\link{est_ipcw}}. The first element (i.e., \code{fit_type}) is used
+to determine how this regression is fit: generalized linear model ("glm")
+or Super Learner ("sl"), and "fit_spec" a user-specified input of the form
+produced by \code{\link{est_ipcw}}. NOTE THAT this first argument is not
+passed to \code{\link{est_ipcw}}.}
 
-\item{g_fit_args}{A \code{list} of arguments, all but one of which are passed
-to \code{est_g}. For further details, please consult the documentation for
-\code{est_g}. The first element of this (i.e., \code{fit_type}) is used to
-determine how this regression is fit: \code{"hal"} for a method using the
-highly adaptive lasso to fit conditional densities via the \code{haldensify}
-package, \code{"sl"} for \code{sl3} learners used to fit Super Learner to
-densities via \code{Lrnr_haldensify} or similar, and \code{"fit_spec"} for
-user-specified input of the form produced by \code{est_g}. NOTE THAT this
-first argument is not passed to \code{est_g}.}
+\item{g_fit_args}{A \code{list} of arguments, all but one of which are
+passed to \code{\link{est_g}}. For details, consult the documentation of
+\code{\link{est_g}}. The first element (i.e., \code{fit_type}) is used to
+determine how this regression is fit: \code{"hal"} to estimate conditional
+densities via the highly adaptive lasso (via \pkg{haldensify}), \code{"sl"}
+for \pkg{sl3} learners used to fit Super Learner to densities via
+\code{\link[sl3]{Lrnr_haldensify}} or similar, and \code{"fit_spec"} for
+user-specified input of the form produced by \code{\link{est_g}}. NOTE that
+this first argument is not passed to \code{\link{est_g}}.}
 
-\item{Q_fit_args}{A \code{list} of arguments, all but one of which are passed
-to \code{est_Q}. For further details, please consult the documentation for
-\code{est_Q}. The first element of this (i.e., \code{fit_type}) is used to
+\item{Q_fit_args}{A \code{list} of arguments, all but one of which are
+passed to \code{\link{est_Q}}. For details, consult the documentation for
+\code{\link{est_Q}}. The first element (i.e., \code{fit_type}) is used to
 determine how this regression is fit: \code{"glm"} for a generalized linear
-model for the outcome regression, \code{"sl"} for \code{sl3} learners used
-to fit a Super Learner for the outcome regression, and \code{"fit_spec"} for
-user-specified input of the form produced by \code{est_Q}. NOTE THAT this
-first argument is not passed to \code{est_g}.}
+model for the outcome regression, \code{"sl"} for \pkg{sl3} learners used
+to fit a Super Learner for the outcome regression, and \code{"fit_spec"}
+for user-specified input of the form produced by \code{\link{est_Q}}. NOTE
+that this first argument is not passed to \code{\link{est_g}}.}
 
 \item{eif_reg_type}{Whether a flexible nonparametric function ought to be
 used in the dimension-reduced nuisance regression of the targeting step for
 the censored data case. By default, the method used is a nonparametric
-regression based on the Highly Adaptive Lasso (from package \code{hal9001}).
-Set this to \code{"glm"} to instead use a simple linear regression model.
-In this step, the efficient influence function (EIF) is regressed against
+regression based on the Highly Adaptive Lasso (from \pkg{hal9001}). Set
+this to \code{"glm"} to instead use a simple linear regression model. In
+this step, the efficient influence function (EIF) is regressed against
 covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).}
 
 \item{ipcw_efficiency}{Whether to invoke an augmentation of the IPCW-TMLE
@@ -106,28 +104,35 @@ procedure that performs an iterative process to ensure efficiency of the
 resulting estimate. The default is \code{TRUE}; only set to \code{FALSE} if
 possible inefficiency of the IPCW-TMLE is not a concern.}
 
-\item{ipcw_fit_spec}{User-specified version of the argument above for fitting
-the censoring mechanism (\code{ipcw_fit_args}). Consult the documentation
-for that argument for details on how to properly use this. In general, this
-should only be used by advanced users familiar with both the underlying
-theory and this software implementation of said theory.}
+\item{ipcw_fit_spec}{User-specified version of the argument above for
+fitting the censoring mechanism (\code{ipcw_fit_args}). Consult the
+documentation for that argument for details on how to properly use this. In
+general, this should only be used by advanced users familiar with both the
+underlying theory and this software implementation.}
 
 \item{gn_fit_spec}{User-specified version of the argument above for fitting
 the treatment mechanism (\code{g_fit_args}). Consult the documentation for
 that argument for details on how to properly use this. In general, this
 should only be used by advanced users familiar with both the underlying
-theory and this software implementation of said theoretical details.}
+theory and this software implementation.}
 
 \item{Qn_fit_spec}{User-specified version of the argument above for fitting
 the outcome mechanism (\code{Q_fit_args}). Consult the documentation for
 that argument for details on how to properly use this. In general, this
 should only be used by advanced users familiar with both the underlying
-theory and this software implementation of said theoretical details.}
+theory and this software implementation.}
 }
 \value{
 S3 object of class \code{txshift} containing the results of the
  procedure to compute a TML estimate of the treatment shift parameter.
 }
 \description{
-Estimate Counterfactual Mean Under Stochastically Shifted Treatment
+Estimate Counterfactual Mean Under Stochastic Shift in Exposure
+}
+\details{
+TODO
+}
+\examples{
+# TODO
+
 }

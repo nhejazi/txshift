@@ -33,7 +33,6 @@ this R package is to work through examples, so let's simply jump to that.
 To start, let's load the packages we'll use and set a seed for simulation:
 
 ```{r setup}
-library(tidyverse)
 library(data.table)
 library(haldensify)
 library(sl3)
@@ -122,9 +121,10 @@ argument to `"glm"` fits this EIF nuisance regression with a generalized linear
 model (GLM; an assumption-laden parametric form) while the default value of
 `"hal"` fits the nuisance regression with the highly adaptive lasso (HAL; a
 recently developed nonparametric estimator) via the [`hal9001` R
-package](https://github.com/tlverse/hal9001). In practice, we recommend
-leaving this argument to the default and fitting the EIF nuisance regression
-with HAL; however, this is significantly slower than simple using a GLM.
+package](https://github.com/tlverse/hal9001) [@coyle2019hal9001]. In practice,
+we recommend leaving this argument to the default and fitting the EIF nuisance
+regression with HAL; however, this is significantly slower than simple using a
+GLM.
 
 ### Inverse Probability Weighting with Targeted Maximum Likelihood Estimation
 
@@ -179,7 +179,7 @@ summary(tmle_hal_shift_2)
 
 To easily incorporate ensemble machine learning into the estimation procedure,
 we rely on the facilities provided in the [`sl3` R
-package](https://sl3.tlverse.org) [@coyle2019sl3]. For a complete guide on
+package](https://sl3.tlverse.org) [@coyle2020sl3]. For a complete guide on
 using the `sl3` R package, consider consulting https://tlverse.org/sl3.
 
 ```{r make_sl}

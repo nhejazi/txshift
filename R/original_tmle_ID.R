@@ -1,10 +1,12 @@
 #' TML Estimate of the Effect of a Continuous Treatment
 #'
+#' @details TODO
+#'
 #' @param Y A \code{numeric} vector of observed outcomes.
 #' @param A A \code{numeric} vector of observed treatments.
 #' @param W A \code{matrix} or \code{data.frame} of baseline covariates.
-#' @param Qn Function to compute the outcome regression: Q(A, W) = E(Y | A, W).
-#' @param gn Function to compute the propensity score: g(A, W) = density(A | W).
+#' @param Qn Function to compute the outcome regression: Q(A, W) = E(Y|A,W).
+#' @param gn Function to compute the propensity score: g(A, W) = density(A|W).
 #' @param delta A \code{numeric} for the shift to be placed on the treatment of
 #'  interest (i.e., the effect of shifting treatment \code{A} by delta units).
 #' @param tol A \code{numeric} for the tolerance for measuring convergence of
@@ -48,7 +50,7 @@
 #'
 #' @author Iván Díaz
 #'
-#' @keywords internal
+#' @return TODO
 tmle_shift_original_ID <- function(Y, A, W,
                                    Qn, gn,
                                    delta, tol = 1e-5, iter_max = 5, A_val) {
@@ -99,8 +101,10 @@ tmle_shift_original_ID <- function(Y, A, W,
 
 #' Iterative Fluctuation
 #'
-#' @param Qn Function to compute the outcome regression: Q(A, W) = E(Y | A, W).
-#' @param gn Function to compute the propensity score: g(A, W) = density(A | W).
+#' @details TODO
+#'
+#' @param Qn Function to compute the outcome regression: Q(A, W) = E(Y|A,W).
+#' @param gn Function to compute the propensity score: g(A, W) = density(A|W).
 #' @param gn0d A \code{Numeric} computed for the propensity score (gn) from the
 #'  first iteration only.
 #' @param prev_sum The sum computed from this fluctuation step in the previous
@@ -121,7 +125,7 @@ tmle_shift_original_ID <- function(Y, A, W,
 #'
 #' @author Iván Díaz
 #'
-#' @keywords internal
+#' @return TODO
 f_iter <- function(Qn, gn, gn0d = NULL, prev_sum = 0, first = FALSE, h_int,
                    Y, A, W, delta, A_val) {
 
@@ -160,8 +164,10 @@ f_iter <- function(Qn, gn, gn0d = NULL, prev_sum = 0, first = FALSE, h_int,
 
 #' Estimating Equation
 #'
+#' @details TODO
+#'
 #' @param eps Fluctuation parameter.
-#' @param Qn Function to compute the outcome regression: Q(A, W) = E(Y | A, W).
+#' @param Qn Function to compute the outcome regression: Q(A,W) = E(Y|A,W).
 #' @param QnAW Estimated outcome mechnism.
 #' @param EQnd Parameter estimate (expectation of Estimated outcome mechanism
 #'  under the proposed shift).
@@ -169,7 +175,7 @@ f_iter <- function(Qn, gn, gn0d = NULL, prev_sum = 0, first = FALSE, h_int,
 #'  first iteration only.
 #' @param H1 Ratio obtained from comparing the propensity score (gn) before and
 #'  after application of the shift \code{delta}.
-#' @param D2 ???
+#' @param D2 A second-order term appearing in the efficient influence function.
 #' @param prev_sum The sum computed from this fluctuation step in the previous
 #'  iteration.
 #' @param Y A \code{numeric} vector of observed outcomes.
@@ -180,7 +186,7 @@ f_iter <- function(Qn, gn, gn0d = NULL, prev_sum = 0, first = FALSE, h_int,
 #'
 #' @author Iván Díaz
 #'
-#' @keywords internal
+#' @return TODO
 est_eqn <- function(eps, QnAW, Qn, H1, gn0d, EQnd, D2, prev_sum, Y, A, W,
                     delta) {
   sum((Y - (QnAW + eps * H1)) * H1 + (Qn(A + delta, W) - EQnd) -

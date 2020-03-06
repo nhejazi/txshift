@@ -1,3 +1,12 @@
+# txshift 0.3.2
+
+As of March 2020:
+* Corrections to dependencies in preparation for eventual CRAN release.
+* Change title partially (from "Targeted Learning" to "Efficient Estimation").
+* Lock dependency version: `sl3` >= v1.3.7 and `hal9001` >= v0.2.5.
+* Remove and/or reduce GitHub-only dependencies.
+* Extensive documentation updates.
+
 # txshift 0.3.1
 
 As of December 2019:

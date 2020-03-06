@@ -7,9 +7,9 @@
 est_ipcw(V, Delta, fit_type = c("sl", "glm"), sl_learners = NULL)
 }
 \arguments{
-\item{V}{A \code{numeric} vector, \code{matrix}, \code{data.frame} or similar
-object giving the observed values of the covariates known to potentially
-inform the censoring mechanism.}
+\item{V}{A \code{numeric} vector, \code{matrix}, \code{data.frame} or
+similar object giving the observed values of the covariates known to
+potentially inform the censoring mechanism.}
 
 \item{Delta}{A \code{numeric} vector giving observed values of the indicator
 function corresponding to the censoring mechanism.}
@@ -18,12 +18,12 @@ function corresponding to the censoring mechanism.}
 using GLMs or a Super Learner. If use of Super Learner is desired, then the
 argument \code{sl_learners} must be provided.}
 
-\item{sl_learners}{An object of class \code{Lrnr_sl}, a Super Learner created
-externally using the \code{sl3} package.}
+\item{sl_learners}{An \code{\link[sl3]{Lrnr_sl}} object, a Super Learner
+instantiated externally using \pkg{sl3}.}
 }
 \value{
-A \code{list} containing a \code{numeric} vector corresponding to the
- inverse probability of censoring weights that are required for computing an
+A \code{list} containing a \code{numeric} vector corresponding to
+ the inverse probability of censoring weights required for computing an
  IPCW-TMLE and \code{numeric} vector of the estimated missingness mechanism.
  Formally, the former is nothing more than %\frac{\Delta}{\Pi_n}, where the
  term %\Pi_n is simply the predicted probability of belonging to a censoring
@@ -31,4 +31,7 @@ A \code{list} containing a \code{numeric} vector corresponding to the
 }
 \description{
 Estimate Inverse Probability of Censoring Weights
+}
+\details{
+TODO
 }

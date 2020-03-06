@@ -12,7 +12,12 @@ bounded within arbitrary machine precision. The most common use of this
 functionality is to avoid indeterminate or non-finite values after the
 application \code{stats::qlogis}.}
 }
+\value{
+TODO
+}
 \description{
 Bound Precision
 }
-\keyword{internal}
+\details{
+TODO
+}
