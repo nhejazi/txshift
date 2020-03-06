@@ -90,7 +90,7 @@ of treatment $A$, conditional on the covariates $W$, has support _a.e._
 
 ```{r}
 # simulate simple data for tmle-shift sketch
-n_obs <- 1000  # sample size
+n_obs <- 500  # sample size
 n_w <- 1  # just one baseline covariate for this example
 tx_mult <- 2  # multiplier for the effect of W = 1 on the treatment
 
@@ -184,22 +184,18 @@ using the `sl3` R package, consider consulting https://tlverse.org/sl3.
 
 ```{r make_sl}
 # SL learners to be used for most fits (e.g., IPCW, outcome regression)
-lrnr_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm", "Lrnr_xgboost")
+lrnr_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm", "Lrnr_ranger")
 sl_learner <- Lrnr_sl$new(learners = lrnr_lib, metalearner = Lrnr_nnls$new())
 
 # SL learners for conditional densities to be used for the propensity score fit
-lrnr_dens_lib <- make_learner_stack(list("Lrnr_haldensify", n_bins = 5,
+lrnr_dens_lib <- make_learner_stack(list("Lrnr_haldensify", n_bins = 3,
                                           grid_type = "equal_range",
                                           lambda_seq = exp(seq(-1, -7,
                                                                length = 100))),
-                                    list("Lrnr_haldensify", n_bins = 5,
+                                    list("Lrnr_haldensify", n_bins = 3,
                                           bin_method = "equal_mass",
                                           lambda_seq = exp(seq(-1, -7,
-                                                               length = 100))),
-                                    list("Lrnr_haldensify", nbins = 10,
-                                          bin_method = "equal_mass",
-                                          lambda_seq = exp(seq(-1, -9,
-                                                               length = 300)))
+                                                               length = 100))))
                                    )
 sl_learner_density <- Lrnr_sl$new(learners = lrnr_dens_lib,
                                   metalearner = Lrnr_solnp_density$new())
