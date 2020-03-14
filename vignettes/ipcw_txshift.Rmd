@@ -195,7 +195,7 @@ lrnr_dens_lib <- make_learner_stack(list("Lrnr_haldensify", n_bins = 3,
                                     list("Lrnr_haldensify", n_bins = 3,
                                           bin_method = "equal_mass",
                                           lambda_seq = exp(seq(-1, -7,
-                                                               length = 100))))
+                                                               length = 100)))
                                    )
 sl_learner_density <- Lrnr_sl$new(learners = lrnr_dens_lib,
                                   metalearner = Lrnr_solnp_density$new())

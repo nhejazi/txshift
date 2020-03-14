@@ -90,7 +90,7 @@
 <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://www.benkeserstatistics.com/">David Benkeser</a>
 </h4>
             
-            <h4 class="date">2020-03-06</h4>
+            <h4 class="date">2020-03-14</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nhejazi/txshift/blob/master/vignettes/intro_txshift.Rmd"><code>vignettes/intro_txshift.Rmd</code></a></small>
       <div class="hidden name"><code>intro_txshift.Rmd</code></div>
@@ -225,12 +225,12 @@
 <a class="sourceLine" id="cb12-7" data-line-number="7">                                             <span class="dt">sl_learners =</span> sl_learner)</a>
 <a class="sourceLine" id="cb12-8" data-line-number="8">                          )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 1420.9251     Pars:  0.99999362 0.00000638
-## Iter: 2 fn: 1420.9251     Pars:  0.999998165 0.000001835
+## Iter: 1 fn: 1420.9251     Pars:  0.999993990 0.000006009
+## Iter: 2 fn: 1420.9251     Pars:  0.999998272 0.000001728
 ## solnp--&gt; Completed in 2 iterations</code></pre>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(tmle_sl_shift_<span class="dv">1</span>)</a></code></pre></div>
 <pre><code>##     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator     n_iter 
-##     1.9245     2.0604     2.1963     0.0048 3.7952e-14       tmle          0</code></pre>
+##     1.9245     2.0604     2.1963     0.0048 3.7699e-14       tmle          0</code></pre>
 <p>As before, we may vary the regression for the submodel fluctuation procedure by weighting each observation by the value of the so-called clever covariate rather than using such an auxiliary covariate directly in the regression procedure:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">tmle_sl_shift_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw"><a href="../reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y, <span class="dt">delta =</span> delta,</a>
 <a class="sourceLine" id="cb16-2" data-line-number="2">                           <span class="dt">fluctuation =</span> <span class="st">"weighted"</span>,</a>
@@ -241,12 +241,12 @@
 <a class="sourceLine" id="cb16-7" data-line-number="7">                                             <span class="dt">sl_learners =</span> sl_learner)</a>
 <a class="sourceLine" id="cb16-8" data-line-number="8">                          )</a></code></pre></div>
 <pre><code>## 
-## Iter: 1 fn: 1420.3361     Pars:  0.9999863 0.0000137
-## Iter: 2 fn: 1420.3361     Pars:  0.999997021 0.000002979
+## Iter: 1 fn: 1420.3361     Pars:  0.99995969 0.00004031
+## Iter: 2 fn: 1420.3361     Pars:  0.999994559 0.000005441
 ## solnp--&gt; Completed in 2 iterations</code></pre>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(tmle_sl_shift_<span class="dv">2</span>)</a></code></pre></div>
 <pre><code>##     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator     n_iter 
-##     1.9243     2.0601      2.196     0.0048 2.6484e-16       tmle          0</code></pre>
+##     1.9243     2.0601      2.196     0.0048 5.1211e-16       tmle          0</code></pre>
 </div>
 <div id="statistical-inference-for-targeted-maximum-likelihood-estimates" class="section level3">
 <h3 class="hasAnchor">

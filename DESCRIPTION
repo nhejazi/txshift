@@ -54,7 +54,6 @@ Suggests:
     Rsolnp,
     nnls
 Remotes:
-    github::nhejazi/haldensify,
     github::tlverse/sl3
 License: MIT + file LICENSE
 URL: https://github.com/nhejazi/txshift
@@ -62,5 +61,5 @@ BugReports: https://github.com/nhejazi/txshift/issues
 Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 RdMacros: Rdpack

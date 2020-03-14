@@ -90,7 +90,7 @@
 <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://www.benkeserstatistics.com/">David Benkeser</a>
 </h4>
             
-            <h4 class="date">2020-03-06</h4>
+            <h4 class="date">2020-03-14</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nhejazi/txshift/blob/master/vignettes/ipcw_txshift.Rmd"><code>vignettes/ipcw_txshift.Rmd</code></a></small>
       <div class="hidden name"><code>ipcw_txshift.Rmd</code></div>
@@ -131,7 +131,7 @@
 <h3 class="hasAnchor">
 <a href="#simulate-data" class="anchor"></a>Simulate Data</h3>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co"># simulate simple data for tmle-shift sketch</span></a>
-<a class="sourceLine" id="cb6-2" data-line-number="2">n_obs &lt;-<span class="st"> </span><span class="dv">1000</span>  <span class="co"># sample size</span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">n_obs &lt;-<span class="st"> </span><span class="dv">500</span>  <span class="co"># sample size</span></a>
 <a class="sourceLine" id="cb6-3" data-line-number="3">n_w &lt;-<span class="st"> </span><span class="dv">1</span>  <span class="co"># just one baseline covariate for this example</span></a>
 <a class="sourceLine" id="cb6-4" data-line-number="4">tx_mult &lt;-<span class="st"> </span><span class="dv">2</span>  <span class="co"># multiplier for the effect of W = 1 on the treatment</span></a>
 <a class="sourceLine" id="cb6-5" data-line-number="5"></a>
@@ -175,8 +175,10 @@
 <a class="sourceLine" id="cb7-15" data-line-number="15">                            <span class="dt">eif_reg_type =</span> <span class="st">"glm"</span></a>
 <a class="sourceLine" id="cb7-16" data-line-number="16">                           )</a>
 <a class="sourceLine" id="cb7-17" data-line-number="17"><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(tmle_hal_shift_<span class="dv">1</span>)</a></code></pre></div>
-<pre><code>##     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator     n_iter 
-##     1.9424      2.078     2.2135     0.0048 3.6786e-05       tmle          1</code></pre>
+<pre><code>##      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
+##      1.8917      2.0738      2.2559      0.0086 -1.5522e-04        tmle 
+##      n_iter 
+##           1</code></pre>
 <p>When computing any such TML estimator, we may, of course, vary the regressions used in fitting the nuisance parameters; however, an even simpler variation is to fit the step for the fluctuation submodels with a <em>weighted</em> method, simply weighting each observation by an auxiliary covariate (often denoted <span class="math inline">\(H_n\)</span>, and sometimes called the “clever covariate” in the literature) rather than using such a covariate directly in the submodel regression fit.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">tmle_hal_shift_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw"><a href="../reference/txshift.html">txshift</a></span>(<span class="dt">W =</span> W, <span class="dt">A =</span> A, <span class="dt">Y =</span> Y,</a>
 <a class="sourceLine" id="cb9-2" data-line-number="2">                            <span class="dt">C =</span> C, <span class="dt">V =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"W"</span>, <span class="st">"Y"</span>),</a>
@@ -195,8 +197,10 @@
 <a class="sourceLine" id="cb9-15" data-line-number="15">                            <span class="dt">eif_reg_type =</span> <span class="st">"glm"</span></a>
 <a class="sourceLine" id="cb9-16" data-line-number="16">                           )</a>
 <a class="sourceLine" id="cb9-17" data-line-number="17"><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(tmle_hal_shift_<span class="dv">2</span>)</a></code></pre></div>
-<pre><code>##     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator     n_iter 
-##     1.9425      2.078     2.2136     0.0048 3.6791e-05       tmle          1</code></pre>
+<pre><code>##      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
+##      1.8925      2.0747      2.2568      0.0086 -1.5527e-04        tmle 
+##      n_iter 
+##           1</code></pre>
 </div>
 <div id="interlude-constructing-optimal-stacked-regressions-with-sl3" class="section level3">
 <h3 class="hasAnchor">
@@ -204,25 +208,21 @@
 </h3>
 <p>To easily incorporate ensemble machine learning into the estimation procedure, we rely on the facilities provided in the <a href="https://sl3.tlverse.org"><code>sl3</code> R package</a> <span class="citation">(Coyle et al. 2020)</span>. For a complete guide on using the <code>sl3</code> R package, consider consulting <a href="https://tlverse.org/sl3" class="uri">https://tlverse.org/sl3</a>.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="co"># SL learners to be used for most fits (e.g., IPCW, outcome regression)</span></a>
-<a class="sourceLine" id="cb11-2" data-line-number="2">lrnr_lib &lt;-<span class="st"> </span><span class="kw"><a href="https://tlverse.org/sl3/reference/make_learner_stack.html">make_learner_stack</a></span>(<span class="st">"Lrnr_mean"</span>, <span class="st">"Lrnr_glm"</span>, <span class="st">"Lrnr_xgboost"</span>)</a>
+<a class="sourceLine" id="cb11-2" data-line-number="2">lrnr_lib &lt;-<span class="st"> </span><span class="kw"><a href="https://tlverse.org/sl3/reference/make_learner_stack.html">make_learner_stack</a></span>(<span class="st">"Lrnr_mean"</span>, <span class="st">"Lrnr_glm"</span>, <span class="st">"Lrnr_ranger"</span>)</a>
 <a class="sourceLine" id="cb11-3" data-line-number="3">sl_learner &lt;-<span class="st"> </span>Lrnr_sl<span class="op">$</span><span class="kw">new</span>(<span class="dt">learners =</span> lrnr_lib, <span class="dt">metalearner =</span> Lrnr_nnls<span class="op">$</span><span class="kw">new</span>())</a>
 <a class="sourceLine" id="cb11-4" data-line-number="4"></a>
 <a class="sourceLine" id="cb11-5" data-line-number="5"><span class="co"># SL learners for conditional densities to be used for the propensity score fit</span></a>
-<a class="sourceLine" id="cb11-6" data-line-number="6">lrnr_dens_lib &lt;-<span class="st"> </span><span class="kw"><a href="https://tlverse.org/sl3/reference/make_learner_stack.html">make_learner_stack</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="st">"Lrnr_haldensify"</span>, <span class="dt">n_bins =</span> <span class="dv">5</span>,</a>
+<a class="sourceLine" id="cb11-6" data-line-number="6">lrnr_dens_lib &lt;-<span class="st"> </span><span class="kw"><a href="https://tlverse.org/sl3/reference/make_learner_stack.html">make_learner_stack</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="st">"Lrnr_haldensify"</span>, <span class="dt">n_bins =</span> <span class="dv">3</span>,</a>
 <a class="sourceLine" id="cb11-7" data-line-number="7">                                          <span class="dt">grid_type =</span> <span class="st">"equal_range"</span>,</a>
 <a class="sourceLine" id="cb11-8" data-line-number="8">                                          <span class="dt">lambda_seq =</span> <span class="kw"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">-7</span>,</a>
 <a class="sourceLine" id="cb11-9" data-line-number="9">                                                               <span class="dt">length =</span> <span class="dv">100</span>))),</a>
-<a class="sourceLine" id="cb11-10" data-line-number="10">                                    <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="st">"Lrnr_haldensify"</span>, <span class="dt">n_bins =</span> <span class="dv">5</span>,</a>
+<a class="sourceLine" id="cb11-10" data-line-number="10">                                    <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="st">"Lrnr_haldensify"</span>, <span class="dt">n_bins =</span> <span class="dv">3</span>,</a>
 <a class="sourceLine" id="cb11-11" data-line-number="11">                                          <span class="dt">bin_method =</span> <span class="st">"equal_mass"</span>,</a>
 <a class="sourceLine" id="cb11-12" data-line-number="12">                                          <span class="dt">lambda_seq =</span> <span class="kw"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">-7</span>,</a>
-<a class="sourceLine" id="cb11-13" data-line-number="13">                                                               <span class="dt">length =</span> <span class="dv">100</span>))),</a>
-<a class="sourceLine" id="cb11-14" data-line-number="14">                                    <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="st">"Lrnr_haldensify"</span>, <span class="dt">nbins =</span> <span class="dv">10</span>,</a>
-<a class="sourceLine" id="cb11-15" data-line-number="15">                                          <span class="dt">bin_method =</span> <span class="st">"equal_mass"</span>,</a>
-<a class="sourceLine" id="cb11-16" data-line-number="16">                                          <span class="dt">lambda_seq =</span> <span class="kw"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">-9</span>,</a>
-<a class="sourceLine" id="cb11-17" data-line-number="17">                                                               <span class="dt">length =</span> <span class="dv">300</span>)))</a>
-<a class="sourceLine" id="cb11-18" data-line-number="18">                                   )</a>
-<a class="sourceLine" id="cb11-19" data-line-number="19">sl_learner_density &lt;-<span class="st"> </span>Lrnr_sl<span class="op">$</span><span class="kw">new</span>(<span class="dt">learners =</span> lrnr_dens_lib,</a>
-<a class="sourceLine" id="cb11-20" data-line-number="20">                                  <span class="dt">metalearner =</span> Lrnr_solnp_density<span class="op">$</span><span class="kw">new</span>())</a></code></pre></div>
+<a class="sourceLine" id="cb11-13" data-line-number="13">                                                               <span class="dt">length =</span> <span class="dv">100</span>)))</a>
+<a class="sourceLine" id="cb11-14" data-line-number="14">                                   )</a>
+<a class="sourceLine" id="cb11-15" data-line-number="15">sl_learner_density &lt;-<span class="st"> </span>Lrnr_sl<span class="op">$</span><span class="kw">new</span>(<span class="dt">learners =</span> lrnr_dens_lib,</a>
+<a class="sourceLine" id="cb11-16" data-line-number="16">                                  <span class="dt">metalearner =</span> Lrnr_solnp_density<span class="op">$</span><span class="kw">new</span>())</a></code></pre></div>
 </div>
 <div id="estimating-the-ipcw-tmle-with-optimal-stacked-regressions" class="section level3">
 <h3 class="hasAnchor">
@@ -285,7 +285,7 @@
 <a class="sourceLine" id="cb14-16" data-line-number="16">                          )</a>
 <a class="sourceLine" id="cb14-17" data-line-number="17"><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(tmle_sl_ineffic)</a></code></pre></div>
 <pre><code>##      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-##      1.8634      2.0848      2.3062      0.0128 -1.3260e-12        tmle 
+##      1.8265       2.098      2.3695      0.0192 -4.3070e-15        tmle 
 ##      n_iter 
 ##           0</code></pre>
 <p>Please note that in such cases, the value of <code>n_iter</code> in the resulting output should be <strong><em>exactly zero</em></strong>, as this indicates that the iterative procedure that is used to achieve efficiency has been skipped.</p>
@@ -296,7 +296,7 @@
 <p>For a discussion of the procedure for obtaining statistical inference for TML estimators, the interested reader is referred to the introductory vignette of this package. Here, we focus on addressing the issue of how censoring impacts the inferential procedure…</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">(ci_shift &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/confint.html">confint</a></span>(tmle_hal_shift_<span class="dv">1</span>))</a></code></pre></div>
 <pre><code>##   lwr_ci      est   upr_ci 
-## 1.942405 2.077960 2.213515</code></pre>
+## 1.891726 2.073822 2.255918</code></pre>
 </div>
 </div>
 <div id="advanced-usage-user-specified-regressions" class="section level2">
@@ -346,7 +346,7 @@
 <a class="sourceLine" id="cb18-41" data-line-number="41">                           <span class="dt">eif_reg_type =</span> <span class="st">"glm"</span>)</a>
 <a class="sourceLine" id="cb18-42" data-line-number="42"><span class="kw"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(tmle_shift_spec)</a></code></pre></div>
 <pre><code>##     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator     n_iter 
-##     1.9508     2.0898     2.2289      0.005 4.2686e-05       tmle          1</code></pre>
+##     1.8795      2.073     2.2666     0.0098 6.9825e-05       tmle          1</code></pre>
 <hr>
 </div>
 <div id="references" class="section level2 unnumbered">

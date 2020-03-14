@@ -15,9 +15,9 @@ txshift(
   fluctuation = c("standard", "weighted"),
   max_iter = 1000,
   ipcw_fit_args = list(fit_type = c("glm", "sl", "fit_spec"), sl_learners = NULL),
-  g_fit_args = list(fit_type = c("hal", "sl", "fit_spec"), n_bins = c(10, 25), grid_type
-    = c("equal_range", "equal_mass"), lambda_seq = exp(seq(-1, -13, length = 300)),
-    use_future = FALSE, sl_learners_density = NULL),
+  g_fit_args = list(fit_type = c("hal", "sl", "fit_spec"), n_bins = c(10, 25),
+    grid_type = c("equal_range", "equal_mass"), lambda_seq = exp(seq(-1, -13, length =
+    300)), use_future = FALSE, sl_learners_density = NULL),
   Q_fit_args = list(fit_type = c("glm", "sl", "fit_spec"), glm_formula = "Y ~ .",
     sl_learners = NULL),
   eif_reg_type = c("hal", "glm"),
