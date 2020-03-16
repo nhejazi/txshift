@@ -1,6 +1,6 @@
 Package: txshift
-Title: Targeted Learning of the Causal Effects of Stochastic Interventions
-Version: 0.3.1
+Title: Efficient Estimation of the Causal Effects of Stochastic Interventions
+Version: 0.3.2
 Authors@R: c(
     person("Nima", "Hejazi", email = "nh@nimahejazi.org",
            role = c("aut", "cre", "cph"),
@@ -20,14 +20,16 @@ Authors@R: c(
   )
 Maintainer: Nima Hejazi <nh@nimahejazi.org>
 Description: Efficient estimation of the population-level causal effects of
-    stochastic interventions on a continuous-valued treatment node. Both
-    one-step and targeted maximum likelihood (TML) estimators are implemented
-    for a causal parameter defined as the counterfactual mean of the outcome of
-    interest under a stochastic intervention that may depend on the natural
-    value of the treatment. To accommodate settings in which two-phase sampling
-    is employed, procedures for making use of inverse probability of censoring
-    weights are provided to facilitate construction of inefficient and efficient
-    one-step and TML estimators.
+    stochastic interventions on a continuous-valued exposure. Both one-step and
+    targeted minimum loss estimators are implemented for a causal parameter
+    defined as the counterfactual mean of an outcome of interest under a
+    stochastic intervention that may depend on the natural value of the
+    exposure (i.e., a modified treatment policy). To accommodate settings in
+    which two-phase sampling is employed, procedures for making use of inverse
+    probability of censoring weights are provided to facilitate construction of
+    inefficient and efficient one-step and targeted minimum loss estimators.
+    The causal parameter and estimation methodology were first described by
+    Díaz and van der Laan (2013) <doi:10.1111/j.1541-0420.2011.01685.x>).
 Depends: R (>= 3.2.0)
 Imports:
     stats,
@@ -36,9 +38,9 @@ Imports:
     data.table,
     mvtnorm,
     Rdpack,
-    sl3 (>= 1.3.6),
     hal9001 (>= 0.2.5),
-    haldensify
+    haldensify (>= 0.0.5),
+    sl3 (>= 1.3.7)
 Suggests:
     testthat,
     knitr,
@@ -46,22 +48,18 @@ Suggests:
     covr,
     future,
     future.apply,
+    origami (>= 1.0.3),
     ggplot2,
-    tidyverse,
+    ranger,
     Rsolnp,
-    nnls,
-    origami,
-    xgboost,
-    ranger
+    nnls
 Remotes:
-    github::tlverse/hal9001,
-    github::tlverse/sl3,
-    github::nhejazi/haldensify
+    github::tlverse/sl3
 License: MIT + file LICENSE
 URL: https://github.com/nhejazi/txshift
 BugReports: https://github.com/nhejazi/txshift/issues
 Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 RdMacros: Rdpack

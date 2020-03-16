@@ -23,30 +23,35 @@ est_Q(
 \item{W}{A \code{numeric} matrix of observed baseline covariate values.}
 
 \item{delta}{A \code{numeric} indicating the magnitude of the shift to be
-computed for the treatment \code{A}. This is passed directly to the internal
-function \code{shift_additive} and is currently limited to additive shifts.}
+computed for the treatment \code{A}. This is passed to the internal
+\code{\link{shift_additive}} and is currently limited to additive shifts.}
 
 \item{ipc_weights}{A \code{numeric} vector of observation-level weights, as
-produced by the internal procedure to estimate the censoring mechanism
-\code{estimate-ipc_weights}.}
+produced by the internal procedure to estimate the censoring mechanism.}
 
 \item{fit_type}{A \code{character} indicating whether to use GLMs or Super
 Learner to fit the outcome regression. If the option "glm" is selected, the
 argument \code{glm_formula} must NOT be \code{NULL}, instead containing a
-model formula (in the style of \code{stats::glm}) as a \code{character}. If
+model formula (as per \code{\link[stats]{glm}}) as a \code{character}. If
 the option "sl" is selected, the argument \code{sl_learners} must NOT be
-\code{NULL}, instead being a pre-defined object of class \code{Lrnr_sl},
-specifying learners and a metalearner for the Super Learner fit. Consult the
-documentation of the \code{sl3} package for details on Super Learner fits.}
+\code{NULL}; instead, an instantiated \code{\link[sl3]{Lrnr_sl}} object,
+specifying learners and a metalearner for the Super Learner fit, must be
+provided. Consult the documentation of \pkg{sl3} for details.}
 
-\item{glm_formula}{A \code{character} corresponding to a \code{formula} to be
-used in fitting a generalized linear model via \code{stats::glm}.}
+\item{glm_formula}{A \code{character} corresponding to a \code{formula} to
+be used in fitting a generalized linear model via \code{\link[stats]{glm}}.}
 
 \item{sl_learners}{Object containing a set of instantiated learners from the
-\code{sl3} package, to be used in fitting an ensemble model.}
+\pkg{sl3}, to be used in fitting an ensemble model.}
+}
+\value{
+TODO
 }
 \description{
-Compute the outcome regression for the observed data, including with the
-shift imposed by the intervention. This returns the propensity score for the
-observed data (at A_i) and the shift of interest (at A_i - delta).
+Estimate the Outcome Regression
+}
+\details{
+Compute the outcome regression for the observed data, including
+ with the shift imposed by the intervention. This returns the propensity
+ score for the observed data (at A_i) and the shift (at A_i - delta).
 }

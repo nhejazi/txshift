@@ -16,7 +16,12 @@ values on the original scale.}
 \item{min_orig}{A \code{numeric} scalar value giving the minimum of the
 values on the original scale.}
 }
+\value{
+TODO
+}
 \description{
 Transform values from the unit interval back to their original scale
 }
-\keyword{internal}
+\details{
+TODO
+}

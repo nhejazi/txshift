@@ -14,11 +14,21 @@ computed.}
 \item{parm}{A \code{numeric} vector indicating indices of \code{object$est}
 for which to return confidence intervals.}
 
-\item{level}{A \code{numeric} indicating the level of the confidence interval
-to be computed.}
+\item{level}{A \code{numeric} indicating the level of the confidence
+interval to be computed.}
 
 \item{...}{Other arguments. Not currently used.}
 }
+\value{
+TODO
+}
 \description{
-Compute confidence intervals for estimates produced by \code{tmle_txshift}
+Confidence Intervals for Shifted Treatment Parameters
+}
+\details{
+Compute confidence intervals for estimates produced by
+ \code{\link{tmle_txshift}}.
+}
+\examples{
+# TODO
 }

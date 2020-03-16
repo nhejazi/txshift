@@ -14,7 +14,12 @@ shift_additive(A, W = NULL, delta)
 \item{delta}{A \code{numeric} indicating the magnitude of the shift to be
 computed for the treatment \code{A}.}
 }
+\value{
+TODO
+}
 \description{
 Simple Additive Modified Treatment Policy
 }
-\keyword{internal}
+\details{
+TODO
+}

@@ -19,9 +19,9 @@ f_iter(
 )
 }
 \arguments{
-\item{Qn}{Function to compute the outcome regression: Q(A, W) = E(Y | A, W).}
+\item{Qn}{Function to compute the outcome regression: Q(A, W) = E(Y|A,W).}
 
-\item{gn}{Function to compute the propensity score: g(A, W) = density(A | W).}
+\item{gn}{Function to compute the propensity score: g(A, W) = density(A|W).}
 
 \item{gn0d}{A \code{Numeric} computed for the propensity score (gn) from the
 first iteration only.}
@@ -47,10 +47,15 @@ interest (i.e., the effect of shifting treatment \code{A} by delta units).}
 range of the treatment \code{A} to approximate integrals by Riemmann sums.
 Note that these must be equally spaced along a grid.}
 }
+\value{
+TODO
+}
 \description{
 Iterative Fluctuation
+}
+\details{
+TODO
 }
 \author{
 Iván Díaz
 }
-\keyword{internal}

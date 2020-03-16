@@ -1,31 +1,32 @@
-#' Estimate the Treatment Mechanism (Propensity Score)
+#' Estimate the Treatment Mechanism (Generalized Propensity Score)
 #'
-#' Compute the propensity score (treatment mechanism) for the observed data,
-#' including the shift. This returns the propensity score for the observed data
-#' (at A) and the shift of interest (at A - delta).
+#' @details Compute the propensity score (treatment mechanism) for the observed
+#'  data, including the shift. This gives the propensity score for the observed
+#'  data (at the observed A) and the shift (at A - delta).
 #'
 #' @param A A \code{numeric} vector of observed treatment values.
 #' @param W A \code{numeric} matrix of observed baseline covariate values.
-#' @param delta A \code{numeric} value identifying a shift in the observed value
-#'  of the treatment under which observations are to be evaluated.
+#' @param delta A \code{numeric} value identifying a shift in the observed
+#'  value of the treatment under which observations are to be evaluated.
 #' @param ipc_weights A \code{numeric} vector of observation-level weights, as
 #'  produced by the internal procedure to estimate the censoring mechanism
 #'  \code{estimate-ipc_weights}.
-#' @param fit_type A \code{character} specifying whether to use Super Learner or
-#'  the Highly Adaptive Lasso to estimate the conditional treatment density.
+#' @param fit_type A \code{character} specifying whether to use Super Learner
+#'  (from \pkg{sl3}) or the Highly Adaptive Lasso (from \pkg{hal9001}) to
+#'  estimate the conditional treatment density.
 #' @param sl_learners_density Object containing a set of instantiated learners
-#'  from the \code{sl3} package, to be used in fitting an ensemble model.
+#'  from \pkg{sl3}, to be used in fitting an ensemble model.
 #' @param std_args A \code{list} of arguments to be passed to \code{haldensify}
-#'  from the \code{haldensify} package when the argument \code{fit_type} is set
-#'  to \code{"hal"}. Note that this invokes HAL instead of Super Learner and is
-#'  thus only feasible for relatively small data sets (n < 2000).
+#'  from \pkg{haldensify} when the argument \code{fit_type} is set to
+#'  \code{"hal"}. Note that this invokes HAL instead of Super Learner and is
+#'  thus only feasible for relatively small data sets.
 #'
 #' @importFrom data.table as.data.table setnames set copy
 #' @importFrom sl3 sl3_Task
 #' @importFrom stats predict
 #' @importFrom haldensify haldensify
 #'
-#' @export
+#' @return TODO
 est_g <- function(A,
                   W,
                   delta = 0,
@@ -201,38 +202,37 @@ est_g <- function(A,
 
 #' Estimate the Outcome Regression
 #'
-#' Compute the outcome regression for the observed data, including with the
-#' shift imposed by the intervention. This returns the propensity score for the
-#' observed data (at A_i) and the shift of interest (at A_i - delta).
+#' @details Compute the outcome regression for the observed data, including
+#'  with the shift imposed by the intervention. This returns the propensity
+#'  score for the observed data (at A_i) and the shift (at A_i - delta).
 #'
 #' @param Y A \code{numeric} vector of observed outcomes.
 #' @param A A \code{numeric} vector of observed treatment values.
 #' @param W A \code{numeric} matrix of observed baseline covariate values.
 #' @param delta A \code{numeric} indicating the magnitude of the shift to be
-#'  computed for the treatment \code{A}. This is passed directly to the internal
-#'  function \code{shift_additive} and is currently limited to additive shifts.
+#'  computed for the treatment \code{A}. This is passed to the internal
+#'  \code{\link{shift_additive}} and is currently limited to additive shifts.
 #' @param ipc_weights A \code{numeric} vector of observation-level weights, as
-#'  produced by the internal procedure to estimate the censoring mechanism
-#'  \code{estimate-ipc_weights}.
+#'  produced by the internal procedure to estimate the censoring mechanism.
 #' @param fit_type A \code{character} indicating whether to use GLMs or Super
 #'  Learner to fit the outcome regression. If the option "glm" is selected, the
 #'  argument \code{glm_formula} must NOT be \code{NULL}, instead containing a
-#'  model formula (in the style of \code{stats::glm}) as a \code{character}. If
+#'  model formula (as per \code{\link[stats]{glm}}) as a \code{character}. If
 #'  the option "sl" is selected, the argument \code{sl_learners} must NOT be
-#'  \code{NULL}, instead being a pre-defined object of class \code{Lrnr_sl},
-#'  specifying learners and a metalearner for the Super Learner fit. Consult the
-#'  documentation of the \code{sl3} package for details on Super Learner fits.
-#' @param glm_formula A \code{character} corresponding to a \code{formula} to be
-#'  used in fitting a generalized linear model via \code{stats::glm}.
+#'  \code{NULL}; instead, an instantiated \code{\link[sl3]{Lrnr_sl}} object,
+#'  specifying learners and a metalearner for the Super Learner fit, must be
+#'  provided. Consult the documentation of \pkg{sl3} for details.
+#' @param glm_formula A \code{character} corresponding to a \code{formula} to
+#'  be used in fitting a generalized linear model via \code{\link[stats]{glm}}.
 #' @param sl_learners Object containing a set of instantiated learners from the
-#'  \code{sl3} package, to be used in fitting an ensemble model.
+#'  \pkg{sl3}, to be used in fitting an ensemble model.
 #'
 #' @importFrom stats glm as.formula predict
 #' @importFrom data.table as.data.table setnames copy set
 #' @importFrom stringr str_detect
 #' @importFrom sl3 sl3_Task
 #'
-#' @export
+#' @return TODO
 est_Q <- function(Y,
                   A,
                   W,
@@ -331,29 +331,29 @@ est_Q <- function(Y,
 
 #' Estimate Inverse Probability of Censoring Weights
 #'
-#' @param V A \code{numeric} vector, \code{matrix}, \code{data.frame} or similar
-#'  object giving the observed values of the covariates known to potentially
-#'  inform the censoring mechanism.
+#' @details TODO
+#'
+#' @param V A \code{numeric} vector, \code{matrix}, \code{data.frame} or
+#'  similar object giving the observed values of the covariates known to
+#'  potentially inform the censoring mechanism.
 #' @param Delta A \code{numeric} vector giving observed values of the indicator
 #'  function corresponding to the censoring mechanism.
 #' @param fit_type A \code{character} indicating whether to perform the fit
 #'  using GLMs or a Super Learner. If use of Super Learner is desired, then the
 #'  argument \code{sl_learners} must be provided.
-#' @param sl_learners An object of class \code{Lrnr_sl}, a Super Learner created
-#'  externally using the \code{sl3} package.
+#' @param sl_learners An \code{\link[sl3]{Lrnr_sl}} object, a Super Learner
+#'  instantiated externally using \pkg{sl3}.
 #'
 #' @importFrom stats glm predict binomial
 #' @importFrom data.table as.data.table setnames
 #' @importFrom sl3 sl3_Task
 #'
-#' @return A \code{list} containing a \code{numeric} vector corresponding to the
-#'  inverse probability of censoring weights that are required for computing an
+#' @return A \code{list} containing a \code{numeric} vector corresponding to
+#'  the inverse probability of censoring weights required for computing an
 #'  IPCW-TMLE and \code{numeric} vector of the estimated missingness mechanism.
 #'  Formally, the former is nothing more than %\frac{\Delta}{\Pi_n}, where the
 #'  term %\Pi_n is simply the predicted probability of belonging to a censoring
 #'  class as computed using standard logistic regression.
-#'
-#' @export
 est_ipcw <- function(V,
                      Delta,
                      fit_type = c("sl", "glm"),
@@ -402,15 +402,17 @@ est_ipcw <- function(V,
 
 #' Estimate Auxiliary Covariate from Efficient Influence Function
 #'
+#' @details TODO
+#'
 #' @param gn An estimate of the treatment probability (propensity score), using
 #'  the output provided by internal function \code{estimate-propensity_score}.
 #' @param a A \code{numeric} vector of the observed values of the treatment.
-#' @param w A \code{numeric}, \code{matrix}, \code{data.frame} or similar object
-#'  that contains the observed values of the baseline covariates.
+#' @param w A \code{numeric}, \code{matrix}, \code{data.frame} or similar
+#'  object that contains the observed values of the baseline covariates.
 #'
 #' @importFrom data.table as.data.table setnames
 #'
-#' @export
+#' @return TODO
 est_Hn <- function(gn, a = NULL, w = NULL) {
   # set any g(a|w) = 0 values to a very small value above zero
   gn$noshift <- bound_propensity(gn$noshift)

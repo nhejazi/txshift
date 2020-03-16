@@ -22,12 +22,12 @@ tmle_txshift(
 }
 \arguments{
 \item{data_internal}{A \code{data.table} constructed internally by a call to
-\code{txshift}. This contains most of the data elements needed for computing
-the targeted maximum likelihood estimator.}
+\code{\link{txshift}}. This contains most of the data for computing the TML
+estimator.}
 
-\item{C}{A \code{numeric} binary vector giving information on whether a given
-observation was subject to censoring, used to compute an IPCW-TMLE in cases
-where two-stage sampling is performed. Default assumes no censoring.}
+\item{C}{A \code{numeric} indicator for whether a given observation was
+subject to censoring, used to compute an IPCW-TMLE in cases where two-stage
+sampling is performed. Default assumes no censoring.}
 
 \item{V}{The covariates that are used in determining the sampling procedure
 that gives rise to censoring. The default is \code{NULL} and corresponds to
@@ -42,16 +42,16 @@ the scale of the treatment (A).}
 
 \item{ipcw_estim}{An object providing the value of the censoring mechanism
 evaluated across the full data. This object is passed in after being
-constructed by a call to the internal function \code{est_ipcw}.}
+constructed by a call to the internal function \code{\link{est_ipcw}}.}
 
 \item{Qn_estim}{An object providing the value of the outcome evaluated after
 imposing a shift in the treatment. This object is passed in after being
-constructed by a call to the internal function \code{est_Q}.}
+constructed by a call to the internal function \code{\link{est_Q}}.}
 
 \item{Hn_estim}{An object providing values of the auxiliary ("clever")
 covariate, constructed from the treatment mechanism and required for
 targeted minimum loss-based estimation. This object object should be passed
-in after being constructed by a call to the internal function \code{est_Hn}.}
+in after being constructed by a call to \code{\link{est_Hn}}.}
 
 \item{fluctuation}{The method to be used in the submodel fluctuation step
 (targeting step) to compute the TML estimator. The choices are "standard"
@@ -64,18 +64,18 @@ to be taken in iterating to a solution of the efficient influence function.}
 \item{eif_reg_type}{Whether a flexible nonparametric function ought to be
 used in the dimension-reduced nuisance regression of the targeting step for
 the censored data case. By default, the method used is a nonparametric
-regression based on the Highly Adaptive Lasso (from package \code{hal9001}).
+regression based on the Highly Adaptive Lasso (from \pkg{hal9001}).
 Set this to \code{"glm"} to instead use a simple linear regression model.
 In this step, the efficient influence function (EIF) is regressed against
 covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).}
 
 \item{ipcw_fit_args}{A \code{list} of arguments, all but one of which are
-passed to \code{est_ipcw}. For details, please consult the documentation for
-\code{est_ipcw}. The first element of this (i.e., \code{fit_type}) is used
-to determine how this regression is fit: "glm" for generalized linear model,
-"sl" for a Super Learner, and "fit_spec" a user-specified input of the form
-produced by \code{est_ipcw}. NOTE THAT this first argument is not passed to
-\code{est_ipcw}.}
+passed to \code{\link{est_ipcw}}. For details, consult the documentation
+for \code{\link{est_ipcw}}. The first element (i.e., \code{fit_type}) is
+used to determine how this regression is fit: "glm" for generalized linear
+model, "sl" for a Super Learner, and "fit_spec" a user-specified input of
+the form produced by \code{\link{est_ipcw}}. NOTE THAT this first argument
+is not passed to \code{\link{est_ipcw}}.}
 
 \item{ipcw_efficiency}{Whether to invoke an augmentation of the IPCW-TMLE
 procedure that performs an iterative process to ensure efficiency of the
@@ -87,8 +87,13 @@ S3 object of class \code{txshift} containing the results of the
  procedure to compute a TML estimate of the treatment shift parameter.
 }
 \description{
-This is the primary user-facing wrapper function to be used in invoking the
-procedure to obtain targeted maximum likelihood / targeted minimum loss-based
-estimates (TMLE) of the causal parameter discussed in Díaz and van der Laan
-(2013) and Díaz and van der Laan (2018).
+Compute Targeted Minimum Loss Estimate of Counterfactual Mean Under
+Stochastic Shift Intervention
+}
+\details{
+Invokes the procedure to obtain targeted minimum loss estimates
+ (TMLE) of the counterfactual mean under a modified treatment policy.
+}
+\examples{
+# TODO
 }

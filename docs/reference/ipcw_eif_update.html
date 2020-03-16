@@ -36,15 +36,7 @@
 
 
 <meta property="og:title" content="Iterative IPCW Update Procedure of Efficient Influence Function — ipcw_eif_update" />
-<meta property="og:description" content="An adaptation of the general IPCW-TMLE formulation of Rose &amp;amp; van der Laan as
-well as its associated algorithm. This may be used to iteratively construct
-an efficient IPCW-TMLE, which is computed by applying IPC weights to the
-efficient influence function of the parameter and subsequently updating the
-IPC weights. The efficient IPCW-TMLE estimate is provided by looping over
-this function until convergence criteria defined over the efficient influence
-function are satisfied (e.g., a mean of very nearly zero). For a detailed
-description of the IPCW-TMLE, please consult Rose and van der Laan (2011)
-&amp;lt;doi:10.2202/1557-4679.1217&amp;gt;. INTERNAL USE ONLY." />
+<meta property="og:description" content="Iterative IPCW Update Procedure of Efficient Influence Function" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -77,7 +69,7 @@ description of the IPCW-TMLE, please consult Rose and van der Laan (2011)
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.2</span>
       </span>
     </div>
 
@@ -137,15 +129,7 @@ description of the IPCW-TMLE, please consult Rose and van der Laan (2011)
     </div>
 
     <div class="ref-description">
-    <p>An adaptation of the general IPCW-TMLE formulation of Rose &amp; van der Laan as
-well as its associated algorithm. This may be used to iteratively construct
-an efficient IPCW-TMLE, which is computed by applying IPC weights to the
-efficient influence function of the parameter and subsequently updating the
-IPC weights. The efficient IPCW-TMLE estimate is provided by looping over
-this function until convergence criteria defined over the efficient influence
-function are satisfied (e.g., a mean of very nearly zero). For a detailed
-description of the IPCW-TMLE, please consult Rose and van der Laan (2011)
-&lt;doi:10.2202/1557-4679.1217&gt;. INTERNAL USE ONLY.</p>
+    <p>Iterative IPCW Update Procedure of Efficient Influence Function</p>
     </div>
 
     <pre class="usage"><span class='fu'>ipcw_eif_update</span>(
@@ -168,9 +152,9 @@ description of the IPCW-TMLE, please consult Rose and van der Laan (2011)
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>data_in</th>
-      <td><p>A <code>data.table</code> containing variables and observations that
-represent the fully observed data. That is, this is a table of the data as
-it is seen after a potential censoring process is applied.</p></td>
+      <td><p>A <code>data.table</code> containing variables and observations of
+full data. That is, this corresponds to the data after application of a
+censoring process.</p></td>
     </tr>
     <tr>
       <th>C</th>
@@ -179,8 +163,8 @@ given observation.</p></td>
     </tr>
     <tr>
       <th>V</th>
-      <td><p>A <code>data.table</code> giving the values across all observations of all
-variables that play a role in the censoring mechanism.</p></td>
+      <td><p>A <code>data.table</code> giving the values across all observations of
+all variables that play a role in the censoring mechanism.</p></td>
     </tr>
     <tr>
       <th>ipc_mech</th>
@@ -200,8 +184,8 @@ that allow convergence to a more efficient estimate.</p></td>
     </tr>
     <tr>
       <th>ipc_weights_norm</th>
-      <td><p>A <code>numeric</code> vector of the same weights described
-in the previous argument, except normalized in this case.</p></td>
+      <td><p>A <code>numeric</code> vector of the weights described in
+the previous argument. In this case, the weights are normalized.</p></td>
     </tr>
     <tr>
       <th>Qn_estim</th>
@@ -236,19 +220,31 @@ tolerated in the fluctuation model for the targeted minimum loss estimator.</p><
       <td><p>Whether a flexible nonparametric function ought to be
 used in the dimension-reduced nuisance regression of the targeting step for
 the censored data case. By default, the method used is a nonparametric
-regression based on the Highly Adaptive Lasso (from package <code>hal9001</code>).
-Set this to <code>"glm"</code> to instead use a simple linear regression model.
-In this step, the efficient influence function (EIF) is regressed against
+regression based on the Highly Adaptive Lasso (from <span class="pkg">hal9001</span>). Set
+this to <code>"glm"</code> to instead use a simple linear regression model. In
+this step, the efficient influence function (EIF) is regressed against
 covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>TODO</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>An adaptation of the IPCW-TMLE for iteratively constructing an
+ efficient inverse probability of censoring weighted TML or one-step
+ estimator. The efficient influence function of the parameter and updating
+ the IPC weights in an iterative process, until a convergence criteria is
+ satisfied.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
+      <li><a href="#value">Value</a></li>
+      <li><a href="#details">Details</a></li>
     </ul>
 
   </div>

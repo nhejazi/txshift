@@ -19,6 +19,16 @@ interval to be computed.}
 \item{digits}{A \code{numeric} scalar giving the number of digits to be
 displayed or to round results to.}
 }
+\value{
+TODO
+}
 \description{
-Print a convenient summary for objects computed using \code{tmle_txshift}.
+Summary for Shifted Treatment Parameter Objects
+}
+\details{
+Print a convenient summary for objects computed using
+ \code{\link{tmle_txshift}}.
+}
+\examples{
+# TODO
 }

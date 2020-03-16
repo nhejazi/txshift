@@ -23,9 +23,9 @@ tmle_shift_original_ID(
 
 \item{W}{A \code{matrix} or \code{data.frame} of baseline covariates.}
 
-\item{Qn}{Function to compute the outcome regression: Q(A, W) = E(Y | A, W).}
+\item{Qn}{Function to compute the outcome regression: Q(A, W) = E(Y|A,W).}
 
-\item{gn}{Function to compute the propensity score: g(A, W) = density(A | W).}
+\item{gn}{Function to compute the propensity score: g(A, W) = density(A|W).}
 
 \item{delta}{A \code{numeric} for the shift to be placed on the treatment of
 interest (i.e., the effect of shifting treatment \code{A} by delta units).}
@@ -39,8 +39,14 @@ the parametric fluctuation.}
 range of the treatment \code{A} to approximate integrals by Riemmann sums.
 Note that these must be equally spaced along a grid.}
 }
+\value{
+TODO
+}
 \description{
 TML Estimate of the Effect of a Continuous Treatment
+}
+\details{
+TODO
 }
 \examples{
 \dontrun{
@@ -76,4 +82,3 @@ tmle00 <- tmle_shift_original_ID(
 \author{
 Iván Díaz
 }
-\keyword{internal}

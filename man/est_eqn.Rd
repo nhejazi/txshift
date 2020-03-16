@@ -11,7 +11,7 @@ est_eqn(eps, QnAW, Qn, H1, gn0d, EQnd, D2, prev_sum, Y, A, W, delta)
 
 \item{QnAW}{Estimated outcome mechnism.}
 
-\item{Qn}{Function to compute the outcome regression: Q(A, W) = E(Y | A, W).}
+\item{Qn}{Function to compute the outcome regression: Q(A,W) = E(Y|A,W).}
 
 \item{H1}{Ratio obtained from comparing the propensity score (gn) before and
 after application of the shift \code{delta}.}
@@ -22,7 +22,7 @@ first iteration only.}
 \item{EQnd}{Parameter estimate (expectation of Estimated outcome mechanism
 under the proposed shift).}
 
-\item{D2}{???}
+\item{D2}{A second-order term appearing in the efficient influence function.}
 
 \item{prev_sum}{The sum computed from this fluctuation step in the previous
 iteration.}
@@ -36,10 +36,15 @@ iteration.}
 \item{delta}{A \code{numeric} for the shift to be placed on the treatment of
 interest (i.e., the effect of shifting treatment \code{A} by delta units).}
 }
+\value{
+TODO
+}
 \description{
 Estimating Equation
+}
+\details{
+TODO
 }
 \author{
 Iván Díaz
 }
-\keyword{internal}

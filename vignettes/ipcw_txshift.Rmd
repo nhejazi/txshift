@@ -33,7 +33,6 @@ this R package is to work through examples, so let's simply jump to that.
 To start, let's load the packages we'll use and set a seed for simulation:
 
 ```{r setup}
-library(tidyverse)
 library(data.table)
 library(haldensify)
 library(sl3)
@@ -91,7 +90,7 @@ of treatment $A$, conditional on the covariates $W$, has support _a.e._
 
 ```{r}
 # simulate simple data for tmle-shift sketch
-n_obs <- 1000  # sample size
+n_obs <- 500  # sample size
 n_w <- 1  # just one baseline covariate for this example
 tx_mult <- 2  # multiplier for the effect of W = 1 on the treatment
 
@@ -122,9 +121,10 @@ argument to `"glm"` fits this EIF nuisance regression with a generalized linear
 model (GLM; an assumption-laden parametric form) while the default value of
 `"hal"` fits the nuisance regression with the highly adaptive lasso (HAL; a
 recently developed nonparametric estimator) via the [`hal9001` R
-package](https://github.com/tlverse/hal9001). In practice, we recommend
-leaving this argument to the default and fitting the EIF nuisance regression
-with HAL; however, this is significantly slower than simple using a GLM.
+package](https://github.com/tlverse/hal9001) [@coyle2019hal9001]. In practice,
+we recommend leaving this argument to the default and fitting the EIF nuisance
+regression with HAL; however, this is significantly slower than simple using a
+GLM.
 
 ### Inverse Probability Weighting with Targeted Maximum Likelihood Estimation
 
@@ -179,27 +179,23 @@ summary(tmle_hal_shift_2)
 
 To easily incorporate ensemble machine learning into the estimation procedure,
 we rely on the facilities provided in the [`sl3` R
-package](https://sl3.tlverse.org) [@coyle2019sl3]. For a complete guide on
+package](https://sl3.tlverse.org) [@coyle2020sl3]. For a complete guide on
 using the `sl3` R package, consider consulting https://tlverse.org/sl3.
 
 ```{r make_sl}
 # SL learners to be used for most fits (e.g., IPCW, outcome regression)
-lrnr_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm", "Lrnr_xgboost")
+lrnr_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm", "Lrnr_ranger")
 sl_learner <- Lrnr_sl$new(learners = lrnr_lib, metalearner = Lrnr_nnls$new())
 
 # SL learners for conditional densities to be used for the propensity score fit
-lrnr_dens_lib <- make_learner_stack(list("Lrnr_haldensify", n_bins = 5,
+lrnr_dens_lib <- make_learner_stack(list("Lrnr_haldensify", n_bins = 3,
                                           grid_type = "equal_range",
                                           lambda_seq = exp(seq(-1, -7,
                                                                length = 100))),
-                                    list("Lrnr_haldensify", n_bins = 5,
+                                    list("Lrnr_haldensify", n_bins = 3,
                                           bin_method = "equal_mass",
                                           lambda_seq = exp(seq(-1, -7,
-                                                               length = 100))),
-                                    list("Lrnr_haldensify", nbins = 10,
-                                          bin_method = "equal_mass",
-                                          lambda_seq = exp(seq(-1, -9,
-                                                               length = 300)))
+                                                               length = 100)))
                                    )
 sl_learner_density <- Lrnr_sl$new(learners = lrnr_dens_lib,
                                   metalearner = Lrnr_solnp_density$new())

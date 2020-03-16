@@ -20,15 +20,15 @@ ipcw_eif_update(
 )
 }
 \arguments{
-\item{data_in}{A \code{data.table} containing variables and observations that
-represent the fully observed data. That is, this is a table of the data as
-it is seen after a potential censoring process is applied.}
+\item{data_in}{A \code{data.table} containing variables and observations of
+full data. That is, this corresponds to the data after application of a
+censoring process.}
 
 \item{C}{A \code{numeric} binary vector giving the censoring status of a
 given observation.}
 
-\item{V}{A \code{data.table} giving the values across all observations of all
-variables that play a role in the censoring mechanism.}
+\item{V}{A \code{data.table} giving the values across all observations of
+all variables that play a role in the censoring mechanism.}
 
 \item{ipc_mech}{A \code{numeric} vector containing values that describe the
 censoring mechanism for all of the observations. Note that such values are
@@ -42,8 +42,8 @@ initial run of this function. Updated values of this vector are provided as
 part of the output of this function, which may be used in subsequent calls
 that allow convergence to a more efficient estimate.}
 
-\item{ipc_weights_norm}{A \code{numeric} vector of the same weights described
-in the previous argument, except normalized in this case.}
+\item{ipc_weights_norm}{A \code{numeric} vector of the weights described in
+the previous argument. In this case, the weights are normalized.}
 
 \item{Qn_estim}{A \code{data.table} corresponding to the outcome regression.
 This is produced by invoking the internal function \code{est_Q}.}
@@ -66,20 +66,21 @@ tolerated in the fluctuation model for the targeted minimum loss estimator.}
 \item{eif_reg_type}{Whether a flexible nonparametric function ought to be
 used in the dimension-reduced nuisance regression of the targeting step for
 the censored data case. By default, the method used is a nonparametric
-regression based on the Highly Adaptive Lasso (from package \code{hal9001}).
-Set this to \code{"glm"} to instead use a simple linear regression model.
-In this step, the efficient influence function (EIF) is regressed against
+regression based on the Highly Adaptive Lasso (from \pkg{hal9001}). Set
+this to \code{"glm"} to instead use a simple linear regression model. In
+this step, the efficient influence function (EIF) is regressed against
 covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).}
 }
-\description{
-An adaptation of the general IPCW-TMLE formulation of Rose & van der Laan as
-well as its associated algorithm. This may be used to iteratively construct
-an efficient IPCW-TMLE, which is computed by applying IPC weights to the
-efficient influence function of the parameter and subsequently updating the
-IPC weights. The efficient IPCW-TMLE estimate is provided by looping over
-this function until convergence criteria defined over the efficient influence
-function are satisfied (e.g., a mean of very nearly zero). For a detailed
-description of the IPCW-TMLE, please consult Rose and van der Laan (2011)
-<doi:10.2202/1557-4679.1217>. INTERNAL USE ONLY.
+\value{
+TODO
 }
-\keyword{internal}
+\description{
+Iterative IPCW Update Procedure of Efficient Influence Function
+}
+\details{
+An adaptation of the IPCW-TMLE for iteratively constructing an
+ efficient inverse probability of censoring weighted TML or one-step
+ estimator. The efficient influence function of the parameter and updating
+ the IPC weights in an iterative process, until a convergence criteria is
+ satisfied.
+}

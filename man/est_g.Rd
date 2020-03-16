@@ -2,7 +2,7 @@
 % Please edit documentation in R/fit_mechanisms.R
 \name{est_g}
 \alias{est_g}
-\title{Estimate the Treatment Mechanism (Propensity Score)}
+\title{Estimate the Treatment Mechanism (Generalized Propensity Score)}
 \usage{
 est_g(
   A,
@@ -20,26 +20,33 @@ est_g(
 
 \item{W}{A \code{numeric} matrix of observed baseline covariate values.}
 
-\item{delta}{A \code{numeric} value identifying a shift in the observed value
-of the treatment under which observations are to be evaluated.}
+\item{delta}{A \code{numeric} value identifying a shift in the observed
+value of the treatment under which observations are to be evaluated.}
 
 \item{ipc_weights}{A \code{numeric} vector of observation-level weights, as
 produced by the internal procedure to estimate the censoring mechanism
 \code{estimate-ipc_weights}.}
 
-\item{fit_type}{A \code{character} specifying whether to use Super Learner or
-the Highly Adaptive Lasso to estimate the conditional treatment density.}
+\item{fit_type}{A \code{character} specifying whether to use Super Learner
+(from \pkg{sl3}) or the Highly Adaptive Lasso (from \pkg{hal9001}) to
+estimate the conditional treatment density.}
 
 \item{sl_learners_density}{Object containing a set of instantiated learners
-from the \code{sl3} package, to be used in fitting an ensemble model.}
+from \pkg{sl3}, to be used in fitting an ensemble model.}
 
 \item{std_args}{A \code{list} of arguments to be passed to \code{haldensify}
-from the \code{haldensify} package when the argument \code{fit_type} is set
-to \code{"hal"}. Note that this invokes HAL instead of Super Learner and is
-thus only feasible for relatively small data sets (n < 2000).}
+from \pkg{haldensify} when the argument \code{fit_type} is set to
+\code{"hal"}. Note that this invokes HAL instead of Super Learner and is
+thus only feasible for relatively small data sets.}
+}
+\value{
+TODO
 }
 \description{
-Compute the propensity score (treatment mechanism) for the observed data,
-including the shift. This returns the propensity score for the observed data
-(at A) and the shift of interest (at A - delta).
+Estimate the Treatment Mechanism (Generalized Propensity Score)
+}
+\details{
+Compute the propensity score (treatment mechanism) for the observed
+ data, including the shift. This gives the propensity score for the observed
+ data (at the observed A) and the shift (at A - delta).
 }

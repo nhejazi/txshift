@@ -11,6 +11,15 @@
 
 \item{...}{Other options (not currently used).}
 }
+\value{
+TODO
+}
 \description{
+Print Method for txshift Objects
+}
+\details{
 The \code{print} method for objects of class \code{txshift}.
+}
+\examples{
+# TODO
 }

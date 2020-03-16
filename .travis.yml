@@ -32,8 +32,8 @@ r_github_packages:
   - r-lib/covr
   - r-lib/sessioninfo
   - tlverse/hal9001
-  - tlverse/sl3
   - nhejazi/haldensify
+  - tlverse/sl3
 
 after_success:
   ## coverage

@@ -1,3 +1,14 @@
+# txshift 0.3.2
+
+As of March 2020:
+* Corrections to dependencies in preparation for eventual CRAN release.
+* Change several previously exported functions to internal, including `eif`,
+  `est_Hn`, `est_Q`, `est_g`, `est_ipcw`, `fit_fluctuation`, `ipcw_eif_update`).
+* Remove/reduce GitHub-only dependencies (now only `sl3`).
+* Change title partially (from "Targeted Learning" to "Efficient Estimation").
+* Lock dependency versions (e.g., `sl3` >= v1.3.7)
+* Extensive documentation updates.
+
 # txshift 0.3.1
 
 As of December 2019:

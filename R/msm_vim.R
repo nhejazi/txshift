@@ -1,24 +1,23 @@
 #' Marginal structural model for the causal effects of a grid of interventions
 #'
+#' @details TODO
+#'
 #' @param Y A \code{numeric} vector of the observed outcomes.
 #' @param A A \code{numeric} vector corresponding to a treatment variable. The
 #'  parameter of interest is defined as a location shift of this quantity.
 #' @param W A \code{matrix}, \code{data.frame}, or similar corresponding to a
 #'  set of baseline covariates.
-#' @param C A \code{numeric} binary vector giving information on whether a given
-#'  observation was subject to censoring. This is used to compute an IPCW-TMLE
-#'  in cases where two-stage sampling is performed. The default assumes that no
-#'  censoring was present (i.e., a two-stage design was NOT used). N.B., this is
-#'  equivalent to the term %\Delta in the notation used in the original Rose and
-#'  van der Laan manuscript that introduced/formulated IPCW-TML estimators.
+#' @param C A \code{numeric} indicator for whether a given observation was
+#'  subject to censoring in the two-phase sample. This is used to compute an
+#'  IPCW-TMLE in such cases. The default assumes no censoring.
 #' @param V The covariates that are used in determining the sampling procedure
 #'  that gives rise to censoring. The default is \code{NULL} and corresponds to
 #'  scenarios in which there is no censoring (in which case all values in the
 #'  preceding argument \code{C} must be uniquely 1. To specify this, pass in a
 #'  NAMED \code{list} identifying variables amongst W, A, Y that are thought to
 #'  have played a role in defining the sampling/censoring mechanism (C).
-#' @param delta_grid A \code{numeric} vector giving the individual values of the
-#'  shift parameter used in computing each of the TML estimates.
+#' @param delta_grid A \code{numeric} vector giving the individual values of
+#'  the shift parameter used in computing each of the estimates.
 #' @param estimator The type of estimator to be fit, either \code{"tmle"} for
 #'  targeted maximum likelihood estimation or \code{"onestep"} for a one-step
 #'  augmented inverse probability weighted (AIPW) estimator.
@@ -26,8 +25,8 @@
 #'  its variance (in order to improve stability of the resultant MSM fit) or to
 #'  simply weight all parameter estimates equally. The default is the option
 #'  \code{"identity"}, weighting all estimates identically.
-#' @param ci_level A \code{numeric} indicating the desired coverage level of the
-#'  confidence interval to be computed.
+#' @param ci_level A \code{numeric} indicating the desired coverage level of
+#'  the confidence interval to be computed.
 #' @param ci_type Whether to construct a simultaneous confidence band covering
 #'  all parameter estimates at once or marginal confidence intervals covering
 #'  each parameter estimate separately. The default is to construct marginal
@@ -40,11 +39,10 @@
 #' @importFrom stats cov qnorm pnorm
 #' @importFrom mvtnorm qmvnorm
 #'
-#' @export
+#' @return TODO
 #'
 #' @examples
-#' set.seed(429153)
-#' n_obs <- 100
+#' n_obs <- 50
 #' W <- as.numeric(replicate(1, rbinom(n_obs, 1, 0.5)))
 #' A <- as.numeric(rnorm(n_obs, mean = 2 * W, sd = 1))
 #' Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
@@ -52,10 +50,10 @@
 #'   W = W, A = A, Y = Y, estimator = "tmle",
 #'   g_fit_args = list(
 #'     fit_type = "hal",
-#'     n_bins = 5,
+#'     n_bins = 3,
 #'     grid_type = "equal_mass",
 #'     lambda_seq = exp(seq(-1, -9,
-#'       length = 100
+#'       length = 50
 #'     ))
 #'   ),
 #'   Q_fit_args = list(
@@ -63,6 +61,7 @@
 #'     glm_formula = "Y ~ ."
 #'   )
 #' )
+#' @export
 msm_vimshift <- function(Y,
                          A,
                          W,

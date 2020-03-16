@@ -12,9 +12,15 @@ the output provided by internal function \code{estimate-propensity_score}.}
 
 \item{a}{A \code{numeric} vector of the observed values of the treatment.}
 
-\item{w}{A \code{numeric}, \code{matrix}, \code{data.frame} or similar object
-that contains the observed values of the baseline covariates.}
+\item{w}{A \code{numeric}, \code{matrix}, \code{data.frame} or similar
+object that contains the observed values of the baseline covariates.}
+}
+\value{
+TODO
 }
 \description{
 Estimate Auxiliary Covariate from Efficient Influence Function
+}
+\details{
+TODO
 }

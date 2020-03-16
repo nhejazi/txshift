@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{bound_propensity}
 \alias{bound_propensity}
-\title{Bound Propensity Score (Density)}
+\title{Bound Generalized Propensity Score (Conditional Density)}
 \usage{
 bound_propensity(vals)
 }
@@ -11,7 +11,12 @@ bound_propensity(vals)
 that, for this parameter, the propensity score is (conditional) density and
 so it ought not be bounded from above.}
 }
-\description{
-Bound Propensity Score (Density)
+\value{
+TODO
 }
-\keyword{internal}
+\description{
+Bound Generalized Propensity Score (Conditional Density)
+}
+\details{
+TODO
+}

@@ -8,9 +8,14 @@ scale_to_unit(vals)
 }
 \arguments{
 \item{vals}{A \code{numeric} vector corresponding to the observed values of
-the variable of interest, to be re-scaled to the unit interval [0, 1].}
+the variable of interest, to be re-scaled to the unit interval [0,1].}
+}
+\value{
+TODO
 }
 \description{
 Transform values by scaling to the unit interval
 }
-\keyword{internal}
+\details{
+TODO
+}

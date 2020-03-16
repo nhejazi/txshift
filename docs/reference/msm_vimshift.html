@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.2</span>
       </span>
     </div>
 
@@ -165,12 +165,9 @@ set of baseline covariates.</p></td>
     </tr>
     <tr>
       <th>C</th>
-      <td><p>A <code>numeric</code> binary vector giving information on whether a given
-observation was subject to censoring. This is used to compute an IPCW-TMLE
-in cases where two-stage sampling is performed. The default assumes that no
-censoring was present (i.e., a two-stage design was NOT used). N.B., this is
-equivalent to the term <!-- %\Delta in the notation used in the original Rose and -->
-van der Laan manuscript that introduced/formulated IPCW-TML estimators.</p></td>
+      <td><p>A <code>numeric</code> indicator for whether a given observation was
+subject to censoring in the two-phase sample. This is used to compute an
+IPCW-TMLE in such cases. The default assumes no censoring.</p></td>
     </tr>
     <tr>
       <th>V</th>
@@ -183,8 +180,8 @@ have played a role in defining the sampling/censoring mechanism (C).</p></td>
     </tr>
     <tr>
       <th>delta_grid</th>
-      <td><p>A <code>numeric</code> vector giving the individual values of the
-shift parameter used in computing each of the TML estimates.</p></td>
+      <td><p>A <code>numeric</code> vector giving the individual values of
+the shift parameter used in computing each of the estimates.</p></td>
     </tr>
     <tr>
       <th>estimator</th>
@@ -201,8 +198,8 @@ simply weight all parameter estimates equally. The default is the option
     </tr>
     <tr>
       <th>ci_level</th>
-      <td><p>A <code>numeric</code> indicating the desired coverage level of the
-confidence interval to be computed.</p></td>
+      <td><p>A <code>numeric</code> indicating the desired coverage level of
+the confidence interval to be computed.</p></td>
     </tr>
     <tr>
       <th>ci_type</th>
@@ -218,10 +215,15 @@ confidence band.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>TODO</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>TODO</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>429153</span>)
-<span class='no'>n_obs</span> <span class='kw'>&lt;-</span> <span class='fl'>100</span>
+    <pre class="examples"><div class='input'><span class='no'>n_obs</span> <span class='kw'>&lt;-</span> <span class='fl'>50</span>
 <span class='no'>W</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>replicate</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span>(<span class='no'>n_obs</span>, <span class='fl'>1</span>, <span class='fl'>0.5</span>)))
 <span class='no'>A</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n_obs</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>2</span> * <span class='no'>W</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>1</span>))
 <span class='no'>Y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span>(<span class='no'>n_obs</span>, <span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Logistic.html'>plogis</a></span>(<span class='no'>A</span> + <span class='no'>W</span> + <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n_obs</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>1</span>)))
@@ -229,10 +231,10 @@ confidence band.</p></td>
   <span class='kw'>W</span> <span class='kw'>=</span> <span class='no'>W</span>, <span class='kw'>A</span> <span class='kw'>=</span> <span class='no'>A</span>, <span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>Y</span>, <span class='kw'>estimator</span> <span class='kw'>=</span> <span class='st'>"tmle"</span>,
   <span class='kw'>g_fit_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
     <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='st'>"hal"</span>,
-    <span class='kw'>n_bins</span> <span class='kw'>=</span> <span class='fl'>5</span>,
+    <span class='kw'>n_bins</span> <span class='kw'>=</span> <span class='fl'>3</span>,
     <span class='kw'>grid_type</span> <span class='kw'>=</span> <span class='st'>"equal_mass"</span>,
     <span class='kw'>lambda_seq</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(-<span class='fl'>1</span>, -<span class='fl'>9</span>,
-      <span class='kw'>length</span> <span class='kw'>=</span> <span class='fl'>100</span>
+      <span class='kw'>length</span> <span class='kw'>=</span> <span class='fl'>50</span>
     ))
   ),
   <span class='kw'>Q_fit_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
@@ -245,6 +247,8 @@ confidence band.</p></td>
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
+      <li><a href="#value">Value</a></li>
+      <li><a href="#details">Details</a></li>
       <li><a href="#examples">Examples</a></li>
     </ul>
 
