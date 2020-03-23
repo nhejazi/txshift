@@ -34,20 +34,23 @@ a host of issues, among them non-identification, violations of the assumption of
 positivity, and inefficiency. Stochastic interventions provide a promising
 solution to these fundamental issues by allowing for the target parameter to be
 defined as the mean counterfactual outcome under a hypothetically shifted
-version of the observed exposure distribution [@diaz2012population].
-@rotnitzky2013... developed...
-Subsequent
-work by @diaz2018stochastic revealed a simplified estimation strategy for
-estimating the effects
+version of the observed exposure distribution [@diaz2012population]. In
+subsequent work, @haneuse2013estimation introduced modified treatment policies
+(MTPs), a particular class of stochastic intervention that may be interpreted as
+changing the natural exposure value at the individual (rather than population)
+level. Subsequent work by @diaz2018stochastic revealed a simplified strategy for
+constructing estimators of the causal effects of stochastic interventions.
 
-Despite the promise of such approaches, real data analyses are often further
-complicated by economic constraints, such as when the primary variable of
-interest is far more expensive to collect than auxiliary covariates. Two-phase
-sampling schemes are often used to bypass such limitations -- unfortunately,
-their use produces side effects that require further adjustment when formal
-statistical inference is the principal goal of a study. While a rich history of
-work on estimation and inference under such designs has developed,
-@rose2011targeted2sd provided a unique treatment of the subject, formulating...
+Despite the promise of such advances in causal inference, real data analyses are
+often further complicated by economic constraints, such as when the primary
+variable of interest is far more expensive to collect than auxiliary covariates.
+Two-phase sampling schemes are often used to bypass such limitations --
+unfortunately, their use produces side effects that require further adjustment
+when formal statistical inference is the principal goal of a study. Among the
+rich literature on two-phase designs, @rose2011targeted2sd stand out for
+providing a study of nonparametric efficiency theory under such designs. Their
+work can be used to construct efficient estimators of causal effects under
+general two-phase sampling designs.
 
 Building on these prior works, @hejazi2020efficient outlined a novel approach
 for use in such settings: augmented targeted minimum loss (TML) and one-step
@@ -61,8 +64,17 @@ a dose-response analysis. The `txshift` software package, for the `R` language
 and environment for statistical computing [@R], is an implementation of this
 methodology.
 
-`txshift` provides...
-
+`txshift` provides facilities for constructing TML and one-step estimators of
+the causal effects of stochastic interventions that shift the observed exposure
+value up (or down) by an arbitrary scalar $\delta$. The package includes tools
+for deploying either estimator under two-phase sampling designs, with two types
+of corrections: (1) a reweighting procedure that introduces inverse probability
+of censoring weights directly to an appropriate loss function, as discussed in
+@rose2011targeted2sd; as well as (2) a correction based on the efficient
+influence function, studied more thoroughly by @hejazi2020efficient. `txshift`
+integrates with the [`sl3` package](https://github.com/tlverse/sl3)
+[@coyle2020sl3] to allow for ensemble machine learning to be leveraged in the
+estimation procedure.
 
 # Acknowledgments
 
