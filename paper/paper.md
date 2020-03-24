@@ -34,12 +34,10 @@ a host of issues, among them non-identification, violations of the assumption of
 positivity, and inefficiency. Stochastic interventions provide a promising
 solution to these fundamental issues by allowing for the target parameter to be
 defined as the mean counterfactual outcome under a hypothetically shifted
-version of the observed exposure distribution [@diaz2012population]. In
-subsequent work, @haneuse2013estimation introduced modified treatment policies
-(MTPs), a particular class of stochastic intervention that may be interpreted as
-changing the natural exposure value at the individual (rather than population)
-level. Subsequent work by @diaz2018stochastic revealed a simplified strategy for
-constructing estimators of the causal effects of stochastic interventions.
+version of the observed exposure distribution [@diaz2012population].
+Modified treatment policies, a particular class of such interventions, may be
+interpreted as shifting the natural exposure level at the level of a given
+observational unit [@haneuse2013estimation;@diaz2018stochastic].
 
 Despite the promise of such advances in causal inference, real data analyses are
 often further complicated by economic constraints, such as when the primary
@@ -56,25 +54,29 @@ Building on these prior works, @hejazi2020efficient outlined a novel approach
 for use in such settings: augmented targeted minimum loss (TML) and one-step
 estimators for the causal effects of stochastic interventions, with guarantees
 of consistency, efficiency, and multiple robustness even in the presence of
-two-phase sampling. These authors further proposed a technique utilizing the
-estimated causal effects of stochastic interventions to construct
-a nonparametric working marginal structural model to summarize the effect of
-shifting an exposure variable on the outcome of interest, analogous to
-a dose-response analysis. The `txshift` software package, for the `R` language
-and environment for statistical computing [@R], is an implementation of this
-methodology.
+two-phase sampling. These authors further outlined a technique that summarizes
+the effect of shifting an exposure variable on the outcome of interest via
+a nonparametric working marginal structural model, analogous to a dose-response
+analysis. The `txshift` software package, for the `R` language and environment
+for statistical computing [@R], implements this methodology.
 
-`txshift` provides facilities for constructing TML and one-step estimators of
-the causal effects of stochastic interventions that shift the observed exposure
-value up (or down) by an arbitrary scalar $\delta$. The package includes tools
-for deploying either estimator under two-phase sampling designs, with two types
-of corrections: (1) a reweighting procedure that introduces inverse probability
-of censoring weights directly to an appropriate loss function, as discussed in
-@rose2011targeted2sd; as well as (2) a correction based on the efficient
-influence function, studied more thoroughly by @hejazi2020efficient. `txshift`
+`txshift` is designed to facilitate the simple construction of TML and one-step
+estimators of the causal effects of modified treatment policies that shift the
+observed exposure value up (or down) by an arbitrary scalar $\delta$. The `R`
+package includes tools for deploying these efficient estimators under two-phase
+sampling designs, with two types of corrections: (1) a reweighting procedure
+that introduces inverse probability of censoring weights directly into an
+appropriate loss function, as discussed in @rose2011targeted2sd; as
+well as (2) a correction based on the efficient influence function, studied more
+thoroughly by @hejazi2020efficient. `txshift`
 integrates with the [`sl3` package](https://github.com/tlverse/sl3)
 [@coyle2020sl3] to allow for ensemble machine learning to be leveraged in the
-estimation procedure.
+estimation of nuisance parameters. What's more, the `txshift` package draws on
+both the `hal9001` and `haldensify` `R` packages [@coyle2019hal9001;
+@hejazi2020haldensify] to allow each of the estimators to be constructed in
+a manner consistent with the theoretical results of @hejazi2020efficient. The
+`txshift` package has been made publicly available via GitHub and will be
+submitted to the Comprehensive `R` Archive Network in the near future.
 
 # Acknowledgments
 
