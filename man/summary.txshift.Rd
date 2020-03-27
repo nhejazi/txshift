@@ -2,14 +2,14 @@
 % Please edit documentation in R/utils.R
 \name{summary.txshift}
 \alias{summary.txshift}
-\title{Summary for Shifted Treatment Parameter Objects}
+\title{Summary for Counterfactual Mean Under Stochastic Intervention}
 \usage{
 \method{summary}{txshift}(object, ..., ci_level = 0.95, digits = 4)
 }
 \arguments{
 \item{object}{An object of class \code{txshift}, as produced by invoking
-the function \code{tmle_txshift}, for which a confidence interval is to be
-computed.}
+the function \code{\link{txshift}}, for which a confidence interval is to
+be computed.}
 
 \item{...}{Other arguments. Not currently used.}
 
@@ -20,15 +20,28 @@ interval to be computed.}
 displayed or to round results to.}
 }
 \value{
-TODO
+None. Called for the side effect of printing a summary of particular
+ slots of objects of class \code{txshift}.
 }
 \description{
-Summary for Shifted Treatment Parameter Objects
+Summary for Counterfactual Mean Under Stochastic Intervention
 }
 \details{
 Print a convenient summary for objects computed using
- \code{\link{tmle_txshift}}.
+ \code{\link{txshift}}.
 }
 \examples{
-# TODO
+set.seed(429153)
+n_obs <- 100
+W <- replicate(2, rbinom(n_obs, 1, 0.5))
+A <- rnorm(n_obs, mean = 2 * W, sd = 1)
+Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
+txout <- txshift(W = W, A = A, Y = Y, delta = 0.5,
+                 estimator = "tmle",
+                 g_fit_args = list(fit_type = "hal", n_bins = 5,
+                                   grid_type = "equal_mass",
+                                   lambda_seq = exp(-1:-9)),
+                 Q_fit_args = list(fit_type = "glm",
+                                   glm_formula = "Y ~ ."))
+summary(txout)
 }

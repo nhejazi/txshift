@@ -29,7 +29,7 @@ constructed by a call to the internal function \code{est_Hn}.}
 
 \item{estimator}{The type of estimator to be fit, either \code{"tmle"} for
 targeted maximum likelihood estimation or \code{"onestep"} for a one-step
-augmented inverse probability weighted (AIPW) estimator.}
+estimator.}
 
 \item{fluc_mod_out}{An object giving values of the logistic tilting model
 for targeted minimum loss estimation. This type of object should be the
@@ -47,7 +47,10 @@ routines for estimating the censoring mechanism.}
 the previous argument. In this case, the weights are normalized.}
 }
 \value{
-TODO
+A \code{list} containing the parameter estimate, estimated variance
+ based on the efficient influence function (EIF), the estimate of the EIF
+ incorporating inverse probability of censoring weights, and the estimate of
+ the EIF without the application of such weights.
 }
 \description{
 Compute the Shift Parameter Estimate and the Efficient Influence Function

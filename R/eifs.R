@@ -17,7 +17,7 @@ utils::globalVariables(c("..v_names"))
 #'  constructed by a call to the internal function \code{est_Hn}.
 #' @param estimator The type of estimator to be fit, either \code{"tmle"} for
 #'  targeted maximum likelihood estimation or \code{"onestep"} for a one-step
-#'  augmented inverse probability weighted (AIPW) estimator.
+#'  estimator.
 #' @param Delta Indicator for missingness. Used for compatibility with the
 #'  routine to compute IPCW-TML estimates.
 #' @param ipc_weights A \code{numeric} vector that gives inverse probability of
@@ -32,7 +32,10 @@ utils::globalVariables(c("..v_names"))
 #'
 #' @importFrom stats var
 #'
-#' @return TODO
+#' @return A \code{list} containing the parameter estimate, estimated variance
+#'  based on the efficient influence function (EIF), the estimate of the EIF
+#'  incorporating inverse probability of censoring weights, and the estimate of
+#'  the EIF without the application of such weights.
 eif <- function(Y,
                 Qn,
                 Hn,
@@ -122,7 +125,7 @@ eif <- function(Y,
 #'  by invoking the internal function \code{est_Hn}.
 #' @param estimator The type of estimator to be fit, either \code{"tmle"} for
 #'  targeted maximum likelihood estimation or \code{"onestep"} for a one-step
-#'  or augmented inverse probability weighted (AIPW) estimator.
+#'  estimator.
 #' @param fluctuation A \code{character} giving the type of regression to be
 #'  used in traversing the fluctuation submodel. The choices are "weighted" and
 #'  "standard".
@@ -141,7 +144,11 @@ eif <- function(Y,
 #' @importFrom assertthat assert_that
 #' @importFrom hal9001 fit_hal
 #'
-#' @return TODO
+#' @return A \code{list} containing the estimated outcome mechanism, the fitted
+#'  fluctuation model for TML updates, the updated inverse probability of
+#'  censoring weights (IPCW), normalized versions of the same weights, the
+#'  updated estimate of the efficient influence function, and the estimated
+#'  IPCW component of the EIF.
 ipcw_eif_update <- function(data_in,
                             C,
                             V,
