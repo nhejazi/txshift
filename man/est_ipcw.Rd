@@ -33,5 +33,8 @@ A \code{list} containing a \code{numeric} vector corresponding to
 Estimate Inverse Probability of Censoring Weights
 }
 \details{
-TODO
+Compute inverse probability of censoring weights for the two-phase
+ sampling mechanism. These inverse weights are based on the probability of
+ appearing in the second-phase sample based on variables measured on all
+ participants.
 }

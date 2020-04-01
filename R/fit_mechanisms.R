@@ -1,4 +1,4 @@
-#' Estimate the Treatment Mechanism (Generalized Propensity Score)
+#' Estimate the Generalized Propensity Score (Treatment Mechanism)
 #'
 #' @details Compute the propensity score (treatment mechanism) for the observed
 #'  data, including the shift. This gives the propensity score for the observed
@@ -26,7 +26,10 @@
 #' @importFrom stats predict
 #' @importFrom haldensify haldensify
 #'
-#' @return TODO
+#' @return A \code{data.table} with four columns, containing estimates of the
+#'  generalized propensity score at a downshift (g(A - delta | W)), no shift
+#'  (g(A | W)), an upshift (g(A + delta) | W), and an upshift of magitudie two
+#'  (g(A + 2 delta) | W).
 est_g <- function(A,
                   W,
                   delta = 0,
@@ -39,9 +42,7 @@ est_g <- function(A,
                     lambda_seq = exp(seq(-1, -13, length = 300)),
                     use_future = FALSE
                   )) {
-  ##############################################################################
   # make data objects from inputs
-  ##############################################################################
   data_in <- data.table::as.data.table(cbind(A, W))
   if (!is.matrix(W)) W <- as.matrix(W)
   data.table::setnames(data_in, c("A", colnames(W)))
@@ -65,9 +66,7 @@ est_g <- function(A,
     A = data_in$A, delta = 2 * delta
   ))
 
-  ##############################################################################
   # if fitting sl3 density make sl3 tasks from the data
-  ##############################################################################
   if (fit_type == "sl" & !is.null(sl_learners_density)) {
     # sl3 task for data with treatment UNSHIFTED
     sl_task <- sl3::sl3_Task$new(
@@ -102,9 +101,7 @@ est_g <- function(A,
     )
   }
 
-  ##############################################################################
   # fit conditional densities with haldensify
-  ##############################################################################
   if (fit_type == "hal" & is.null(sl_learners_density)) {
     fit_args <- unlist(
       list(
@@ -121,9 +118,7 @@ est_g <- function(A,
     )
   }
 
-  ##############################################################################
   # predict probabilities for the UNSHIFTED data (A = a)
-  ##############################################################################
   if (fit_type == "hal" & is.null(sl_learners_density)) {
     pred_g_A_noshift <-
       stats::predict(
@@ -137,9 +132,7 @@ est_g <- function(A,
     )
   }
 
-  ##############################################################################
   # predict probabilities for the DOWNSHIFTED data (A = a - delta)
-  ##############################################################################
   if (fit_type == "hal" & is.null(sl_learners_density)) {
     pred_g_A_downshifted <-
       stats::predict(
@@ -153,9 +146,7 @@ est_g <- function(A,
     )
   }
 
-  ##############################################################################
   # predict probabilities for the UPSHIFTED data (A = a + delta)
-  ##############################################################################
   if (fit_type == "hal" & is.null(sl_learners_density)) {
     pred_g_A_upshifted <-
       stats::predict(
@@ -169,9 +160,7 @@ est_g <- function(A,
     )
   }
 
-  ##############################################################################
   # predict probabilities for the UPSHIFTED data (A = a + 2*delta)
-  ##############################################################################
   if (fit_type == "hal" & is.null(sl_learners_density)) {
     pred_g_A_upupshifted <-
       stats::predict(
@@ -185,9 +174,7 @@ est_g <- function(A,
     )
   }
 
-  ##############################################################################
   # create output data.tables
-  ##############################################################################
   out <- data.table::as.data.table(cbind(
     pred_g_A_downshifted,
     pred_g_A_noshift,
@@ -232,7 +219,9 @@ est_g <- function(A,
 #' @importFrom stringr str_detect
 #' @importFrom sl3 sl3_Task
 #'
-#' @return TODO
+#' @return A \code{data.table} with two columns, containing estimates of the
+#'  outcome mechanism at the natural value of the exposure Q(A, W) and an
+#'  upshift of the exposure Q(A + delta, W).
 est_Q <- function(Y,
                   A,
                   W,
@@ -331,7 +320,10 @@ est_Q <- function(Y,
 
 #' Estimate Inverse Probability of Censoring Weights
 #'
-#' @details TODO
+#' @details Compute inverse probability of censoring weights for the two-phase
+#'  sampling mechanism. These inverse weights are based on the probability of
+#'  appearing in the second-phase sample based on variables measured on all
+#'  participants.
 #'
 #' @param V A \code{numeric} vector, \code{matrix}, \code{data.frame} or
 #'  similar object giving the observed values of the covariates known to
@@ -402,7 +394,9 @@ est_ipcw <- function(V,
 
 #' Estimate Auxiliary Covariate from Efficient Influence Function
 #'
-#' @details TODO
+#' @details Compute an estimate of the auxiliary covariate required to update
+#'  initial estimates via logistic tilting models in targeted minimum loss
+#'  estimation.
 #'
 #' @param gn An estimate of the treatment probability (propensity score), using
 #'  the output provided by internal function \code{estimate-propensity_score}.
@@ -412,7 +406,9 @@ est_ipcw <- function(V,
 #'
 #' @importFrom data.table as.data.table setnames
 #'
-#' @return TODO
+#' @return A \code{data.table} with two columns, containing estimates of the
+#'  auxiliary covariate at the natural value of the exposure H(A, W) and at the
+#'  shifted value of the exposure H(A + delta, W).
 est_Hn <- function(gn, a = NULL, w = NULL) {
   # set any g(a|w) = 0 values to a very small value above zero
   gn$noshift <- bound_propensity(gn$noshift)

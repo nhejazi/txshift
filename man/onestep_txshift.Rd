@@ -82,8 +82,6 @@ Compute One-Step Estimate of Counterfactual Mean Under Stochastic Shift
 Intervention
 }
 \details{
-TODO
-}
-\examples{
-# TODO
+Invokes the procedure to construct a one-step estimate of the
+ counterfactual mean under a modified treatment policy.
 }

@@ -91,9 +91,6 @@ Compute Targeted Minimum Loss Estimate of Counterfactual Mean Under
 Stochastic Shift Intervention
 }
 \details{
-Invokes the procedure to obtain targeted minimum loss estimates
+Invokes the procedure to construct a targeted minimum loss estimate
  (TMLE) of the counterfactual mean under a modified treatment policy.
-}
-\examples{
-# TODO
 }

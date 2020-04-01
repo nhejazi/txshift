@@ -16,11 +16,15 @@ the output provided by internal function \code{estimate-propensity_score}.}
 object that contains the observed values of the baseline covariates.}
 }
 \value{
-TODO
+A \code{data.table} with two columns, containing estimates of the
+ auxiliary covariate at the natural value of the exposure H(A, W) and at the
+ shifted value of the exposure H(A + delta, W).
 }
 \description{
 Estimate Auxiliary Covariate from Efficient Influence Function
 }
 \details{
-TODO
+Compute an estimate of the auxiliary covariate required to update
+ initial estimates via logistic tilting models in targeted minimum loss
+ estimation.
 }

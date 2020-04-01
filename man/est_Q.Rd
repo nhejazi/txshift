@@ -45,7 +45,9 @@ be used in fitting a generalized linear model via \code{\link[stats]{glm}}.}
 \pkg{sl3}, to be used in fitting an ensemble model.}
 }
 \value{
-TODO
+A \code{data.table} with two columns, containing estimates of the
+ outcome mechanism at the natural value of the exposure Q(A, W) and an
+ upshift of the exposure Q(A + delta, W).
 }
 \description{
 Estimate the Outcome Regression

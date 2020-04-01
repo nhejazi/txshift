@@ -2,7 +2,7 @@
 % Please edit documentation in R/fit_mechanisms.R
 \name{est_g}
 \alias{est_g}
-\title{Estimate the Treatment Mechanism (Generalized Propensity Score)}
+\title{Estimate the Generalized Propensity Score (Treatment Mechanism)}
 \usage{
 est_g(
   A,
@@ -40,10 +40,13 @@ from \pkg{haldensify} when the argument \code{fit_type} is set to
 thus only feasible for relatively small data sets.}
 }
 \value{
-TODO
+A \code{data.table} with four columns, containing estimates of the
+ generalized propensity score at a downshift (g(A - delta | W)), no shift
+ (g(A | W)), an upshift (g(A + delta) | W), and an upshift of magitudie two
+ (g(A + 2 delta) | W).
 }
 \description{
-Estimate the Treatment Mechanism (Generalized Propensity Score)
+Estimate the Generalized Propensity Score (Treatment Mechanism)
 }
 \details{
 Compute the propensity score (treatment mechanism) for the observed
