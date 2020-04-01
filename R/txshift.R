@@ -96,7 +96,7 @@
 #' W <- replicate(2, rbinom(n_obs, 1, 0.5))
 #' A <- rnorm(n_obs, mean = 2 * W, sd = 1)
 #' Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
-#' C <- rbinom(n_obs, 1, plogis(W + Y))  # two-phase sampling
+#' C <- rbinom(n_obs, 1, plogis(W + Y)) # two-phase sampling
 #'
 #' # construct a TML estimate (set estimator = "onestep" for the one-step)
 #' tmle <- txshift(
@@ -118,6 +118,7 @@
 #'   W = W, A = A, Y = Y, delta = 0.5,
 #'   C = C, V = c("W", "Y"),
 #'   estimator = "tmle", max_iter = 5,
+#'   ipcw_fit_args = list(fit_type = "glm"),
 #'   g_fit_args = list(
 #'     fit_type = "hal", n_bins = 5,
 #'     grid_type = "equal_mass",
