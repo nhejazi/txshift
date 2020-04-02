@@ -1,7 +1,8 @@
 #' Compute One-Step Estimate of Counterfactual Mean Under Stochastic Shift
 #' Intervention
 #'
-#' @details TODO
+#' @details Invokes the procedure to construct a one-step estimate of the
+#'  counterfactual mean under a modified treatment policy.
 #'
 #' @param data_internal A \code{data.table} constructed internally by a call to
 #'  \code{\link{txshift}}. This contains the data elements needed for computing
@@ -54,10 +55,6 @@
 #'
 #' @return S3 object of class \code{txshift} containing the results of the
 #'  procedure to compute a one-step estimate of the treatment shift parameter.
-#'
-#' @examples
-#' # TODO
-#' @export
 onestep_txshift <- function(data_internal,
                             C = rep(1, nrow(data_internal)),
                             V = NULL,

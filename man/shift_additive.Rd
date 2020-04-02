@@ -15,11 +15,13 @@ shift_additive(A, W = NULL, delta)
 computed for the treatment \code{A}.}
 }
 \value{
-TODO
+A \code{numeric} vector containing the shifted exposure values.
 }
 \description{
 Simple Additive Modified Treatment Policy
 }
 \details{
-TODO
+A simple modified treatment policy that modifes the observed value
+ of the exposure by shifting it by a value \code{delta}. Note that this
+ shifting function assumes support of A|W across all strata of W.
 }

@@ -17,11 +17,14 @@ values on the original scale.}
 values on the original scale.}
 }
 \value{
-TODO
+A \code{numeric} vector of the same length as \code{scaled_vals},
+ where the values are re-scaled to lie in their original/natural interval.
 }
 \description{
 Transform values from the unit interval back to their original scale
 }
 \details{
-TODO
+A back-transformation that returns values computed in the unit
+ interval to their original scale. This is used in re-scaling updated TML
+ estimates back to their natural scale. Undoes \code{\link{scale_to_unit}}.
 }

@@ -62,13 +62,21 @@ confidence band.}
 \item{...}{Additional arguments to be passed to \code{txshift}.}
 }
 \value{
-TODO
+A \code{list} containing estimates of the individual counterfactual
+ means over a grid in the shift parameters (\code{delta_grid}), alongside
+ the estimate of a marginal structural model that summarizes a trend through
+ these counterfactual means.
 }
 \description{
 Marginal structural model for the causal effects of a grid of interventions
 }
 \details{
-TODO
+Computes estimates of the counterfactual mean over a grid of shift
+ stochastic interventions and fits a marginal structural model to summarize
+ the trend through the counterfactual means as a function of the specified
+ shift intervention. Provides support for two weighting schemes, may be used
+ with either the one-step or TML estimator, and allows the construction of
+ marginal or simultaneous confidence intervals.
 }
 \examples{
 n_obs <- 50

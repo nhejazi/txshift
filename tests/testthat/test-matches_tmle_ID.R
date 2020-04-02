@@ -102,18 +102,6 @@ tmle_shift_2012 <- tmle.shift(
 )
 tmle_2012_psi <- as.numeric(tmle_shift_2012[1])
 
-tmle_shift_new <- txshift:::tmle_shift_original_ID(
-  Y = Y, A = A, W = W, Qn = Qn.0, gn = gn.0,
-  delta = delta_shift, tol = 1e-4, iter_max = 5,
-  A_val = seq(1, 60, 1)
-)
-tmle_new_psi <- as.numeric(tmle_shift_new[1])
-
-# test for equality between Ivan's original code and that with minor revisions
-test_that("Revised tmle_shift procedure matches code from 2012 manuscript", {
-  expect_equal(tmle_new_psi, tmle_2012_psi, tol = 1e-10)
-})
-
 # run the new txshift implementation of TMLE
 # NOTE: using true density like Ivan does
 gn_spec_fitted <- as.data.table(
@@ -146,5 +134,5 @@ txshift_psi <- as.numeric(tmle_txshift$psi)
 
 # test for equality between Ivan's modified code and txshift implementation
 test_that("txshift implementation matches revised 2012 procedure closely", {
-  expect_equal(tmle_new_psi, txshift_psi, tol = 1e-3)
+  expect_equal(tmle_2012_psi, txshift_psi, tol = 1e-3)
 })

@@ -1,11 +1,11 @@
-#' Confidence Intervals for Shifted Treatment Parameters
+#' Confidence Intervals for Counterfactual Mean Under Stochastic Intervention
 #'
 #' @details Compute confidence intervals for estimates produced by
-#'  \code{\link{tmle_txshift}}.
+#'  \code{\link{txshift}}.
 #'
 #' @param object An object of class \code{txshift}, as produced by invoking
-#'  the function \code{tmle_txshift}, for which a confidence interval is to be
-#'  computed.
+#'  the function \code{\link{txshift}}, for which a confidence interval is to
+#'  be computed.
 #' @param parm A \code{numeric} vector indicating indices of \code{object$est}
 #'  for which to return confidence intervals.
 #' @param level A \code{numeric} indicating the level of the confidence
@@ -16,10 +16,30 @@
 #'
 #' @method confint txshift
 #'
-#' @return TODO
+#' @return A named \code{numeric} vector containing the parameter estimate from
+#'  a \code{txshift} object, alongside lower and upper Wald-style confidence
+#'  intervals at a specified coverage level.
 #'
 #' @examples
-#' # TODO
+#' set.seed(429153)
+#' n_obs <- 100
+#' W <- replicate(2, rbinom(n_obs, 1, 0.5))
+#' A <- rnorm(n_obs, mean = 2 * W, sd = 1)
+#' Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
+#' txout <- txshift(
+#'   W = W, A = A, Y = Y, delta = 0.5,
+#'   estimator = "tmle",
+#'   g_fit_args = list(
+#'     fit_type = "hal", n_bins = 5,
+#'     grid_type = "equal_mass",
+#'     lambda_seq = exp(-1:-9)
+#'   ),
+#'   Q_fit_args = list(
+#'     fit_type = "glm",
+#'     glm_formula = "Y ~ ."
+#'   )
+#' )
+#' confint(txout)
 #' @export
 confint.txshift <- function(object,
                             parm = seq_len(object$psi),
@@ -53,14 +73,14 @@ confint.txshift <- function(object,
 
 ################################################################################
 
-#' Summary for Shifted Treatment Parameter Objects
+#' Summary for Counterfactual Mean Under Stochastic Intervention
 #'
 #' @details Print a convenient summary for objects computed using
-#'  \code{\link{tmle_txshift}}.
+#'  \code{\link{txshift}}.
 #'
 #' @param object An object of class \code{txshift}, as produced by invoking
-#'  the function \code{tmle_txshift}, for which a confidence interval is to be
-#'  computed.
+#'  the function \code{\link{txshift}}, for which a confidence interval is to
+#'  be computed.
 #' @param ... Other arguments. Not currently used.
 #' @param ci_level A \code{numeric} indicating the level of the confidence
 #'  interval to be computed.
@@ -71,10 +91,29 @@ confint.txshift <- function(object,
 #'
 #' @method summary txshift
 #'
-#' @return TODO
+#' @return None. Called for the side effect of printing a summary of particular
+#'  slots of objects of class \code{txshift}.
 #'
 #' @examples
-#' # TODO
+#' set.seed(429153)
+#' n_obs <- 100
+#' W <- replicate(2, rbinom(n_obs, 1, 0.5))
+#' A <- rnorm(n_obs, mean = 2 * W, sd = 1)
+#' Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
+#' txout <- txshift(
+#'   W = W, A = A, Y = Y, delta = 0.5,
+#'   estimator = "tmle",
+#'   g_fit_args = list(
+#'     fit_type = "hal", n_bins = 5,
+#'     grid_type = "equal_mass",
+#'     lambda_seq = exp(-1:-9)
+#'   ),
+#'   Q_fit_args = list(
+#'     fit_type = "glm",
+#'     glm_formula = "Y ~ ."
+#'   )
+#' )
+#' summary(txout)
 #' @export
 summary.txshift <- function(object,
                             ...,
@@ -109,10 +148,29 @@ summary.txshift <- function(object,
 #'
 #' @method print txshift
 #'
-#' @return TODO
+#' @return None. Called for the side effect of printing particular slots of
+#'  objects of class \code{txshift}.
 #'
 #' @examples
-#' # TODO
+#' set.seed(429153)
+#' n_obs <- 100
+#' W <- replicate(2, rbinom(n_obs, 1, 0.5))
+#' A <- rnorm(n_obs, mean = 2 * W, sd = 1)
+#' Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
+#' txout <- txshift(
+#'   W = W, A = A, Y = Y, delta = 0.5,
+#'   estimator = "tmle",
+#'   g_fit_args = list(
+#'     fit_type = "hal", n_bins = 5,
+#'     grid_type = "equal_mass",
+#'     lambda_seq = exp(-1:-9)
+#'   ),
+#'   Q_fit_args = list(
+#'     fit_type = "glm",
+#'     glm_formula = "Y ~ ."
+#'   )
+#' )
+#' print(txout)
 #' @export
 print.txshift <- function(x, ...) {
   print(x[c("psi", "var", "estimator", "n_iter")])
@@ -122,7 +180,8 @@ print.txshift <- function(x, ...) {
 
 #' Bound Precision
 #'
-#' @details TODO
+#' @details Bound values in the unit interval to machine precision in order to
+#'  avoid numerical instability issues in downstream computation.
 #'
 #' @param vals \code{numeric} vector of values in the interval [0, 1] to be
 #'  bounded within arbitrary machine precision. The most common use of this
@@ -131,7 +190,9 @@ print.txshift <- function(x, ...) {
 #'
 #' @importFrom assertthat assert_that
 #'
-#' @return TODO
+#' @return A \code{numeric} vector of the same length as \code{vals}, where
+#'  the returned values are bounded to machine precision. This is intended to
+#'  avoid numerical instability issues.
 bound_precision <- function(vals) {
   assertthat::assert_that(!(max(vals) > 1 | min(vals) < 0))
   vals[vals == 0] <- .Machine$double.neg.eps
@@ -141,15 +202,19 @@ bound_precision <- function(vals) {
 
 ################################################################################
 
-#' Bound Generalized Propensity Score (Conditional Density)
+#' Bound Generalized Propensity Score
 #'
-#' @details TODO
+#' @details Bound estimated values of the generalized propensity score (a
+#'  conditional density) to avoid numerical instability issues arising from
+#'  practical violations of the assumption of positivity.
 #'
 #' @param vals \code{numeric} vector of propensity score estimate values. Note
 #'  that, for this parameter, the propensity score is (conditional) density and
 #'  so it ought not be bounded from above.
 #'
-#' @return TODO
+#' @return A \code{numeric} vector of the same length as \code{vals}, where the
+#'  returned values are bounded such that the minimum is no lower than 1/n, for
+#'  the sample size n.
 bound_propensity <- function(vals) {
   # bound likelihood component g(a|w) away from 0 only
   propensity_bound <- 1 / length(vals)
@@ -161,12 +226,15 @@ bound_propensity <- function(vals) {
 
 #' Transform values by scaling to the unit interval
 #'
-#' @details TODO
+#' @details A transformation that scales an arbitrary set of input values to
+#'  the unit interval. See \code{\link{scale_to_original}} for a corresponding
+#'  backtransformation.
 #'
 #' @param vals A \code{numeric} vector corresponding to the observed values of
 #'  the variable of interest, to be re-scaled to the unit interval [0,1].
 #'
-#' @return TODO
+#' @return A \code{numeric} vector of the same length as \code{vals}, where the
+#'  values are re-scaled to lie in unit interval [0, 1].
 scale_to_unit <- function(vals) {
   # compute re-scaled value in interval [0,1]
   scaled_vals <- (vals - min(vals)) / (max(vals) - min(vals))
@@ -177,7 +245,9 @@ scale_to_unit <- function(vals) {
 
 #' Transform values from the unit interval back to their original scale
 #'
-#' @details TODO
+#' @details A back-transformation that returns values computed in the unit
+#'  interval to their original scale. This is used in re-scaling updated TML
+#'  estimates back to their natural scale. Undoes \code{\link{scale_to_unit}}.
 #'
 #' @param scaled_vals A \code{numeric} vector corresponding to re-scaled values
 #'  in the unit interval, to be re-scaled to the original interval.
@@ -186,7 +256,8 @@ scale_to_unit <- function(vals) {
 #' @param min_orig A \code{numeric} scalar value giving the minimum of the
 #'  values on the original scale.
 #'
-#' @return TODO
+#' @return A \code{numeric} vector of the same length as \code{scaled_vals},
+#'  where the values are re-scaled to lie in their original/natural interval.
 scale_to_original <- function(scaled_vals, max_orig, min_orig) {
   scaled_orig <- scaled_vals * (max_orig - min_orig) + min_orig
   return(scaled_orig)

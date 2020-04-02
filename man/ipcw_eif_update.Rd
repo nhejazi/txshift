@@ -54,7 +54,7 @@ by invoking the internal function \code{est_Hn}.}
 
 \item{estimator}{The type of estimator to be fit, either \code{"tmle"} for
 targeted maximum likelihood estimation or \code{"onestep"} for a one-step
-or augmented inverse probability weighted (AIPW) estimator.}
+estimator.}
 
 \item{fluctuation}{A \code{character} giving the type of regression to be
 used in traversing the fluctuation submodel. The choices are "weighted" and
@@ -72,7 +72,11 @@ this step, the efficient influence function (EIF) is regressed against
 covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).}
 }
 \value{
-TODO
+A \code{list} containing the estimated outcome mechanism, the fitted
+ fluctuation model for TML updates, the updated inverse probability of
+ censoring weights (IPCW), normalized versions of the same weights, the
+ updated estimate of the efficient influence function, and the estimated
+ IPCW component of the EIF.
 }
 \description{
 Iterative IPCW Update Procedure of Efficient Influence Function

@@ -182,7 +182,8 @@ After using the `txshift` R package, please cite the following:
       title = {Efficient nonparametric inference on the effects of
         stochastic interventions under two-phase sampling, with
         applications to vaccine efficacy trials},
-      year  = {2020}
+      year  = {2020},
+      url = {http://arxiv.org/abs/2003.13771}
     }
 
     @manual{hejazi2020txshift,
@@ -191,7 +192,7 @@ After using the `txshift` R package, please cite the following:
         Stochastic Interventions},
       year  = {2020},
       url = {https://github.com/nhejazi/txshift},
-      note = {R package version 0.3.2}
+      note = {R package version 0.3.3}
     }
 ```
 

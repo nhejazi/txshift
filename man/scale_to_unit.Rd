@@ -11,11 +11,14 @@ scale_to_unit(vals)
 the variable of interest, to be re-scaled to the unit interval [0,1].}
 }
 \value{
-TODO
+A \code{numeric} vector of the same length as \code{vals}, where the
+ values are re-scaled to lie in unit interval [0, 1].
 }
 \description{
 Transform values by scaling to the unit interval
 }
 \details{
-TODO
+A transformation that scales an arbitrary set of input values to
+ the unit interval. See \code{\link{scale_to_original}} for a corresponding
+ backtransformation.
 }

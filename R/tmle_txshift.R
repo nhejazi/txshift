@@ -1,7 +1,7 @@
 #' Compute Targeted Minimum Loss Estimate of Counterfactual Mean Under
 #' Stochastic Shift Intervention
 #'
-#' @details Invokes the procedure to obtain targeted minimum loss estimates
+#' @details Invokes the procedure to construct a targeted minimum loss estimate
 #'  (TMLE) of the counterfactual mean under a modified treatment policy.
 #'
 #' @param data_internal A \code{data.table} constructed internally by a call to
@@ -60,10 +60,6 @@
 #'
 #' @return S3 object of class \code{txshift} containing the results of the
 #'  procedure to compute a TML estimate of the treatment shift parameter.
-#'
-#' @examples
-#' # TODO
-#' @export
 tmle_txshift <- function(data_internal,
                          C = rep(1, nrow(data_internal)),
                          V = NULL,

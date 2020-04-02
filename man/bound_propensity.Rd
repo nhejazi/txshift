@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{bound_propensity}
 \alias{bound_propensity}
-\title{Bound Generalized Propensity Score (Conditional Density)}
+\title{Bound Generalized Propensity Score}
 \usage{
 bound_propensity(vals)
 }
@@ -12,11 +12,15 @@ that, for this parameter, the propensity score is (conditional) density and
 so it ought not be bounded from above.}
 }
 \value{
-TODO
+A \code{numeric} vector of the same length as \code{vals}, where the
+ returned values are bounded such that the minimum is no lower than 1/n, for
+ the sample size n.
 }
 \description{
-Bound Generalized Propensity Score (Conditional Density)
+Bound Generalized Propensity Score
 }
 \details{
-TODO
+Bound estimated values of the generalized propensity score (a
+ conditional density) to avoid numerical instability issues arising from
+ practical violations of the assumption of positivity.
 }

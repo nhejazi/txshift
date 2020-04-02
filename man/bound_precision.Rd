@@ -13,11 +13,14 @@ functionality is to avoid indeterminate or non-finite values after the
 application \code{stats::qlogis}.}
 }
 \value{
-TODO
+A \code{numeric} vector of the same length as \code{vals}, where
+ the returned values are bounded to machine precision. This is intended to
+ avoid numerical instability issues.
 }
 \description{
 Bound Precision
 }
 \details{
-TODO
+Bound values in the unit interval to machine precision in order to
+ avoid numerical instability issues in downstream computation.
 }
