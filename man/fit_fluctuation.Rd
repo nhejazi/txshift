@@ -2,7 +2,7 @@
 % Please edit documentation in R/tmle_txshift.R
 \name{fit_fluctuation}
 \alias{fit_fluctuation}
-\title{Fit Logistic Regression to Traverse the Fluctuation Submodel}
+\title{Fit One-Dimensional Fluctuation Model for Updating Initial Estimates}
 \usage{
 fit_fluctuation(
   Y,
@@ -37,11 +37,19 @@ and "standard". Consult the literature for details on the differences.}
 tolerated in the fluctuation model for the targeted minimum loss estimator.}
 }
 \value{
-TODO
+A \code{list} containing the fluctuation model (a \code{glm} object)
+ produced by logistic regression, a \code{character} vector indicating the
+ type of fluctuation (whether the auxiliary covariates was used as a weight
+ or included directly in the model formula), the updated estimates of the
+ outcome regression under the shifted value of the exposure, and the updated
+ estimates of the outcome regression under the natural value of exposure.
 }
 \description{
-Fit Logistic Regression to Traverse the Fluctuation Submodel
+Fit One-Dimensional Fluctuation Model for Updating Initial Estimates
 }
 \details{
-TODO
+Procedure for fitting a one-dimensional fluctuation model to update
+ the initial estimates of the outcome regression based on the auxiliary
+ covariate. These updated estimates are subsequently used to construct the
+ TML estimator of the counterfactual mean under a modified treatment policy.
 }

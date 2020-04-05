@@ -1,6 +1,10 @@
 #' Estimate Counterfactual Mean Under Stochastic Shift in Exposure
 #'
-#' @details TODO
+#' @details Construct a one-step estimate or targeted minimum loss estimate of
+#'  the counterfactual mean under a modified treatment policy, automatically
+#'  making adjustments for two-phase sampling when a censoring indicator is
+#'  included. Ensemble machine learning may be used to construct the initial
+#'  estimates of nuisance functions using \pkg{sl3}.
 #'
 #' @param W A \code{matrix}, \code{data.frame}, or similar containing a set of
 #'  baseline covariates.
