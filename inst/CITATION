@@ -22,6 +22,6 @@ bibentry(bibtype = "Article",
                     person("Holly", "Janes", "E"),
                     person("Peter", "Gilbert", "B"),
                     person("David", "Benkeser", "C")),
-         year = "2020+",
+         year = "2020",
          doi = "",
-         url = "")
+         url = "http://arxiv.org/abs/2003.13771")

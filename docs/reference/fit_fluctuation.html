@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Fit Logistic Regression to Traverse the Fluctuation Submodel — fit_fluctuation • txshift</title>
+<title>Fit One-Dimensional Fluctuation Model for Updating Initial Estimates — fit_fluctuation • txshift</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Fit Logistic Regression to Traverse the Fluctuation Submodel — fit_fluctuation" />
-<meta property="og:description" content="Fit Logistic Regression to Traverse the Fluctuation Submodel" />
+<meta property="og:title" content="Fit One-Dimensional Fluctuation Model for Updating Initial Estimates — fit_fluctuation" />
+<meta property="og:description" content="Fit One-Dimensional Fluctuation Model for Updating Initial Estimates" />
 
 
 
@@ -126,13 +126,13 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Fit Logistic Regression to Traverse the Fluctuation Submodel</h1>
+    <h1>Fit One-Dimensional Fluctuation Model for Updating Initial Estimates</h1>
     <small class="dont-index">Source: <a href='https://github.com/nhejazi/txshift/blob/master/R/tmle_txshift.R'><code>R/tmle_txshift.R</code></a></small>
     <div class="hidden name"><code>fit_fluctuation.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Fit Logistic Regression to Traverse the Fluctuation Submodel</p>
+    <p>Fit One-Dimensional Fluctuation Model for Updating Initial Estimates</p>
     </div>
 
     <pre class="usage"><span class='fu'>fit_fluctuation</span>(
@@ -185,10 +185,18 @@ tolerated in the fluctuation model for the targeted minimum loss estimator.</p><
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>TODO</p>
+    <p>A <code>list</code> containing the fluctuation model (a <code>glm</code> object)
+ produced by logistic regression, a <code>character</code> vector indicating the
+ type of fluctuation (whether the auxiliary covariates was used as a weight
+ or included directly in the model formula), the updated estimates of the
+ outcome regression under the shifted value of the exposure, and the updated
+ estimates of the outcome regression under the natural value of exposure.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>TODO</p>
+    <p>Procedure for fitting a one-dimensional fluctuation model to update
+ the initial estimates of the outcome regression based on the auxiliary
+ covariate. These updated estimates are subsequently used to construct the
+ TML estimator of the counterfactual mean under a modified treatment policy.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

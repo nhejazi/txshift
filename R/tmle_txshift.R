@@ -203,9 +203,12 @@ tmle_txshift <- function(data_internal,
 
 ################################################################################
 
-#' Fit Logistic Regression to Traverse the Fluctuation Submodel
+#' Fit One-Dimensional Fluctuation Model for Updating Initial Estimates
 #'
-#' @details TODO
+#' @details Procedure for fitting a one-dimensional fluctuation model to update
+#'  the initial estimates of the outcome regression based on the auxiliary
+#'  covariate. These updated estimates are subsequently used to construct the
+#'  TML estimator of the counterfactual mean under a modified treatment policy.
 #'
 #' @param Y A \code{numeric} vector corresponding to an outcome variable.
 #' @param Qn_scaled An object providing the value of the outcome evaluate
@@ -227,7 +230,12 @@ tmle_txshift <- function(data_internal,
 #' @importFrom stats qlogis glm fitted predict as.formula coef
 #' @importFrom data.table as.data.table setnames
 #'
-#' @return TODO
+#' @return A \code{list} containing the fluctuation model (a \code{glm} object)
+#'  produced by logistic regression, a \code{character} vector indicating the
+#'  type of fluctuation (whether the auxiliary covariates was used as a weight
+#'  or included directly in the model formula), the updated estimates of the
+#'  outcome regression under the shifted value of the exposure, and the updated
+#'  estimates of the outcome regression under the natural value of exposure.
 fit_fluctuation <- function(Y,
                             Qn_scaled,
                             Hn,

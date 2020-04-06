@@ -1,7 +1,5 @@
 #' TML Estimate of the Effect of a Continuous Treatment
 #'
-#' @details TODO
-#'
 #' @param Y A \code{numeric} vector of observed outcomes.
 #' @param A A \code{numeric} vector of observed treatments.
 #' @param W A \code{matrix} or \code{data.frame} of baseline covariates.
@@ -50,7 +48,7 @@
 #'
 #' @author Iván Díaz
 #'
-#' @return TODO
+#' @note Adapted from https://github.com/idiazst/continuoustreat
 tmle_shift_original_ID <- function(Y, A, W,
                                    Qn, gn,
                                    delta, tol = 1e-5, iter_max = 5, A_val) {
