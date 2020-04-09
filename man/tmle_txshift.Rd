@@ -14,7 +14,7 @@ tmle_txshift(
   Qn_estim,
   Hn_estim,
   fluctuation = c("standard", "weighted"),
-  max_iter = 10000,
+  max_iter = 10,
   eif_reg_type = c("hal", "glm"),
   ipcw_fit_args,
   ipcw_efficiency = TRUE
@@ -73,14 +73,13 @@ covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).}
 passed to \code{\link{est_ipcw}}. For details, consult the documentation
 for \code{\link{est_ipcw}}. The first element (i.e., \code{fit_type}) is
 used to determine how this regression is fit: "glm" for generalized linear
-model, "sl" for a Super Learner, and "fit_spec" a user-specified input of
-the form produced by \code{\link{est_ipcw}}. NOTE THAT this first argument
-is not passed to \code{\link{est_ipcw}}.}
+model, "sl" for a Super Learner, and "external" for a user-specified input
+of the form produced by \code{\link{est_ipcw}}.}
 
 \item{ipcw_efficiency}{Whether to invoke an augmentation of the IPCW-TMLE
 procedure that performs an iterative process to ensure efficiency of the
 resulting estimate. The default is \code{TRUE}; set to \code{FALSE} to use
-an IPC-weighted loss rather than the IPC-augment influence function.}
+an IPC-weighted loss rather than the IPC-augmented influence function.}
 }
 \value{
 S3 object of class \code{txshift} containing the results of the

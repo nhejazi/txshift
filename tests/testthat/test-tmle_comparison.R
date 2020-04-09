@@ -38,31 +38,29 @@ Qn.0 <- function(A = A, W = W) {
 }
 
 # NOTE: using true density like Ivan does
-gn_spec_fitted <- as.data.table(
+gn_ext_fitted <- as.data.table(
   lapply(
     c(-delta_shift, 0, delta_shift, 2 * delta_shift),
     function(shift_value) {
       gn_out <- gn.0(A = A + shift_value, W = W)
     }
   )
-)
-setnames(gn_spec_fitted, c("downshift", "noshift", "upshift", "upupshift"))
+) %>% set_names(c("downshift", "noshift", "upshift", "upupshift"))
 
 # NOTE: should also use true Q for good measure (truth includes interactions)
-Qn_spec_fitted <- as.data.table(
+Qn_ext_fitted <- as.data.table(
   lapply(c(0, delta_shift), function(shift_value) {
     Qn_out <- Qn.0(A = A + shift_value, W = W)
   })
-)
-setnames(Qn_spec_fitted, c("noshift", "upshift"))
+) %>% set_names(c("noshift", "upshift"))
 
 # fit TMLE
 tmle_txshift_std <- txshift(
   Y = Y, A = A, W = W, delta = delta_shift,
-  g_fit = list(fit_type = "fit_spec"),
-  Q_fit = list(fit_type = "fit_spec"),
-  gn_fit_spec = gn_spec_fitted,
-  Qn_fit_spec = Qn_spec_fitted,
+  g_fit = list(fit_type = "external"),
+  gn_fit_ext = gn_ext_fitted,
+  Q_fit = list(fit_type = "external"),
+  Qn_fit_ext = Qn_ext_fitted,
   estimator = "tmle",
   fluctuation = "standard"
 )
@@ -71,10 +69,10 @@ psi_std <- as.numeric(tmle_txshift_std$psi)
 # fit one-step
 tmle_txshift_wts <- txshift(
   Y = Y, A = A, W = W, delta = delta_shift,
-  g_fit = list(fit_type = "fit_spec"),
-  Q_fit = list(fit_type = "fit_spec"),
-  gn_fit_spec = gn_spec_fitted,
-  Qn_fit_spec = Qn_spec_fitted,
+  g_fit = list(fit_type = "external"),
+  gn_fit_ext = gn_ext_fitted,
+  Q_fit = list(fit_type = "external"),
+  Qn_fit_ext = Qn_ext_fitted,
   estimator = "tmle",
   fluctuation = "weighted"
 )
@@ -92,10 +90,10 @@ ipcw_tmle_glm_std <- txshift(
   estimator = "tmle",
   max_iter = 5,
   ipcw_fit_args = list(fit_type = "glm"),
-  g_fit = list(fit_type = "fit_spec"),
-  Q_fit = list(fit_type = "fit_spec"),
-  gn_fit_spec = gn_spec_fitted[C == 1, ],
-  Qn_fit_spec = Qn_spec_fitted[C == 1, ],
+  g_fit = list(fit_type = "external"),
+  gn_fit_ext = gn_ext_fitted[C == 1, ],
+  Q_fit = list(fit_type = "external"),
+  Qn_fit_ext = Qn_ext_fitted[C == 1, ],
   eif_reg_type = "glm",
   fluctuation = "standard"
 )
@@ -107,10 +105,10 @@ ipcw_tmle_glm_wts <- txshift(
   estimator = "tmle",
   max_iter = 5,
   ipcw_fit_args = list(fit_type = "glm"),
-  g_fit = list(fit_type = "fit_spec"),
-  Q_fit = list(fit_type = "fit_spec"),
-  gn_fit_spec = gn_spec_fitted[C == 1, ],
-  Qn_fit_spec = Qn_spec_fitted[C == 1, ],
+  g_fit = list(fit_type = "external"),
+  gn_fit_ext = gn_ext_fitted[C == 1, ],
+  Q_fit = list(fit_type = "external"),
+  Qn_fit_ext = Qn_ext_fitted[C == 1, ],
   eif_reg_type = "glm",
   fluctuation = "weighted"
 )
@@ -128,10 +126,10 @@ ipcw_tmle_hal_std <- txshift(
   estimator = "tmle",
   max_iter = 5,
   ipcw_fit_args = list(fit_type = "glm"),
-  g_fit = list(fit_type = "fit_spec"),
-  Q_fit = list(fit_type = "fit_spec"),
-  gn_fit_spec = gn_spec_fitted[C == 1, ],
-  Qn_fit_spec = Qn_spec_fitted[C == 1, ],
+  g_fit = list(fit_type = "external"),
+  gn_fit_ext = gn_ext_fitted[C == 1, ],
+  Q_fit = list(fit_type = "external"),
+  Qn_fit_ext = Qn_ext_fitted[C == 1, ],
   eif_reg_type = "hal",
   fluctuation = "standard"
 )
@@ -143,10 +141,10 @@ ipcw_tmle_hal_wts <- txshift(
   estimator = "tmle",
   max_iter = 5,
   ipcw_fit_args = list(fit_type = "glm"),
-  g_fit = list(fit_type = "fit_spec"),
-  Q_fit = list(fit_type = "fit_spec"),
-  gn_fit_spec = gn_spec_fitted[C == 1, ],
-  Qn_fit_spec = Qn_spec_fitted[C == 1, ],
+  g_fit = list(fit_type = "external"),
+  gn_fit_ext = gn_ext_fitted[C == 1, ],
+  Q_fit = list(fit_type = "external"),
+  Qn_fit_ext = Qn_ext_fitted[C == 1, ],
   eif_reg_type = "hal",
   fluctuation = "weighted"
 )

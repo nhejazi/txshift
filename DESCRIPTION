@@ -34,22 +34,22 @@ Depends: R (>= 3.2.0)
 Imports:
     stats,
     stringr,
-    assertthat,
     data.table,
+    assertthat,
     mvtnorm,
-    Rdpack,
     hal9001 (>= 0.2.5),
     haldensify (>= 0.0.5),
-    sl3 (>= 1.3.7)
+    sl3 (>= 1.3.7),
+    Rdpack
 Suggests:
     testthat,
     knitr,
     rmarkdown,
     covr,
+    rlang,
     future,
     future.apply,
     origami (>= 1.0.3),
-    ggplot2,
     ranger,
     Rsolnp,
     nnls

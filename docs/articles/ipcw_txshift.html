@@ -90,7 +90,7 @@
 <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://www.benkeserstatistics.com/">David Benkeser</a>
 </h4>
             
-            <h4 class="date">2020-04-05</h4>
+            <h4 class="date">2020-04-08</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nhejazi/txshift/blob/master/vignettes/ipcw_txshift.Rmd"><code>vignettes/ipcw_txshift.Rmd</code></a></small>
       <div class="hidden name"><code>ipcw_txshift.Rmd</code></div>
@@ -285,7 +285,7 @@
                           )
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">tmle_sl_ineffic</span>)</pre></body></html></div>
 <pre><code>##      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-##      1.8196      2.0931      2.3667      0.0195 -1.2367e-15        tmle 
+##      1.8224      2.0958      2.3692      0.0195 -4.5051e-15        tmle 
 ##      n_iter 
 ##           0</code></pre>
 <p>Please note that in such cases, the value of <code>n_iter</code> in the resulting output should be <strong><em>exactly zero</em></strong>, as this indicates that the iterative procedure that is used to achieve efficiency has been skipped.</p>
@@ -302,7 +302,7 @@
 <div id="advanced-usage-user-specified-regressions" class="section level2">
 <h2 class="hasAnchor">
 <a href="#advanced-usage-user-specified-regressions" class="anchor"></a><em>Advanced Usage:</em> User-Specified Regressions</h2>
-<p>In some special cases it may be useful for the experienced user to compute the censoring mechanism, treatment mechanism, and outcome mechanism regressions separately (i.e., outside of the <code>txshift</code> wrapper function), instead applying this user-facing wrapper only to invoke the <em>targeting</em> steps involved in computing the TML estimator for the treatment shift parameter. In such cases, the optional arguments <code>ipcw_fit_spec</code>, <code>gn_fit_spec</code> and <code>Qn_fit_spec</code> may be utilized. We present a case of using these arguments here:</p>
+<p>In some special cases it may be useful for the experienced user to compute the censoring mechanism, treatment mechanism, and outcome mechanism regressions separately (i.e., outside of the <code>txshift</code> wrapper function), instead applying this user-facing wrapper only to invoke the <em>targeting</em> steps involved in computing the TML estimator for the treatment shift parameter. In such cases, the optional arguments <code>ipcw_fit_ext</code>, <code>gn_fit_ext</code> and <code>Qn_fit_ext</code> may be utilized. We present a case of using these arguments here:</p>
 <div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="co"># compute the censoring mechanism and produce IPC weights externally</span>
 <span class="no">pi_mech</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">plogis</a></span>(<span class="no">W</span>)
 <span class="no">ipc_weights_out</span> <span class="kw">&lt;-</span> (<span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span>(<span class="no">C</span> <span class="kw">==</span> <span class="fl">1</span>) / <span class="no">pi_mech</span>)[<span class="no">C</span> <span class="kw">==</span> <span class="fl">1</span>]
@@ -337,12 +337,12 @@
                            <span class="kw">C</span> <span class="kw">=</span> <span class="no">C</span>, <span class="kw">V</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"W"</span>, <span class="st">"Y"</span>),
                            <span class="kw">fluctuation</span> <span class="kw">=</span> <span class="st">"standard"</span>,
                            <span class="kw">max_iter</span> <span class="kw">=</span> <span class="fl">2</span>,
-                           <span class="kw">ipcw_fit_args</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">fit_type</span> <span class="kw">=</span> <span class="st">"fit_spec"</span>),
-                           <span class="kw">g_fit_args</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">fit_type</span> <span class="kw">=</span> <span class="st">"fit_spec"</span>),
-                           <span class="kw">Q_fit_args</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">fit_type</span> <span class="kw">=</span> <span class="st">"fit_spec"</span>),
-                           <span class="kw">ipcw_fit_spec</span> <span class="kw">=</span> <span class="no">ipcw_out</span>,
-                           <span class="kw">gn_fit_spec</span> <span class="kw">=</span> <span class="no">gn_out</span>,
-                           <span class="kw">Qn_fit_spec</span> <span class="kw">=</span> <span class="no">Qn_out</span>,
+                           <span class="kw">ipcw_fit_args</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">fit_type</span> <span class="kw">=</span> <span class="st">"external"</span>),
+                           <span class="kw">g_fit_args</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">fit_type</span> <span class="kw">=</span> <span class="st">"external"</span>),
+                           <span class="kw">Q_fit_args</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">fit_type</span> <span class="kw">=</span> <span class="st">"external"</span>),
+                           <span class="kw">ipcw_fit_ext</span> <span class="kw">=</span> <span class="no">ipcw_out</span>,
+                           <span class="kw">gn_fit_ext</span> <span class="kw">=</span> <span class="no">gn_out</span>,
+                           <span class="kw">Qn_fit_ext</span> <span class="kw">=</span> <span class="no">Qn_out</span>,
                            <span class="kw">eif_reg_type</span> <span class="kw">=</span> <span class="st">"glm"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">tmle_shift_spec</span>)</pre></body></html></div>
 <pre><code>##     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator     n_iter 

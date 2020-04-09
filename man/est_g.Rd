@@ -11,7 +11,7 @@ est_g(
   ipc_weights = rep(1, length(A)),
   fit_type = c("sl", "hal"),
   sl_learners_density = NULL,
-  std_args = list(n_bins = c(10, 25), grid_type = c("equal_range", "equal_mass"),
+  haldensify_args = list(n_bins = c(5, 10), grid_type = c("equal_range", "equal_mass"),
     lambda_seq = exp(seq(-1, -13, length = 300)), use_future = FALSE)
 )
 }
@@ -34,10 +34,10 @@ estimate the conditional treatment density.}
 \item{sl_learners_density}{Object containing a set of instantiated learners
 from \pkg{sl3}, to be used in fitting an ensemble model.}
 
-\item{std_args}{A \code{list} of arguments to be passed to \code{haldensify}
-from \pkg{haldensify} when the argument \code{fit_type} is set to
-\code{"hal"}. Note that this invokes HAL instead of Super Learner and is
-thus only feasible for relatively small data sets.}
+\item{haldensify_args}{A \code{list} of argument to be directly passed to
+\code{\link[haldensify]{haldensify}} when \code{fit_type} is set to
+\code{"hal"}. Note that this invokes the Highly Adaptive Lasso instead of
+Super Learner and is thus only feasible for relatively small data sets.}
 }
 \value{
 A \code{data.table} with four columns, containing estimates of the

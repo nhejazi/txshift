@@ -149,7 +149,7 @@ Stochastic Shift Intervention</p>
   <span class='no'>Qn_estim</span>,
   <span class='no'>Hn_estim</span>,
   <span class='kw'>fluctuation</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"standard"</span>, <span class='st'>"weighted"</span>),
-  <span class='kw'>max_iter</span> <span class='kw'>=</span> <span class='fl'>10000</span>,
+  <span class='kw'>max_iter</span> <span class='kw'>=</span> <span class='fl'>10</span>,
   <span class='kw'>eif_reg_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"hal"</span>, <span class='st'>"glm"</span>),
   <span class='no'>ipcw_fit_args</span>,
   <span class='kw'>ipcw_efficiency</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
@@ -232,16 +232,15 @@ covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).</p><
 passed to <code><a href='est_ipcw.html'>est_ipcw</a></code>. For details, consult the documentation
 for <code><a href='est_ipcw.html'>est_ipcw</a></code>. The first element (i.e., <code>fit_type</code>) is
 used to determine how this regression is fit: "glm" for generalized linear
-model, "sl" for a Super Learner, and "fit_spec" a user-specified input of
-the form produced by <code><a href='est_ipcw.html'>est_ipcw</a></code>. NOTE THAT this first argument
-is not passed to <code><a href='est_ipcw.html'>est_ipcw</a></code>.</p></td>
+model, "sl" for a Super Learner, and "external" for a user-specified input
+of the form produced by <code><a href='est_ipcw.html'>est_ipcw</a></code>.</p></td>
     </tr>
     <tr>
       <th>ipcw_efficiency</th>
       <td><p>Whether to invoke an augmentation of the IPCW-TMLE
 procedure that performs an iterative process to ensure efficiency of the
 resulting estimate. The default is <code>TRUE</code>; set to <code>FALSE</code> to use
-an IPC-weighted loss rather than the IPC-augment influence function.</p></td>
+an IPC-weighted loss rather than the IPC-augmented influence function.</p></td>
     </tr>
     </table>
 
