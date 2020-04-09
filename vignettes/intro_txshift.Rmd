@@ -255,8 +255,8 @@ In some special cases it may be useful for the experienced user to compute the
 treatment mechanism and outcome regressions separately (i.e., outside of the
 `tmle_txshift` wrapper function), instead applying this user-facing wrapper only
 to invoke the _targeting_ steps involved in computing the TML estimator for the
-treatment shift parameter. In such cases, the optional arguments `gn_fit_spec`
-and `Qn_fit_spec` may be utilized. We present a case of using these here:
+treatment shift parameter. In such cases, the optional arguments `gn_fit_ext`
+and `Qn_fit_ext` may be utilized. We present a case of using these here:
 
 ```{r}
 # compute treatment mechanism (propensity score) externally
@@ -287,10 +287,10 @@ setnames(Qn_out, c("noshift", "upshift"))
 tmle_shift_spec <- txshift(W = W, A = A, Y = Y, delta = delta,
                            fluctuation = "standard",
                            ipcw_fit_args = NULL,
-                           g_fit_args = list(fit_type = "fit_spec"),
-                           Q_fit_args = list(fit_type = "fit_spec"),
-                           gn_fit_spec = gn_out,
-                           Qn_fit_spec = Qn_out)
+                           g_fit_args = list(fit_type = "external"),
+                           Q_fit_args = list(fit_type = "external"),
+                           gn_fit_ext = gn_out,
+                           Qn_fit_ext = Qn_out)
 summary(tmle_shift_spec)
 ```
 

@@ -1,5 +1,6 @@
 context("tmle_shift_orig agrees with Diaz and van der Laan (2012)")
 library(data.table)
+library(rlang)
 set.seed(73294)
 
 ################################################################################
@@ -104,31 +105,29 @@ tmle_2012_psi <- as.numeric(tmle_shift_2012[1])
 
 # run the new txshift implementation of TMLE
 # NOTE: using true density like Ivan does
-gn_spec_fitted <- as.data.table(
+gn_ext_fitted <- as.data.table(
   lapply(
     c(-delta_shift, 0, delta_shift, 2 * delta_shift),
     function(shift_value) {
       gn_out <- gn.0(A = A + shift_value, W = W)
     }
   )
-)
-setnames(gn_spec_fitted, c("downshift", "noshift", "upshift", "upupshift"))
+) %>% set_names(c("downshift", "noshift", "upshift", "upupshift"))
 
 # NOTE: should also use true Q for good measure (truth includes interactions)
-Qn_spec_fitted <- as.data.table(
+Qn_ext_fitted <- as.data.table(
   lapply(c(0, delta_shift), function(shift_value) {
     Qn_out <- Qn.0(A = A + shift_value, W = W)
   })
-)
-setnames(Qn_spec_fitted, c("noshift", "upshift"))
+) %>% set_names(c("noshift", "upshift"))
 
 # fit TMLE
 tmle_txshift <- txshift(
   Y = Y, A = A, W = W, delta = delta_shift,
-  g_fit = list(fit_type = "fit_spec"),
-  Q_fit = list(fit_type = "fit_spec"),
-  gn_fit_spec = gn_spec_fitted,
-  Qn_fit_spec = Qn_spec_fitted
+  g_fit = list(fit_type = "external"),
+  gn_fit_ext = gn_ext_fitted,
+  Q_fit = list(fit_type = "external"),
+  Qn_fit_ext = Qn_ext_fitted
 )
 txshift_psi <- as.numeric(tmle_txshift$psi)
 

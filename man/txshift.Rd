@@ -13,18 +13,18 @@ txshift(
   delta = 0,
   estimator = c("tmle", "onestep"),
   fluctuation = c("standard", "weighted"),
-  max_iter = 1000,
-  ipcw_fit_args = list(fit_type = c("glm", "sl", "fit_spec"), sl_learners = NULL),
-  g_fit_args = list(fit_type = c("hal", "sl", "fit_spec"), n_bins = c(10, 25),
+  max_iter = 10,
+  ipcw_fit_args = list(fit_type = c("glm", "sl", "external"), sl_learners = NULL),
+  g_fit_args = list(fit_type = c("hal", "sl", "external"), n_bins = c(10, 25),
     grid_type = c("equal_range", "equal_mass"), lambda_seq = exp(seq(-1, -13, length =
     300)), use_future = FALSE, sl_learners_density = NULL),
-  Q_fit_args = list(fit_type = c("glm", "sl", "fit_spec"), glm_formula = "Y ~ .",
+  Q_fit_args = list(fit_type = c("glm", "sl", "external"), glm_formula = "Y ~ .",
     sl_learners = NULL),
   eif_reg_type = c("hal", "glm"),
   ipcw_efficiency = TRUE,
-  ipcw_fit_spec = NULL,
-  gn_fit_spec = NULL,
-  Qn_fit_spec = NULL
+  ipcw_fit_ext = NULL,
+  gn_fit_ext = NULL,
+  Qn_fit_ext = NULL
 )
 }
 \arguments{
@@ -68,7 +68,7 @@ to be taken in iterating to a solution of the efficient influence function.}
 passed to \code{\link{est_ipcw}}. For details, consult the documentation of
 \code{\link{est_ipcw}}. The first element (i.e., \code{fit_type}) is used
 to determine how this regression is fit: generalized linear model ("glm")
-or Super Learner ("sl"), and "fit_spec" a user-specified input of the form
+or Super Learner ("sl"), and "external" a user-specified input of the form
 produced by \code{\link{est_ipcw}}. NOTE THAT this first argument is not
 passed to \code{\link{est_ipcw}}.}
 
@@ -78,7 +78,7 @@ passed to \code{\link{est_g}}. For details, consult the documentation of
 determine how this regression is fit: \code{"hal"} to estimate conditional
 densities via the highly adaptive lasso (via \pkg{haldensify}), \code{"sl"}
 for \pkg{sl3} learners used to fit Super Learner to densities via
-\code{\link[sl3]{Lrnr_haldensify}} or similar, and \code{"fit_spec"} for
+\code{\link[sl3]{Lrnr_haldensify}} or similar, and \code{"external"} for
 user-specified input of the form produced by \code{\link{est_g}}. NOTE that
 this first argument is not passed to \code{\link{est_g}}.}
 
@@ -87,7 +87,7 @@ passed to \code{\link{est_Q}}. For details, consult the documentation for
 \code{\link{est_Q}}. The first element (i.e., \code{fit_type}) is used to
 determine how this regression is fit: \code{"glm"} for a generalized linear
 model for the outcome regression, \code{"sl"} for \pkg{sl3} learners used
-to fit a Super Learner for the outcome regression, and \code{"fit_spec"}
+to fit a Super Learner for the outcome regression, and \code{"external"}
 for user-specified input of the form produced by \code{\link{est_Q}}. NOTE
 that this first argument is not passed to \code{\link{est_g}}.}
 
@@ -104,23 +104,23 @@ procedure that performs an iterative process to ensure efficiency of the
 resulting estimate. The default is \code{TRUE}; only set to \code{FALSE} if
 possible inefficiency of the IPCW-TMLE is not a concern.}
 
-\item{ipcw_fit_spec}{User-specified version of the argument above for
-fitting the censoring mechanism (\code{ipcw_fit_args}). Consult the
-documentation for that argument for details on how to properly use this. In
-general, this should only be used by advanced users familiar with both the
-underlying theory and this software implementation.}
+\item{ipcw_fit_ext}{The results of an external fitting procedure used to
+estimate the two-phase censoring mechanism, to be used in constructing the
+inverse probability of censoring weighted TML or one-step estimator. The
+input provided must match the output of \code{\link{est_ipcw}} exactly;
+thus, use of this argument is only recommended for power users.}
 
-\item{gn_fit_spec}{User-specified version of the argument above for fitting
-the treatment mechanism (\code{g_fit_args}). Consult the documentation for
-that argument for details on how to properly use this. In general, this
-should only be used by advanced users familiar with both the underlying
-theory and this software implementation.}
+\item{gn_fit_ext}{The results of an external fitting procedure used to
+estimate the exposure mechanism (generalized propensity score), to be used
+in constructing the TML or one-step estimator. The input provided must
+match the output of \code{\link{est_g}} exactly; thus, use of this argument
+is only recommended for power users.}
 
-\item{Qn_fit_spec}{User-specified version of the argument above for fitting
-the outcome mechanism (\code{Q_fit_args}). Consult the documentation for
-that argument for details on how to properly use this. In general, this
-should only be used by advanced users familiar with both the underlying
-theory and this software implementation.}
+\item{Qn_fit_ext}{The results of an external fitting procedure used to
+estimate the outcome mechanism, to be used in constructing the TML or
+one-step estimator. The input provided must match the output of
+\code{\link{est_Q}} exactly; thus, use of this argument is only recommended
+for power users.}
 }
 \value{
 S3 object of class \code{txshift} containing the results of the

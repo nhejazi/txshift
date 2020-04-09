@@ -313,7 +313,7 @@ censoring mechanism, treatment mechanism, and outcome mechanism regressions
 separately (i.e., outside of the `txshift` wrapper function), instead
 applying this user-facing wrapper only to invoke the _targeting_ steps involved
 in computing the TML estimator for the treatment shift parameter. In such cases,
-the optional arguments `ipcw_fit_spec`, `gn_fit_spec` and `Qn_fit_spec` may be
+the optional arguments `ipcw_fit_ext`, `gn_fit_ext` and `Qn_fit_ext` may be
 utilized. We present a case of using these arguments here:
 
 ```{r manual_ipcw_tmle}
@@ -351,12 +351,12 @@ tmle_shift_spec <- txshift(W = W, A = A, Y = Y, delta = delta,
                            C = C, V = c("W", "Y"),
                            fluctuation = "standard",
                            max_iter = 2,
-                           ipcw_fit_args = list(fit_type = "fit_spec"),
-                           g_fit_args = list(fit_type = "fit_spec"),
-                           Q_fit_args = list(fit_type = "fit_spec"),
-                           ipcw_fit_spec = ipcw_out,
-                           gn_fit_spec = gn_out,
-                           Qn_fit_spec = Qn_out,
+                           ipcw_fit_args = list(fit_type = "external"),
+                           g_fit_args = list(fit_type = "external"),
+                           Q_fit_args = list(fit_type = "external"),
+                           ipcw_fit_ext = ipcw_out,
+                           gn_fit_ext = gn_out,
+                           Qn_fit_ext = Qn_out,
                            eif_reg_type = "glm")
 summary(tmle_shift_spec)
 ```

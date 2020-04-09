@@ -4,16 +4,11 @@
 \alias{est_Hn}
 \title{Estimate Auxiliary Covariate from Efficient Influence Function}
 \usage{
-est_Hn(gn, a = NULL, w = NULL)
+est_Hn(gn)
 }
 \arguments{
 \item{gn}{An estimate of the treatment probability (propensity score), using
 the output provided by internal function \code{estimate-propensity_score}.}
-
-\item{a}{A \code{numeric} vector of the observed values of the treatment.}
-
-\item{w}{A \code{numeric}, \code{matrix}, \code{data.frame} or similar
-object that contains the observed values of the baseline covariates.}
 }
 \value{
 A \code{data.table} with two columns, containing estimates of the

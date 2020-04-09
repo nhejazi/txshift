@@ -79,19 +79,16 @@ Computes estimates of the counterfactual mean over a grid of shift
  marginal or simultaneous confidence intervals.
 }
 \examples{
-n_obs <- 50
+library(sl3)
+n_obs <- 100
 W <- as.numeric(replicate(1, rbinom(n_obs, 1, 0.5)))
 A <- as.numeric(rnorm(n_obs, mean = 2 * W, sd = 1))
 Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
 msm <- msm_vimshift(
   W = W, A = A, Y = Y, estimator = "tmle",
   g_fit_args = list(
-    fit_type = "hal",
-    n_bins = 3,
-    grid_type = "equal_mass",
-    lambda_seq = exp(seq(-1, -9,
-      length = 50
-    ))
+    fit_type = "sl",
+    sl_learners_density = Lrnr_density_hse$new(Lrnr_glm$new())
   ),
   Q_fit_args = list(
     fit_type = "glm",

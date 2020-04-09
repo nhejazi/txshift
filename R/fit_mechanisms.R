@@ -16,15 +16,16 @@
 #'  estimate the conditional treatment density.
 #' @param sl_learners_density Object containing a set of instantiated learners
 #'  from \pkg{sl3}, to be used in fitting an ensemble model.
-#' @param std_args A \code{list} of arguments to be passed to \code{haldensify}
-#'  from \pkg{haldensify} when the argument \code{fit_type} is set to
-#'  \code{"hal"}. Note that this invokes HAL instead of Super Learner and is
-#'  thus only feasible for relatively small data sets.
+#' @param haldensify_args A \code{list} of argument to be directly passed to
+#'  \code{\link[haldensify]{haldensify}} when \code{fit_type} is set to
+#'  \code{"hal"}. Note that this invokes the Highly Adaptive Lasso instead of
+#'  Super Learner and is thus only feasible for relatively small data sets.
 #'
 #' @importFrom data.table as.data.table setnames set copy
 #' @importFrom sl3 sl3_Task
 #' @importFrom stats predict
 #' @importFrom haldensify haldensify
+#' @importFrom assertthat assert_that
 #'
 #' @return A \code{data.table} with four columns, containing estimates of the
 #'  generalized propensity score at a downshift (g(A - delta | W)), no shift
@@ -36,12 +37,20 @@ est_g <- function(A,
                   ipc_weights = rep(1, length(A)),
                   fit_type = c("sl", "hal"),
                   sl_learners_density = NULL,
-                  std_args = list(
-                    n_bins = c(10, 25),
+                  haldensify_args = list(
+                    n_bins = c(5, 10),
                     grid_type = c("equal_range", "equal_mass"),
                     lambda_seq = exp(seq(-1, -13, length = 300)),
                     use_future = FALSE
                   )) {
+  # set defaults and check arguments
+  fit_type <- match.arg(fit_type)
+  if (fit_type == "sl") {
+    assertthat::assert_that(!is.null(sl_learners_density),
+                            msg = paste("`sl_learners_density` cannot be NULL",
+                                        "when `fit_type = 'sl'`."))
+  }
+
   # make data objects from inputs
   data_in <- data.table::as.data.table(cbind(A, W))
   if (!is.matrix(W)) W <- as.matrix(W)
@@ -107,7 +116,7 @@ est_g <- function(A,
       list(
         A = list(A), W = list(W),
         wts = list(ipc_weights),
-        std_args
+        haldensify_args
       ),
       recursive = FALSE
     )
@@ -218,6 +227,7 @@ est_g <- function(A,
 #' @importFrom data.table as.data.table setnames copy set
 #' @importFrom stringr str_detect
 #' @importFrom sl3 sl3_Task
+#' @importFrom assertthat assert_that
 #'
 #' @return A \code{data.table} with two columns, containing estimates of the
 #'  outcome mechanism at the natural value of the exposure Q(A, W) and an
@@ -230,6 +240,14 @@ est_Q <- function(Y,
                   fit_type = c("sl", "glm"),
                   glm_formula = "Y ~ .",
                   sl_learners = NULL) {
+  # set defaults and check arguments
+  fit_type <- match.arg(fit_type)
+  if (fit_type == "sl") {
+    assertthat::assert_that(!is.null(sl_learners),
+                            msg = paste("`sl_learners` cannot be NULL",
+                                        "when `fit_type = 'sl'`."))
+  }
+
   # scale the outcome for logit transform
   y_star <- scale_to_unit(vals = Y)
 
@@ -339,6 +357,7 @@ est_Q <- function(Y,
 #' @importFrom stats glm predict binomial
 #' @importFrom data.table as.data.table setnames
 #' @importFrom sl3 sl3_Task
+#' @importFrom assertthat assert_that
 #'
 #' @return A \code{list} containing a \code{numeric} vector corresponding to
 #'  the inverse probability of censoring weights required for computing an
@@ -350,6 +369,14 @@ est_ipcw <- function(V,
                      Delta,
                      fit_type = c("sl", "glm"),
                      sl_learners = NULL) {
+  # set defaults and check arguments
+  fit_type <- match.arg(fit_type)
+  if (fit_type == "sl") {
+    assertthat::assert_that(!is.null(sl_learners),
+                            msg = paste("`sl_learners` cannot be NULL",
+                                        "when `fit_type = 'sl'`."))
+  }
+
   # make data objects from inputs
   fit_type <- match.arg(fit_type)
   data_in <- data.table::as.data.table(cbind(Delta, V))
@@ -400,16 +427,13 @@ est_ipcw <- function(V,
 #'
 #' @param gn An estimate of the treatment probability (propensity score), using
 #'  the output provided by internal function \code{estimate-propensity_score}.
-#' @param a A \code{numeric} vector of the observed values of the treatment.
-#' @param w A \code{numeric}, \code{matrix}, \code{data.frame} or similar
-#'  object that contains the observed values of the baseline covariates.
 #'
 #' @importFrom data.table as.data.table setnames
 #'
 #' @return A \code{data.table} with two columns, containing estimates of the
 #'  auxiliary covariate at the natural value of the exposure H(A, W) and at the
 #'  shifted value of the exposure H(A + delta, W).
-est_Hn <- function(gn, a = NULL, w = NULL) {
+est_Hn <- function(gn) {
   # set any g(a|w) = 0 values to a very small value above zero
   gn$noshift <- bound_propensity(gn$noshift)
 

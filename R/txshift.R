@@ -37,7 +37,7 @@
 #'  passed to \code{\link{est_ipcw}}. For details, consult the documentation of
 #'  \code{\link{est_ipcw}}. The first element (i.e., \code{fit_type}) is used
 #'  to determine how this regression is fit: generalized linear model ("glm")
-#'  or Super Learner ("sl"), and "fit_spec" a user-specified input of the form
+#'  or Super Learner ("sl"), and "external" a user-specified input of the form
 #'  produced by \code{\link{est_ipcw}}. NOTE THAT this first argument is not
 #'  passed to \code{\link{est_ipcw}}.
 #' @param g_fit_args A \code{list} of arguments, all but one of which are
@@ -46,7 +46,7 @@
 #'  determine how this regression is fit: \code{"hal"} to estimate conditional
 #'  densities via the highly adaptive lasso (via \pkg{haldensify}), \code{"sl"}
 #'  for \pkg{sl3} learners used to fit Super Learner to densities via
-#'  \code{\link[sl3]{Lrnr_haldensify}} or similar, and \code{"fit_spec"} for
+#'  \code{\link[sl3]{Lrnr_haldensify}} or similar, and \code{"external"} for
 #'  user-specified input of the form produced by \code{\link{est_g}}. NOTE that
 #'  this first argument is not passed to \code{\link{est_g}}.
 #' @param Q_fit_args A \code{list} of arguments, all but one of which are
@@ -54,7 +54,7 @@
 #'  \code{\link{est_Q}}. The first element (i.e., \code{fit_type}) is used to
 #'  determine how this regression is fit: \code{"glm"} for a generalized linear
 #'  model for the outcome regression, \code{"sl"} for \pkg{sl3} learners used
-#'  to fit a Super Learner for the outcome regression, and \code{"fit_spec"}
+#'  to fit a Super Learner for the outcome regression, and \code{"external"}
 #'  for user-specified input of the form produced by \code{\link{est_Q}}. NOTE
 #'  that this first argument is not passed to \code{\link{est_g}}.
 #' @param eif_reg_type Whether a flexible nonparametric function ought to be
@@ -68,21 +68,21 @@
 #'  procedure that performs an iterative process to ensure efficiency of the
 #'  resulting estimate. The default is \code{TRUE}; only set to \code{FALSE} if
 #'  possible inefficiency of the IPCW-TMLE is not a concern.
-#' @param ipcw_fit_spec User-specified version of the argument above for
-#'  fitting the censoring mechanism (\code{ipcw_fit_args}). Consult the
-#'  documentation for that argument for details on how to properly use this. In
-#'  general, this should only be used by advanced users familiar with both the
-#'  underlying theory and this software implementation.
-#' @param gn_fit_spec User-specified version of the argument above for fitting
-#'  the treatment mechanism (\code{g_fit_args}). Consult the documentation for
-#'  that argument for details on how to properly use this. In general, this
-#'  should only be used by advanced users familiar with both the underlying
-#'  theory and this software implementation.
-#' @param Qn_fit_spec User-specified version of the argument above for fitting
-#'  the outcome mechanism (\code{Q_fit_args}). Consult the documentation for
-#'  that argument for details on how to properly use this. In general, this
-#'  should only be used by advanced users familiar with both the underlying
-#'  theory and this software implementation.
+#' @param ipcw_fit_ext The results of an external fitting procedure used to
+#'  estimate the two-phase censoring mechanism, to be used in constructing the
+#'  inverse probability of censoring weighted TML or one-step estimator. The
+#'  input provided must match the output of \code{\link{est_ipcw}} exactly;
+#'  thus, use of this argument is only recommended for power users.
+#' @param gn_fit_ext The results of an external fitting procedure used to
+#'  estimate the exposure mechanism (generalized propensity score), to be used
+#'  in constructing the TML or one-step estimator. The input provided must
+#'  match the output of \code{\link{est_g}} exactly; thus, use of this argument
+#'  is only recommended for power users.
+#' @param Qn_fit_ext The results of an external fitting procedure used to
+#'  estimate the outcome mechanism, to be used in constructing the TML or
+#'  one-step estimator. The input provided must match the output of
+#'  \code{\link{est_Q}} exactly; thus, use of this argument is only recommended
+#'  for power users.
 #'
 #' @importFrom data.table data.table as.data.table setnames ":="
 #' @importFrom stringr str_detect
@@ -143,13 +143,13 @@ txshift <- function(W,
                     delta = 0,
                     estimator = c("tmle", "onestep"),
                     fluctuation = c("standard", "weighted"),
-                    max_iter = 1e3,
+                    max_iter = 10,
                     ipcw_fit_args = list(
-                      fit_type = c("glm", "sl", "fit_spec"),
+                      fit_type = c("glm", "sl", "external"),
                       sl_learners = NULL
                     ),
                     g_fit_args = list(
-                      fit_type = c("hal", "sl", "fit_spec"),
+                      fit_type = c("hal", "sl", "external"),
                       n_bins = c(10, 25),
                       grid_type = c("equal_range", "equal_mass"),
                       lambda_seq = exp(seq(-1, -13, length = 300)),
@@ -157,15 +157,15 @@ txshift <- function(W,
                       sl_learners_density = NULL
                     ),
                     Q_fit_args = list(
-                      fit_type = c("glm", "sl", "fit_spec"),
+                      fit_type = c("glm", "sl", "external"),
                       glm_formula = "Y ~ .",
                       sl_learners = NULL
                     ),
                     eif_reg_type = c("hal", "glm"),
                     ipcw_efficiency = TRUE,
-                    ipcw_fit_spec = NULL,
-                    gn_fit_spec = NULL,
-                    Qn_fit_spec = NULL) {
+                    ipcw_fit_ext = NULL,
+                    gn_fit_ext = NULL,
+                    Qn_fit_ext = NULL) {
   # check arguments and set up some objects for programmatic convenience
   call <- match.call(expand.dots = TRUE)
   estimator <- match.arg(estimator)
@@ -226,8 +226,8 @@ txshift <- function(W,
     )
 
     # compute the IPC weights by passing all args to the relevant function
-    if (!is.null(ipcw_fit_spec) & ipcw_fit_type == "fit_spec") {
-      ipcw_estim <- ipcw_fit_spec
+    if (!is.null(ipcw_fit_ext) && ipcw_fit_type == "external") {
+      ipcw_estim <- ipcw_fit_ext
     } else {
       ipcw_estim <- do.call(est_ipcw, ipcw_estim_args)
     }
@@ -248,8 +248,8 @@ txshift <- function(W,
   }
 
   # initial estimate of the treatment mechanism (propensity score)
-  if (!is.null(gn_fit_spec) & g_fit_type == "fit_spec") {
-    gn_estim <- gn_fit_spec
+  if (!is.null(gn_fit_ext) && g_fit_type == "external") {
+    gn_estim <- gn_fit_ext
   } else {
     gn_estim_in <- list(
       A = data_internal$A,
@@ -264,7 +264,7 @@ txshift <- function(W,
 
       # reshape args to a list suitable to be passed to do.call
       gn_estim_args <- unlist(
-        list(gn_estim_in, std_args = list(g_fit_args)),
+        list(gn_estim_in, haldensify_args = list(g_fit_args)),
         recursive = FALSE
       )
     } else if (g_fit_type == "sl") {
@@ -280,8 +280,8 @@ txshift <- function(W,
   }
 
   # initial estimate of the outcome regression
-  if (!is.null(Qn_fit_spec) & Q_fit_type == "fit_spec") {
-    Qn_estim <- Qn_fit_spec
+  if (!is.null(Qn_fit_ext) && Q_fit_type == "external") {
+    Qn_estim <- Qn_fit_ext
   } else {
     # generate and reshape args to pass to function for outcome regression
     Qn_estim_in <- list(
