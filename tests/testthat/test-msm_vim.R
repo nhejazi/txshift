@@ -14,7 +14,7 @@ delta_grid <- seq(-0.5, 0.5, 0.5)
 EY <- mean(Y)
 EY_delta <- lapply(delta_grid, function(delta) {
   mean(-1 + 0.05 * A - 0.02 * (A + delta) * W$W2 + 0.2 * A * tan(W$W1^2) -
-       0.02 * W$W1 * W$W2 + 0.1 * A * W$W1 * W$W2)
+    0.02 * W$W1 * W$W2 + 0.1 * A * W$W1 * W$W2)
 })
 msm_lm <- lm.fit(y = do.call(c, EY_delta), x = cbind(1, delta_grid))
 
@@ -34,8 +34,10 @@ mvd_learner <- make_learner(Lrnr_density_semiparametric,
   var_learner = glm_learner
 )
 g_lib <- Stack$new(hse_learner, mvd_learner)
-sl_density <- Lrnr_sl$new(learners = g_lib,
-                          metalearner = Lrnr_solnp_density$new())
+sl_density <- Lrnr_sl$new(
+  learners = g_lib,
+  metalearner = Lrnr_solnp_density$new()
+)
 
 # fit MSM over TMLEs
 tmle_fits <- lapply(delta_grid, function(delta) {

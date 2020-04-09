@@ -142,7 +142,7 @@
   <span class='kw'>ipc_weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>A</span>)),
   <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"sl"</span>, <span class='st'>"hal"</span>),
   <span class='kw'>sl_learners_density</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>std_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>n_bins</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>10</span>, <span class='fl'>25</span>), <span class='kw'>grid_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"equal_range"</span>, <span class='st'>"equal_mass"</span>),
+  <span class='kw'>haldensify_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>n_bins</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>5</span>, <span class='fl'>10</span>), <span class='kw'>grid_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"equal_range"</span>, <span class='st'>"equal_mass"</span>),
     <span class='kw'>lambda_seq</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(-<span class='fl'>1</span>, -<span class='fl'>13</span>, <span class='kw'>length</span> <span class='kw'>=</span> <span class='fl'>300</span>)), <span class='kw'>use_future</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
 )</pre>
 
@@ -180,11 +180,11 @@ estimate the conditional treatment density.</p></td>
 from <span class="pkg">sl3</span>, to be used in fitting an ensemble model.</p></td>
     </tr>
     <tr>
-      <th>std_args</th>
-      <td><p>A <code>list</code> of arguments to be passed to <code>haldensify</code>
-from <span class="pkg">haldensify</span> when the argument <code>fit_type</code> is set to
-<code>"hal"</code>. Note that this invokes HAL instead of Super Learner and is
-thus only feasible for relatively small data sets.</p></td>
+      <th>haldensify_args</th>
+      <td><p>A <code>list</code> of argument to be directly passed to
+<code><a href='https://rdrr.io/pkg/haldensify/man/haldensify.html'>haldensify</a></code> when <code>fit_type</code> is set to
+<code>"hal"</code>. Note that this invokes the Highly Adaptive Lasso instead of
+Super Learner and is thus only feasible for relatively small data sets.</p></td>
     </tr>
     </table>
 

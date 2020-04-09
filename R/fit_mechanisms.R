@@ -47,8 +47,11 @@ est_g <- function(A,
   fit_type <- match.arg(fit_type)
   if (fit_type == "sl") {
     assertthat::assert_that(!is.null(sl_learners_density),
-                            msg = paste("`sl_learners_density` cannot be NULL",
-                                        "when `fit_type = 'sl'`."))
+      msg = paste(
+        "`sl_learners_density` cannot be NULL",
+        "when `fit_type = 'sl'`."
+      )
+    )
   }
 
   # make data objects from inputs
@@ -244,8 +247,11 @@ est_Q <- function(Y,
   fit_type <- match.arg(fit_type)
   if (fit_type == "sl") {
     assertthat::assert_that(!is.null(sl_learners),
-                            msg = paste("`sl_learners` cannot be NULL",
-                                        "when `fit_type = 'sl'`."))
+      msg = paste(
+        "`sl_learners` cannot be NULL",
+        "when `fit_type = 'sl'`."
+      )
+    )
   }
 
   # scale the outcome for logit transform
@@ -373,8 +379,11 @@ est_ipcw <- function(V,
   fit_type <- match.arg(fit_type)
   if (fit_type == "sl") {
     assertthat::assert_that(!is.null(sl_learners),
-                            msg = paste("`sl_learners` cannot be NULL",
-                                        "when `fit_type = 'sl'`."))
+      msg = paste(
+        "`sl_learners` cannot be NULL",
+        "when `fit_type = 'sl'`."
+      )
+    )
   }
 
   # make data objects from inputs

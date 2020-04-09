@@ -32,33 +32,45 @@ mvd_learner <- make_learner(Lrnr_density_semiparametric,
   var_learner = glm_learner
 )
 g_lib <- Stack$new(hse_learner, mvd_learner)
-sl_density <- Lrnr_sl$new(learners = g_lib,
-                          metalearner = Lrnr_solnp_density$new())
+sl_density <- Lrnr_sl$new(
+  learners = g_lib,
+  metalearner = Lrnr_solnp_density$new()
+)
 
 # fit exposure mechanism with HAL, SL, or GLM
-gn_est_hal <- est_g(A = A, W = W,
-                    delta = delta_shift,
-                    fit_type = "hal",
-                    haldensify_args = list(
-                      n_bins = 5,
-                      grid_type = "equal_mass",
-                      lambda_seq = exp(seq(-1, -13, length = 300)),
-                      use_future = FALSE)
-                   )
-gn_est_sl <- est_g(A = A, W = W,
-                   delta = delta_shift,
-                   fit_type = "sl",
-                   sl_learners_density = sl_density)
-gn_est_glm <- est_g(A = A, W = W,
-                   delta = delta_shift,
-                   fit_type = "sl",
-                   sl_learners_density = hse_learner)
+gn_est_hal <- est_g(
+  A = A, W = W,
+  delta = delta_shift,
+  fit_type = "hal",
+  haldensify_args = list(
+    n_bins = 5,
+    grid_type = "equal_mass",
+    lambda_seq = exp(seq(-1, -13, length = 300)),
+    use_future = FALSE
+  )
+)
+gn_est_sl <- est_g(
+  A = A, W = W,
+  delta = delta_shift,
+  fit_type = "sl",
+  sl_learners_density = sl_density
+)
+gn_est_glm <- est_g(
+  A = A, W = W,
+  delta = delta_shift,
+  fit_type = "sl",
+  sl_learners_density = hse_learner
+)
 
 # fit outcome mechanism with GLM or SL
-Qn_est_glm <- est_Q(Y = Y, A = A, W = W, delta = delta_shift,
-                    fit_type = "glm", glm_formula = "Y ~ .")
-Qn_est_sl <- est_Q(Y = Y, A = A, W = W, delta = delta_shift,
-                   fit_type = "sl", sl_learners = sl)
+Qn_est_glm <- est_Q(
+  Y = Y, A = A, W = W, delta = delta_shift,
+  fit_type = "glm", glm_formula = "Y ~ ."
+)
+Qn_est_sl <- est_Q(
+  Y = Y, A = A, W = W, delta = delta_shift,
+  fit_type = "sl", sl_learners = sl
+)
 
 # fit two-phase censoring mechanism with GLM or SL
 ipcw_est_glm <- est_ipcw(V = V, Delta = C, fit_type = "glm")

@@ -57,8 +57,10 @@ mvd_learner <- make_learner(Lrnr_density_semiparametric,
   var_learner = glm_learner
 )
 g_lib <- Stack$new(hse_learner, mvd_learner)
-sl_density <- Lrnr_sl$new(learners = g_lib,
-                          metalearner = Lrnr_solnp_density$new())
+sl_density <- Lrnr_sl$new(
+  learners = g_lib,
+  metalearner = Lrnr_solnp_density$new()
+)
 
 # NOTE: using true density like Ivan does
 gn_ext_fitted <- as.data.table(
