@@ -1,3 +1,16 @@
+# txshift 0.3.4
+
+* Adds support for directly estimating the population intervention effect (PIE),
+  defined as PIE: E[Y - Y_delta], for a counterfactual mean EY_delta.
+
+# txshift 0.3.3
+
+* Re-haul documentation, correcting minor mistakes and vague statements.
+* Update names of arguments and change defaults for better compatibility with
+  conditional density estimator used in `est_g`.
+* Add examples and tests for marginal structural model summary method.
+* Rebuild documentation webpage.
+
 # txshift 0.3.2
 
 As of March 2020:
@@ -8,6 +21,7 @@ As of March 2020:
 * Change title partially (from "Targeted Learning" to "Efficient Estimation").
 * Lock dependency versions (e.g., `sl3` >= v1.3.7)
 * Extensive documentation updates.
+* Add initial draft of JOSS paper.
 
 # txshift 0.3.1
 
