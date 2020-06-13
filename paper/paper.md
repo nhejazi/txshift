@@ -27,6 +27,19 @@ bibliography: refs.bib
 
 # Summary
 
+The `txshift` `R` package aims to provide researchers in (bio)statistics,
+epidemiology, health policy, econometrics, and related disciplines with access
+to cutting-edge statistical methodology for evaluating the causal effects of
+_continuous-valued_ exposures. `txshift` estimates the causal effects of
+modified treatment policies (or "feasible interventions"), which take into
+account the natural value of an exposure in assigning an intervention level.
+What's more, the package provides independent corrections for estimating such
+effects under two-phase sampling (e.g., case-control) designs, allowing for the
+methodology to be readily applied in a diversity of real-world experimental and
+observational studies.
+
+# Background
+
 Causal inference has traditionally focused on the effects of static
 interventions, under which the magnitude of the treatment is set to a fixed,
 prespecified value for each unit. The evaluation of such interventions faces
@@ -49,6 +62,8 @@ rich literature on two-phase designs, @rose2011targeted2sd stand out for
 providing a study of nonparametric efficiency theory under such designs. Their
 work can be used to construct efficient estimators of causal effects under
 general two-phase sampling designs.
+
+# `txshift`'s Scope
 
 Building on these prior works, @hejazi2020efficient outlined a novel approach
 for use in such settings: augmented targeted minimum loss (TML) and one-step
@@ -74,9 +89,11 @@ integrates with the [`sl3` package](https://github.com/tlverse/sl3)
 estimation of nuisance parameters. What's more, the `txshift` package draws on
 both the `hal9001` and `haldensify` `R` packages [@coyle2019hal9001;
 @hejazi2020haldensify] to allow each of the estimators to be constructed in
-a manner consistent with the theoretical results of @hejazi2020efficient. The
+a manner consistent with the theoretical claims of @hejazi2020efficient. The
 `txshift` package has been made publicly available via GitHub and will be
-submitted to the Comprehensive `R` Archive Network in the near future.
+submitted to the Comprehensive `R` Archive Network in the near future. Use of
+the `txshift` package has been extensively documented in the package's `README`,
+two vignettes, and its `pkgdown` documentation website.
 
 # Acknowledgments
 
