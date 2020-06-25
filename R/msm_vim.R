@@ -23,6 +23,9 @@
 #'  have played a role in defining the sampling/censoring mechanism (C).
 #' @param delta_grid A \code{numeric} vector giving the individual values of
 #'  the shift parameter used in computing each of the estimates.
+#' @param msm_formula The right-hand-side of a formula describing the marginal
+#' structural model. The single covariate in this model is \code{"delta"}. See
+#' examples. 
 #' @param estimator The type of estimator to be fit, either \code{"tmle"} for
 #'  targeted maximum likelihood estimation or \code{"onestep"} for a one-step
 #'  augmented inverse probability weighted (AIPW) estimator.
@@ -66,6 +69,22 @@
 #'     glm_formula = "Y ~ ."
 #'   )
 #' )
+#' 
+#' # fit a linear spline with knot at 0
+#' knot <- 0
+#' msm <- msm_vimshift(
+#'   W = W, A = A, Y = Y, estimator = "tmle",
+#'   g_fit_args = list(
+#'     fit_type = "sl",
+#'     sl_learners_density = Lrnr_density_hse$new(Lrnr_glm$new())
+#'   ),
+#'   Q_fit_args = list(
+#'     fit_type = "glm",
+#'     glm_formula = "Y ~ ."
+#'   ),
+#'   delta_grid = seq(-1, 1, 0.25),
+#'   msm_formula = paste0("delta + I(pmax(delta - ", knot, ", 0))")
+#' )
 #' @export
 msm_vimshift <- function(Y,
                          A,
@@ -73,6 +92,7 @@ msm_vimshift <- function(Y,
                          C = rep(1, length(Y)),
                          V = NULL,
                          delta_grid = seq(-0.5, 0.5, 0.5),
+                         msm_formula = "delta",
                          estimator = c("tmle", "onestep"),
                          weighting = c("identity", "variance"),
                          ci_level = 0.95,
@@ -112,8 +132,10 @@ msm_vimshift <- function(Y,
   }
 
   # compute the MSM parameters
-  intercept <- rep(1, length(delta_grid))
-  x_mat <- cbind(intercept, delta_grid)
+  x_mat <- model.matrix(as.formula(paste0("psi_vec ~ ", msm_formula)),
+                        data = data.frame(psi_vec = psi_vec, delta = delta_grid))
+  # intercept <- rep(1, length(delta_grid))
+  # x_mat <- cbind(intercept, delta_grid)
   omega <- diag(weights)
   s_mat <- solve(t(x_mat) %*% omega %*% x_mat) %*% t(x_mat) %*% omega
   msm_param <- as.vector(s_mat %*% psi_vec)
