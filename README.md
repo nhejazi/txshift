@@ -93,7 +93,7 @@ tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                )
 summary(tmle)
 #>     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator     n_iter 
-#>     0.7474     0.7782     0.8062      2e-04 6.7628e-11       tmle          0
+#>     0.7474     0.7782     0.8061      2e-04 7.0199e-11       tmle          0
 
 # fit a full-data one-step estimator for comparison (again, no sampling)
 os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
@@ -107,7 +107,7 @@ os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
              )
 summary(os)
 #>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-#>      0.7472      0.7779      0.8059       2e-04 -1.6543e-03     onestep 
+#>      0.7472      0.7779      0.8059       2e-04 -1.6704e-03     onestep 
 #>      n_iter 
 #>           0
 
@@ -128,7 +128,7 @@ ipcw_tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                     )
 summary(ipcw_tmle)
 #>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-#>      0.7435      0.7765      0.8063       3e-04 -4.0361e-05        tmle 
+#>      0.7435      0.7765      0.8063       3e-04 -4.0365e-05        tmle 
 #>      n_iter 
 #>           1
 
@@ -148,7 +148,7 @@ ipcw_os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                   )
 summary(ipcw_os)
 #>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-#>      0.7427      0.7758      0.8058       3e-04 -2.0617e-03     onestep 
+#>      0.7427      0.7758      0.8058       3e-04 -2.0555e-03     onestep 
 #>      n_iter 
 #>           0
 ```

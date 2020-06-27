@@ -1,3 +1,27 @@
+# txshift 0.3.4
+
+As of June 2020:
+* Add single-knot spline to working MSM summarization.
+* Add class and `plot` method for working MSM summarization.
+* Fix bug in computing CIs for binary outcomes (using `confint` method).
+* Finish drafting short paper for _Journal of Open Source Software_.
+
+# txshift 0.3.3
+
+As of April 2020:
+* Change export status of internal functions (e.g., no longer exporting
+  `onestep_txshift` and `tmle_txshift`).
+* Finish adding Roxygen "details" and "return" slots throughout functions.
+* Add examples to main estimation functions (`txshift`, `vimshift_msm`).
+* Update argument names and add several `assert_that` checks.
+* Change `fit_spec` terminology to `fit_ext` for external fits.
+* Add unit tests for MSM functionality and nuisance parameter estimation.
+
+As of March 2020:
+* Extensive documentation, including fixing estimation terminology (e.g.,
+  one-step instead of AIPW) and adding Roxygen "details" and "return" slots.
+* Begin adding examples to exported functions.
+
 # txshift 0.3.2
 
 As of March 2020:

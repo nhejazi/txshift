@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Confidence Intervals for Counterfactual Mean Under Stochastic Intervention — confint.txshift • txshift</title>
+<title>Print Method for Marginal Structural Models — print.txshift_msm • txshift</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Confidence Intervals for Counterfactual Mean Under Stochastic Intervention — confint.txshift" />
-<meta property="og:description" content="Confidence Intervals for Counterfactual Mean Under Stochastic Intervention" />
+<meta property="og:title" content="Print Method for Marginal Structural Models — print.txshift_msm" />
+<meta property="og:description" content="Print Method for Marginal Structural Models" />
 
 
 
@@ -126,74 +126,64 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Confidence Intervals for Counterfactual Mean Under Stochastic Intervention</h1>
-    <small class="dont-index">Source: <a href='https://github.com/nhejazi/txshift/blob/master/R/confint.R'><code>R/confint.R</code></a></small>
-    <div class="hidden name"><code>confint.txshift.Rd</code></div>
+    <h1>Print Method for Marginal Structural Models</h1>
+    <small class="dont-index">Source: <a href='https://github.com/nhejazi/txshift/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
+    <div class="hidden name"><code>print.txshift_msm.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Confidence Intervals for Counterfactual Mean Under Stochastic Intervention</p>
+    <p>Print Method for Marginal Structural Models</p>
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for txshift</span>
-<span class='fu'><a href='https://rdrr.io/r/stats/confint.html'>confint</a></span>(<span class='no'>object</span>, <span class='kw'>parm</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_len</a></span>(<span class='no'>object</span>$<span class='no'>psi</span>), <span class='kw'>level</span> <span class='kw'>=</span> <span class='fl'>0.95</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='co'># S3 method for txshift_msm</span>
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>object</th>
-      <td><p>An object of class <code>txshift</code>, as produced by invoking
-the function <code><a href='txshift.html'>txshift</a></code>, for which a confidence interval is to
-be computed.</p></td>
-    </tr>
-    <tr>
-      <th>parm</th>
-      <td><p>A <code>numeric</code> vector indicating indices of <code>object$est</code>
-for which to return confidence intervals.</p></td>
-    </tr>
-    <tr>
-      <th>level</th>
-      <td><p>A <code>numeric</code> indicating the level of the confidence
-interval to be computed.</p></td>
+      <th>x</th>
+      <td><p>An object of class <code>txshift_msm</code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Other arguments. Not currently used.</p></td>
+      <td><p>Other options (not currently used).</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A named <code>numeric</code> vector containing the parameter estimate from
- a <code>txshift</code> object, alongside lower and upper Wald-style confidence
- intervals at a specified coverage level.</p>
+    <p>None. Called for the side effect of printing particular slots of
+ objects of class <code>txshift_msm</code>.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Compute confidence intervals for estimates produced by
- <code><a href='txshift.html'>txshift</a></code>.</p>
+    <p>The <code>print</code> method for objects of class <code>txshift_msm</code>.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>429153</span>)
-<span class='no'>n_obs</span> <span class='kw'>&lt;-</span> <span class='fl'>100</span>
-<span class='no'>W</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>replicate</a></span>(<span class='fl'>2</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span>(<span class='no'>n_obs</span>, <span class='fl'>1</span>, <span class='fl'>0.5</span>))
-<span class='no'>A</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n_obs</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>2</span> * <span class='no'>W</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>1</span>)
-<span class='no'>Y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span>(<span class='no'>n_obs</span>, <span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Logistic.html'>plogis</a></span>(<span class='no'>A</span> + <span class='no'>W</span> + <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n_obs</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>1</span>)))
-<span class='no'>txout</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='txshift.html'>txshift</a></span>(
-  <span class='kw'>W</span> <span class='kw'>=</span> <span class='no'>W</span>, <span class='kw'>A</span> <span class='kw'>=</span> <span class='no'>A</span>, <span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>Y</span>, <span class='kw'>delta</span> <span class='kw'>=</span> <span class='fl'>0.5</span>,
-  <span class='kw'>estimator</span> <span class='kw'>=</span> <span class='st'>"tmle"</span>,
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>sl3</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>3287</span>)
+<span class='no'>n_obs</span> <span class='kw'>&lt;-</span> <span class='fl'>1000</span>
+<span class='no'>W</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>replicate</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span>(<span class='no'>n_obs</span>, <span class='fl'>1</span>, <span class='fl'>0.5</span>)))
+<span class='no'>A</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n_obs</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>2</span> * <span class='no'>W</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>1</span>))
+<span class='no'>Y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span>(<span class='no'>n_obs</span>, <span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Logistic.html'>plogis</a></span>(<span class='fl'>2</span> * <span class='no'>A</span> - <span class='no'>W</span>))
+<span class='no'>msm</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='msm_vimshift.html'>msm_vimshift</a></span>(
+  <span class='kw'>W</span> <span class='kw'>=</span> <span class='no'>W</span>, <span class='kw'>A</span> <span class='kw'>=</span> <span class='no'>A</span>, <span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>Y</span>, <span class='kw'>estimator</span> <span class='kw'>=</span> <span class='st'>"tmle"</span>,
   <span class='kw'>g_fit_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
-    <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='st'>"hal"</span>, <span class='kw'>n_bins</span> <span class='kw'>=</span> <span class='fl'>5</span>,
-    <span class='kw'>grid_type</span> <span class='kw'>=</span> <span class='st'>"equal_mass"</span>,
-    <span class='kw'>lambda_seq</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span>(-<span class='fl'>1</span>:-<span class='fl'>9</span>)
+    <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='st'>"sl"</span>,
+    <span class='kw'>sl_learners_density</span> <span class='kw'>=</span> <span class='no'>Lrnr_density_hse</span>$<span class='fu'>new</span>(<span class='no'>Lrnr_glm</span>$<span class='fu'>new</span>())
   ),
   <span class='kw'>Q_fit_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
     <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='st'>"glm"</span>,
     <span class='kw'>glm_formula</span> <span class='kw'>=</span> <span class='st'>"Y ~ ."</span>
-  )
+  ),
+  <span class='kw'>delta_grid</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(-<span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>0.25</span>)
 )
-<span class='fu'><a href='https://rdrr.io/r/stats/confint.html'>confint</a></span>(<span class='no'>txout</span>)</div><div class='output co'>#&gt;    lwr_ci       est    upr_ci 
-#&gt; 0.6967237 0.7894301 0.8595120 </div></pre>
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>msm</span>)</div><div class='output co'>#&gt; [1] "linear MSM"
+#&gt; <span style='color: #555555;'># A tibble: 2 x 6</span><span>
+#&gt;   param       ci_lwr param_est ci_upr param_se   p_value
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>        </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>    </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span> (Intercept)  0.677     0.703  0.729  0.013</span><span style='text-decoration: underline;'>3</span><span>  0.  </span><span style='color: #555555;'> </span><span>    
+#&gt; </span><span style='color: #555555;'>2</span><span> delta        0.193     0.212  0.230  0.009</span><span style='text-decoration: underline;'>51</span><span> 9.11</span><span style='color: #555555;'>e</span><span style='color: #BB0000;'>-110</span><span></div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

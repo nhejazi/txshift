@@ -108,7 +108,7 @@
 #'   estimator = "tmle",
 #'   g_fit_args = list(
 #'     fit_type = "hal", n_bins = 5,
-#'     grid_type = "equal_mass",
+#'     grid_type = "equal_range",
 #'     lambda_seq = exp(-1:-9)
 #'   ),
 #'   Q_fit_args = list(
@@ -125,7 +125,7 @@
 #'   ipcw_fit_args = list(fit_type = "glm"),
 #'   g_fit_args = list(
 #'     fit_type = "hal", n_bins = 5,
-#'     grid_type = "equal_mass",
+#'     grid_type = "equal_range",
 #'     lambda_seq = exp(-1:-9)
 #'   ),
 #'   Q_fit_args = list(
@@ -151,7 +151,7 @@ txshift <- function(W,
                     g_fit_args = list(
                       fit_type = c("hal", "sl", "external"),
                       n_bins = c(10, 25),
-                      grid_type = c("equal_range", "equal_mass"),
+                      grid_type = c("equal_range", "equal_range"),
                       lambda_seq = exp(seq(-1, -13, length = 300)),
                       use_future = FALSE,
                       sl_learners_density = NULL

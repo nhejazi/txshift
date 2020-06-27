@@ -12,7 +12,7 @@ vignette: >
 ---
 
 ```{r, echo=FALSE}
-options(scipen=999)
+options(scipen = 999)
 ```
 
 ## Introduction
@@ -113,10 +113,10 @@ tmle_hal_shift_1 <- txshift(W = W, A = A, Y = Y, delta = delta,
                             fluctuation = "standard",
                             g_fit_args = list(fit_type = "hal",
                                               n_bins = 5,
-                                              grid_type = "equal_mass",
+                                              grid_type = "equal_range",
                                               lambda_seq =
-                                                exp(seq(-1, -9,
-                                                        length = 300))),
+                                                exp(seq(-1, -12,
+                                                        length = 500))),
                             Q_fit_args = list(fit_type = "glm",
                                               glm_formula = "Y ~ .")
                            )
@@ -135,10 +135,10 @@ tmle_hal_shift_2 <- txshift(W = W, A = A, Y = Y, delta = delta,
                             fluctuation = "weighted",
                             g_fit_args = list(fit_type = "hal",
                                               n_bins = 5,
-                                              grid_type = "equal_mass",
+                                              grid_type = "equal_range",
                                               lambda_seq =
-                                                exp(seq(-1, -9,
-                                                        length = 300))),
+                                                exp(seq(-1, -12,
+                                                        length = 500))),
                             Q_fit_args = list(fit_type = "glm",
                                               glm_formula = "Y ~ .")
                            )
@@ -246,7 +246,7 @@ may be obtained using the bootstrap or computed directly via the following
 $$\sigma_n^2 = \frac{1}{n} \sum_{i = 1}^{n} D^2(\bar{Q}_n^{\star}, g_n)(O_i)$$
 
 ```{r}
-(ci_shift <- confint(tmle_sl_shift_1))
+(ci_param <- confint(tmle_sl_shift_1))
 ```
 
 ## _Advanced Usage:_ User-Specified Regressions

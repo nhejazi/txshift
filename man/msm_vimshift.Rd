@@ -2,7 +2,7 @@
 % Please edit documentation in R/msm_vim.R
 \name{msm_vimshift}
 \alias{msm_vimshift}
-\title{Marginal structural model for the causal effects of a grid of interventions}
+\title{Working marginal structural model for causal effects of an intervention grid}
 \usage{
 msm_vimshift(
   Y,
@@ -11,6 +11,7 @@ msm_vimshift(
   C = rep(1, length(Y)),
   V = NULL,
   delta_grid = seq(-0.5, 0.5, 0.5),
+  msm_form = list(type = "linear", knot = NA),
   estimator = c("tmle", "onestep"),
   weighting = c("identity", "variance"),
   ci_level = 0.95,
@@ -41,6 +42,12 @@ have played a role in defining the sampling/censoring mechanism (C).}
 \item{delta_grid}{A \code{numeric} vector giving the individual values of
 the shift parameter used in computing each of the estimates.}
 
+\item{msm_form}{A \code{list} specifying the type of working MSM to fit to
+summarize the counterfactual means. The \code{list} has two components:
+(1) \code{"type"}, which may be either "linear" or "piecewise", and (2)
+\code{"knot"}, which, if specified, must be a value in \code{delta_grid}.
+See examples for its use.}
+
 \item{estimator}{The type of estimator to be fit, either \code{"tmle"} for
 targeted maximum likelihood estimation or \code{"onestep"} for a one-step
 augmented inverse probability weighted (AIPW) estimator.}
@@ -68,22 +75,24 @@ A \code{list} containing estimates of the individual counterfactual
  these counterfactual means.
 }
 \description{
-Marginal structural model for the causal effects of a grid of interventions
+Working marginal structural model for causal effects of an intervention grid
 }
 \details{
 Computes estimates of the counterfactual mean over a grid of shift
- stochastic interventions and fits a marginal structural model to summarize
- the trend through the counterfactual means as a function of the specified
- shift intervention. Provides support for two weighting schemes, may be used
- with either the one-step or TML estimator, and allows the construction of
- marginal or simultaneous confidence intervals.
+ stochastic interventions and fits a working marginal structural model to
+ summarize the trend through the counterfactual means as a function of the
+ specified shift intervention. The working marginal structural model may be
+ linear in the shift parameter or piecewise linear with a single knot point.
+ Provides support for two weighting schemes, may be used with either of the
+ one-step or TML estimators, and also allows the construction of marginal or
+ simultaneous confidence intervals.
 }
 \examples{
 library(sl3)
 n_obs <- 100
 W <- as.numeric(replicate(1, rbinom(n_obs, 1, 0.5)))
 A <- as.numeric(rnorm(n_obs, mean = 2 * W, sd = 1))
-Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
+Y <- rbinom(n_obs, 1, plogis(2 * A - W))
 msm <- msm_vimshift(
   W = W, A = A, Y = Y, estimator = "tmle",
   g_fit_args = list(
@@ -93,6 +102,26 @@ msm <- msm_vimshift(
   Q_fit_args = list(
     fit_type = "glm",
     glm_formula = "Y ~ ."
-  )
+  ),
+  delta_grid = seq(-1, 1, 0.25)
+)
+
+# fit a linear spline with knot at 0
+n_obs <- 100
+W <- as.numeric(replicate(1, rbinom(n_obs, 1, 0.5)))
+A <- as.numeric(rnorm(n_obs, mean = 2 * W, sd = 1))
+Y <- rbinom(n_obs, 1, plogis(0.1 * A * (A >= 0) - 3 * A * (A < 0) - W))
+msm <- msm_vimshift(
+  W = W, A = A, Y = Y, estimator = "tmle",
+  g_fit_args = list(
+    fit_type = "sl",
+    sl_learners_density = Lrnr_density_hse$new(Lrnr_glm$new())
+  ),
+  Q_fit_args = list(
+    fit_type = "glm",
+    glm_formula = "Y ~ ."
+  ),
+  delta_grid = seq(-1, 1, 0.25),
+  msm_form = list(type = "piecewise", knot = 0)
 )
 }

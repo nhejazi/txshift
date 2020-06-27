@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Working marginal structural model for causal effects of an intervention grid — msm_vimshift • txshift</title>
+<title>Plot working MSM for causal effects of an intervention grid — plot.txshift_msm • txshift</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Working marginal structural model for causal effects of an intervention grid — msm_vimshift" />
-<meta property="og:description" content="Working marginal structural model for causal effects of an intervention grid" />
+<meta property="og:title" content="Plot working MSM for causal effects of an intervention grid — plot.txshift_msm" />
+<meta property="og:description" content="Plot working MSM for causal effects of an intervention grid" />
 
 
 
@@ -126,131 +126,46 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Working marginal structural model for causal effects of an intervention grid</h1>
+    <h1>Plot working MSM for causal effects of an intervention grid</h1>
     <small class="dont-index">Source: <a href='https://github.com/nhejazi/txshift/blob/master/R/msm_vim.R'><code>R/msm_vim.R</code></a></small>
-    <div class="hidden name"><code>msm_vimshift.Rd</code></div>
+    <div class="hidden name"><code>plot.txshift_msm.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Working marginal structural model for causal effects of an intervention grid</p>
+    <p>Plot working MSM for causal effects of an intervention grid</p>
     </div>
 
-    <pre class="usage"><span class='fu'>msm_vimshift</span>(
-  <span class='no'>Y</span>,
-  <span class='no'>A</span>,
-  <span class='no'>W</span>,
-  <span class='kw'>C</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>Y</span>)),
-  <span class='kw'>V</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>delta_grid</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(-<span class='fl'>0.5</span>, <span class='fl'>0.5</span>, <span class='fl'>0.5</span>),
-  <span class='kw'>msm_form</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"linear"</span>, <span class='kw'>knot</span> <span class='kw'>=</span> <span class='fl'>NA</span>),
-  <span class='kw'>estimator</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"tmle"</span>, <span class='st'>"onestep"</span>),
-  <span class='kw'>weighting</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"identity"</span>, <span class='st'>"variance"</span>),
-  <span class='kw'>ci_level</span> <span class='kw'>=</span> <span class='fl'>0.95</span>,
-  <span class='kw'>ci_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"marginal"</span>, <span class='st'>"simultaneous"</span>),
-  <span class='no'>...</span>
-)</pre>
+    <pre class="usage"><span class='co'># S3 method for txshift_msm</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>Y</th>
-      <td><p>A <code>numeric</code> vector of the observed outcomes.</p></td>
-    </tr>
-    <tr>
-      <th>A</th>
-      <td><p>A <code>numeric</code> vector corresponding to a treatment variable. The
-parameter of interest is defined as a location shift of this quantity.</p></td>
-    </tr>
-    <tr>
-      <th>W</th>
-      <td><p>A <code>matrix</code>, <code>data.frame</code>, or similar corresponding to a
-set of baseline covariates.</p></td>
-    </tr>
-    <tr>
-      <th>C</th>
-      <td><p>A <code>numeric</code> indicator for whether a given observation was
-subject to censoring in the two-phase sample. This is used to compute an
-IPCW-TMLE in such cases. The default assumes no censoring.</p></td>
-    </tr>
-    <tr>
-      <th>V</th>
-      <td><p>The covariates that are used in determining the sampling procedure
-that gives rise to censoring. The default is <code>NULL</code> and corresponds to
-scenarios in which there is no censoring (in which case all values in the
-preceding argument <code>C</code> must be uniquely 1. To specify this, pass in a
-NAMED <code>list</code> identifying variables amongst W, A, Y that are thought to
-have played a role in defining the sampling/censoring mechanism (C).</p></td>
-    </tr>
-    <tr>
-      <th>delta_grid</th>
-      <td><p>A <code>numeric</code> vector giving the individual values of
-the shift parameter used in computing each of the estimates.</p></td>
-    </tr>
-    <tr>
-      <th>msm_form</th>
-      <td><p>A <code>list</code> specifying the type of working MSM to fit to
-summarize the counterfactual means. The <code>list</code> has two components:
-(1) <code>"type"</code>, which may be either "linear" or "piecewise", and (2)
-<code>"knot"</code>, which, if specified, must be a value in <code>delta_grid</code>.
-See examples for its use.</p></td>
-    </tr>
-    <tr>
-      <th>estimator</th>
-      <td><p>The type of estimator to be fit, either <code>"tmle"</code> for
-targeted maximum likelihood estimation or <code>"onestep"</code> for a one-step
-augmented inverse probability weighted (AIPW) estimator.</p></td>
-    </tr>
-    <tr>
-      <th>weighting</th>
-      <td><p>Whether to weight each parameter estimate by the inverse of
-its variance (in order to improve stability of the resultant MSM fit) or to
-simply weight all parameter estimates equally. The default is the option
-<code>"identity"</code>, weighting all estimates identically.</p></td>
-    </tr>
-    <tr>
-      <th>ci_level</th>
-      <td><p>A <code>numeric</code> indicating the desired coverage level of
-the confidence interval to be computed.</p></td>
-    </tr>
-    <tr>
-      <th>ci_type</th>
-      <td><p>Whether to construct a simultaneous confidence band covering
-all parameter estimates at once or marginal confidence intervals covering
-each parameter estimate separately. The default is to construct marginal
-confidence intervals for each parameter estimate rather than a simultaneous
-confidence band.</p></td>
+      <th>x</th>
+      <td><p>Object of class <code>txshift_msm</code> as produced by a call to
+<code><a href='msm_vimshift.html'>msm_vimshift</a></code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Additional arguments to be passed to <code>txshift</code>.</p></td>
+      <td><p>Additional arguments passed to <code>plot</code> as necessary.</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>A <code>list</code> containing estimates of the individual counterfactual
- means over a grid in the shift parameters (<code>delta_grid</code>), alongside
- the estimate of a marginal structural model that summarizes a trend through
- these counterfactual means.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Computes estimates of the counterfactual mean over a grid of shift
- stochastic interventions and fits a working marginal structural model to
- summarize the trend through the counterfactual means as a function of the
- specified shift intervention. The working marginal structural model may be
- linear in the shift parameter or piecewise linear with a single knot point.
- Provides support for two weighting schemes, may be used with either of the
- one-step or TML estimators, and also allows the construction of marginal or
- simultaneous confidence intervals.</p>
+    <p>Creates a visualization of the intervention-specific counterfactual
+ means as well as the working marginal structural model summarizing the
+ trend across posited values of the intervention.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>sl3</span>)
-<span class='no'>n_obs</span> <span class='kw'>&lt;-</span> <span class='fl'>100</span>
+<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>3287</span>)
+<span class='no'>n_obs</span> <span class='kw'>&lt;-</span> <span class='fl'>1000</span>
 <span class='no'>W</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>replicate</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span>(<span class='no'>n_obs</span>, <span class='fl'>1</span>, <span class='fl'>0.5</span>)))
 <span class='no'>A</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n_obs</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>2</span> * <span class='no'>W</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>1</span>))
 <span class='no'>Y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span>(<span class='no'>n_obs</span>, <span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Logistic.html'>plogis</a></span>(<span class='fl'>2</span> * <span class='no'>A</span> - <span class='no'>W</span>))
-<span class='no'>msm</span> <span class='kw'>&lt;-</span> <span class='fu'>msm_vimshift</span>(
+<span class='no'>msm</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='msm_vimshift.html'>msm_vimshift</a></span>(
   <span class='kw'>W</span> <span class='kw'>=</span> <span class='no'>W</span>, <span class='kw'>A</span> <span class='kw'>=</span> <span class='no'>A</span>, <span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>Y</span>, <span class='kw'>estimator</span> <span class='kw'>=</span> <span class='st'>"tmle"</span>,
   <span class='kw'>g_fit_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
     <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='st'>"sl"</span>,
@@ -262,13 +177,14 @@ confidence band.</p></td>
   ),
   <span class='kw'>delta_grid</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(-<span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>0.25</span>)
 )
-
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>msm</span>)</div><div class='img'><img src='plot.txshift_msm-1.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># fit a linear spline with knot at 0</span>
-<span class='no'>n_obs</span> <span class='kw'>&lt;-</span> <span class='fl'>100</span>
+<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>8293</span>)
+<span class='no'>n_obs</span> <span class='kw'>&lt;-</span> <span class='fl'>1000</span>
 <span class='no'>W</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>replicate</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span>(<span class='no'>n_obs</span>, <span class='fl'>1</span>, <span class='fl'>0.5</span>)))
 <span class='no'>A</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n_obs</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>2</span> * <span class='no'>W</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>1</span>))
 <span class='no'>Y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span>(<span class='no'>n_obs</span>, <span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Logistic.html'>plogis</a></span>(<span class='fl'>0.1</span> * <span class='no'>A</span> * (<span class='no'>A</span> <span class='kw'>&gt;=</span> <span class='fl'>0</span>) - <span class='fl'>3</span> * <span class='no'>A</span> * (<span class='no'>A</span> <span class='kw'>&lt;</span> <span class='fl'>0</span>) - <span class='no'>W</span>))
-<span class='no'>msm</span> <span class='kw'>&lt;-</span> <span class='fu'>msm_vimshift</span>(
+<span class='no'>msm</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='msm_vimshift.html'>msm_vimshift</a></span>(
   <span class='kw'>W</span> <span class='kw'>=</span> <span class='no'>W</span>, <span class='kw'>A</span> <span class='kw'>=</span> <span class='no'>A</span>, <span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>Y</span>, <span class='kw'>estimator</span> <span class='kw'>=</span> <span class='st'>"tmle"</span>,
   <span class='kw'>g_fit_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
     <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='st'>"sl"</span>,
@@ -280,7 +196,8 @@ confidence band.</p></td>
   ),
   <span class='kw'>delta_grid</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(-<span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>0.25</span>),
   <span class='kw'>msm_form</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"piecewise"</span>, <span class='kw'>knot</span> <span class='kw'>=</span> <span class='fl'>0</span>)
-)</div></pre>
+)
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>msm</span>)</div><div class='img'><img src='plot.txshift_msm-2.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
