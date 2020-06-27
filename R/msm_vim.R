@@ -234,8 +234,8 @@ msm_vimshift <- function(Y,
 #'  \code{\link{msm_vimshift}}.
 #' @param ... Additional arguments passed to \code{plot} as necessary.
 #'
-#' @importFrom ggplot2 ggplot aes_string geom_point geom_errorbar labs theme
-#'  theme_bw element_text geom_abline geom_smooth
+#' @importFrom ggplot2 ggplot geom_point geom_errorbar geom_abline geom_smooth
+#'  aes_string labs theme_bw
 #' @importFrom data.table copy setnames
 #' @importFrom stats formula lm
 #' @importFrom lspline lspline
@@ -289,12 +289,12 @@ plot.txshift_msm <- function(x, ...) {
   data.table::setnames(msm_data, c("psi", "delta"), c("y", "x"))
 
   # extract MSM specs
-  msm_type <- knot <- x[["msm_type"]]
-  msm_knot <- knot <- x[["msm_knot"]]
+  msm_type <- x[["msm_type"]]
+  msm_knot <- x[["msm_knot"]]
 
   if (msm_type != "linear" && !is.na(msm_knot)) {
     # fit working MSM regression line if there's a knot point
-    msm_mod <- stats::lm(y ~ lspline::lspline(x, knot, marginal = TRUE),
+    msm_mod <- stats::lm(y ~ lspline::lspline(x, msm_knot, marginal = TRUE),
       data = msm_data
     )
 
@@ -318,12 +318,13 @@ plot.txshift_msm <- function(x, ...) {
   # create plot
   p_msm <- ggplot2::ggplot(data = msm_data, ggplot2::aes_string("x", "y")) +
     ggplot2::geom_point(size = 5) +
-    ggplot2::geom_errorbar(ggplot2::aes_string(
-      ymin = "ci_lwr",
-      ymax = "ci_upr"
-    ),
-    position = "dodge", linetype = "dashed",
-    width = 0.05
+    ggplot2::geom_errorbar(
+      ggplot2::aes_string(
+        ymin = "ci_lwr",
+        ymax = "ci_upr"
+      ),
+      position = "dodge", linetype = "dashed",
+      width = 0.05
     ) +
     geom_msm +
     ggplot2::labs(
@@ -335,18 +336,7 @@ plot.txshift_msm <- function(x, ...) {
         msm_type, "working MSM for summarization"
       )
     ) +
-    ggplot2::theme_bw() +
-    ggplot2::theme(
-      text = ggplot2::element_text(size = 25),
-      axis.text.x = ggplot2::element_text(
-        colour = "black",
-        size = 32
-      ),
-      axis.text.y = ggplot2::element_text(
-        colour = "black",
-        size = 32
-      )
-    )
+    ggplot2::theme_bw()
 
   # output plot
   return(p_msm)
