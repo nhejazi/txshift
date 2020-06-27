@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.4</span>
       </span>
     </div>
 
@@ -90,7 +90,7 @@
 <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://www.benkeserstatistics.com/">David Benkeser</a>
 </h4>
             
-            <h4 class="date">2020-04-08</h4>
+            <h4 class="date">2020-06-26</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nhejazi/txshift/blob/master/vignettes/intro_txshift.Rmd"><code>vignettes/intro_txshift.Rmd</code></a></small>
       <div class="hidden name"><code>intro_txshift.Rmd</code></div>
@@ -106,10 +106,10 @@
 <p>To start, let’s load the packages we’ll use and set a seed for simulation:</p>
 <div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">data.table</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">haldensify</span>)</pre></body></html></div>
-<pre><code>## haldensify v0.0.5: Highly Adaptive Lasso Conditional Density Estimation</code></pre>
+<pre><code>## haldensify v0.0.6: Highly Adaptive Lasso Conditional Density Estimation</code></pre>
 <div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">sl3</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">txshift</span>)</pre></body></html></div>
-<pre><code>## txshift v0.3.3: Efficient Estimation of the Causal Effects of Stochastic Interventions</code></pre>
+<pre><code>## txshift v0.3.4: Efficient Estimation of the Causal Effects of Stochastic Interventions</code></pre>
 <div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">429153</span>)</pre></body></html></div>
 <hr>
 </div>
@@ -158,33 +158,31 @@
                             <span class="kw">fluctuation</span> <span class="kw">=</span> <span class="st">"standard"</span>,
                             <span class="kw">g_fit_args</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">fit_type</span> <span class="kw">=</span> <span class="st">"hal"</span>,
                                               <span class="kw">n_bins</span> <span class="kw">=</span> <span class="fl">5</span>,
-                                              <span class="kw">grid_type</span> <span class="kw">=</span> <span class="st">"equal_mass"</span>,
+                                              <span class="kw">grid_type</span> <span class="kw">=</span> <span class="st">"equal_range"</span>,
                                               <span class="kw">lambda_seq</span> <span class="kw">=</span>
-                                                <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(-<span class="fl">1</span>, -<span class="fl">9</span>,
-                                                        <span class="kw">length</span> <span class="kw">=</span> <span class="fl">300</span>))),
+                                                <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(-<span class="fl">1</span>, -<span class="fl">12</span>,
+                                                        <span class="kw">length</span> <span class="kw">=</span> <span class="fl">500</span>))),
                             <span class="kw">Q_fit_args</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">fit_type</span> <span class="kw">=</span> <span class="st">"glm"</span>,
                                               <span class="kw">glm_formula</span> <span class="kw">=</span> <span class="st">"Y ~ ."</span>)
                            )
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">tmle_hal_shift_1</span>)</pre></body></html></div>
-<pre><code>##      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-##      1.9199      2.0529      2.1858      0.0046 -5.2888e-16        tmle 
-##      n_iter 
-##           0</code></pre>
+<pre><code>##     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator     n_iter 
+##     1.8971     2.0474     2.1977     0.0059 5.3505e-12       tmle          0</code></pre>
 <p>When computing any such TML estimator, we may, of course, vary the regressions used in fitting the nuisance parameters; however, an even simpler variation is to fit the step for the fluctuation submodels with a <em>weighted</em> method, simply weighting each observation by an auxiliary covariate (often denoted <span class="math inline">\(H_n\)</span>, and sometimes called the “clever covariate” in the literature) rather than using such a covariate directly in the submodel regression fit.</p>
 <div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">tmle_hal_shift_2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/txshift.html">txshift</a></span>(<span class="kw">W</span> <span class="kw">=</span> <span class="no">W</span>, <span class="kw">A</span> <span class="kw">=</span> <span class="no">A</span>, <span class="kw">Y</span> <span class="kw">=</span> <span class="no">Y</span>, <span class="kw">delta</span> <span class="kw">=</span> <span class="no">delta</span>,
                             <span class="kw">fluctuation</span> <span class="kw">=</span> <span class="st">"weighted"</span>,
                             <span class="kw">g_fit_args</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">fit_type</span> <span class="kw">=</span> <span class="st">"hal"</span>,
                                               <span class="kw">n_bins</span> <span class="kw">=</span> <span class="fl">5</span>,
-                                              <span class="kw">grid_type</span> <span class="kw">=</span> <span class="st">"equal_mass"</span>,
+                                              <span class="kw">grid_type</span> <span class="kw">=</span> <span class="st">"equal_range"</span>,
                                               <span class="kw">lambda_seq</span> <span class="kw">=</span>
-                                                <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(-<span class="fl">1</span>, -<span class="fl">9</span>,
-                                                        <span class="kw">length</span> <span class="kw">=</span> <span class="fl">300</span>))),
+                                                <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(-<span class="fl">1</span>, -<span class="fl">12</span>,
+                                                        <span class="kw">length</span> <span class="kw">=</span> <span class="fl">500</span>))),
                             <span class="kw">Q_fit_args</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">fit_type</span> <span class="kw">=</span> <span class="st">"glm"</span>,
                                               <span class="kw">glm_formula</span> <span class="kw">=</span> <span class="st">"Y ~ ."</span>)
                            )
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">tmle_hal_shift_2</span>)</pre></body></html></div>
 <pre><code>##      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-##      1.9195      2.0524      2.1854      0.0046 -2.3317e-17        tmle 
+##       1.892      2.0423      2.1925      0.0059 -5.7243e-17        tmle 
 ##      n_iter 
 ##           0</code></pre>
 </div>
@@ -225,12 +223,12 @@
                                              <span class="kw">sl_learners</span> <span class="kw">=</span> <span class="no">sl_learner</span>)
                           )</pre></body></html></div>
 <pre><code>## 
-## Iter: 1 fn: 1420.9251     Pars:  0.999994126 0.000005872
-## Iter: 2 fn: 1420.9251     Pars:  0.999998301 0.000001699
+## Iter: 1 fn: 1419.8276     Pars:  0.99998372 0.00001628
+## Iter: 2 fn: 1419.8276     Pars:  0.999995199 0.000004801
 ## solnp--&gt; Completed in 2 iterations</code></pre>
 <div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">tmle_sl_shift_1</span>)</pre></body></html></div>
 <pre><code>##     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator     n_iter 
-##     1.9245     2.0604     2.1963     0.0048 3.8014e-14       tmle          0</code></pre>
+##     1.9245     2.0604     2.1963     0.0048 5.4823e-14       tmle          0</code></pre>
 <p>As before, we may vary the regression for the submodel fluctuation procedure by weighting each observation by the value of the so-called clever covariate rather than using such an auxiliary covariate directly in the regression procedure:</p>
 <div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="no">tmle_sl_shift_2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/txshift.html">txshift</a></span>(<span class="kw">W</span> <span class="kw">=</span> <span class="no">W</span>, <span class="kw">A</span> <span class="kw">=</span> <span class="no">A</span>, <span class="kw">Y</span> <span class="kw">=</span> <span class="no">Y</span>, <span class="kw">delta</span> <span class="kw">=</span> <span class="no">delta</span>,
                            <span class="kw">fluctuation</span> <span class="kw">=</span> <span class="st">"weighted"</span>,
@@ -241,12 +239,14 @@
                                              <span class="kw">sl_learners</span> <span class="kw">=</span> <span class="no">sl_learner</span>)
                           )</pre></body></html></div>
 <pre><code>## 
-## Iter: 1 fn: 1420.3361     Pars:  0.99993048 0.00006952
-## Iter: 2 fn: 1420.3361     Pars:  0.999990465 0.000009535
-## solnp--&gt; Completed in 2 iterations</code></pre>
+## Iter: 1 fn: 1422.2041     Pars:  0.50287 0.49713
+## Iter: 2 fn: 1422.1719     Pars:  0.99258 0.00742
+## Iter: 3 fn: 1422.1717     Pars:  0.9997561 0.0002439
+## Iter: 4 fn: 1422.1717     Pars:  0.9998954 0.0001046
+## solnp--&gt; Completed in 4 iterations</code></pre>
 <div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">tmle_sl_shift_2</span>)</pre></body></html></div>
 <pre><code>##     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator     n_iter 
-##     1.9243     2.0601      2.196     0.0048 1.7582e-16       tmle          0</code></pre>
+##     1.9243     2.0601      2.196     0.0048 2.6966e-16       tmle          0</code></pre>
 </div>
 <div id="statistical-inference-for-targeted-maximum-likelihood-estimates" class="section level3">
 <h3 class="hasAnchor">
@@ -262,9 +262,9 @@
 <p>The above implies that <span class="math inline">\(\psi_n\)</span> is a <span class="math inline">\(\sqrt{n}\)</span>-consistent estimator of <span class="math inline">\(\psi\)</span>, that it is asymptotically normal (as given above), and that it is locally efficient. This allows us to build Wald-type confidence intervals in a straightforward manner:</p>
 <p><span class="math display">\[\psi_n \pm z_{\alpha} \cdot \frac{\sigma_n}{\sqrt{n}},\]</span> where <span class="math inline">\(\sigma_n^2\)</span> is an estimator of <span class="math inline">\(V(D(P_0))\)</span>. The estimator <span class="math inline">\(\sigma_n^2\)</span> may be obtained using the bootstrap or computed directly via the following</p>
 <p><span class="math display">\[\sigma_n^2 = \frac{1}{n} \sum_{i = 1}^{n} D^2(\bar{Q}_n^{\star}, g_n)(O_i)\]</span></p>
-<div class="sourceCode" id="cb20"><html><body><pre class="r">(<span class="no">ci_shift</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/confint.html">confint</a></span>(<span class="no">tmle_sl_shift_1</span>))</pre></body></html></div>
+<div class="sourceCode" id="cb20"><html><body><pre class="r">(<span class="no">ci_param</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/confint.html">confint</a></span>(<span class="no">tmle_sl_shift_1</span>))</pre></body></html></div>
 <pre><code>##   lwr_ci      est   upr_ci 
-## 1.924529 2.060398 2.196267</code></pre>
+## 1.924520 2.060391 2.196261</code></pre>
 </div>
 </div>
 <div id="advanced-usage-user-specified-regressions" class="section level2">
@@ -352,7 +352,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

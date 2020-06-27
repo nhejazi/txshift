@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.4</span>
       </span>
     </div>
 
@@ -129,6 +129,35 @@
       <small>Source: <a href='https://github.com/nhejazi/txshift/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="txshift-0-3-4" class="section level1">
+<h1 class="page-header" data-toc-text="0.3.4">
+<a href="#txshift-0-3-4" class="anchor"></a>txshift 0.3.4</h1>
+<p>As of June 2020:</p>
+<ul>
+<li>Add single-knot spline to working MSM summarization.</li>
+<li>Add class and <code>plot</code> method for working MSM summarization.</li>
+<li>Fix bug in computing CIs for binary outcomes (using <code>confint</code> method).</li>
+<li>Finish drafting short paper for <em>Journal of Open Source Software</em>.</li>
+</ul>
+</div>
+    <div id="txshift-0-3-3" class="section level1">
+<h1 class="page-header" data-toc-text="0.3.3">
+<a href="#txshift-0-3-3" class="anchor"></a>txshift 0.3.3</h1>
+<p>As of April 2020:</p>
+<ul>
+<li>Change export status of internal functions (e.g., no longer exporting <code>onestep_txshift</code> and <code>tmle_txshift</code>).</li>
+<li>Finish adding Roxygen “details” and “return” slots throughout functions.</li>
+<li>Add examples to main estimation functions (<code>txshift</code>, <code>vimshift_msm</code>).</li>
+<li>Update argument names and add several <code>assert_that</code> checks.</li>
+<li>Change <code>fit_spec</code> terminology to <code>fit_ext</code> for external fits.</li>
+<li>Add unit tests for MSM functionality and nuisance parameter estimation.</li>
+</ul>
+<p>As of March 2020:</p>
+<ul>
+<li>Extensive documentation, including fixing estimation terminology (e.g., one-step instead of AIPW) and adding Roxygen “details” and “return” slots.</li>
+<li>Begin adding examples to exported functions.</li>
+</ul>
+</div>
     <div id="txshift-0-3-2" class="section level1">
 <h1 class="page-header" data-toc-text="0.3.2">
 <a href="#txshift-0-3-2" class="anchor"></a>txshift 0.3.2</h1>
@@ -137,7 +166,7 @@
 <li>Corrections to dependencies in preparation for eventual CRAN release.</li>
 <li>Change several previously exported functions to internal, including <code>eif</code>, <code>est_Hn</code>, <code>est_Q</code>, <code>est_g</code>, <code>est_ipcw</code>, <code>fit_fluctuation</code>, <code>ipcw_eif_update</code>).</li>
 <li>Remove/reduce GitHub-only dependencies (now only <code>sl3</code>).</li>
-<li>Change title partially (from âTargeted Learningâ to âEfficient Estimationâ).</li>
+<li>Change title partially (from “Targeted Learning” to “Efficient Estimation”).</li>
 <li>Lock dependency versions (e.g., <code>sl3</code> &gt;= v1.3.7)</li>
 <li>Extensive documentation updates.</li>
 </ul>
@@ -279,7 +308,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

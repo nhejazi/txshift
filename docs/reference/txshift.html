@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.4</span>
       </span>
     </div>
 
@@ -147,7 +147,7 @@
   <span class='kw'>max_iter</span> <span class='kw'>=</span> <span class='fl'>10</span>,
   <span class='kw'>ipcw_fit_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"glm"</span>, <span class='st'>"sl"</span>, <span class='st'>"external"</span>), <span class='kw'>sl_learners</span> <span class='kw'>=</span> <span class='kw'>NULL</span>),
   <span class='kw'>g_fit_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"hal"</span>, <span class='st'>"sl"</span>, <span class='st'>"external"</span>), <span class='kw'>n_bins</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>10</span>, <span class='fl'>25</span>),
-    <span class='kw'>grid_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"equal_range"</span>, <span class='st'>"equal_mass"</span>), <span class='kw'>lambda_seq</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(-<span class='fl'>1</span>, -<span class='fl'>13</span>, <span class='kw'>length</span> <span class='kw'>=</span>
+    <span class='kw'>grid_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"equal_range"</span>, <span class='st'>"equal_range"</span>), <span class='kw'>lambda_seq</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(-<span class='fl'>1</span>, -<span class='fl'>13</span>, <span class='kw'>length</span> <span class='kw'>=</span>
     <span class='fl'>300</span>)), <span class='kw'>use_future</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>sl_learners_density</span> <span class='kw'>=</span> <span class='kw'>NULL</span>),
   <span class='kw'>Q_fit_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"glm"</span>, <span class='st'>"sl"</span>, <span class='st'>"external"</span>), <span class='kw'>glm_formula</span> <span class='kw'>=</span> <span class='st'>"Y ~ ."</span>,
     <span class='kw'>sl_learners</span> <span class='kw'>=</span> <span class='kw'>NULL</span>),
@@ -320,7 +320,7 @@ for power users.</p></td>
   <span class='kw'>estimator</span> <span class='kw'>=</span> <span class='st'>"tmle"</span>,
   <span class='kw'>g_fit_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
     <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='st'>"hal"</span>, <span class='kw'>n_bins</span> <span class='kw'>=</span> <span class='fl'>5</span>,
-    <span class='kw'>grid_type</span> <span class='kw'>=</span> <span class='st'>"equal_mass"</span>,
+    <span class='kw'>grid_type</span> <span class='kw'>=</span> <span class='st'>"equal_range"</span>,
     <span class='kw'>lambda_seq</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span>(-<span class='fl'>1</span>:-<span class='fl'>9</span>)
   ),
   <span class='kw'>Q_fit_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
@@ -337,7 +337,7 @@ for power users.</p></td>
   <span class='kw'>ipcw_fit_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='st'>"glm"</span>),
   <span class='kw'>g_fit_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
     <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='st'>"hal"</span>, <span class='kw'>n_bins</span> <span class='kw'>=</span> <span class='fl'>5</span>,
-    <span class='kw'>grid_type</span> <span class='kw'>=</span> <span class='st'>"equal_mass"</span>,
+    <span class='kw'>grid_type</span> <span class='kw'>=</span> <span class='st'>"equal_range"</span>,
     <span class='kw'>lambda_seq</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span>(-<span class='fl'>1</span>:-<span class='fl'>9</span>)
   ),
   <span class='kw'>Q_fit_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
@@ -361,7 +361,7 @@ for power users.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>
