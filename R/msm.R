@@ -44,11 +44,12 @@
 #'  each parameter estimate separately. The default is to construct marginal
 #'  confidence intervals for each parameter estimate rather than a simultaneous
 #'  confidence band.
-#' @param ... Additional arguments to be passed to \code{txshift}.
+#' @param ... Additional arguments to be passed to \code{\link{txshift}}.
 #'
 #' @importFrom assertthat assert_that
-#' @importFrom data.table as.data.table
-#' @importFrom stats cov confint qnorm pnorm as.formula model.matrix
+#' @importFrom data.table as.data.table copy setnames
+#' @importFrom stats cov confint qnorm pnorm as.formula model.matrix lm
+#' @importFrom lspline lspline
 #' @importFrom mvtnorm qmvnorm
 #'
 #' @return A \code{list} containing estimates of the individual counterfactual
@@ -211,12 +212,28 @@ msm_vimshift <- function(Y,
     p_value = pval_msm_param
   ))
 
+  # create and rename MSM data for downstream ggplot2 compatibility
+  msm_data <- data.table::copy(vimshift_out)
+  data.table::setnames(msm_data, c("psi", "delta"), c("y", "x"))
+
+  # compute linear working MSM or single-knot spline model
+  if (msm_form[["type"]] == "piecewise" && !is.na(msm_form[["knot"]])) {
+    msm_fit <- stats::lm(y ~ lspline::lspline(x, msm_form[["knot"]],
+      marginal = TRUE
+    ),
+    weights = weights, data = msm_data
+    )
+  } else if (msm_form[["type"]] == "linear") {
+    msm_fit <- stats::lm(y ~ x, weights = weights, data = msm_data)
+  }
+
   # complete output for MSM
   out <- list(
     param_est = vimshift_out,
     msm_est = msm_out,
     msm_type = msm_form[["type"]],
-    msm_knot = msm_form[["knot"]]
+    msm_data = msm_data,
+    msm_fit = msm_fit
   )
   class(out) <- "txshift_msm"
   return(out)
@@ -234,11 +251,9 @@ msm_vimshift <- function(Y,
 #'  \code{\link{msm_vimshift}}.
 #' @param ... Additional arguments passed to \code{plot} as necessary.
 #'
-#' @importFrom ggplot2 ggplot geom_point geom_errorbar geom_abline geom_smooth
-#'  aes_string labs theme_bw
-#' @importFrom data.table copy setnames
-#' @importFrom stats formula lm
-#' @importFrom lspline lspline
+#' @importFrom ggplot2 ggplot geom_point geom_errorbar geom_segment geom_smooth
+#'  aes aes_string labs theme_bw
+#' @importFrom stats formula
 #' @importFrom latex2exp TeX
 #'
 #' @examples
@@ -284,46 +299,42 @@ msm_vimshift <- function(Y,
 #' plot(msm)
 #' @export
 plot.txshift_msm <- function(x, ...) {
-  # create and rename data in MSM fitting for ggplot compatibility
-  msm_data <- data.table::copy(x[["param_est"]])
-  data.table::setnames(msm_data, c("psi", "delta"), c("y", "x"))
-
-  # extract MSM specs
-  msm_type <- x[["msm_type"]]
-  msm_knot <- x[["msm_knot"]]
-
-  if (msm_type != "linear" && !is.na(msm_knot)) {
-    # fit working MSM regression line if there's a knot point
-    msm_mod <- stats::lm(y ~ lspline::lspline(x, msm_knot, marginal = TRUE),
-      data = msm_data
-    )
-
-    # build geom for MSM in plot
+  # build geom for MSM in plot
+  if (x[["msm_type"]] == "piecewise") {
     geom_msm <- ggplot2::geom_smooth(
       method = "lm",
-      formula = stats::formula(msm_mod),
+      formula = stats::formula(x[["msm_fit"]]),
       se = FALSE,
       color = "black",
-      size = 0.5
+      size = 0.5,
+      linetype = "dashed"
     )
-  } else {
-    # build geom for MSM in plot
-    geom_msm <- ggplot2::geom_abline(
-      intercept = x[["msm_est"]][["param_est"]][1],
-      slope = x[["msm_est"]][["param_est"]][2],
-      size = 0.5
+  } else if (x[["msm_type"]] == "linear") {
+    delta_grid <- x[["param_est"]][["delta"]]
+    intercept <- x[["msm_est"]][["param_est"]][1]
+    slope <- x[["msm_est"]][["param_est"]][2]
+    geom_msm <- ggplot2::geom_segment(
+      ggplot2::aes(
+        x = min(delta_grid), xend = max(delta_grid),
+        y = intercept + min(delta_grid) * slope,
+        yend = intercept + max(delta_grid) * slope
+      ),
+      size = 0.5, color = "black", linetype = "dashed"
     )
   }
 
   # create plot
-  p_msm <- ggplot2::ggplot(data = msm_data, ggplot2::aes_string("x", "y")) +
-    ggplot2::geom_point(size = 5) +
+  p_msm <- ggplot2::ggplot(
+    data = x[["msm_data"]],
+    ggplot2::aes_string("x", "y")
+  ) +
+    ggplot2::geom_point(size = 3, alpha = 0.75) +
     ggplot2::geom_errorbar(
       ggplot2::aes_string(
         ymin = "ci_lwr",
         ymax = "ci_upr"
       ),
-      position = "dodge", linetype = "dashed",
+      position = "dodge", linetype = "dotted",
       width = 0.05
     ) +
     geom_msm +
@@ -333,7 +344,7 @@ plot.txshift_msm <- function(x, ...) {
       title = "Estimated mean counterfactual outcome under shifted treatment",
       subtitle = paste(
         "with marginal confidence intervals and",
-        msm_type, "working MSM for summarization"
+        x[["msm_type"]], "working MSM for summarization"
       )
     ) +
     ggplot2::theme_bw()

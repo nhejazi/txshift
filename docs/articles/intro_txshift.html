@@ -90,7 +90,7 @@
 <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://www.benkeserstatistics.com/">David Benkeser</a>
 </h4>
             
-            <h4 class="date">2020-06-27</h4>
+            <h4 class="date">2020-06-28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nhejazi/txshift/blob/master/vignettes/intro_txshift.Rmd"><code>vignettes/intro_txshift.Rmd</code></a></small>
       <div class="hidden name"><code>intro_txshift.Rmd</code></div>
@@ -223,13 +223,13 @@
                                              <span class="kw">sl_learners</span> <span class="kw">=</span> <span class="no">sl_learner</span>)
                           )</pre></body></html></div>
 <pre><code>## 
-## Iter: 1 fn: 1419.8759     Pars:  0.57302 0.42698
-## Iter: 2 fn: 1419.8276     Pars:  0.9998081 0.0001919
-## Iter: 3 fn: 1419.8276     Pars:  0.9998834 0.0001166
+## Iter: 1 fn: 1419.8537     Pars:  0.57300 0.42700
+## Iter: 2 fn: 1419.8276     Pars:  0.9993419 0.0006581
+## Iter: 3 fn: 1419.8276     Pars:  0.9996226 0.0003774
 ## solnp--&gt; Completed in 3 iterations</code></pre>
 <div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">tmle_sl_shift_1</span>)</pre></body></html></div>
 <pre><code>##     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator     n_iter 
-##     1.9245     2.0604     2.1963     0.0048 5.4715e-14       tmle          0</code></pre>
+##     1.9245     2.0604     2.1963     0.0048 5.4739e-14       tmle          0</code></pre>
 <p>As before, we may vary the regression for the submodel fluctuation procedure by weighting each observation by the value of the so-called clever covariate rather than using such an auxiliary covariate directly in the regression procedure:</p>
 <div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="no">tmle_sl_shift_2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/txshift.html">txshift</a></span>(<span class="kw">W</span> <span class="kw">=</span> <span class="no">W</span>, <span class="kw">A</span> <span class="kw">=</span> <span class="no">A</span>, <span class="kw">Y</span> <span class="kw">=</span> <span class="no">Y</span>, <span class="kw">delta</span> <span class="kw">=</span> <span class="no">delta</span>,
                            <span class="kw">fluctuation</span> <span class="kw">=</span> <span class="st">"weighted"</span>,
@@ -240,13 +240,17 @@
                                              <span class="kw">sl_learners</span> <span class="kw">=</span> <span class="no">sl_learner</span>)
                           )</pre></body></html></div>
 <pre><code>## 
-## Iter: 1 fn: 1422.0969     Pars:  0.50273 0.49727
-## Iter: 2 fn: 1422.0562     Pars:  0.0001001 0.9998999
-## Iter: 3 fn: 1422.0562     Pars:  0.00006426 0.99993574
-## solnp--&gt; Completed in 3 iterations</code></pre>
+## Iter: 1 fn: 1422.1572     Pars:  0.50281 0.49719
+## Iter: 2 fn: 1422.1572     Pars:  0.50612 0.49388
+## Iter: 3 fn: 1422.1572     Pars:  0.50919 0.49081
+## Iter: 4 fn: 1422.1572     Pars:  0.51204 0.48796
+## Iter: 5 fn: 1422.1572     Pars:  0.51468 0.48532
+## solnp--&gt; Completed in 5 iterations</code></pre>
 <div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">tmle_sl_shift_2</span>)</pre></body></html></div>
-<pre><code>##     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator     n_iter 
-##     1.9237     2.0595     2.1954     0.0048 7.6238e-17       tmle          0</code></pre>
+<pre><code>##      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
+##       1.924      2.0598      2.1957      0.0048 -1.8959e-16        tmle 
+##      n_iter 
+##           0</code></pre>
 </div>
 <div id="statistical-inference-for-targeted-maximum-likelihood-estimates" class="section level3">
 <h3 class="hasAnchor">
@@ -264,7 +268,7 @@
 <p><span class="math display">\[\sigma_n^2 = \frac{1}{n} \sum_{i = 1}^{n} D^2(\bar{Q}_n^{\star}, g_n)(O_i)\]</span></p>
 <div class="sourceCode" id="cb20"><html><body><pre class="r">(<span class="no">ci_param</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/confint.html">confint</a></span>(<span class="no">tmle_sl_shift_1</span>))</pre></body></html></div>
 <pre><code>##   lwr_ci      est   upr_ci 
-## 1.924520 2.060391 2.196261</code></pre>
+## 1.924520 2.060390 2.196261</code></pre>
 </div>
 </div>
 <div id="advanced-usage-user-specified-regressions" class="section level2">
