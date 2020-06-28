@@ -181,7 +181,7 @@ After using the `txshift` R package, please cite the following:
             Stochastic Interventions},
           year  = {2020},
           url = {https://github.com/nhejazi/txshift},
-          note = {R package version 0.3.3}
+          note = {R package version 0.3.4}
         }
 
 ---

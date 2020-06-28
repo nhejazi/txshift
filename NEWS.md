@@ -1,10 +1,13 @@
 # txshift 0.3.4
 
 As of June 2020:
-* Add single-knot spline to working MSM summarization.
-* Add class and `plot` method for working MSM summarization.
-* Fix bug in computing CIs for binary outcomes (using `confint` method).
-* Finish drafting short paper for _Journal of Open Source Software_.
+* Add single-knot spline to MSM summarization (`msm_vimshift`).
+* Add class and `plot` method for MSM summarization (`msm_vimshift`).
+* Fix bug in `msm_vimshift` for computing CIs for binary outcomes by switching
+  from manually computing CIs to internally using custom `confint` method.
+* Fix bug in `msm_vimshift` for building `lm` model objects through weighted
+  regression; move models from `plot` method to `msm_vimshift`.
+* Finish drafting brief paper for _Journal of Open Source Software_.
 
 # txshift 0.3.3
 

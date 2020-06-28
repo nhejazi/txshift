@@ -134,10 +134,11 @@
 <a href="#txshift-0-3-4" class="anchor"></a>txshift 0.3.4</h1>
 <p>As of June 2020:</p>
 <ul>
-<li>Add single-knot spline to working MSM summarization.</li>
-<li>Add class and <code>plot</code> method for working MSM summarization.</li>
-<li>Fix bug in computing CIs for binary outcomes (using <code>confint</code> method).</li>
-<li>Finish drafting short paper for <em>Journal of Open Source Software</em>.</li>
+<li>Add single-knot spline to MSM summarization (<code>msm_vimshift</code>).</li>
+<li>Add class and <code>plot</code> method for MSM summarization (<code>msm_vimshift</code>).</li>
+<li>Fix bug in <code>msm_vimshift</code> for computing CIs for binary outcomes by switching from manually computing CIs to internally using custom <code>confint</code> method.</li>
+<li>Fix bug in <code>msm_vimshift</code> for building <code>lm</code> model objects through weighted regression; move models from <code>plot</code> method to <code>msm_vimshift</code>.</li>
+<li>Finish drafting brief paper for <em>Journal of Open Source Software</em>.</li>
 </ul>
 </div>
     <div id="txshift-0-3-3" class="section level1">
