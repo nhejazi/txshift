@@ -158,7 +158,9 @@ summary(ipcw_os)
 ## Issues
 
 If you encounter any bugs or have any specific feature requests, please
-[file an issue](https://github.com/nhejazi/txshift/issues).
+[file an issue](https://github.com/nhejazi/txshift/issues). Further
+details on filing issues are provided in our [contribution
+guidelines](https://github.com/nhejazi/txshift/blob/master/CONTRIBUTING.md).
 
 -----
 
