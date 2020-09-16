@@ -15,4 +15,7 @@
 
 ## Additional Notes
 * This is a new CRAN submission.
-* It depends on `haldensify` v0.0.6, which was just submitted.
+* In the initial attempt, there were two significant issues:
+  * A few links throughout used `http`; these have been moved to `https`.
+  * The dependency `haldensify` v0.0.6 had just been submitted to CRAN but had
+    not been posted; it is now posted on CRAN.
