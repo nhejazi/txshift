@@ -1,7 +1,7 @@
 ---
 title: "IPCW-TMLEs with Stochastic Treatment Regimes"
 author: "[Nima Hejazi](https://nimahejazi.org) and [David
-  Benkeser](https://www.benkeserstatistics.com/)"
+  Benkeser](https://www.sph.emory.edu/faculty/profile/#!dbenkes)"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: ../inst/REFERENCES.bib
@@ -26,16 +26,17 @@ when a censoring process is introduced into the observed data structure. In this
 case the observed data structure may be denoted $O = (W, \Delta A, Y)$, where
 $W$ is a set of baseline covariates, $A$ is a continuous-valued treatment or
 intervention, $Y$ is an outcome of interest, and $\Delta$ is an indicator of
-censoring ($1$ corresponding to being observed, $0$ to being missing). Perhaps
-the best way to appreciate the utilities provided for computing IPCW-TMLEs in
-this R package is to work through examples, so let's simply jump to that.
+censoring ($1$ corresponding to being observed, $0$ to being missing). For a
+detailed description of the methodological aspects of this procedure, consult
+@hejazi2020efficient. Perhaps the best way to appreciate the utilities provided
+for computing IPCW-TMLEs in this R package is to work through examples, so let's
+simply jump to that.
 
 To start, let's load the packages we'll use and set a seed for simulation:
 
 ```{r setup}
 library(data.table)
 library(haldensify)
-library(sl3)
 library(txshift)
 set.seed(429153)
 ```
@@ -121,7 +122,7 @@ argument to `"glm"` fits this EIF nuisance regression with a generalized linear
 model (GLM; an assumption-laden parametric form) while the default value of
 `"hal"` fits the nuisance regression with the highly adaptive lasso (HAL; a
 recently developed nonparametric estimator) via the [`hal9001` R
-package](https://github.com/tlverse/hal9001) [@coyle2019hal9001]. In practice,
+package](https://github.com/tlverse/hal9001) [@coyle2020hal9001]. In practice,
 we recommend leaving this argument to the default and fitting the EIF nuisance
 regression with HAL; however, this is significantly slower than simple using a
 GLM.
@@ -182,7 +183,7 @@ we rely on the facilities provided in the [`sl3` R
 package](https://sl3.tlverse.org) [@coyle2020sl3]. For a complete guide on
 using the `sl3` R package, consider consulting https://tlverse.org/sl3.
 
-```{r make_sl}
+```{r make_sl, eval = FALSE}
 # SL learners to be used for most fits (e.g., IPCW, outcome regression)
 lrnr_lib <- make_learner_stack("Lrnr_mean", "Lrnr_glm", "Lrnr_ranger")
 sl_learner <- Lrnr_sl$new(learners = lrnr_lib, metalearner = Lrnr_nnls$new())
@@ -271,7 +272,7 @@ the efficient and inefficient IPCW-TMLEs. By default, an efficient IPCW-TMLE is
 computed when censoring is detected; however, this may be disable by setting
 the `ipcw_efficiency` argument to `FALSE` like so
 
-```{r ipcw_tmle_ghal_sl_inefficient}
+```{r ipcw_tmle_ghal_sl_inefficient, eval = FALSE}
 tmle_sl_ineffic <- txshift(W = W, A = A, Y = Y,
                            C = C, V = c("W", "Y"),
                            delta = delta,

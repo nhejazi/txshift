@@ -136,18 +136,18 @@
     </div>
 
     <pre class="usage"><span class='fu'>ipcw_eif_update</span>(
-  <span class='no'>data_in</span>,
-  <span class='no'>C</span>,
-  <span class='no'>V</span>,
-  <span class='no'>ipc_mech</span>,
-  <span class='no'>ipc_weights</span>,
-  <span class='no'>ipc_weights_norm</span>,
-  <span class='no'>Qn_estim</span>,
-  <span class='no'>Hn_estim</span>,
-  <span class='kw'>estimator</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"tmle"</span>, <span class='st'>"onestep"</span>),
-  <span class='kw'>fluctuation</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>flucmod_tol</span> <span class='kw'>=</span> <span class='fl'>100</span>,
-  <span class='kw'>eif_reg_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"hal"</span>, <span class='st'>"glm"</span>)
+  <span class='kw'>data_in</span>,
+  <span class='kw'>C</span>,
+  <span class='kw'>V</span>,
+  <span class='kw'>ipc_mech</span>,
+  <span class='kw'>ipc_weights</span>,
+  <span class='kw'>ipc_weights_norm</span>,
+  <span class='kw'>Qn_estim</span>,
+  <span class='kw'>Hn_estim</span>,
+  estimator = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"tmle"</span>, <span class='st'>"onestep"</span>),
+  fluctuation = <span class='kw'>NULL</span>,
+  flucmod_tol = <span class='fl'>100</span>,
+  eif_reg_type = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"hal"</span>, <span class='st'>"glm"</span>)
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -260,7 +260,7 @@ covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).</p><
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -87,7 +87,7 @@ thoroughly by @hejazi2020efficient. `txshift`
 integrates with the [`sl3` package](https://github.com/tlverse/sl3)
 [@coyle2020sl3] to allow for ensemble machine learning to be leveraged in the
 estimation of nuisance parameters. What's more, the `txshift` package draws on
-both the `hal9001` and `haldensify` `R` packages [@coyle2019hal9001;
+both the `hal9001` and `haldensify` `R` packages [@coyle2020hal9001;
 @hejazi2020haldensify] to allow each of the estimators to be constructed in
 a manner consistent with the theoretical claims of @hejazi2020efficient. The
 `txshift` package has been made publicly available via GitHub and will be

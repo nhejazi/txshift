@@ -51,7 +51,9 @@ parameter. @rose2011targeted2sd first introduced an augmentation procedure that
 relies on introducing inverse probability of censoring (IPC) weights directly to
 an appropriate loss function or to the efficient influence function estimating
 equation. `txshift` extends this approach to compute IPC-weighted one-step and
-TML estimators of the counterfactual mean under a stochastic treatment regime.
+TML estimators of the counterfactual mean outcome under a shift stochastic
+treatment regime. The package is designed to implement the statistical
+methodology described in @hejazi2020efficient.
 
 ---
 
@@ -167,17 +169,28 @@ prior to submitting a pull request.
 
 After using the `txshift` R package, please cite the following:
 
-        @article{hejazi2020efficient,
+        @article{hejazi2020efficient-biom,
           author = {Hejazi, Nima S and {van der Laan}, Mark J and Janes, Holly
             E and Gilbert, Peter B and Benkeser, David C},
           title = {Efficient nonparametric inference on the effects of
             stochastic interventions under two-phase sampling, with
             applications to vaccine efficacy trials},
           year  = {2020},
-          url = {http://arxiv.org/abs/2003.13771}
+          url = {http://arxiv.org/abs/2003.13771},
+          journal = {Biometrics (Methodology)},
+          publisher = {Wiley Online Library}
         }
 
-        @manual{hejazi2020txshift,
+        @article{hejazi2020txshift-joss,
+          author = {Hejazi, Nima S and Benkeser, David C},
+          title = {{txshift}: Efficient estimation of the causal effects of
+            stochastic interventions in {R}},
+          year  = {2020},
+          journal = {under review at Journal of Open Source Software},
+          publisher = {The Open Journal}
+        }
+
+        @software{hejazi2020txshift-rpkg,
           author = {Hejazi, Nima S and Benkeser, David C},
           title = {{txshift}: Efficient Estimation of the Causal Effects of
             Stochastic Interventions},
@@ -206,7 +219,7 @@ After using the `txshift` R package, please cite the following:
 * [R/`haldensify`](https://github.com/nhejazi/haldensify) - A minimal package
   for estimating the conditional density treatment mechanism component of this
   parameter based on using the [highly adaptive
-  lasso](https://github.com/tlverse/hal9001) [@coyle2019hal9001] in combination
+  lasso](https://github.com/tlverse/hal9001) [@coyle2020hal9001] in combination
   with a pooled hazard regression. This package implements the methodology
   proposed by @diaz2011super.
 

@@ -1,7 +1,7 @@
 ---
 title: "Targeted Learning with Stochastic Treatment Regimes"
 author: "[Nima Hejazi](https://nimahejazi.org) and [David
-  Benkeser](https://www.benkeserstatistics.com/)"
+  Benkeser](https://www.sph.emory.edu/faculty/profile/#!dbenkes)"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: ../inst/REFERENCES.bib
@@ -33,7 +33,6 @@ To start, let's load the packages we'll use and set a seed for simulation:
 ```{r setup}
 library(data.table)
 library(haldensify)
-library(sl3)
 library(txshift)
 set.seed(429153)
 ```
@@ -152,7 +151,7 @@ we rely on the facilities provided in the [`sl3` R
 package](https://tlverse.org/sl3) [@coyle2020sl3]. For a complete guide on
 using the `sl3` R package, consider consulting https://tlverse.org/sl3.
 
-```{r}
+```{r, eval = FALSE}
 # SL learners to be used for most fits (e.g., IPCW, outcome regression)
 mean_learner <- Lrnr_mean$new()
 glm_learner <- Lrnr_glm$new()
@@ -180,7 +179,7 @@ the nuisance parameters of the TML estimator may be fit with ensemble learning,
 using the cross-validation framework of the Super Learner algorithm of
 @vdl2007super.
 
-```{r}
+```{r, eval = FALSE}
 tmle_sl_shift_1 <- txshift(W = W, A = A, Y = Y, delta = delta,
                            fluctuation = "standard",
                            g_fit_args = list(fit_type = "sl",
@@ -196,7 +195,7 @@ As before, we may vary the regression for the submodel fluctuation procedure by
 weighting each observation by the value of the so-called clever covariate rather
 than using such an auxiliary covariate directly in the regression procedure:
 
-```{r}
+```{r, eval = FALSE}
 tmle_sl_shift_2 <- txshift(W = W, A = A, Y = Y, delta = delta,
                            fluctuation = "weighted",
                            g_fit_args = list(fit_type = "sl",
@@ -246,7 +245,7 @@ may be obtained using the bootstrap or computed directly via the following
 $$\sigma_n^2 = \frac{1}{n} \sum_{i = 1}^{n} D^2(\bar{Q}_n^{\star}, g_n)(O_i)$$
 
 ```{r}
-(ci_param <- confint(tmle_sl_shift_1))
+(ci_param <- confint(tmle_hal_shift_1))
 ```
 
 ## _Advanced Usage:_ User-Specified Regressions

@@ -52,25 +52,26 @@ print.txshift <- function(x, ...) {
 #'  objects of class \code{txshift_msm}.
 #'
 #' @examples
-#' library(sl3)
-#' set.seed(3287)
-#' n_obs <- 1000
-#' W <- as.numeric(replicate(1, rbinom(n_obs, 1, 0.5)))
-#' A <- as.numeric(rnorm(n_obs, mean = 2 * W, sd = 1))
-#' Y <- rbinom(n_obs, 1, plogis(2 * A - W))
-#' msm <- msm_vimshift(
-#'   W = W, A = A, Y = Y, estimator = "tmle",
-#'   g_fit_args = list(
-#'     fit_type = "sl",
-#'     sl_learners_density = Lrnr_density_hse$new(Lrnr_glm$new())
-#'   ),
-#'   Q_fit_args = list(
-#'     fit_type = "glm",
-#'     glm_formula = "Y ~ ."
-#'   ),
-#'   delta_grid = seq(-1, 1, 0.25)
-#' )
-#' print(msm)
+#' if (require("sl3")) {
+#'   set.seed(3287)
+#'   n_obs <- 1000
+#'   W <- as.numeric(replicate(1, rbinom(n_obs, 1, 0.5)))
+#'   A <- as.numeric(rnorm(n_obs, mean = 2 * W, sd = 1))
+#'   Y <- rbinom(n_obs, 1, plogis(2 * A - W))
+#'   msm <- msm_vimshift(
+#'     W = W, A = A, Y = Y, estimator = "tmle",
+#'     g_fit_args = list(
+#'       fit_type = "sl",
+#'       sl_learners_density = Lrnr_density_hse$new(Lrnr_glm$new())
+#'     ),
+#'     Q_fit_args = list(
+#'       fit_type = "glm",
+#'       glm_formula = "Y ~ ."
+#'     ),
+#'     delta_grid = seq(-1, 1, 0.25)
+#'   )
+#'   print(msm)
+#' }
 #' @export
 print.txshift_msm <- function(x, ...) {
   if (x[["msm_type"]] == "piecewise") {
