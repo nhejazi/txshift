@@ -56,10 +56,10 @@ al. (2020).
 ## Installation
 
 Install the most recent *stable release* from GitHub via
-[`devtools`](https://www.rstudio.com/products/rpackages/devtools/):
+[`remotes`](https://CRAN.R-project.org/package=remotes):
 
 ``` r
-devtools::install_github("nhejazi/txshift", build_vignettes = FALSE)
+remotes::install_github("nhejazi/txshift", build_vignettes = FALSE)
 ```
 
 -----
@@ -339,7 +339,7 @@ Hejazi, Nima S, Mark J van der Laan, Holly E Janes, Peter B Gilbert, and
 David C Benkeser. 2020. “Efficient Nonparametric Inference on the
 Effects of Stochastic Interventions Under Two-Phase Sampling, with
 Applications to Vaccine Efficacy Trials.” *Biometrics (Methodology)*.
-<http://arxiv.org/abs/2003.13771>.
+<https://arxiv.org/abs/2003.13771>.
 
 </div>
 

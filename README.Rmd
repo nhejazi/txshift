@@ -60,10 +60,10 @@ methodology described in @hejazi2020efficient.
 ## Installation
 
 Install the most recent _stable release_ from GitHub via
-[`devtools`](https://www.rstudio.com/products/rpackages/devtools/):
+[`remotes`](https://CRAN.R-project.org/package=remotes):
 
 ```{r gh-master-installation, eval = FALSE}
-devtools::install_github("nhejazi/txshift", build_vignettes = FALSE)
+remotes::install_github("nhejazi/txshift", build_vignettes = FALSE)
 ```
 
 ---

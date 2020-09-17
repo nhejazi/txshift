@@ -180,7 +180,7 @@ summary(tmle_hal_shift_2)
 
 To easily incorporate ensemble machine learning into the estimation procedure,
 we rely on the facilities provided in the [`sl3` R
-package](https://sl3.tlverse.org) [@coyle2020sl3]. For a complete guide on
+package](https://tlverse.org/sl3) [@coyle2020sl3]. For a complete guide on
 using the `sl3` R package, consider consulting https://tlverse.org/sl3.
 
 ```{r make_sl, eval = FALSE}
