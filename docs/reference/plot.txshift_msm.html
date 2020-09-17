@@ -136,7 +136,7 @@
     </div>
 
     <pre class="usage"><span class='co'># S3 method for txshift_msm</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>x</span>, <span class='kw'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -159,45 +159,48 @@
  trend across posited values of the intervention.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>sl3</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>3287</span>)
-<span class='no'>n_obs</span> <span class='kw'>&lt;-</span> <span class='fl'>1000</span>
-<span class='no'>W</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>replicate</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span>(<span class='no'>n_obs</span>, <span class='fl'>1</span>, <span class='fl'>0.5</span>)))
-<span class='no'>A</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n_obs</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>2</span> * <span class='no'>W</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>1</span>))
-<span class='no'>Y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span>(<span class='no'>n_obs</span>, <span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Logistic.html'>plogis</a></span>(<span class='fl'>2</span> * <span class='no'>A</span> - <span class='no'>W</span>))
-<span class='no'>msm</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='msm_vimshift.html'>msm_vimshift</a></span>(
-  <span class='kw'>W</span> <span class='kw'>=</span> <span class='no'>W</span>, <span class='kw'>A</span> <span class='kw'>=</span> <span class='no'>A</span>, <span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>Y</span>, <span class='kw'>estimator</span> <span class='kw'>=</span> <span class='st'>"tmle"</span>,
-  <span class='kw'>g_fit_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
-    <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='st'>"sl"</span>,
-    <span class='kw'>sl_learners_density</span> <span class='kw'>=</span> <span class='no'>Lrnr_density_hse</span>$<span class='fu'>new</span>(<span class='no'>Lrnr_glm</span>$<span class='fu'>new</span>())
-  ),
-  <span class='kw'>Q_fit_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
-    <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='st'>"glm"</span>,
-    <span class='kw'>glm_formula</span> <span class='kw'>=</span> <span class='st'>"Y ~ ."</span>
-  ),
-  <span class='kw'>delta_grid</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(-<span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>0.25</span>)
-)
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>msm</span>)</div><div class='img'><img src='plot.txshift_msm-1.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='co'># fit a linear spline with knot at 0</span>
-<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>8293</span>)
-<span class='no'>n_obs</span> <span class='kw'>&lt;-</span> <span class='fl'>1000</span>
-<span class='no'>W</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>replicate</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span>(<span class='no'>n_obs</span>, <span class='fl'>1</span>, <span class='fl'>0.5</span>)))
-<span class='no'>A</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n_obs</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>2</span> * <span class='no'>W</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>1</span>))
-<span class='no'>Y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span>(<span class='no'>n_obs</span>, <span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Logistic.html'>plogis</a></span>(<span class='fl'>0.1</span> * <span class='no'>A</span> * (<span class='no'>A</span> <span class='kw'>&gt;=</span> <span class='fl'>0</span>) - <span class='fl'>3</span> * <span class='no'>A</span> * (<span class='no'>A</span> <span class='kw'>&lt;</span> <span class='fl'>0</span>) - <span class='no'>W</span>))
-<span class='no'>msm</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='msm_vimshift.html'>msm_vimshift</a></span>(
-  <span class='kw'>W</span> <span class='kw'>=</span> <span class='no'>W</span>, <span class='kw'>A</span> <span class='kw'>=</span> <span class='no'>A</span>, <span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>Y</span>, <span class='kw'>estimator</span> <span class='kw'>=</span> <span class='st'>"tmle"</span>,
-  <span class='kw'>g_fit_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
-    <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='st'>"sl"</span>,
-    <span class='kw'>sl_learners_density</span> <span class='kw'>=</span> <span class='no'>Lrnr_density_hse</span>$<span class='fu'>new</span>(<span class='no'>Lrnr_glm</span>$<span class='fu'>new</span>())
-  ),
-  <span class='kw'>Q_fit_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
-    <span class='kw'>fit_type</span> <span class='kw'>=</span> <span class='st'>"glm"</span>,
-    <span class='kw'>glm_formula</span> <span class='kw'>=</span> <span class='st'>"Y ~ ."</span>
-  ),
-  <span class='kw'>delta_grid</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(-<span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>0.25</span>),
-  <span class='kw'>msm_form</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"piecewise"</span>, <span class='kw'>knot</span> <span class='kw'>=</span> <span class='fl'>0</span>)
-)
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>msm</span>)</div><div class='img'><img src='plot.txshift_msm-2.png' alt='' width='700' height='433' /></div></pre>
+    <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fu'><a href='https://rdrr.io/r/base/library.html'>require</a></span>(<span class='st'><a href='https://tlverse.org/sl3'>"sl3"</a></span>)) {
+  <span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>3287</span>)
+  <span class='kw'>n_obs</span> <span class='op'>&lt;-</span> <span class='fl'>1000</span>
+  <span class='kw'>W</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>replicate</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span>(<span class='kw'>n_obs</span>, <span class='fl'>1</span>, <span class='fl'>0.5</span>)))
+  <span class='kw'>A</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='kw'>n_obs</span>, mean = <span class='fl'>2</span> <span class='op'>*</span> <span class='kw'>W</span>, sd = <span class='fl'>1</span>))
+  <span class='kw'>Y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span>(<span class='kw'>n_obs</span>, <span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Logistic.html'>plogis</a></span>(<span class='fl'>2</span> <span class='op'>*</span> <span class='kw'>A</span> <span class='op'>-</span> <span class='kw'>W</span>))
+  <span class='kw'>msm</span> <span class='op'>&lt;-</span> <span class='fu'><a href='msm_vimshift.html'>msm_vimshift</a></span>(
+    W = <span class='kw'>W</span>, A = <span class='kw'>A</span>, Y = <span class='kw'>Y</span>, estimator = <span class='st'>"tmle"</span>,
+    g_fit_args = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
+      fit_type = <span class='st'>"sl"</span>,
+      sl_learners_density = <span class='kw'>Lrnr_density_hse</span><span class='op'>$</span><span class='fu'>new</span>(<span class='kw'>Lrnr_glm</span><span class='op'>$</span><span class='fu'>new</span>())
+    ),
+    Q_fit_args = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
+      fit_type = <span class='st'>"glm"</span>,
+      glm_formula = <span class='st'>"Y ~ ."</span>
+    ),
+    delta_grid = <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='op'>-</span><span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>0.25</span>)
+  )
+  <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>msm</span>)
+
+  <span class='co'># fit a linear spline with knot at 0</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>8293</span>)
+  <span class='kw'>n_obs</span> <span class='op'>&lt;-</span> <span class='fl'>1000</span>
+  <span class='kw'>W</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>replicate</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span>(<span class='kw'>n_obs</span>, <span class='fl'>1</span>, <span class='fl'>0.5</span>)))
+  <span class='kw'>A</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/numeric.html'>as.numeric</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='kw'>n_obs</span>, mean = <span class='fl'>2</span> <span class='op'>*</span> <span class='kw'>W</span>, sd = <span class='fl'>1</span>))
+  <span class='kw'>Y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span>(<span class='kw'>n_obs</span>, <span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Logistic.html'>plogis</a></span>(<span class='fl'>0.1</span> <span class='op'>*</span> <span class='kw'>A</span> <span class='op'>*</span> (<span class='kw'>A</span> <span class='op'>&gt;=</span> <span class='fl'>0</span>) <span class='op'>-</span> <span class='fl'>3</span> <span class='op'>*</span> <span class='kw'>A</span> <span class='op'>*</span> (<span class='kw'>A</span> <span class='op'>&lt;</span> <span class='fl'>0</span>) <span class='op'>-</span> <span class='kw'>W</span>))
+  <span class='kw'>msm</span> <span class='op'>&lt;-</span> <span class='fu'><a href='msm_vimshift.html'>msm_vimshift</a></span>(
+    W = <span class='kw'>W</span>, A = <span class='kw'>A</span>, Y = <span class='kw'>Y</span>, estimator = <span class='st'>"tmle"</span>,
+    g_fit_args = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
+      fit_type = <span class='st'>"sl"</span>,
+      sl_learners_density = <span class='kw'>Lrnr_density_hse</span><span class='op'>$</span><span class='fu'>new</span>(<span class='kw'>Lrnr_glm</span><span class='op'>$</span><span class='fu'>new</span>())
+    ),
+    Q_fit_args = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(
+      fit_type = <span class='st'>"glm"</span>,
+      glm_formula = <span class='st'>"Y ~ ."</span>
+    ),
+    delta_grid = <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='op'>-</span><span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>0.25</span>),
+    msm_form = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(type = <span class='st'>"piecewise"</span>, knot = <span class='fl'>0</span>)
+  )
+  <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>msm</span>)
+}
+</div><div class='img'><img src='plot.txshift_msm-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -213,7 +216,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -11,9 +11,9 @@ Status](https://ci.appveyor.com/api/projects/status/github/nhejazi/txshift?branc
 Status](https://img.shields.io/codecov/c/github/nhejazi/txshift/master.svg)](https://codecov.io/github/nhejazi/txshift?branch=master)
 [![Project Status: Active – The project has reached a stable, usable
 state and is being actively
-developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![MIT
-license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
+license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 
 > Efficient Estimation of the Causal Effects of Stochastic Interventions
 
@@ -27,10 +27,10 @@ Benkeser](https://www.sph.emory.edu/faculty/profile/#!dbenkes)
 The `txshift` R package is designed to provide facilities for the
 construction of efficient estimators of a causal parameter defined as
 the counterfactual mean of an outcome under stochastic mechanisms for
-treatment assignment (Díaz and van der Laan 2012). `txshift` implements
+treatment assignment (Dı́az and van der Laan 2012). `txshift` implements
 and builds upon a simplified algorithm for the targeted maximum
 likelihood (TML) estimator of such a causal parameter, originally
-proposed by Díaz and van der Laan (2018), and makes use of analogous
+proposed by Dı́az and van der Laan (2018), and makes use of analogous
 machinery to compute an efficient one-step estimator (Pfanzagl and
 Wefelmeyer 1985). `txshift` integrates with the [`sl3`
 package](https://github.com/tlverse/sl3) (Coyle et al. 2020) to allow
@@ -47,7 +47,9 @@ introducing inverse probability of censoring (IPC) weights directly to
 an appropriate loss function or to the efficient influence function
 estimating equation. `txshift` extends this approach to compute
 IPC-weighted one-step and TML estimators of the counterfactual mean
-under a stochastic treatment regime.
+outcome under a shift stochastic treatment regime. The package is
+designed to implement the statistical methodology described in Hejazi et
+al. (2020).
 
 -----
 
@@ -158,7 +160,9 @@ summary(ipcw_os)
 ## Issues
 
 If you encounter any bugs or have any specific feature requests, please
-[file an issue](https://github.com/nhejazi/txshift/issues).
+[file an issue](https://github.com/nhejazi/txshift/issues). Further
+details on filing issues are provided in our [contribution
+guidelines](https://github.com/nhejazi/txshift/blob/master/CONTRIBUTING.md).
 
 -----
 
@@ -176,17 +180,28 @@ prior to submitting a pull request.
 After using the `txshift` R package, please cite the following:
 
 ``` 
-    @article{hejazi2020efficient,
+    @article{hejazi2020efficient-biom,
       author = {Hejazi, Nima S and {van der Laan}, Mark J and Janes, Holly
         E and Gilbert, Peter B and Benkeser, David C},
       title = {Efficient nonparametric inference on the effects of
         stochastic interventions under two-phase sampling, with
         applications to vaccine efficacy trials},
       year  = {2020},
-      url = {http://arxiv.org/abs/2003.13771}
+      url = {http://arxiv.org/abs/2003.13771},
+      journal = {Biometrics (Methodology)},
+      publisher = {Wiley Online Library}
     }
 
-    @manual{hejazi2020txshift,
+    @article{hejazi2020txshift-joss,
+      author = {Hejazi, Nima S and Benkeser, David C},
+      title = {{txshift}: Efficient estimation of the causal effects of
+        stochastic interventions in {R}},
+      year  = {2020},
+      journal = {under review at Journal of Open Source Software},
+      publisher = {The Open Journal}
+    }
+
+    @software{hejazi2020txshift-rpkg,
       author = {Hejazi, Nima S and Benkeser, David C},
       title = {{txshift}: Efficient Estimation of the Causal Effects of
         Stochastic Interventions},
@@ -212,16 +227,16 @@ After using the `txshift` R package, please cite the following:
     providing facilities to estimate the causal effect of stochastic
     treatment regimes in the mediation setting, including classical
     (IPW) and augmented double robust (one-step) estimators. This is an
-    implementation of the methodology explored by Díaz and Hejazi
+    implementation of the methodology explored by Dı́az and Hejazi
     (2020).
 
   - [R/`haldensify`](https://github.com/nhejazi/haldensify) - A minimal
     package for estimating the conditional density treatment mechanism
     component of this parameter based on using the [highly adaptive
     lasso](https://github.com/tlverse/hal9001) (Coyle, Hejazi, and van
-    der Laan 2019) in combination with a pooled hazard regression. This
-    package implements the methodology proposed by Díaz and van der Laan
-    (2011).
+    der Laan 2020) in combination with a pooled hazard regression. This
+    package implements the methodology proposed by Dı́az and van der
+    Laan (2011).
 
 -----
 
@@ -277,9 +292,9 @@ Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2020.
 
 </div>
 
-<div id="ref-coyle2019hal9001">
+<div id="ref-coyle2020hal9001">
 
-Coyle, Jeremy R, Nima S Hejazi, and Mark J van der Laan. 2019. *hal9001:
+Coyle, Jeremy R, Nima S Hejazi, and Mark J van der Laan. 2020. *hal9001:
 The Scalable Highly Adaptive Lasso*.
 <https://github.com/tlverse/hal9001>.
 <https://doi.org/10.5281/zenodo.3558313>.
@@ -288,26 +303,25 @@ The Scalable Highly Adaptive Lasso*.
 
 <div id="ref-diaz2020causal">
 
-Díaz, Iván, and Nima S Hejazi. 2020. “Causal Mediation Analysis for
+Dı́az, Iván, and Nima S Hejazi. 2020. “Causal Mediation Analysis for
 Stochastic Interventions.” *Journal of the Royal Statistical Society:
-Series B (Statistical Methodology)*. Wiley Online Library.
+Series B (Statistical Methodology)* 82 (3): 661–83.
 <https://doi.org/10.1111/rssb.12362>.
 
 </div>
 
 <div id="ref-diaz2011super">
 
-Díaz, Iván, and Mark J van der Laan. 2011. “Super Learner Based
+Dı́az, Iván, and Mark J van der Laan. 2011. “Super Learner Based
 Conditional Density Estimation with Application to Marginal Structural
-Models.” *The International Journal of Biostatistics* 7 (1). De Gruyter:
-1–20.
+Models.” *The International Journal of Biostatistics* 7 (1): 1–20.
 
 </div>
 
 <div id="ref-diaz2012population">
 
 ———. 2012. “Population Intervention Causal Effects Based on Stochastic
-Interventions.” *Biometrics* 68 (2). Wiley Online Library: 541–49.
+Interventions.” *Biometrics* 68 (2): 541–49.
 
 </div>
 
@@ -316,6 +330,16 @@ Interventions.” *Biometrics* 68 (2). Wiley Online Library: 541–49.
 ———. 2018. “Stochastic Treatment Regimes.” In *Targeted Learning in Data
 Science: Causal Inference for Complex Longitudinal Studies*, 167–80.
 Springer Science & Business Media.
+
+</div>
+
+<div id="ref-hejazi2020efficient">
+
+Hejazi, Nima S, Mark J van der Laan, Holly E Janes, Peter B Gilbert, and
+David C Benkeser. 2020. “Efficient Nonparametric Inference on the
+Effects of Stochastic Interventions Under Two-Phase Sampling, with
+Applications to Vaccine Efficacy Trials.” *Biometrics (Methodology)*.
+<http://arxiv.org/abs/2003.13771>.
 
 </div>
 

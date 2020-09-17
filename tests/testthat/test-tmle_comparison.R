@@ -1,5 +1,6 @@
 context("Implementations of TML estimator variants agree")
 library(data.table)
+library(rlang)
 set.seed(172943)
 
 # Example based on the data-generating mechanism presented in the simulation

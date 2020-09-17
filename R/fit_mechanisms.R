@@ -22,7 +22,6 @@
 #'  Super Learner and is thus only feasible for relatively small data sets.
 #'
 #' @importFrom data.table as.data.table setnames set copy
-#' @importFrom sl3 sl3_Task
 #' @importFrom stats predict
 #' @importFrom haldensify haldensify
 #' @importFrom assertthat assert_that
@@ -229,7 +228,6 @@ est_g <- function(A,
 #' @importFrom stats glm as.formula predict
 #' @importFrom data.table as.data.table setnames copy set
 #' @importFrom stringr str_detect
-#' @importFrom sl3 sl3_Task
 #' @importFrom assertthat assert_that
 #'
 #' @return A \code{data.table} with two columns, containing estimates of the
@@ -362,7 +360,6 @@ est_Q <- function(Y,
 #'
 #' @importFrom stats glm predict binomial
 #' @importFrom data.table as.data.table setnames
-#' @importFrom sl3 sl3_Task
 #' @importFrom assertthat assert_that
 #'
 #' @return A \code{list} containing a \code{numeric} vector corresponding to

@@ -1,5 +1,9 @@
 # txshift 0.3.4
 
+As of September 2020:
+* Moved `sl3` dependency to an `Enhances` designation for CRAN submission.
+* As above, removed `sl3` from `Remotes` and added installation safety checks.
+
 As of June 2020:
 * Add single-knot spline to MSM summarization (`msm_vimshift`).
 * Add class and `plot` method for MSM summarization (`msm_vimshift`).
