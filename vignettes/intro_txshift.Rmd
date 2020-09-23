@@ -11,10 +11,6 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, echo=FALSE}
-options(scipen = 999)
-```
-
 ## Introduction
 
 Stochastic treatment regimes present a relatively simple manner in which to
@@ -148,8 +144,9 @@ summary(tmle_hal_shift_2)
 
 To easily incorporate ensemble machine learning into the estimation procedure,
 we rely on the facilities provided in the [`sl3` R
-package](https://tlverse.org/sl3) [@coyle2020sl3]. For a complete guide on
-using the `sl3` R package, consider consulting https://tlverse.org/sl3.
+package](https://tlverse.org/sl3/) [@coyle2020sl3]. For a complete guide on
+using the `sl3` R package, consider consulting https://tlverse.org/sl3/ and
+https://tlverse.org/tlverse-handbook/sl3.html.
 
 ```{r, eval = FALSE}
 # SL learners to be used for most fits (e.g., IPCW, outcome regression)
@@ -174,7 +171,7 @@ sl_learner_density <- Lrnr_sl$new(learners = g_lib,
 
 ### Estimating Stochastic Interventions Effects with Stacked Regressions
 
-Using the framework provided by the [`sl3` package](https://tlverse.org/sl3),
+Using the framework provided by the [`sl3` package](https://tlverse.org/sl3/),
 the nuisance parameters of the TML estimator may be fit with ensemble learning,
 using the cross-validation framework of the Super Learner algorithm of
 @vdl2007super.

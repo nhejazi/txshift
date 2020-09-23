@@ -90,7 +90,7 @@
 <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://www.sph.emory.edu/faculty/profile/#!dbenkes">David Benkeser</a>
 </h4>
             
-            <h4 class="date">2020-09-17</h4>
+            <h4 class="date">2020-09-23</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nhejazi/txshift/blob/master/vignettes/intro_txshift.Rmd"><code>vignettes/intro_txshift.Rmd</code></a></small>
       <div class="hidden name"><code>intro_txshift.Rmd</code></div>
@@ -201,7 +201,7 @@
 <h3 class="hasAnchor">
 <a href="#interlude-constructing-optimal-stacked-regressions-with-sl3" class="anchor"></a>Interlude: Constructing Optimal Stacked Regressions with <code>sl3</code>
 </h3>
-<p>To easily incorporate ensemble machine learning into the estimation procedure, we rely on the facilities provided in the <a href="https://tlverse.org/sl3"><code>sl3</code> R package</a> <span class="citation">(Coyle et al. 2020)</span>. For a complete guide on using the <code>sl3</code> R package, consider consulting <a href="https://tlverse.org/sl3" class="uri">https://tlverse.org/sl3</a>.</p>
+<p>To easily incorporate ensemble machine learning into the estimation procedure, we rely on the facilities provided in the <a href="https://tlverse.org/sl3/"><code>sl3</code> R package</a> <span class="citation">(Coyle et al. 2020)</span>. For a complete guide on using the <code>sl3</code> R package, consider consulting <a href="https://tlverse.org/sl3/" class="uri">https://tlverse.org/sl3/</a> and <a href="https://tlverse.org/tlverse-handbook/sl3.html" class="uri">https://tlverse.org/tlverse-handbook/sl3.html</a>.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit">
 <span class="co"># SL learners to be used for most fits (e.g., IPCW, outcome regression)</span>
 <span class="kw">mean_learner</span> <span class="op">&lt;-</span> <span class="kw">Lrnr_mean</span><span class="op">$</span><span class="fu">new</span>()
@@ -226,7 +226,7 @@
 <div id="estimating-stochastic-interventions-effects-with-stacked-regressions" class="section level3">
 <h3 class="hasAnchor">
 <a href="#estimating-stochastic-interventions-effects-with-stacked-regressions" class="anchor"></a>Estimating Stochastic Interventions Effects with Stacked Regressions</h3>
-<p>Using the framework provided by the <a href="https://tlverse.org/sl3"><code>sl3</code> package</a>, the nuisance parameters of the TML estimator may be fit with ensemble learning, using the cross-validation framework of the Super Learner algorithm of <span class="citation">van der Laan, Polley, and Hubbard (2007)</span>.</p>
+<p>Using the framework provided by the <a href="https://tlverse.org/sl3/"><code>sl3</code> package</a>, the nuisance parameters of the TML estimator may be fit with ensemble learning, using the cross-validation framework of the Super Learner algorithm of <span class="citation">van der Laan, Polley, and Hubbard (2007)</span>.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit">
 <span class="kw">tmle_sl_shift_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/txshift.html">txshift</a></span>(W = <span class="kw">W</span>, A = <span class="kw">A</span>, Y = <span class="kw">Y</span>, delta = <span class="kw">delta</span>,
                            fluctuation = <span class="st">"standard"</span>,

@@ -18,5 +18,7 @@
 * In the initial attempt, there were two significant issues:
   * A few more links throughout used `http`; these have been moved to `https`
     or otherwise changed entirely.
-  * The old URL `https://sl3.tlverse.org` has been replaced by
-    `https://tlverse.org/sl3`
+  * The old URL `https://sl3.tlverse.org` has been replaced by a corrected
+    version `https://tlverse.org/sl3/`
+  * Changing of user options via calls to `options()` in the vignettes have
+    been removed entirely.
