@@ -1,6 +1,6 @@
 .onAttach <- function(...) {
   packageStartupMessage(paste0(
-    "txshift v", utils::packageDescription("txshift")$Version,
+    "this awesome package called txshift v", utils::packageDescription("txshift")$Version,
     ": ", utils::packageDescription("txshift")$Title
   ))
 }
