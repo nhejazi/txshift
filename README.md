@@ -9,6 +9,9 @@ Status](https://travis-ci.org/nhejazi/txshift.svg?branch=master)](https://travis
 Status](https://ci.appveyor.com/api/projects/status/github/nhejazi/txshift?branch=master&svg=true)](https://ci.appveyor.com/project/nhejazi/txshift)
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/nhejazi/txshift/master.svg)](https://codecov.io/github/nhejazi/txshift?branch=master)
+[![CRAN](http://www.r-pkg.org/badges/version/txshift)](http://www.r-pkg.org/pkg/txshift)
+[![CRAN
+downloads](https://cranlogs.r-pkg.org/badges/txshift)](https://CRAN.R-project.org/package=txshift)
 [![Project Status: Active – The project has reached a stable, usable
 state and is being actively
 developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
@@ -55,11 +58,26 @@ al. (2020).
 
 ## Installation
 
-Install the most recent *stable release* from GitHub via
+For standard use, we recommend installing the package from
+[CRAN](https://CRAN.R-project.org/package=txshift) via
+
+``` r
+install.packages("txshift")
+```
+
+For the latest features, install the most recent *stable version* of
+`txshift` from GitHub via
 [`remotes`](https://CRAN.R-project.org/package=remotes):
 
 ``` r
-remotes::install_github("nhejazi/txshift", build_vignettes = FALSE)
+remotes::install_github("nhejazi/txshift@master")
+```
+
+To contribute, install the *development version* of `txshift` from
+GitHub via [`remotes`](https://CRAN.R-project.org/package=remotes):
+
+``` r
+remotes::install_github("nhejazi/txshift@devel")
 ```
 
 -----

@@ -4,6 +4,7 @@ tags:
   - causal inference
   - machine learning
   - two-phase sampling
+  - efficient estimation
   - targeted learning
   - stochastic interventions
   - R
@@ -21,7 +22,7 @@ affiliations:
     index: 2
   - name: Department of Biostatistics and Bioinformatics, Rollins School of Public Health, Emory University
     index: 3
-date: 30 March 2020
+date: 25 September 2020
 bibliography: refs.bib
 ---
 
@@ -50,7 +51,7 @@ defined as the mean counterfactual outcome under a hypothetically shifted
 version of the observed exposure distribution [@diaz2012population].
 Modified treatment policies, a particular class of such interventions, may be
 interpreted as shifting the natural exposure level at the level of a given
-observational unit [@haneuse2013estimation;@diaz2018stochastic].
+observational unit [@haneuse2013estimation; @diaz2018stochastic].
 
 Despite the promise of such advances in causal inference, real data analyses are
 often further complicated by economic constraints, such as when the primary
@@ -87,13 +88,19 @@ thoroughly by @hejazi2020efficient. `txshift`
 integrates with the [`sl3` package](https://github.com/tlverse/sl3)
 [@coyle2020sl3] to allow for ensemble machine learning to be leveraged in the
 estimation of nuisance parameters. What's more, the `txshift` package draws on
-both the `hal9001` and `haldensify` `R` packages [@coyle2020hal9001;
-@hejazi2020haldensify] to allow each of the estimators to be constructed in
-a manner consistent with the theoretical claims of @hejazi2020efficient. The
-`txshift` package has been made publicly available via GitHub and will be
-submitted to the Comprehensive `R` Archive Network in the near future. Use of
-the `txshift` package has been extensively documented in the package's `README`,
-two vignettes, and its `pkgdown` documentation website.
+both the `hal9001` [@coyle2020hal9001; @hejazi2020hal9001] and `haldensify`
+[@hejazi2020haldensify] `R` packages  to allow each of the estimators to be
+constructed in a manner consistent with the methodological and theoretical
+advances of @hejazi2020efficient.
+
+# Availability
+
+The `txshift` package has been made publicly available both [via
+GitHub](https://github.com/nhejazi/txshift) and the [Comprehensive `R` Archive
+Network](https://CRAN.R-project.org/package=txshift). Use of the `txshift`
+package has been extensively documented in the package's `README`, two
+vignettes, and its [`pkgdown` documentation
+website](https://code.nimahejazi.org/txshift).
 
 # Acknowledgments
 

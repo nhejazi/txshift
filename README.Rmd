@@ -20,6 +20,8 @@ knitr::opts_chunk$set(
 [![Travis-CI Build Status](https://travis-ci.org/nhejazi/txshift.svg?branch=master)](https://travis-ci.org/nhejazi/txshift)
 [![AppVeyor Build  Status](https://ci.appveyor.com/api/projects/status/github/nhejazi/txshift?branch=master&svg=true)](https://ci.appveyor.com/project/nhejazi/txshift)
 [![Coverage Status](https://img.shields.io/codecov/c/github/nhejazi/txshift/master.svg)](https://codecov.io/github/nhejazi/txshift?branch=master)
+[![CRAN](http://www.r-pkg.org/badges/version/txshift)](http://www.r-pkg.org/pkg/txshift)
+[![CRAN downloads](https://cranlogs.r-pkg.org/badges/txshift)](https://CRAN.R-project.org/package=txshift)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 
@@ -59,11 +61,25 @@ methodology described in @hejazi2020efficient.
 
 ## Installation
 
-Install the most recent _stable release_ from GitHub via
-[`remotes`](https://CRAN.R-project.org/package=remotes):
+For standard use, we recommend installing the package from
+[CRAN](https://CRAN.R-project.org/package=txshift) via
+
+```{r cran-installation, eval = FALSE}
+install.packages("txshift")
+```
+
+For the latest features, install the most recent _stable version_  of `txshift`
+from GitHub via [`remotes`](https://CRAN.R-project.org/package=remotes):
 
 ```{r gh-master-installation, eval = FALSE}
-remotes::install_github("nhejazi/txshift", build_vignettes = FALSE)
+remotes::install_github("nhejazi/txshift@master")
+```
+
+To contribute, install the _development version_ of `txshift` from GitHub via
+[`remotes`](https://CRAN.R-project.org/package=remotes):
+
+```{r gh-devel-installation, eval = FALSE}
+remotes::install_github("nhejazi/txshift@devel")
 ```
 
 ---
