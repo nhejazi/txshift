@@ -1,3 +1,14 @@
+# txshift 0.3.5
+
+As of October 2020:
+* Changes references to the argument `C` to `Delta` as the indicator of
+  inclusion in the second-stage sample.
+* Co-opts the newly freed argument `C` to denote censoring prior to occurrence
+  of the outcome.
+* Adds a nuisance regression for censoring `C` and adjusts the estimation
+  procedure so as to use inverse censoring weights for this in the full-data
+  EIF procedure (not the augmented two-phase sampling correction).
+
 # txshift 0.3.4
 
 As of September 2020:
