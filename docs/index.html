@@ -121,12 +121,16 @@
 <div class="sourceCode" id="cb1"><pre class="downlit">
 <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"txshift"</span>)
 </pre></div>
-<p>For the latest features, install the most recent <em>stable version</em> of <code>txshift</code> from GitHub via <a href="https://CRAN.R-project.org/package=remotes"><code>remotes</code></a>:</p>
+<p><em>Note:</em> If <code>txshift</code> is installed from <a href="https://CRAN.R-project.org/package=txshift">CRAN</a>, the <code>sl3</code>, an enhancing dependency that allows ensemble machine learning to be used for nuisance parameter estimation, won’t be included. We highly recommend additionally installing <code>sl3</code> from GitHub via <a href="https://CRAN.R-project.org/package=remotes"><code>remotes</code></a>:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit">
+<span class="kw">remotes</span>::<span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"tlverse/sl3@master"</span>)
+</pre></div>
+<p>For the latest features, install the most recent <em>stable version</em> of <code>txshift</code> from GitHub via <a href="https://CRAN.R-project.org/package=remotes"><code>remotes</code></a>:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit">
 <span class="kw">remotes</span>::<span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"nhejazi/txshift@master"</span>)
 </pre></div>
 <p>To contribute, install the <em>development version</em> of <code>txshift</code> from GitHub via <a href="https://CRAN.R-project.org/package=remotes"><code>remotes</code></a>:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit">
+<div class="sourceCode" id="cb4"><pre class="downlit">
 <span class="kw">remotes</span>::<span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"nhejazi/txshift@devel"</span>)
 </pre></div>
 <hr>
@@ -135,7 +139,7 @@
 <h2 class="hasAnchor">
 <a href="#example" class="anchor"></a>Example</h2>
 <p>To illustrate how <code>txshift</code> may be used to ascertain the effect of a treatment, consider the following example:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit">
+<div class="sourceCode" id="cb5"><pre class="downlit">
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://github.com/nhejazi/txshift">txshift</a></span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://github.com/nhejazi/haldensify">haldensify</a></span>)
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">429153</span>)
@@ -238,15 +242,16 @@
 <h2 class="hasAnchor">
 <a href="#citation" class="anchor"></a>Citation</h2>
 <p>After using the <code>txshift</code> R package, please cite the following:</p>
-<pre><code>    @article{hejazi2020efficient-biom,
+<pre><code>    @article{hejazi2020efficient,
       author = {Hejazi, Nima S and {van der Laan}, Mark J and Janes, Holly
         E and Gilbert, Peter B and Benkeser, David C},
       title = {Efficient nonparametric inference on the effects of
         stochastic interventions under two-phase sampling, with
         applications to vaccine efficacy trials},
-      year  = {2020},
-      url = {http://arxiv.org/abs/2003.13771},
-      journal = {Biometrics (Methodology)},
+      year = {2020},
+      doi = {10.1111/biom.13375},
+      url = {https://doi.org/10.1111/biom.13375},
+      journal = {Biometrics},
       publisher = {Wiley Online Library}
     }
 
@@ -255,7 +260,9 @@
       title = {{txshift}: Efficient estimation of the causal effects of
         stochastic interventions in {R}},
       year  = {2020},
-      journal = {under review at Journal of Open Source Software},
+      doi = {},
+      url = {},
+      journal = {Journal of Open Source Software},
       publisher = {The Open Journal}
     }
 
@@ -275,7 +282,7 @@
 <ul>
 <li><p><a href="https://github.com/tlverse/tmle3shift">R/<code>tmle3shift</code></a> - An R package providing an independent implementation of the same core routines for the TML estimation procedure and statistical methodology as is made available here, through reliance on a unified interface for Targeted Learning provided by the <a href="https://github.com/tlverse/tmle3"><code>tmle3</code></a> engine of the <a href="https://github.com/tlverse"><code>tlverse</code> ecosystem</a>.</p></li>
 <li><p><a href="https://github.com/nhejazi/medshift">R/<code>medshift</code></a> - An R package providing facilities to estimate the causal effect of stochastic treatment regimes in the mediation setting, including classical (IPW) and augmented double robust (one-step) estimators. This is an implementation of the methodology explored by Dı́az and Hejazi (2020).</p></li>
-<li><p><a href="https://github.com/nhejazi/haldensify">R/<code>haldensify</code></a> - A minimal package for estimating the conditional density treatment mechanism component of this parameter based on using the <a href="https://github.com/tlverse/hal9001">highly adaptive lasso</a> (Coyle, Hejazi, and van der Laan 2020) in combination with a pooled hazard regression. This package implements the methodology proposed by Dı́az and van der Laan (2011).</p></li>
+<li><p><a href="https://github.com/nhejazi/haldensify">R/<code>haldensify</code></a> - A minimal package for estimating the conditional density treatment mechanism component of this parameter based on using the <a href="https://github.com/tlverse/hal9001">highly adaptive lasso</a> (Coyle, Hejazi, and van der Laan 2020; Hejazi, Coyle, and van der Laan 2020) in combination with a pooled hazard regression. This package implements a variant of the approach advocated by Dı́az and van der Laan (2011).</p></li>
 </ul>
 <hr>
 </div>
@@ -290,27 +297,27 @@
 <a href="#license" class="anchor"></a>License</h2>
 <p>© 2017-2020 <a href="https://nimahejazi.org">Nima S. Hejazi</a></p>
 <p>The contents of this repository are distributed under the MIT license. See below for details:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">MIT License</a>
-<a class="sourceLine" id="cb6-2" title="2"></a>
-<a class="sourceLine" id="cb6-3" title="3"><span class="kw">Copyright</span> (c) <span class="dv">2017-2020</span> Nima S. Hejazi</a>
-<a class="sourceLine" id="cb6-4" title="4"></a>
-<a class="sourceLine" id="cb6-5" title="5">Permission is hereby granted, free of charge, to any person obtaining a copy</a>
-<a class="sourceLine" id="cb6-6" title="6">of this software and associated documentation <span class="kw">files</span> (the <span class="st">"Software"</span>), to deal</a>
-<a class="sourceLine" id="cb6-7" title="7"><span class="cf">in</span> the Software without restriction, including without limitation the rights</a>
-<a class="sourceLine" id="cb6-8" title="8">to use, copy, modify, merge, publish, distribute, sublicense, and<span class="op">/</span>or sell</a>
-<a class="sourceLine" id="cb6-9" title="9">copies of the Software, and to permit persons to whom the Software is</a>
-<a class="sourceLine" id="cb6-10" title="10">furnished to do so, subject to the following conditions<span class="op">:</span></a>
-<a class="sourceLine" id="cb6-11" title="11"></a>
-<a class="sourceLine" id="cb6-12" title="12">The above copyright notice and this permission notice shall be included <span class="cf">in</span> all</a>
-<a class="sourceLine" id="cb6-13" title="13">copies or substantial portions of the Software.</a>
-<a class="sourceLine" id="cb6-14" title="14"></a>
-<a class="sourceLine" id="cb6-15" title="15">THE SOFTWARE IS PROVIDED <span class="st">"AS IS"</span>, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</a>
-<a class="sourceLine" id="cb6-16" title="16">IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</a>
-<a class="sourceLine" id="cb6-17" title="17">FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</a>
-<a class="sourceLine" id="cb6-18" title="18">AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</a>
-<a class="sourceLine" id="cb6-19" title="19">LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</a>
-<a class="sourceLine" id="cb6-20" title="20">OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</a>
-<a class="sourceLine" id="cb6-21" title="21">SOFTWARE.</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">MIT License</a>
+<a class="sourceLine" id="cb7-2" title="2"></a>
+<a class="sourceLine" id="cb7-3" title="3"><span class="kw">Copyright</span> (c) <span class="dv">2017-2020</span> Nima S. Hejazi</a>
+<a class="sourceLine" id="cb7-4" title="4"></a>
+<a class="sourceLine" id="cb7-5" title="5">Permission is hereby granted, free of charge, to any person obtaining a copy</a>
+<a class="sourceLine" id="cb7-6" title="6">of this software and associated documentation <span class="kw">files</span> (the <span class="st">"Software"</span>), to deal</a>
+<a class="sourceLine" id="cb7-7" title="7"><span class="cf">in</span> the Software without restriction, including without limitation the rights</a>
+<a class="sourceLine" id="cb7-8" title="8">to use, copy, modify, merge, publish, distribute, sublicense, and<span class="op">/</span>or sell</a>
+<a class="sourceLine" id="cb7-9" title="9">copies of the Software, and to permit persons to whom the Software is</a>
+<a class="sourceLine" id="cb7-10" title="10">furnished to do so, subject to the following conditions<span class="op">:</span></a>
+<a class="sourceLine" id="cb7-11" title="11"></a>
+<a class="sourceLine" id="cb7-12" title="12">The above copyright notice and this permission notice shall be included <span class="cf">in</span> all</a>
+<a class="sourceLine" id="cb7-13" title="13">copies or substantial portions of the Software.</a>
+<a class="sourceLine" id="cb7-14" title="14"></a>
+<a class="sourceLine" id="cb7-15" title="15">THE SOFTWARE IS PROVIDED <span class="st">"AS IS"</span>, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</a>
+<a class="sourceLine" id="cb7-16" title="16">IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</a>
+<a class="sourceLine" id="cb7-17" title="17">FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</a>
+<a class="sourceLine" id="cb7-18" title="18">AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</a>
+<a class="sourceLine" id="cb7-19" title="19">LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</a>
+<a class="sourceLine" id="cb7-20" title="20">OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</a>
+<a class="sourceLine" id="cb7-21" title="21">SOFTWARE.</a></code></pre></div>
 <hr>
 </div>
 <div id="references" class="section level2">
@@ -320,7 +327,7 @@
 <div id="ref-coyle2020sl3">
 <p>Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2020. <em>sl3: Modern Pipelines for Machine Learning and Super Learning</em>. <a href="https://github.com/tlverse/sl3" class="uri">https://github.com/tlverse/sl3</a>. <a href="https://doi.org/10.5281/zenodo.1342293" class="uri">https://doi.org/10.5281/zenodo.1342293</a>.</p>
 </div>
-<div id="ref-coyle2020hal9001">
+<div id="ref-coyle2020hal9001-rpkg">
 <p>Coyle, Jeremy R, Nima S Hejazi, and Mark J van der Laan. 2020. <em>hal9001: The Scalable Highly Adaptive Lasso</em>. <a href="https://github.com/tlverse/hal9001" class="uri">https://github.com/tlverse/hal9001</a>. <a href="https://doi.org/10.5281/zenodo.3558313" class="uri">https://doi.org/10.5281/zenodo.3558313</a>.</p>
 </div>
 <div id="ref-diaz2020causal">
@@ -335,8 +342,11 @@
 <div id="ref-diaz2018stochastic">
 <p>———. 2018. “Stochastic Treatment Regimes.” In <em>Targeted Learning in Data Science: Causal Inference for Complex Longitudinal Studies</em>, 167–80. Springer Science &amp; Business Media.</p>
 </div>
+<div id="ref-hejazi2020hal9001-joss">
+<p>Hejazi, Nima S, Jeremy R Coyle, and Mark J van der Laan. 2020. “hal9001: Scalable Highly Adaptive Lasso Regression in R.” <em>Journal of Open Source Software</em> 5 (53): 2526. <a href="https://doi.org/10.21105/joss.02526" class="uri">https://doi.org/10.21105/joss.02526</a>.</p>
+</div>
 <div id="ref-hejazi2020efficient">
-<p>Hejazi, Nima S, Mark J van der Laan, Holly E Janes, Peter B Gilbert, and David C Benkeser. 2020. “Efficient Nonparametric Inference on the Effects of Stochastic Interventions Under Two-Phase Sampling, with Applications to Vaccine Efficacy Trials.” <em>Biometrics (Methodology)</em>. <a href="https://arxiv.org/abs/2003.13771" class="uri">https://arxiv.org/abs/2003.13771</a>.</p>
+<p>Hejazi, Nima S, Mark J van der Laan, Holly E Janes, Peter B Gilbert, and David C Benkeser. 2020. “Efficient Nonparametric Inference on the Effects of Stochastic Interventions Under Two-Phase Sampling, with Applications to Vaccine Efficacy Trials.” <em>Biometrics</em>. <a href="https://doi.org/10.1111/biom.13375" class="uri">https://doi.org/10.1111/biom.13375</a>.</p>
 </div>
 <div id="ref-pfanzagl1985contributions">
 <p>Pfanzagl, J, and W Wefelmeyer. 1985. “Contributions to a General Asymptotic Statistical Theory.” <em>Statistics &amp; Risk Modeling</em> 3 (3-4): 379–88.</p>

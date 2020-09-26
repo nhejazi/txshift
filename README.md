@@ -65,6 +65,17 @@ For standard use, we recommend installing the package from
 install.packages("txshift")
 ```
 
+*Note:* If `txshift` is installed from
+[CRAN](https://CRAN.R-project.org/package=txshift), the `sl3`, an
+enhancing dependency that allows ensemble machine learning to be used
+for nuisance parameter estimation, won’t be included. We highly
+recommend additionally installing `sl3` from GitHub via
+[`remotes`](https://CRAN.R-project.org/package=remotes):
+
+``` r
+remotes::install_github("tlverse/sl3@master")
+```
+
 For the latest features, install the most recent *stable version* of
 `txshift` from GitHub via
 [`remotes`](https://CRAN.R-project.org/package=remotes):
@@ -198,15 +209,16 @@ prior to submitting a pull request.
 After using the `txshift` R package, please cite the following:
 
 ``` 
-    @article{hejazi2020efficient-biom,
+    @article{hejazi2020efficient,
       author = {Hejazi, Nima S and {van der Laan}, Mark J and Janes, Holly
         E and Gilbert, Peter B and Benkeser, David C},
       title = {Efficient nonparametric inference on the effects of
         stochastic interventions under two-phase sampling, with
         applications to vaccine efficacy trials},
-      year  = {2020},
-      url = {http://arxiv.org/abs/2003.13771},
-      journal = {Biometrics (Methodology)},
+      year = {2020},
+      doi = {10.1111/biom.13375},
+      url = {https://doi.org/10.1111/biom.13375},
+      journal = {Biometrics},
       publisher = {Wiley Online Library}
     }
 
@@ -215,7 +227,9 @@ After using the `txshift` R package, please cite the following:
       title = {{txshift}: Efficient estimation of the causal effects of
         stochastic interventions in {R}},
       year  = {2020},
-      journal = {under review at Journal of Open Source Software},
+      doi = {},
+      url = {},
+      journal = {Journal of Open Source Software},
       publisher = {The Open Journal}
     }
 
@@ -252,9 +266,9 @@ After using the `txshift` R package, please cite the following:
     package for estimating the conditional density treatment mechanism
     component of this parameter based on using the [highly adaptive
     lasso](https://github.com/tlverse/hal9001) (Coyle, Hejazi, and van
-    der Laan 2020) in combination with a pooled hazard regression. This
-    package implements the methodology proposed by Dı́az and van der
-    Laan (2011).
+    der Laan 2020; Hejazi, Coyle, and van der Laan 2020) in combination
+    with a pooled hazard regression. This package implements a variant
+    of the approach advocated by Dı́az and van der Laan (2011).
 
 -----
 
@@ -310,7 +324,7 @@ Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2020.
 
 </div>
 
-<div id="ref-coyle2020hal9001">
+<div id="ref-coyle2020hal9001-rpkg">
 
 Coyle, Jeremy R, Nima S Hejazi, and Mark J van der Laan. 2020. *hal9001:
 The Scalable Highly Adaptive Lasso*.
@@ -351,13 +365,21 @@ Springer Science & Business Media.
 
 </div>
 
+<div id="ref-hejazi2020hal9001-joss">
+
+Hejazi, Nima S, Jeremy R Coyle, and Mark J van der Laan. 2020. “hal9001:
+Scalable Highly Adaptive Lasso Regression in R.” *Journal of Open Source
+Software* 5 (53): 2526. <https://doi.org/10.21105/joss.02526>.
+
+</div>
+
 <div id="ref-hejazi2020efficient">
 
 Hejazi, Nima S, Mark J van der Laan, Holly E Janes, Peter B Gilbert, and
 David C Benkeser. 2020. “Efficient Nonparametric Inference on the
 Effects of Stochastic Interventions Under Two-Phase Sampling, with
-Applications to Vaccine Efficacy Trials.” *Biometrics (Methodology)*.
-<https://arxiv.org/abs/2003.13771>.
+Applications to Vaccine Efficacy Trials.” *Biometrics*.
+<https://doi.org/10.1111/biom.13375>.
 
 </div>
 

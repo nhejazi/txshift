@@ -90,7 +90,7 @@
 <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://www.sph.emory.edu/faculty/profile/#!dbenkes">David Benkeser</a>
 </h4>
             
-            <h4 class="date">2020-09-25</h4>
+            <h4 class="date">2020-09-26</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nhejazi/txshift/blob/master/vignettes/ipcw_txshift.Rmd"><code>vignettes/ipcw_txshift.Rmd</code></a></small>
       <div class="hidden name"><code>ipcw_txshift.Rmd</code></div>
@@ -161,7 +161,7 @@
 <div id="methodology" class="section level2">
 <h2 class="hasAnchor">
 <a href="#methodology" class="anchor"></a>Methodology</h2>
-<p><strong>Note:</strong> In all examples below, the argument <code>eif_reg_type</code> is set to <code>"glm"</code> (whereas the default is <code>"hal"</code>) when invoking an IPCW-TMLE. This is done in an effort to speed along the computation process, as this argument controls the manner in which a nuisance regression associated with the efficient influence function of the IPCW-TMLE is fit. As stated in the documentation, setting this argument to <code>"glm"</code> fits this EIF nuisance regression with a generalized linear model (GLM; an assumption-laden parametric form) while the default value of <code>"hal"</code> fits the nuisance regression with the highly adaptive lasso (HAL; a recently developed nonparametric estimator) via the <a href="https://github.com/tlverse/hal9001"><code>hal9001</code> R package</a> <span class="citation">(Coyle, Hejazi, and van der Laan 2020)</span>. In practice, we recommend leaving this argument to the default and fitting the EIF nuisance regression with HAL; however, this is significantly slower than simple using a GLM.</p>
+<p><strong>Note:</strong> In all examples below, the argument <code>eif_reg_type</code> is set to <code>"glm"</code> (whereas the default is <code>"hal"</code>) when invoking an IPCW-TMLE. This is done in an effort to speed along the computation process, as this argument controls the manner in which a nuisance regression associated with the efficient influence function of the IPCW-TMLE is fit. As stated in the documentation, setting this argument to <code>"glm"</code> fits this EIF nuisance regression with a generalized linear model (GLM; an assumption-laden parametric form) while the default value of <code>"hal"</code> fits the nuisance regression with the highly adaptive lasso (HAL; a recently developed nonparametric estimator) via the <a href="https://github.com/tlverse/hal9001"><code>hal9001</code> R package</a> <span class="citation">(<span class="citeproc-not-found" data-reference-id="coyle2020hal9001"><strong>???</strong></span>)</span>. In practice, we recommend leaving this argument to the default and fitting the EIF nuisance regression with HAL; however, this is significantly slower than simple using a GLM.</p>
 <div id="inverse-probability-weighting-with-targeted-maximum-likelihood-estimation" class="section level3">
 <h3 class="hasAnchor">
 <a href="#inverse-probability-weighting-with-targeted-maximum-likelihood-estimation" class="anchor"></a>Inverse Probability Weighting with Targeted Maximum Likelihood Estimation</h3>
@@ -375,14 +375,11 @@
 <div id="ref-coyle2020sl3">
 <p>Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2020. <em>sl3: Modern Pipelines for Machine Learning and Super Learning</em>. <a href="https://github.com/tlverse/sl3">https://github.com/tlverse/sl3</a>. <a href="https://doi.org/10.5281/zenodo.1342293">https://doi.org/10.5281/zenodo.1342293</a>.</p>
 </div>
-<div id="ref-coyle2020hal9001">
-<p>Coyle, Jeremy R, Nima S Hejazi, and Mark J van der Laan. 2020. <em>hal9001: The Scalable Highly Adaptive Lasso</em>. <a href="https://github.com/tlverse/hal9001">https://github.com/tlverse/hal9001</a>. <a href="https://doi.org/10.5281/zenodo.3558313">https://doi.org/10.5281/zenodo.3558313</a>.</p>
-</div>
 <div id="ref-diaz2018stochastic">
 <p>Dı́az, Iván, and Mark J van der Laan. 2018. “Stochastic Treatment Regimes.” In <em>Targeted Learning in Data Science: Causal Inference for Complex Longitudinal Studies</em>, 167–80. Springer Science &amp; Business Media.</p>
 </div>
 <div id="ref-hejazi2020efficient">
-<p>Hejazi, Nima S, Mark J van der Laan, Holly E Janes, Peter B Gilbert, and David C Benkeser. 2020. “Efficient Nonparametric Inference on the Effects of Stochastic Interventions Under Two-Phase Sampling, with Applications to Vaccine Efficacy Trials.” <em>Biometrics (Methodology)</em>. <a href="https://arxiv.org/abs/2003.13771">https://arxiv.org/abs/2003.13771</a>.</p>
+<p>Hejazi, Nima S, Mark J van der Laan, Holly E Janes, Peter B Gilbert, and David C Benkeser. 2020. “Efficient Nonparametric Inference on the Effects of Stochastic Interventions Under Two-Phase Sampling, with Applications to Vaccine Efficacy Trials.” <em>Biometrics</em>. <a href="https://doi.org/10.1111/biom.13375">https://doi.org/10.1111/biom.13375</a>.</p>
 </div>
 <div id="ref-pearl2000causality">
 <p>Pearl, Judea. 2000. <em>Causality</em>. Cambridge university press.</p>
