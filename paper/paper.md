@@ -41,8 +41,8 @@ types of modern corrections, both rooted in semiparametric theory, for
 constructing unbiased and efficient estimates, despite the significant
 limitations induced by such designs. Thus, `txshift` makes possible the
 estimation of the causal effects of stochastic interventions in experimental and
-observational study settings subject to common real-world design limitations
-that commonly arise in modern scientific practice.
+observational study settings subject to real-world design limitations that
+commonly arise in modern scientific practice.
 
 # Background
 
