@@ -10,16 +10,20 @@
 #'  baseline covariates.
 #' @param A A \code{numeric} vector corresponding to a treatment variable. The
 #'  parameter of interest is defined as a location shift of this quantity.
+#' @param C_cens A \code{numeric} indicator for whether a given observation was
+#'  subject to censoring by way of loss to follow-up. The default assumes no
+#'  censoring due to loss to follow-up.
 #' @param Y A \code{numeric} vector of the observed outcomes.
-#' @param C A \code{numeric} indicator for whether a given observation was
-#'  subject to censoring, used to compute an IPC-weighted estimator in cases
-#'  where two-stage sampling is performed. The default assumes no censoring.
+#' @param C_samp A \code{numeric} indicator for whether a given observation was
+#'  subject to censoring by being omitted from the second-stage sample, used to
+#'  compute an inverse probability of censoring weighted estimator in such
+#'  cases. The default assumes no censoring due to two-phase sampling.
 #' @param V The covariates that are used in determining the sampling procedure
 #'  that gives rise to censoring. The default is \code{NULL} and corresponds to
 #'  scenarios in which there is no censoring (in which case all values in the
-#'  preceding argument \code{C} must be uniquely 1). To specify this, pass in a
-#'  \code{character} vector identifying variables amongst W, A, Y thought to
-#'  have played a role in defining the sampling/censoring mechanism (C). This
+#'  preceding argument \code{C_samp} must be uniquely 1). To specify this, pass
+#'  in a \code{character} vector identifying variables amongst W, A, Y thought
+#'  to have impacted the definition of the sampling mechanism (C_samp). This
 #'  argument also accepts a \code{data.table} (or similar) object composed of
 #'  combinations of variables W, A, Y; use of this option is NOT recommended.
 #' @param delta A \code{numeric} value indicating the shift in the treatment to
@@ -40,7 +44,7 @@
 #'  or Super Learner ("sl"), and "external" a user-specified input of the form
 #'  produced by \code{\link{est_ipcw}}. NOTE THAT this first argument is not
 #'  passed to \code{\link{est_ipcw}}.
-#' @param g_fit_args A \code{list} of arguments, all but one of which are
+#' @param g_exp_fit_args A \code{list} of arguments, all but one of which are
 #'  passed to \code{\link{est_g}}. For details, consult the documentation of
 #'  \code{\link{est_g}}. The first element (i.e., \code{fit_type}) is used to
 #'  determine how this regression is fit: \code{"hal"} to estimate conditional
@@ -64,10 +68,10 @@
 #'  this to \code{"glm"} to instead use a simple linear regression model. In
 #'  this step, the efficient influence function (EIF) is regressed against
 #'  covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).
-#' @param ipcw_efficiency Whether to invoke an augmentation of the IPCW-TMLE
-#'  procedure that performs an iterative process to ensure efficiency of the
+#' @param ipcw_efficiency Whether to use an augmented inverse probability of
+#'  censoring weighted estimating equation to ensure efficiency of the
 #'  resulting estimate. The default is \code{TRUE}; only set to \code{FALSE} if
-#'  possible inefficiency of the IPCW-TMLE is not a concern.
+#'  possible inefficiency of the resultant estimator is not a concern.
 #' @param ipcw_fit_ext The results of an external fitting procedure used to
 #'  estimate the two-phase censoring mechanism, to be used in constructing the
 #'  inverse probability of censoring weighted TML or one-step estimator. The
@@ -106,7 +110,7 @@
 #' tmle <- txshift(
 #'   W = W, A = A, Y = Y, delta = 0.5,
 #'   estimator = "tmle",
-#'   g_fit_args = list(
+#'   g_exp_fit_args = list(
 #'     fit_type = "hal", n_bins = 5,
 #'     grid_type = "equal_range",
 #'     lambda_seq = exp(-1:-9)
@@ -120,10 +124,10 @@
 #' # construct a TML estimate under two-phase sampling
 #' ipcwtmle <- txshift(
 #'   W = W, A = A, Y = Y, delta = 0.5,
-#'   C = C, V = c("W", "Y"),
+#'   C_samp = C_samp, V = c("W", "Y"),
 #'   estimator = "tmle", max_iter = 5,
 #'   ipcw_fit_args = list(fit_type = "glm"),
-#'   g_fit_args = list(
+#'   g_exp_fit_args = list(
 #'     fit_type = "hal", n_bins = 5,
 #'     grid_type = "equal_range",
 #'     lambda_seq = exp(-1:-9)
@@ -137,8 +141,9 @@
 #' @export
 txshift <- function(W,
                     A,
+                    C_cens = rep(1, length(A)),
                     Y,
-                    C = rep(1, length(Y)),
+                    C_samp = rep(1, length(Y)),
                     V = NULL,
                     delta = 0,
                     estimator = c("tmle", "onestep"),
@@ -148,13 +153,18 @@ txshift <- function(W,
                       fit_type = c("glm", "sl", "external"),
                       sl_learners = NULL
                     ),
-                    g_fit_args = list(
+                    g_exp_fit_args = list(
                       fit_type = c("hal", "sl", "external"),
                       n_bins = c(10, 25),
                       grid_type = c("equal_range", "equal_range"),
                       lambda_seq = exp(seq(-1, -13, length = 300)),
                       use_future = FALSE,
                       sl_learners_density = NULL
+                    ),
+                    g_cens_fit_args = list(
+                      fit_type = c("glm", "sl", "external"),
+                      glm_formula = "C_cens ~ .",
+                      sl_learners = NULL
                     ),
                     Q_fit_args = list(
                       fit_type = c("glm", "sl", "external"),
@@ -172,18 +182,19 @@ txshift <- function(W,
   fluctuation <- match.arg(fluctuation)
   eif_reg_type <- match.arg(eif_reg_type)
 
+  browser()
   # dissociate fit type from other arguments to simplify passing to do.call
   ipcw_fit_type <- unlist(ipcw_fit_args[names(ipcw_fit_args) == "fit_type"],
     use.names = FALSE
   )
-  g_fit_type <- unlist(g_fit_args[names(g_fit_args) == "fit_type"],
+  g_exp_fit_type <- unlist(g_exp_fit_args[names(g_exp_fit_args) == "fit_type"],
     use.names = FALSE
   )
   Q_fit_type <- unlist(Q_fit_args[names(Q_fit_args) == "fit_type"],
     use.names = FALSE
   )
   ipcw_fit_args <- ipcw_fit_args[names(ipcw_fit_args) != "fit_type"]
-  g_fit_args <- g_fit_args[names(g_fit_args) != "fit_type"]
+  g_exp_fit_args <- g_exp_fit_args[names(g_exp_fit_args) != "fit_type"]
   Q_fit_args <- Q_fit_args[names(Q_fit_args) != "fit_type"]
 
   # coerce W to matrix and, if no names in W, assign them generically
@@ -195,7 +206,7 @@ txshift <- function(W,
   }
 
   # perform sub-setting of data and implement IPC weighting if required
-  if (!all(C == 1) & !is.null(V)) {
+  if (!all(C_samp == 1) & !is.null(V)) {
     if (is.character(V)) {
       # combine censoring node information
       V_in <- data.table::as.data.table(mget(V))
@@ -215,7 +226,7 @@ txshift <- function(W,
     }
 
     ipcw_estim_in <- list(
-      V = V_in, Delta = C,
+      V = V_in, Delta = C_samp,
       fit_type = ipcw_fit_type
     )
 
@@ -237,18 +248,19 @@ txshift <- function(W,
 
     # remove column corresponding to indicator for censoring
     data_internal <- data.table::data.table(W, A, C, Y)
-    data_internal <- data_internal[C == 1, ] # NOTE: subset forces copying :(
-    data_internal[, C := NULL]
+    data_internal <- data_internal[C_samp == 1, ] # NOTE: subset forces copy :(
+    data_internal[, C_samp := NULL]
   } else {
     # if no censoring, we can just use IPC weights that are identically 1
     V_in <- NULL
-    cens_weights <- C
-    ipcw_estim <- list(pi_mech = rep(1, length(C)), ipc_weights = C[C == 1])
+    cens_weights <- C_samp
+    ipcw_estim <- list(pi_mech = rep(1, length(C_samp)),
+                       ipc_weights = C_samp[C_samp == 1])
     data_internal <- data.table::data.table(W, A, Y)
   }
 
   # initial estimate of the treatment mechanism (propensity score)
-  if (!is.null(gn_fit_ext) && g_fit_type == "external") {
+  if (!is.null(gn_fit_ext) && g_exp_fit_type == "external") {
     gn_estim <- gn_fit_ext
   } else {
     gn_estim_in <- list(
@@ -256,23 +268,26 @@ txshift <- function(W,
       W = data_internal[, W_names, with = FALSE],
       delta = delta,
       ipc_weights = cens_weights,
-      fit_type = g_fit_type
+      fit_type = g_exp_fit_type
     )
-    if (g_fit_type == "hal") {
+    if (g_exp_fit_type == "hal") {
       # since fitting a GLM, can safely remove all args related to SL
-      g_fit_args <- g_fit_args[!stringr::str_detect(names(g_fit_args), "sl")]
+      g_exp_fit_args <-
+        g_exp_fit_args[!stringr::str_detect(names(g_exp_fit_args), "sl")]
 
       # reshape args to a list suitable to be passed to do.call
       gn_estim_args <- unlist(
-        list(gn_estim_in, haldensify_args = list(g_fit_args)),
+        list(gn_estim_in, haldensify_args = list(g_exp_fit_args)),
         recursive = FALSE
       )
-    } else if (g_fit_type == "sl") {
+    } else if (g_exp_fit_type == "sl") {
       # if fitting SL, we can discard all the standard non-sl3 arguments
-      g_fit_args <- g_fit_args[stringr::str_detect(names(g_fit_args), "sl")]
+      g_exp_fit_args <-
+        g_exp_fit_args[stringr::str_detect(names(g_exp_fit_args), "sl")]
 
       # reshapes list of args to make passing to do.call possible
-      gn_estim_args <- unlist(list(gn_estim_in, g_fit_args), recursive = FALSE)
+      gn_estim_args <- unlist(list(gn_estim_in, g_exp_fit_args),
+                              recursive = FALSE)
     }
 
     # pass the relevant args for computing the propensity score
@@ -305,7 +320,7 @@ txshift <- function(W,
   if (estimator == "tmle") {
     tmle_fit <- tmle_txshift(
       data_internal = data_internal,
-      C = C,
+      C = C_samp,
       V = V_in,
       delta = delta,
       ipcw_estim = ipcw_estim,
@@ -326,7 +341,7 @@ txshift <- function(W,
   } else if (estimator == "onestep") {
     onestep_fit <- onestep_txshift(
       data_internal = data_internal,
-      C = C,
+      C_samp = C_samp,
       V = V_in,
       delta = delta,
       ipcw_estim = ipcw_estim,
