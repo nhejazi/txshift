@@ -32,19 +32,22 @@ bibliography: refs.bib
 The `txshift` `R` package aims to provide researchers in (bio)statistics,
 epidemiology, health policy, econometrics, and related disciplines with access
 to state-of-the-art statistical methodology for evaluating the causal effects of
-interventions on _continuous-valued_ exposures. `txshift` estimates the causal
-effects of modified treatment policies (or "feasible interventions"), which take
-into account the natural value of an exposure in assigning an intervention
-level. To accommodate use in experimental designs using two-phase sampling
-(e.g., case-control sampling), the package provides modern corrections for
-estimating causal effects subject to the limitations induced by these designs,
-allowing for the methodology to be readily applied in a diversity of real-world
-experimental and observational studies.
+stochastic shift interventions on _continuous-valued_ exposures. `txshift`
+estimates the causal effects of modified treatment policies (or "feasible
+interventions"), which take into account the natural value of an exposure in
+assigning an intervention level. To accommodate use in study designs
+incorporating two-phase sampling (e.g., case-control), the package provides two
+types of modern corrections, both rooted in semiparametric theory, for
+constructing unbiased and efficient estimates, despite the significant
+limitations induced by such designs. Thus, `txshift` makes possible the
+estimation of the causal effects of stochastic interventions in experimental and
+observational study settings subject to common real-world design limitations
+that commonly arise in modern scientific practice.
 
 # Background
 
 Causal inference has traditionally focused on the effects of static
-interventions, under which the magnitude of the treatment is set to a fixed,
+interventions, under which the magnitude of the exposure is set to a fixed,
 prespecified value for each unit. The evaluation of such interventions faces
 a host of issues, among them non-identification, violations of the assumption of
 positivity, and inefficiency. Stochastic interventions provide a promising
@@ -58,13 +61,13 @@ observational unit [@haneuse2013estimation; @diaz2018stochastic].
 Despite the promise of such advances in causal inference, real data analyses are
 often further complicated by economic constraints, such as when the primary
 variable of interest is far more expensive to collect than auxiliary covariates.
-Two-phase sampling schemes are often used to bypass such limitations --
-unfortunately, their use produces side effects that require further adjustment
-when formal statistical inference is the principal goal of a study. Among the
-rich literature on two-phase designs, @rose2011targeted2sd stand out for
-providing a study of nonparametric efficiency theory under such designs. Their
-work can be used to construct efficient estimators of causal effects under
-general two-phase sampling designs.
+Two-phase sampling is often used to bypass these limitations -- unfortunately,
+these sampling schemes produce side effects that require further adjustment when
+formal statistical inference is the principal goal of a study. Among the rich
+literature on two-phase designs, @rose2011targeted2sd stand out for providing
+a study of nonparametric efficiency theory under a broad class of two-phase
+designs. Their work provides guidance on constructing efficient estimators of
+causal effects under general two-phase sampling designs.
 
 # `txshift`'s Scope
 
@@ -81,21 +84,22 @@ for statistical computing [@R], implements this methodology.
 `txshift` is designed to facilitate the construction of TML and one-step
 estimators of the causal effects of modified treatment policies that shift the
 observed exposure value up (or down) by an arbitrary scalar $\delta$, which may
-possibly take into account the natural value of the exposure. The `R` package
-includes tools for deploying these efficient estimators under two-phase sampling
-designs, with two types of corrections: (1) a reweighting procedure that
-introduces inverse probability of censoring weights directly into an appropriate
-loss function, as discussed in @rose2011targeted2sd; as well as (2) a correction
-based on the efficient influence function, studied more thoroughly by
-@hejazi2020efficient. `txshift` integrates with the [`sl3`
-package](https://github.com/tlverse/sl3) [@coyle2020sl3] to allow for ensemble
-machine learning to be leveraged in the estimation of nuisance parameters.
-What's more, the `txshift` package draws on both the `hal9001`
-[@coyle2020hal9001; @hejazi2020hal9001] and `haldensify` [@hejazi2020haldensify]
-`R` packages  to allow each of the estimators to be constructed in a manner
-consistent with the methodological and theoretical advances of
-@hejazi2020efficient, which require fast convergence rates of nuisance
-parameters to their true counterparts for efficiency of the resultant estimator.
+possibly take into account the natural value of the exposure (and, in future
+versions, the covariates). The `R` package includes tools for deploying these
+efficient estimators under two-phase sampling designs, with two types of
+corrections: (1) a reweighting procedure that introduces inverse probability of
+censoring weights directly into relevant loss functions, as discussed in
+@rose2011targeted2sd; as well as (2) an augmented efficient influence function
+estimating equation, studied more thoroughly by @hejazi2020efficient. `txshift`
+integrates with the [`sl3` package](https://github.com/tlverse/sl3)
+[@coyle2020sl3] to allow for ensemble machine learning to be leveraged in the
+estimation of nuisance parameters. What's more, the `txshift` package draws on
+both the `hal9001` [@coyle2020hal9001; @hejazi2020hal9001] and `haldensify`
+[@hejazi2020haldensify] `R` packages to allow each of the efficient estimators
+to be constructed in a manner consistent with the methodological and theoretical
+advances of @hejazi2020efficient, which require fast convergence rates of
+nuisance parameters to their true counterparts for efficiency of the resultant
+estimator.
 
 # Availability
 
