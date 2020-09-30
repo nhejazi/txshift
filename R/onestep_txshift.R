@@ -1,5 +1,4 @@
-#' Compute One-Step Estimate of Counterfactual Mean Under Stochastic Shift
-#' Intervention
+#' One-Step Estimate of Counterfactual Mean of Stochastic Shift Intervention
 #'
 #' @details Invokes the procedure to construct a one-step estimate of the
 #'  counterfactual mean under a modified treatment policy.
@@ -7,10 +6,10 @@
 #' @param data_internal A \code{data.table} constructed internally by a call to
 #'  \code{\link{txshift}}. This contains the data elements needed for computing
 #'  the one-step estimator.
-#' @param C A \code{numeric} indicator for whether a given observation censored
-#'  in the two-phase sampling procedure, used to compute an IPC-weighted
+#' @param C_samp A \code{numeric} indicator for whether a given observation was
+#'  included in the second-stage sample, used to compute an IPC-weighted
 #'  one-step estimator in cases where two-stage sampling is performed. Default
-#'  assumes no censoring.
+#'  assumes no censoring due to sampling.
 #' @param V The covariates that are used in determining the sampling procedure
 #'  that gives rise to censoring. The default is \code{NULL} and corresponds to
 #'  scenarios in which there is no censoring (in which case all values in the
@@ -23,6 +22,7 @@
 #' @param ipcw_estim An object providing the value of the censoring mechanism
 #'  evaluated across the full data. This object is passed in after being
 #'  constructed by a call to the internal function \code{est_ipcw}.
+#' @param gn_cens_estim TODO: document
 #' @param Qn_estim An object providing the value of the outcome evaluated after
 #'  imposing a shift in the treatment. This object is passed in after being
 #'  constructed by a call to the internal function \code{est_Q}.
@@ -55,33 +55,35 @@
 #' @return S3 object of class \code{txshift} containing the results of the
 #'  procedure to compute a one-step estimate of the treatment shift parameter.
 onestep_txshift <- function(data_internal,
-                            C = rep(1, nrow(data_internal)),
+                            C_samp = rep(1, nrow(data_internal)),
                             V = NULL,
-                            delta,
+                            delta = 0,
                             ipcw_estim,
+                            gn_cens_estim,
                             Qn_estim,
                             Hn_estim,
                             eif_reg_type = c("hal", "glm"),
                             ipcw_fit_args,
                             ipcw_efficiency = TRUE) {
   # extract and normalize sampling mechanism weights
-  cens_weights <- C / ipcw_estim$pi_mech
-  cens_weights_norm <- cens_weights / sum(cens_weights)
+  samp_weights <- C_samp / ipcw_estim$pi_mech
+  samp_weights_norm <- samp_weights / sum(samp_weights)
 
   # invoke efficient IPC-weighted one-step if necessary
-  if (ipcw_efficiency & !all(C == 1) & !is.null(V) & !is.null(ipcw_estim)) {
+  if (ipcw_efficiency & !all(C_samp == 1)
+      & !is.null(V) & !is.null(ipcw_estim)) {
     # quantities to be updated across iterations
     pi_mech_star <- ipcw_estim$pi_mech
     Qn_estim_updated <- Qn_estim
 
-    # update sub-model fluctuation, re-compute EIF, and update EIF
+    # update by submodel fluctuation, re-compute EIF, and update EIF
     os_ipcw_eif <- ipcw_eif_update(
       data_in = data_internal,
-      C = C,
+      C_samp = C_samp,
       V = V,
       ipc_mech = pi_mech_star,
-      ipc_weights = cens_weights,
-      ipc_weights_norm = cens_weights_norm,
+      ipc_weights = samp_weights,
+      ipc_weights_norm = samp_weights_norm,
       Qn_estim = Qn_estim,
       Hn_estim = Hn_estim,
       estimator = "onestep",
@@ -101,13 +103,13 @@ onestep_txshift <- function(data_internal,
       )
     )
     data.table::setnames(Qn_estim_updated, names(Qn_estim))
-    cens_weights <- os_ipcw_eif$ipc_weights
-    cens_weights_norm <- os_ipcw_eif$ipc_weights_norm
+    samp_weights <- os_ipcw_eif$ipc_weights
+    samp_weights_norm <- os_ipcw_eif$ipc_weights_norm
     pi_mech_star <- os_ipcw_eif$pi_mech_star
 
     # compute updated mean of efficient influence function
     eif_ipcw <- os_ipcw_eif$eif_eval$eif - os_ipcw_eif$ipcw_eif
-    eif_ipcw_var <- var(eif_ipcw) / length(C)
+    eif_ipcw_var <- var(eif_ipcw) / length(C_samp)
 
     # update the one-step estimator with mean of the 2nd half of augmented EIF
     # NOTE: the 2nd half of the EIF is actually a correction (with a minus sign
@@ -137,9 +139,9 @@ onestep_txshift <- function(data_internal,
       Qn = Qn_estim,
       Hn = Hn_estim,
       estimator = "onestep",
-      Delta = C,
-      ipc_weights = cens_weights[C == 1],
-      ipc_weights_norm = cens_weights_norm[C == 1]
+      C_samp = C_samp,
+      ipc_weights = samp_weights[C_samp == 1],
+      ipc_weights_norm = samp_weights_norm[C_samp == 1]
     )
 
     # create output object

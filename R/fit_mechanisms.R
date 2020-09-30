@@ -1,16 +1,17 @@
-#' Estimate the Generalized Propensity Score (Treatment Mechanism)
+#' Estimate the Treatment Mechanism (Generalized Propensity Score)
 #'
 #' @details Compute the propensity score (treatment mechanism) for the observed
 #'  data, including the shift. This gives the propensity score for the observed
-#'  data (at the observed A) and the shift (at A - delta).
+#'  data (at the observed A) the counterfactual shifts (at {A - delta},
+#'  {A + delta}, and {A + 2 * delta}).
 #'
 #' @param A A \code{numeric} vector of observed treatment values.
 #' @param W A \code{numeric} matrix of observed baseline covariate values.
 #' @param delta A \code{numeric} value identifying a shift in the observed
 #'  value of the treatment under which observations are to be evaluated.
-#' @param ipc_weights A \code{numeric} vector of observation-level weights, as
-#'  produced by the internal procedure to estimate the censoring mechanism
-#'  \code{estimate-ipc_weights}.
+#' @param ipc_weights A \code{numeric} vector of observation-level sampling
+#'  weights, as produced by the internal procedure to estimate the two-phase
+#'  sampling mechanism \code{\link{est_ipcw}}.
 #' @param fit_type A \code{character} specifying whether to use Super Learner
 #'  (from \pkg{sl3}) or the Highly Adaptive Lasso (from \pkg{hal9001}) to
 #'  estimate the conditional treatment density.
@@ -28,20 +29,20 @@
 #'
 #' @return A \code{data.table} with four columns, containing estimates of the
 #'  generalized propensity score at a downshift (g(A - delta | W)), no shift
-#'  (g(A | W)), an upshift (g(A + delta) | W), and an upshift of magitudie two
+#'  (g(A | W)), an upshift (g(A + delta) | W), and an upshift of magnitude two
 #'  (g(A + 2 delta) | W).
-est_g <- function(A,
-                  W,
-                  delta = 0,
-                  ipc_weights = rep(1, length(A)),
-                  fit_type = c("sl", "hal"),
-                  sl_learners_density = NULL,
-                  haldensify_args = list(
-                    n_bins = c(5, 10),
-                    grid_type = c("equal_range", "equal_mass"),
-                    lambda_seq = exp(seq(-1, -13, length = 300)),
-                    use_future = FALSE
-                  )) {
+est_g_exp <- function(A,
+                      W,
+                      delta = 0,
+                      ipc_weights = rep(1, length(A)),
+                      fit_type = c("hal", "sl"),
+                      sl_learners_density = NULL,
+                      haldensify_args = list(
+                        n_bins = c(5, 10),
+                        grid_type = c("equal_range", "equal_mass"),
+                        lambda_seq = exp(seq(-1, -13, length = 300)),
+                        use_future = FALSE
+                      )) {
   # set defaults and check arguments
   fit_type <- match.arg(fit_type)
   if (fit_type == "sl") {
@@ -122,87 +123,191 @@ est_g <- function(A,
       ),
       recursive = FALSE
     )
-    fit_g_dens_hal <- do.call(haldensify::haldensify, fit_args)
+    fit_g_exp_dens_hal <- do.call(haldensify::haldensify, fit_args)
   } else if (fit_type == "sl" & !is.null(sl_learners_density)) {
     suppressMessages(
-      fit_g_dens_sl <- sl_learners_density$train(sl_task)
+      fit_g_exp_dens_sl <- sl_learners_density$train(sl_task)
     )
   }
 
   # predict probabilities for the UNSHIFTED data (A = a)
   if (fit_type == "hal" & is.null(sl_learners_density)) {
-    pred_g_A_noshift <-
+    pred_g_exp_noshift <-
       stats::predict(
-        object = fit_g_dens_hal,
+        object = fit_g_exp_dens_hal,
         new_A = as.numeric(data_in$A),
         new_W = as.matrix(data_in[, colnames(W), with = FALSE])
       )
   } else if (fit_type == "sl" & !is.null(sl_learners_density)) {
     suppressMessages(
-      pred_g_A_noshift <- fit_g_dens_sl$predict()
+      pred_g_exp_noshift <- fit_g_exp_dens_sl$predict()
     )
   }
 
   # predict probabilities for the DOWNSHIFTED data (A = a - delta)
   if (fit_type == "hal" & is.null(sl_learners_density)) {
-    pred_g_A_downshifted <-
+    pred_g_exp_downshifted <-
       stats::predict(
-        object = fit_g_dens_hal,
+        object = fit_g_exp_dens_hal,
         new_A = as.numeric(data_in_downshifted$A),
         new_W = as.matrix(data_in[, colnames(W), with = FALSE])
       )
   } else if (fit_type == "sl" & !is.null(sl_learners_density)) {
     suppressMessages(
-      pred_g_A_downshifted <- fit_g_dens_sl$predict(sl_task_downshifted)
+      pred_g_exp_downshifted <- fit_g_exp_dens_sl$predict(sl_task_downshifted)
     )
   }
 
   # predict probabilities for the UPSHIFTED data (A = a + delta)
   if (fit_type == "hal" & is.null(sl_learners_density)) {
-    pred_g_A_upshifted <-
+    pred_g_exp_upshifted <-
       stats::predict(
-        object = fit_g_dens_hal,
+        object = fit_g_exp_dens_hal,
         new_A = as.numeric(data_in_upshifted$A),
         new_W = as.matrix(data_in[, colnames(W), with = FALSE])
       )
   } else if (fit_type == "sl" & !is.null(sl_learners_density)) {
     suppressMessages(
-      pred_g_A_upshifted <- fit_g_dens_sl$predict(sl_task_upshifted)
+      pred_g_exp_upshifted <- fit_g_exp_dens_sl$predict(sl_task_upshifted)
     )
   }
 
   # predict probabilities for the UPSHIFTED data (A = a + 2*delta)
   if (fit_type == "hal" & is.null(sl_learners_density)) {
-    pred_g_A_upupshifted <-
+    pred_g_exp_upupshifted <-
       stats::predict(
-        object = fit_g_dens_hal,
+        object = fit_g_exp_dens_hal,
         new_A = as.numeric(data_in_upupshifted$A),
         new_W = as.matrix(data_in[, colnames(W), with = FALSE])
       )
   } else if (fit_type == "sl" & !is.null(sl_learners_density)) {
     suppressMessages(
-      pred_g_A_upupshifted <- fit_g_dens_sl$predict(sl_task_upupshifted)
+      pred_g_exp_upupshifted <- fit_g_exp_dens_sl$predict(sl_task_upupshifted)
     )
   }
 
   # create output data.tables
   out <- data.table::as.data.table(cbind(
-    pred_g_A_downshifted,
-    pred_g_A_noshift,
-    pred_g_A_upshifted,
-    pred_g_A_upupshifted
+    pred_g_exp_downshifted,
+    pred_g_exp_noshift,
+    pred_g_exp_upshifted,
+    pred_g_exp_upupshifted
   ))
   data.table::setnames(out, c("downshift", "noshift", "upshift", "upupshift"))
   return(out)
 }
 
-################################################################################
+###############################################################################
 
-#' Estimate the Outcome Regression
+#' Estimate the Censoring Mechanism
+#'
+#' @details Compute the censoring mechanism for the observed data, in order to
+#'  apply a joint intervention for removing censoring by re-weighting.
+#'
+#' @param C_cens A \code{numeric} vector of loss of follow-up indicators.
+#' @param A A \code{numeric} vector of observed treatment values.
+#' @param W A \code{numeric} matrix of observed baseline covariate values.
+#' @param ipc_weights A \code{numeric} vector of observation-level sampling
+#'  weights, as produced by the internal procedure to estimate the two-phase
+#'  sampling mechanism \code{\link{est_ipcw}}.
+#' @param fit_type A \code{character} indicating whether to use GLMs or Super
+#'  Learner to fit the censoring mechanism. If option "glm" is selected, the
+#'  argument \code{glm_formula} must NOT be \code{NULL}, instead containing a
+#'  model formula (as per \code{\link[stats]{glm}}) as a \code{character}. If
+#'  the option "sl" is selected, the argument \code{sl_learners} must NOT be
+#'  \code{NULL}; instead, an instantiated \code{\link[sl3]{Lrnr_sl}} object,
+#'  specifying learners and a metalearner for the Super Learner fit, must be
+#'  provided. Consult the documentation of \pkg{sl3} for details.
+#' @param glm_formula A \code{character} matching a \code{\link[stat]{formula}}
+#'  for use in fitting a generalized linear model via \code{\link[stats]{glm}}.
+#' @param sl_learners Object containing a set of instantiated learners from the
+#'  \pkg{sl3}, to be used in fitting an ensemble model.
+#'
+#' @importFrom stats glm as.formula predict
+#' @importFrom data.table as.data.table setnames copy set
+#' @importFrom stringr str_detect
+#' @importFrom assertthat assert_that
+#'
+#' @return A \code{numeric} vector of the propensity score for censoring.
+est_g_cens <- function(C_cens,
+                       A,
+                       W,
+                       ipc_weights = rep(1, length(Y)),
+                       fit_type = c("sl", "glm"),
+                       glm_formula = "C_cens ~ .",
+                       sl_learners = NULL) {
+  # set defaults and check arguments
+  fit_type <- match.arg(fit_type)
+  if (fit_type == "sl") {
+    assertthat::assert_that(!is.null(sl_learners),
+      msg = paste(
+        "`sl_learners` cannot be NULL",
+        "when `fit_type = 'sl'`."
+      )
+    )
+  }
+
+  # generate the data objects for fitting the outcome regression
+  data_in <- data.table::as.data.table(cbind(C_cens, A, W))
+  if (!is.matrix(W)) W <- as.matrix(W)
+  data.table::setnames(data_in, c("C_cens", "A",
+                                  paste0("W", seq_len(ncol(W)))))
+  names_W <- colnames(data_in)[stringr::str_detect(colnames(data_in), "W")]
+  data.table::set(data_in, j = "ipc_weights", value = ipc_weights)
+
+  # fit a logistic regression and extract the predicted probabilities
+  if (fit_type == "glm" & !is.null(glm_formula)) {
+    # need to remove IPCW column from input data.table object for GLM fits
+    data.table::set(data_in, j = "ipc_weights", value = NULL)
+
+    # fit a logistic regression for the (scaled) outcome
+    suppressWarnings(
+      fit_g_cens <- stats::glm(
+        formula = stats::as.formula(glm_formula),
+        family = "binomial",
+        data = data_in,
+        weights = ipc_weights
+      )
+    )
+
+    # predict conditional censoring mechanism
+    suppressWarnings(
+      pred_g_cens <- unname(stats::predict(
+        object = fit_g_cens,
+        newdata = data_in,
+        type = "response"
+      ))
+    )
+  }
+
+  # fit a binary Super Learner and get the predicted probabilities
+  if (fit_type == "sl" & !is.null(sl_learners)) {
+    # make sl3 task for original data
+    task_cens <- sl3::sl3_Task$new(
+      data = data_in,
+      covariates = c("A", names_W),
+      outcome = "C_cens",
+      outcome_type = "binomial",
+      weights = "ipc_weights"
+    )
+
+    # fit new Super Learner to the data and predict
+    sl_fit_cens <- sl_learners$train(task_cens)
+    pred_g_cens <- sl_fit_cens$predict()
+  }
+
+  # generate output
+  return(pred_g_cens)
+}
+
+###############################################################################
+
+#' Estimate the Outcome Mechanism
 #'
 #' @details Compute the outcome regression for the observed data, including
-#'  with the shift imposed by the intervention. This returns the propensity
-#'  score for the observed data (at A_i) and the shift (at A_i - delta).
+#'  with the shift imposed by the intervention. This returns the outcome
+#'  regression for the observed data (at A) and under the counterfactual shift
+#'  shift (at A + delta).
 #'
 #' @param Y A \code{numeric} vector of observed outcomes.
 #' @param A A \code{numeric} vector of observed treatment values.
@@ -210,8 +315,9 @@ est_g <- function(A,
 #' @param delta A \code{numeric} indicating the magnitude of the shift to be
 #'  computed for the treatment \code{A}. This is passed to the internal
 #'  \code{\link{shift_additive}} and is currently limited to additive shifts.
-#' @param ipc_weights A \code{numeric} vector of observation-level weights, as
-#'  produced by the internal procedure to estimate the censoring mechanism.
+#' @param ipc_weights A \code{numeric} vector of observation-level sampling
+#'  weights, as produced by the internal procedure to estimate the two-phase
+#'  sampling mechanism \code{\link{est_ipcw}}.
 #' @param fit_type A \code{character} indicating whether to use GLMs or Super
 #'  Learner to fit the outcome regression. If the option "glm" is selected, the
 #'  argument \code{glm_formula} must NOT be \code{NULL}, instead containing a
@@ -220,8 +326,8 @@ est_g <- function(A,
 #'  \code{NULL}; instead, an instantiated \code{\link[sl3]{Lrnr_sl}} object,
 #'  specifying learners and a metalearner for the Super Learner fit, must be
 #'  provided. Consult the documentation of \pkg{sl3} for details.
-#' @param glm_formula A \code{character} corresponding to a \code{formula} to
-#'  be used in fitting a generalized linear model via \code{\link[stats]{glm}}.
+#' @param glm_formula A \code{character} matching a \code{\link[stat]{formula}}
+#'  for use in fitting a generalized linear model via \code{\link[stats]{glm}}.
 #' @param sl_learners Object containing a set of instantiated learners from the
 #'  \pkg{sl3}, to be used in fitting an ensemble model.
 #'
@@ -338,19 +444,19 @@ est_Q <- function(Y,
   return(out)
 }
 
-################################################################################
+###############################################################################
 
-#' Estimate Inverse Probability of Censoring Weights
+#' Estimate Inverse Probability of Censoring Weights for Two-Phase Sampling
 #'
 #' @details Compute inverse probability of censoring weights for the two-phase
 #'  sampling mechanism. These inverse weights are based on the probability of
-#'  appearing in the second-phase sample based on variables measured on all
+#'  inclusion in the second-stage sample based on variables measured across all
 #'  participants.
 #'
 #' @param V A \code{numeric} vector, \code{matrix}, \code{data.frame} or
 #'  similar object giving the observed values of the covariates known to
 #'  potentially inform the censoring mechanism.
-#' @param Delta A \code{numeric} vector giving observed values of the indicator
+#' @param C_samp A \code{numeric} vector giving observed values of the indicator
 #'  function corresponding to the censoring mechanism.
 #' @param fit_type A \code{character} indicating whether to perform the fit
 #'  using GLMs or a Super Learner. If use of Super Learner is desired, then the
@@ -364,12 +470,9 @@ est_Q <- function(Y,
 #'
 #' @return A \code{list} containing a \code{numeric} vector corresponding to
 #'  the inverse probability of censoring weights required for computing an
-#'  IPCW-TMLE and \code{numeric} vector of the estimated missingness mechanism.
-#'  Formally, the former is nothing more than %\frac{\Delta}{\Pi_n}, where the
-#'  term %\Pi_n is simply the predicted probability of belonging to a censoring
-#'  class as computed using standard logistic regression.
+#'  IPCW-TMLE and \code{numeric} vector of the estimated sampling mechanism.
 est_ipcw <- function(V,
-                     Delta,
+                     C_samp,
                      fit_type = c("sl", "glm"),
                      sl_learners = NULL) {
   # set defaults and check arguments
@@ -385,17 +488,17 @@ est_ipcw <- function(V,
 
   # make data objects from inputs
   fit_type <- match.arg(fit_type)
-  data_in <- data.table::as.data.table(cbind(Delta, V))
+  data_in <- data.table::as.data.table(cbind(C_samp, V))
   if (!is.matrix(V)) V <- as.matrix(V)
   names_V <- paste0("V", seq_len(ncol(V)))
-  data.table::setnames(data_in, c("Delta", names_V))
+  data.table::setnames(data_in, c("C_samp", names_V))
 
   # make sl3 tasks from the data if fitting Super Learners
   if (fit_type == "sl" & !is.null(sl_learners)) {
     sl_task <- sl3::sl3_Task$new(
       data = data_in,
       covariates = names_V,
-      outcome = "Delta",
+      outcome = "C_samp",
       outcome_type = "binomial"
     )
   }
@@ -403,7 +506,7 @@ est_ipcw <- function(V,
   # fit logistic regression or binomial SL to get class probabilities for IPCW
   if (fit_type == "glm" & is.null(sl_learners)) {
     ipcw_reg <- stats::glm(
-      as.formula("Delta ~ ."),
+      as.formula("C_samp ~ ."),
       family = stats::binomial(),
       data = data_in
     )
@@ -417,15 +520,15 @@ est_ipcw <- function(V,
     ipcw_probs <- as.numeric(sl_fit$predict())
   }
 
-  # compute the inverse weights as Delta/Pi_n and return this vector
-  ipc_weights <- Delta / ipcw_probs
+  # compute the inverse weights as C_samp/Pi_n and return this vector
+  ipc_weights <- C_samp / ipcw_probs
   ipc_weights_out <- ipc_weights[ipc_weights != 0]
   return(list(pi_mech = ipcw_probs, ipc_weights = ipc_weights_out))
 }
 
-################################################################################
+###############################################################################
 
-#' Estimate Auxiliary Covariate from Efficient Influence Function
+#' Estimate Auxiliary Covariate of Full Data Efficient Influence Function
 #'
 #' @details Compute an estimate of the auxiliary covariate required to update
 #'  initial estimates via logistic tilting models in targeted minimum loss

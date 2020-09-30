@@ -2,11 +2,11 @@
 % Please edit documentation in R/eifs.R
 \name{ipcw_eif_update}
 \alias{ipcw_eif_update}
-\title{Iterative IPCW Update Procedure of Efficient Influence Function}
+\title{Iterative IPCW Update Procedure of Augmented Efficient Influence Function}
 \usage{
 ipcw_eif_update(
   data_in,
-  C,
+  C_samp,
   V,
   ipc_mech,
   ipc_weights,
@@ -24,8 +24,8 @@ ipcw_eif_update(
 full data. That is, this corresponds to the data after application of a
 censoring process.}
 
-\item{C}{A \code{numeric} binary vector giving the censoring status of a
-given observation.}
+\item{C_samp}{A \code{numeric} indicator for missingness due to exclusion
+the from second-stage sample.}
 
 \item{V}{A \code{data.table} giving the values across all observations of
 all variables that play a role in the censoring mechanism.}
@@ -33,7 +33,7 @@ all variables that play a role in the censoring mechanism.}
 \item{ipc_mech}{A \code{numeric} vector containing values that describe the
 censoring mechanism for all of the observations. Note that such values are
 estimated by regressing the censoring covariates \code{V} on the observed
-censoring \code{C} and thus correspond to predicted probabilities of being
+censoring \code{C_samp} and correspond to predicted probabilities of being
 censored for each observation.}
 
 \item{ipc_weights}{A \code{numeric} vector of inverse probability of
@@ -79,7 +79,7 @@ A \code{list} containing the estimated outcome mechanism, the fitted
  IPCW component of the EIF.
 }
 \description{
-Iterative IPCW Update Procedure of Efficient Influence Function
+Iterative IPCW Update Procedure of Augmented Efficient Influence Function
 }
 \details{
 An adaptation of the IPCW-TMLE for iteratively constructing an

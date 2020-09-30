@@ -77,16 +77,21 @@
 #'  inverse probability of censoring weighted TML or one-step estimator. The
 #'  input provided must match the output of \code{\link{est_ipcw}} exactly;
 #'  thus, use of this argument is only recommended for power users.
-#' @param gn_fit_ext The results of an external fitting procedure used to
+#' @param gn_exp_fit_ext The results of an external fitting procedure used to
 #'  estimate the exposure mechanism (generalized propensity score), to be used
 #'  in constructing the TML or one-step estimator. The input provided must
-#'  match the output of \code{\link{est_g}} exactly; thus, use of this argument
+#'  match the output of \code{\link{est_g_exp}} exactly; use of this argument
+#'  is only recommended for power users.
+#' @param gn_cens_fit_ext The results of an external fitting procedure used to
+#'  estimate the censoring mechanism (propensity score for missingness), to be
+#'  used in constructing the TML or one-step estimator. The input provided must
+#'  match the output of \code{\link{est_g_cens}} exactly; use of this argument
 #'  is only recommended for power users.
 #' @param Qn_fit_ext The results of an external fitting procedure used to
 #'  estimate the outcome mechanism, to be used in constructing the TML or
 #'  one-step estimator. The input provided must match the output of
-#'  \code{\link{est_Q}} exactly; thus, use of this argument is only recommended
-#'  for power users.
+#'  \code{\link{est_Q}} exactly; use of this argument is only recommended for
+#'  power users.
 #'
 #' @importFrom data.table data.table as.data.table setnames ":="
 #' @importFrom stringr str_detect
@@ -104,7 +109,7 @@
 #' W <- replicate(2, rbinom(n_obs, 1, 0.5))
 #' A <- rnorm(n_obs, mean = 2 * W, sd = 1)
 #' Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
-#' C <- rbinom(n_obs, 1, plogis(W + Y)) # two-phase sampling
+#' C_samp <- rbinom(n_obs, 1, plogis(W + Y)) # two-phase sampling
 #'
 #' # construct a TML estimate (set estimator = "onestep" for the one-step)
 #' tmle <- txshift(
@@ -174,7 +179,8 @@ txshift <- function(W,
                     eif_reg_type = c("hal", "glm"),
                     ipcw_efficiency = TRUE,
                     ipcw_fit_ext = NULL,
-                    gn_fit_ext = NULL,
+                    gn_exp_fit_ext = NULL,
+                    gn_cens_fit_ext = NULL,
                     Qn_fit_ext = NULL) {
   # check arguments and set up some objects for programmatic convenience
   call <- match.call(expand.dots = TRUE)
@@ -190,11 +196,15 @@ txshift <- function(W,
   g_exp_fit_type <- unlist(g_exp_fit_args[names(g_exp_fit_args) == "fit_type"],
     use.names = FALSE
   )
+  g_cens_fit_type <-
+    unlist(g_cens_fit_args[names(g_cens_fit_args) == "fit_type"],
+           use.names = FALSE)
   Q_fit_type <- unlist(Q_fit_args[names(Q_fit_args) == "fit_type"],
     use.names = FALSE
   )
   ipcw_fit_args <- ipcw_fit_args[names(ipcw_fit_args) != "fit_type"]
   g_exp_fit_args <- g_exp_fit_args[names(g_exp_fit_args) != "fit_type"]
+  g_cens_fit_args <- g_cens_fit_args[names(g_cens_fit_args) != "fit_type"]
   Q_fit_args <- Q_fit_args[names(Q_fit_args) != "fit_type"]
 
   # coerce W to matrix and, if no names in W, assign them generically
@@ -205,7 +215,7 @@ txshift <- function(W,
     colnames(W) <- W_names
   }
 
-  # perform sub-setting of data and implement IPC weighting if required
+  # subset data and implement IPC weighting for two-phase sampling corrections
   if (!all(C_samp == 1) & !is.null(V)) {
     if (is.character(V)) {
       # combine censoring node information
@@ -244,57 +254,72 @@ txshift <- function(W,
     }
 
     # extract IPC weights for censoring case and normalize weights
-    cens_weights <- ipcw_estim$ipc_weights
+    samp_weights <- ipcw_estim$ipc_weights
 
     # remove column corresponding to indicator for censoring
-    data_internal <- data.table::data.table(W, A, C, Y)
+    data_internal <- data.table::data.table(W, A, C_Cens, Y, C_samp)
     data_internal <- data_internal[C_samp == 1, ] # NOTE: subset forces copy :(
     data_internal[, C_samp := NULL]
   } else {
-    # if no censoring, we can just use IPC weights that are identically 1
+    # if no two-phase sampling, we can use IPC weights that are identically 1
     V_in <- NULL
-    cens_weights <- C_samp
+    samp_weights <- C_samp
     ipcw_estim <- list(pi_mech = rep(1, length(C_samp)),
                        ipc_weights = C_samp[C_samp == 1])
-    data_internal <- data.table::data.table(W, A, Y)
+    data_internal <- data.table::data.table(W, A, C_cens, Y)
   }
 
-  # initial estimate of the treatment mechanism (propensity score)
-  if (!is.null(gn_fit_ext) && g_exp_fit_type == "external") {
-    gn_estim <- gn_fit_ext
+  # initial estimate of the treatment mechanism (generalized propensity score)
+  if (!is.null(gn_exp_fit_ext) && g_exp_fit_type == "external") {
+    gn_exp_estim <- gn_exp_fit_ext
   } else {
-    gn_estim_in <- list(
+    gn_exp_estim_in <- list(
       A = data_internal$A,
       W = data_internal[, W_names, with = FALSE],
       delta = delta,
-      ipc_weights = cens_weights,
+      ipc_weights = samp_weights,
       fit_type = g_exp_fit_type
     )
     if (g_exp_fit_type == "hal") {
-      # since fitting a GLM, can safely remove all args related to SL
-      g_exp_fit_args <-
-        g_exp_fit_args[!stringr::str_detect(names(g_exp_fit_args), "sl")]
-
       # reshape args to a list suitable to be passed to do.call
-      gn_estim_args <- unlist(
-        list(gn_estim_in, haldensify_args = list(g_exp_fit_args)),
+      gn_exp_estim_args <- unlist(
+        list(gn_exp_estim_in, haldensify_args = list(g_exp_fit_args)),
         recursive = FALSE
       )
     } else if (g_exp_fit_type == "sl") {
-      # if fitting SL, we can discard all the standard non-sl3 arguments
-      g_exp_fit_args <-
-        g_exp_fit_args[stringr::str_detect(names(g_exp_fit_args), "sl")]
-
       # reshapes list of args to make passing to do.call possible
-      gn_estim_args <- unlist(list(gn_estim_in, g_exp_fit_args),
-                              recursive = FALSE)
+      gn_exp_estim_args <- unlist(list(gn_exp_estim_in, g_exp_fit_args),
+                                  recursive = FALSE)
     }
 
     # pass the relevant args for computing the propensity score
-    gn_estim <- do.call(est_g, gn_estim_args)
+    gn_exp_estim <- do.call(est_g_exp, gn_exp_estim_args)
   }
 
-  # initial estimate of the outcome regression
+  # estimate the natural censoring mechanism for joint intervention to remove
+  # censoring (obviously only need to estimate this _if_ there is censoring)
+  if (any(C_cens != 1)) {
+    if (!is.null(gn_cens_fit_ext) && g_cens_fit_type == "external") {
+      gn_cens_estim <- gn_cens_fit_ext
+    } else {
+      gn_cens_estim_in <- list(
+        C = data_internal$C_cens,
+        A = data_internal$A,
+        W = data_internal[, W_names, with = FALSE],
+        ipc_weights = samp_weights,
+        fit_type = g_cens_fit_type
+      )
+      gn_cens_estim_args <- unlist(list(gn_cens_estim_in, g_cens_fit_args),
+                                   recursive = FALSE)
+
+      # invoke function to estimate the natural censoring mechanism
+      gn_cens_estim <- do.call(est_g_cens, gn_cens_estim_args)
+    }
+  } else {
+    gn_cens_estim <- rep(1, nrow(data_internal))
+  }
+
+  # initial estimate of the outcome mechanism
   if (!is.null(Qn_fit_ext) && Q_fit_type == "external") {
     Qn_estim <- Qn_fit_ext
   } else {
@@ -304,7 +329,7 @@ txshift <- function(W,
       A = data_internal$A,
       W = data_internal[, W_names, with = FALSE],
       delta = delta,
-      ipc_weights = cens_weights,
+      ipc_weights = samp_weights,
       fit_type = Q_fit_type
     )
     Qn_estim_args <- unlist(list(Qn_estim_in, Q_fit_args), recursive = FALSE)
@@ -314,16 +339,18 @@ txshift <- function(W,
   }
 
   # initial estimate of the auxiliary covariate
-  Hn_estim <- est_Hn(gn = gn_estim)
+  Hn_estim <- est_Hn(gn = gn_exp_estim)
 
-  # compute targeted maximum likelihood estimator
+  # compute whichever efficient estimator was asked for
   if (estimator == "tmle") {
+    # compute targeted maximum likelihood estimator
     tmle_fit <- tmle_txshift(
       data_internal = data_internal,
-      C = C_samp,
+      C_samp = C_samp,
       V = V_in,
       delta = delta,
       ipcw_estim = ipcw_estim,
+      gn_cens_estim = gn_cens_estim,
       Qn_estim = Qn_estim,
       Hn_estim = Hn_estim,
       fluctuation = fluctuation,
@@ -333,18 +360,19 @@ txshift <- function(W,
       ipcw_efficiency = ipcw_efficiency
     )
 
-    # return output object created by TML estimation routine
+    # return output object created by the TML estimation routine
     tmle_fit$call <- call
     return(tmle_fit)
 
-    # compute one-step (augmented inverse probability weighted) estimator
   } else if (estimator == "onestep") {
+    # compute the efficient one-step estimator
     onestep_fit <- onestep_txshift(
       data_internal = data_internal,
       C_samp = C_samp,
       V = V_in,
       delta = delta,
       ipcw_estim = ipcw_estim,
+      gn_cens_estim = gn_cens_estim,
       Qn_estim = Qn_estim,
       Hn_estim = Hn_estim,
       eif_reg_type = eif_reg_type,
@@ -352,7 +380,7 @@ txshift <- function(W,
       ipcw_efficiency = ipcw_efficiency
     )
 
-    # return output object created by AIPW estimation routine
+    # return output object created by the one-step estimation routine
     onestep_fit$call <- call
     return(onestep_fit)
   }

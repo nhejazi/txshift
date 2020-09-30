@@ -2,15 +2,15 @@
 % Please edit documentation in R/onestep_txshift.R
 \name{onestep_txshift}
 \alias{onestep_txshift}
-\title{Compute One-Step Estimate of Counterfactual Mean Under Stochastic Shift
-Intervention}
+\title{One-Step Estimate of Counterfactual Mean of Stochastic Shift Intervention}
 \usage{
 onestep_txshift(
   data_internal,
-  C = rep(1, nrow(data_internal)),
+  C_samp = rep(1, nrow(data_internal)),
   V = NULL,
-  delta,
+  delta = 0,
   ipcw_estim,
+  gn_cens_estim,
   Qn_estim,
   Hn_estim,
   eif_reg_type = c("hal", "glm"),
@@ -23,10 +23,10 @@ onestep_txshift(
 \code{\link{txshift}}. This contains the data elements needed for computing
 the one-step estimator.}
 
-\item{C}{A \code{numeric} indicator for whether a given observation censored
-in the two-phase sampling procedure, used to compute an IPC-weighted
+\item{C_samp}{A \code{numeric} indicator for whether a given observation was
+included in the second-stage sample, used to compute an IPC-weighted
 one-step estimator in cases where two-stage sampling is performed. Default
-assumes no censoring.}
+assumes no censoring due to sampling.}
 
 \item{V}{The covariates that are used in determining the sampling procedure
 that gives rise to censoring. The default is \code{NULL} and corresponds to
@@ -42,6 +42,8 @@ the scale of the treatment (A).}
 \item{ipcw_estim}{An object providing the value of the censoring mechanism
 evaluated across the full data. This object is passed in after being
 constructed by a call to the internal function \code{est_ipcw}.}
+
+\item{gn_cens_estim}{TODO: document}
 
 \item{Qn_estim}{An object providing the value of the outcome evaluated after
 imposing a shift in the treatment. This object is passed in after being
@@ -77,8 +79,7 @@ S3 object of class \code{txshift} containing the results of the
  procedure to compute a one-step estimate of the treatment shift parameter.
 }
 \description{
-Compute One-Step Estimate of Counterfactual Mean Under Stochastic Shift
-Intervention
+One-Step Estimate of Counterfactual Mean of Stochastic Shift Intervention
 }
 \details{
 Invokes the procedure to construct a one-step estimate of the

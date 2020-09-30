@@ -2,16 +2,16 @@
 % Please edit documentation in R/fit_mechanisms.R
 \name{est_ipcw}
 \alias{est_ipcw}
-\title{Estimate Inverse Probability of Censoring Weights}
+\title{Estimate Inverse Probability of Censoring Weights for Two-Phase Sampling}
 \usage{
-est_ipcw(V, Delta, fit_type = c("sl", "glm"), sl_learners = NULL)
+est_ipcw(V, C_samp, fit_type = c("sl", "glm"), sl_learners = NULL)
 }
 \arguments{
 \item{V}{A \code{numeric} vector, \code{matrix}, \code{data.frame} or
 similar object giving the observed values of the covariates known to
 potentially inform the censoring mechanism.}
 
-\item{Delta}{A \code{numeric} vector giving observed values of the indicator
+\item{C_samp}{A \code{numeric} vector giving observed values of the indicator
 function corresponding to the censoring mechanism.}
 
 \item{fit_type}{A \code{character} indicating whether to perform the fit
@@ -24,17 +24,14 @@ instantiated externally using \pkg{sl3}.}
 \value{
 A \code{list} containing a \code{numeric} vector corresponding to
  the inverse probability of censoring weights required for computing an
- IPCW-TMLE and \code{numeric} vector of the estimated missingness mechanism.
- Formally, the former is nothing more than %\frac{\Delta}{\Pi_n}, where the
- term %\Pi_n is simply the predicted probability of belonging to a censoring
- class as computed using standard logistic regression.
+ IPCW-TMLE and \code{numeric} vector of the estimated sampling mechanism.
 }
 \description{
-Estimate Inverse Probability of Censoring Weights
+Estimate Inverse Probability of Censoring Weights for Two-Phase Sampling
 }
 \details{
 Compute inverse probability of censoring weights for the two-phase
  sampling mechanism. These inverse weights are based on the probability of
- appearing in the second-phase sample based on variables measured on all
+ inclusion in the second-stage sample based on variables measured across all
  participants.
 }

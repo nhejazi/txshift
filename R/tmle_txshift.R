@@ -1,15 +1,16 @@
-#' Compute Targeted Minimum Loss Estimate of Counterfactual Mean Under
-#' Stochastic Shift Intervention
+#' Targeted Minimum Loss Estimate of Counterfactual Mean of Stochastic Shift
+#' Intervention
 #'
 #' @details Invokes the procedure to construct a targeted minimum loss estimate
 #'  (TMLE) of the counterfactual mean under a modified treatment policy.
 #'
 #' @param data_internal A \code{data.table} constructed internally by a call to
-#'  \code{\link{txshift}}. This contains most of the data for computing the TML
-#'  estimator.
-#' @param C A \code{numeric} indicator for whether a given observation was
-#'  subject to censoring, used to compute an IPCW-TMLE in cases where two-stage
-#'  sampling is performed. Default assumes no censoring.
+#'  \code{\link{txshift}}. This contains most of the data for computing the
+#'  targeted minimum loss (TML) estimator.
+#' @param C_samp A \code{numeric} indicator for whether a given observation was
+#'  included in the second-stage sample, used to compute an IPC-weighted
+#'  one-step estimator in cases where two-stage sampling is performed. Default
+#'  assumes no censoring due to sampling.
 #' @param V The covariates that are used in determining the sampling procedure
 #'  that gives rise to censoring. The default is \code{NULL} and corresponds to
 #'  scenarios in which there is no censoring (in which case all values in the
@@ -22,6 +23,7 @@
 #' @param ipcw_estim An object providing the value of the censoring mechanism
 #'  evaluated across the full data. This object is passed in after being
 #'  constructed by a call to the internal function \code{\link{est_ipcw}}.
+#' @param gn_cens_estim TODO: document
 #' @param Qn_estim An object providing the value of the outcome evaluated after
 #'  imposing a shift in the treatment. This object is passed in after being
 #'  constructed by a call to the internal function \code{\link{est_Q}}.
@@ -60,10 +62,11 @@
 #' @return S3 object of class \code{txshift} containing the results of the
 #'  procedure to compute a TML estimate of the treatment shift parameter.
 tmle_txshift <- function(data_internal,
-                         C = rep(1, nrow(data_internal)),
+                         C_samp = rep(1, nrow(data_internal)),
                          V = NULL,
-                         delta,
+                         delta = 0,
                          ipcw_estim,
+                         gn_cens_estim,
                          Qn_estim,
                          Hn_estim,
                          fluctuation = c("standard", "weighted"),
@@ -75,14 +78,15 @@ tmle_txshift <- function(data_internal,
   n_steps <- 0
 
   # extract and normalize sampling mechanism weights
-  cens_weights <- C / ipcw_estim$pi_mech
-  cens_weights_norm <- cens_weights / sum(cens_weights)
+  samp_weights <- C_samp / ipcw_estim$pi_mech
+  samp_weights_norm <- samp_weights / sum(samp_weights)
 
   # invoke efficient IPCW-TMLE if satisfied; otherwise ineffecient variant
-  if (ipcw_efficiency & !all(C == 1) & !is.null(V) & !is.null(ipcw_estim)) {
+  if (ipcw_efficiency & !all(C_samp == 1)
+      & !is.null(V) & !is.null(ipcw_estim)) {
     # programmatic bookkeeping
     eif_mean <- Inf
-    eif_tol <- 1 / length(cens_weights)
+    eif_tol <- 1 / length(samp_weights)
     conv_res <- matrix(replicate(3, rep(NA_real_, max_iter)), nrow = max_iter)
 
     # quantities to be updated across iterations
@@ -100,8 +104,8 @@ tmle_txshift <- function(data_internal,
         C = C,
         V = V,
         ipc_mech = pi_mech_star,
-        ipc_weights = cens_weights,
-        ipc_weights_norm = cens_weights_norm,
+        ipc_weights = samp_weights,
+        ipc_weights_norm = samp_weights_norm,
         Qn_estim = Qn_estim_updated,
         Hn_estim = Hn_estim, # N.B., g_n never gets updated in this procedure
         estimator = "tmle",
@@ -124,19 +128,19 @@ tmle_txshift <- function(data_internal,
       data.table::setnames(Qn_estim_updated, names(Qn_estim))
 
       # updated sampling/censoring weights and stabilize
-      cens_weights <- tmle_ipcw_eif$ipc_weights
-      cens_weights <- cens_weights / mean(cens_weights)
-      cens_weights_norm <- tmle_ipcw_eif$ipc_weights_norm
+      samp_weights <- tmle_ipcw_eif$ipc_weights
+      samp_weights <- samp_weights / mean(samp_weights)
+      samp_weights_norm <- tmle_ipcw_eif$ipc_weights_norm
       pi_mech_star <- tmle_ipcw_eif$pi_mech_star
 
       # compute updated mean of efficient influence function and save
       eif_ipcw <- tmle_ipcw_eif$eif_eval$eif - tmle_ipcw_eif$ipcw_eif_component
       eif_mean <- mean(eif_ipcw)
-      eif_var <- var(eif_ipcw) / length(cens_weights)
+      eif_var <- var(eif_ipcw) / length(samp_weights)
       conv_res[n_steps, ] <- c(tmle_ipcw_eif$eif_eval$psi, eif_var, eif_mean)
 
       # TMLE convergence criterion based on re-scaled standard error
-      tol_scaling <- 1 / (max(10, log(length(cens_weights))))
+      tol_scaling <- 1 / (max(10, log(length(samp_weights))))
       eif_tol <- sqrt(eif_var) * tol_scaling
     }
     conv_res <- data.table::as.data.table(conv_res)
@@ -164,7 +168,7 @@ tmle_txshift <- function(data_internal,
       Y = data_internal$Y,
       Qn_scaled = Qn_estim,
       Hn = Hn_estim,
-      ipc_weights = cens_weights[C == 1],
+      ipc_weights = samp_weights[C_samp == 1],
       method = fluctuation
     )
 
@@ -175,9 +179,9 @@ tmle_txshift <- function(data_internal,
       Hn = Hn_estim,
       estimator = "tmle",
       fluc_mod_out = fitted_fluc_mod,
-      Delta = C,
-      ipc_weights = cens_weights[C == 1],
-      ipc_weights_norm = cens_weights_norm[C == 1]
+      C_samp = C_samp,
+      ipc_weights = samp_weights[C_samp == 1],
+      ipc_weights_norm = samp_weights_norm[C_samp == 1]
     )
 
     # create output object

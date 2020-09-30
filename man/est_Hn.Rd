@@ -2,7 +2,7 @@
 % Please edit documentation in R/fit_mechanisms.R
 \name{est_Hn}
 \alias{est_Hn}
-\title{Estimate Auxiliary Covariate from Efficient Influence Function}
+\title{Estimate Auxiliary Covariate of Full Data Efficient Influence Function}
 \usage{
 est_Hn(gn)
 }
@@ -16,7 +16,7 @@ A \code{data.table} with two columns, containing estimates of the
  shifted value of the exposure H(A + delta, W).
 }
 \description{
-Estimate Auxiliary Covariate from Efficient Influence Function
+Estimate Auxiliary Covariate of Full Data Efficient Influence Function
 }
 \details{
 Compute an estimate of the auxiliary covariate required to update
