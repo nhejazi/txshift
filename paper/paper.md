@@ -23,26 +23,49 @@ affiliations:
     index: 2
   - name: Department of Biostatistics and Bioinformatics, Rollins School of Public Health, Emory University
     index: 3
-date: 28 September 2020
+date: 06 October 2020
 bibliography: refs.bib
 ---
 
 # Summary
 
-The `txshift` `R` package aims to provide researchers in (bio)statistics,
-epidemiology, health policy, econometrics, and related disciplines with access
-to state-of-the-art statistical methodology for evaluating the causal effects of
-stochastic shift interventions on _continuous-valued_ exposures. `txshift`
-estimates the causal effects of modified treatment policies (or "feasible
-interventions"), which take into account the natural value of an exposure in
-assigning an intervention level. To accommodate use in study designs
-incorporating two-phase sampling (e.g., case-control), the package provides two
-types of modern corrections, both rooted in semiparametric theory, for
-constructing unbiased and efficient estimates, despite the significant
-limitations induced by such designs. Thus, `txshift` makes possible the
-estimation of the causal effects of stochastic interventions in experimental and
-observational study settings subject to real-world design limitations that
-commonly arise in modern scientific practice.
+Statistical causal inference has traditionally focused on effects defined by
+inflexible static interventions, applicable only to binary or categorical
+exposures. The evaluation of such interventions is often plagued by many
+problems, both theoretical (e.g., non-identification) and practical (e.g.,
+positivity violations); however, stochastic interventions provide a promising
+solution to these fundamental issues [@diaz2018stochastic]. The `txshift` `R`
+package provides researchers in (bio)statistics, epidemiology, health policy,
+economics, and related disciplines with access to state-of-the-art statistical
+methodology for evaluating the causal effects of stochastic shift interventions
+on _continuous-valued_ exposures. `txshift` estimates the causal effects of
+modified treatment policies (or "feasible interventions"), which take into
+account the natural value of an exposure in assigning an intervention level. To
+accommodate use in study designs incorporating outcome-dependent two-phase
+sampling (e.g., case-control), the package provides two types of modern
+corrections, both rooted in semiparametric theory, for constructing unbiased and
+efficient estimates, despite the significant limitations induced by such
+designs. Thus, `txshift` makes possible the estimation of the causal effects of
+stochastic interventions in experimental and observational study settings
+subject to real-world design limitations that commonly arise in modern
+scientific practice.
+
+# Statement of Need
+
+Researchers seeking to build upon or apply cutting-edge statistical approaches
+for causal inference often face significant obstacles: such methods are usually
+not accompanied by robust, well-tested, and well-documented software packages.
+Yet coding such methods from scratch is often impractical for the applied
+researcher, as understanding the theoretical underpinnings of these methods
+requires advanced training, severely complicating the assessment and testing of
+bespoke causal inference software. What's more, even when such software tools
+exist, they are usually minimal implementations, providing support only for
+deploying the statistical method in problem settings untouched by the
+complexities of real-world data. The `txshift` `R` package solves this problem
+by providing an open source tool for evaluating the causal effects of flexible,
+stochastic interventions, applicable to categorical or continuous-valued
+exposures, while providing corrections for appropriately handling data generated
+by commonly used but complex two-phase sampling designs.
 
 # Background
 
@@ -74,7 +97,7 @@ causal effects under general two-phase sampling designs.
 Building on these prior works, @hejazi2020efficient outlined a novel approach
 for use in such settings: augmented targeted minimum loss (TML) and one-step
 estimators for the causal effects of stochastic interventions, with guarantees
-of consistency, efficiency, and multiple robustness even in the presence of
+of consistency, efficiency, and multiple robustness despite the presence of
 two-phase sampling. These authors further outlined a technique that summarizes
 the effect of shifting an exposure variable on the outcome of interest via
 a nonparametric working marginal structural model, analogous to a dose-response
@@ -86,20 +109,20 @@ estimators of the causal effects of modified treatment policies that shift the
 observed exposure value up (or down) by an arbitrary scalar $\delta$, which may
 possibly take into account the natural value of the exposure (and, in future
 versions, the covariates). The `R` package includes tools for deploying these
-efficient estimators under two-phase sampling designs, with two types of
-corrections: (1) a reweighting procedure that introduces inverse probability of
-censoring weights directly into relevant loss functions, as discussed in
-@rose2011targeted2sd; as well as (2) an augmented efficient influence function
-estimating equation, studied more thoroughly by @hejazi2020efficient. `txshift`
-integrates with the [`sl3` package](https://github.com/tlverse/sl3)
-[@coyle2020sl3] to allow for ensemble machine learning to be leveraged in the
-estimation of nuisance parameters. What's more, the `txshift` package draws on
-both the `hal9001` [@coyle2020hal9001; @hejazi2020hal9001] and `haldensify`
-[@hejazi2020haldensify] `R` packages to allow each of the efficient estimators
-to be constructed in a manner consistent with the methodological and theoretical
-advances of @hejazi2020efficient, which require fast convergence rates of
-nuisance parameters to their true counterparts for efficiency of the resultant
-estimator.
+efficient estimators under outcome-dependent two-phase sampling designs, with
+two types of corrections: (1) a reweighting procedure that introduces inverse
+probability of censoring weights directly into relevant loss functions, as
+discussed in @rose2011targeted2sd; as well as (2) an augmented efficient
+influence function estimating equation, studied more thoroughly by
+@hejazi2020efficient. `txshift` integrates with the [`sl3`
+package](https://github.com/tlverse/sl3) [@coyle2020sl3] to allow for ensemble
+machine learning to be leveraged in the estimation of nuisance parameters.
+What's more, the `txshift` package draws on both the `hal9001`
+[@coyle2020hal9001; @hejazi2020hal9001] and `haldensify` [@hejazi2020haldensify]
+`R` packages to allow each of the efficient estimators to be constructed in
+a manner consistent with the methodological and theoretical advances of
+@hejazi2020efficient, which require fast convergence rates of nuisance
+parameters to their true counterparts for efficiency of the resultant estimator.
 
 # Availability
 
