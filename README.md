@@ -17,6 +17,8 @@ state and is being actively
 developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![MIT
 license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4070042.svg)](https://doi.org/10.5281/zenodo.4070042)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.02447/status.svg)](https://doi.org/10.21105/joss.02447)
 
 > Efficient Estimation of the Causal Effects of Stochastic Interventions
 
@@ -227,8 +229,8 @@ After using the `txshift` R package, please cite the following:
       title = {{txshift}: Efficient estimation of the causal effects of
         stochastic interventions in {R}},
       year  = {2020},
-      doi = {},
-      url = {},
+      doi = {10.21105/joss.02447},
+      url = {https://10.21105.joss.02447},
       journal = {Journal of Open Source Software},
       publisher = {The Open Journal}
     }
@@ -238,7 +240,8 @@ After using the `txshift` R package, please cite the following:
       title = {{txshift}: Efficient Estimation of the Causal Effects of
         Stochastic Interventions},
       year  = {2020},
-      url = {https://github.com/nhejazi/txshift},
+      doi = {10.5281/zenodo.4070042},
+      url = {https://CRAN.R-project.org/package=txshift},
       note = {R package version 0.3.4}
     }
 ```

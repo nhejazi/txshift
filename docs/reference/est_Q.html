@@ -135,16 +135,16 @@
     <p>Estimate the Outcome Regression</p>
     </div>
 
-    <pre class="usage"><span class='fu'>est_Q</span>(
-  <span class='kw'>Y</span>,
-  <span class='kw'>A</span>,
-  <span class='kw'>W</span>,
-  delta = <span class='fl'>0</span>,
-  ipc_weights = <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='kw'>Y</span>)),
-  fit_type = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"sl"</span>, <span class='st'>"glm"</span>),
-  glm_formula = <span class='st'>"Y ~ ."</span>,
-  sl_learners = <span class='kw'>NULL</span>
-)</pre>
+    <pre class="usage"><span class='fu'>est_Q</span><span class='op'>(</span>
+  <span class='va'>Y</span>,
+  <span class='va'>A</span>,
+  <span class='va'>W</span>,
+  delta <span class='op'>=</span> <span class='fl'>0</span>,
+  ipc_weights <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>Y</span><span class='op'>)</span><span class='op'>)</span>,
+  fit_type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"sl"</span>, <span class='st'>"glm"</span><span class='op'>)</span>,
+  glm_formula <span class='op'>=</span> <span class='st'>"Y ~ ."</span>,
+  sl_learners <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">

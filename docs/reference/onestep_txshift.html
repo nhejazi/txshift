@@ -140,18 +140,18 @@ Intervention</h1>
 Intervention</p>
     </div>
 
-    <pre class="usage"><span class='fu'>onestep_txshift</span>(
-  <span class='kw'>data_internal</span>,
-  C = <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='kw'>data_internal</span>)),
-  V = <span class='kw'>NULL</span>,
-  <span class='kw'>delta</span>,
-  <span class='kw'>ipcw_estim</span>,
-  <span class='kw'>Qn_estim</span>,
-  <span class='kw'>Hn_estim</span>,
-  eif_reg_type = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"hal"</span>, <span class='st'>"glm"</span>),
-  <span class='kw'>ipcw_fit_args</span>,
-  ipcw_efficiency = <span class='fl'>TRUE</span>
-)</pre>
+    <pre class="usage"><span class='fu'>onestep_txshift</span><span class='op'>(</span>
+  <span class='va'>data_internal</span>,
+  C <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>data_internal</span><span class='op'>)</span><span class='op'>)</span>,
+  V <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>delta</span>,
+  <span class='va'>ipcw_estim</span>,
+  <span class='va'>Qn_estim</span>,
+  <span class='va'>Hn_estim</span>,
+  eif_reg_type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"hal"</span>, <span class='st'>"glm"</span><span class='op'>)</span>,
+  <span class='va'>ipcw_fit_args</span>,
+  ipcw_efficiency <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
