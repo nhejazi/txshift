@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{print.txshift}
 \alias{print.txshift}
-\title{Print Method for Counterfactual Means}
+\title{Print Method for Counterfactual Mean of Stochastic Shift Intervention}
 \usage{
 \method{print}{txshift}(x, ...)
 }
@@ -16,7 +16,7 @@ None. Called for the side effect of printing particular slots of
  objects of class \code{txshift}.
 }
 \description{
-Print Method for Counterfactual Means
+Print Method for Counterfactual Mean of Stochastic Shift Intervention
 }
 \details{
 The \code{print} method for objects of class \code{txshift}.

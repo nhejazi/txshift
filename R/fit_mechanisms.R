@@ -204,7 +204,7 @@ est_g_exp <- function(A,
 #' @details Compute the censoring mechanism for the observed data, in order to
 #'  apply a joint intervention for removing censoring by re-weighting.
 #'
-#' @param C_cens A \code{numeric} vector of loss of follow-up indicators.
+#' @param C_cens A \code{numeric} vector of loss to follow-up indicators.
 #' @param A A \code{numeric} vector of observed treatment values.
 #' @param W A \code{numeric} matrix of observed baseline covariate values.
 #' @param ipc_weights A \code{numeric} vector of observation-level sampling
@@ -310,6 +310,7 @@ est_g_cens <- function(C_cens,
 #'  shift (at A + delta).
 #'
 #' @param Y A \code{numeric} vector of observed outcomes.
+#' @param C_cens A \code{numeric} vector of loss to follow-up indicators.
 #' @param A A \code{numeric} vector of observed treatment values.
 #' @param W A \code{numeric} matrix of observed baseline covariate values.
 #' @param delta A \code{numeric} indicating the magnitude of the shift to be
@@ -340,6 +341,7 @@ est_g_cens <- function(C_cens,
 #'  outcome mechanism at the natural value of the exposure Q(A, W) and an
 #'  upshift of the exposure Q(A + delta, W).
 est_Q <- function(Y,
+                  C_cens,
                   A,
                   W,
                   delta = 0,
@@ -362,17 +364,20 @@ est_Q <- function(Y,
   y_star <- scale_to_unit(vals = Y)
 
   # generate the data objects for fitting the outcome regression
-  data_in <- data.table::as.data.table(cbind(y_star, A, W))
+  data_in <- data.table::as.data.table(cbind(y_star, C_cens, A, W))
   if (!is.matrix(W)) W <- as.matrix(W)
-  data.table::setnames(data_in, c("Y", "A", paste0("W", seq_len(ncol(W)))))
+  data.table::setnames(data_in, c("Y", "C_cens", "A",
+                                  paste0("W", seq_len(ncol(W)))))
   names_W <- colnames(data_in)[stringr::str_detect(colnames(data_in), "W")]
   data.table::set(data_in, j = "ipc_weights", value = ipc_weights)
 
-  # need a data set with the treatment stochastically shifted UPWARDS...
+  # counterfactual data with treatment shifted do(A + delta)
+  # NOTE: also introduce joint intervention on the censoring node do(C = 1)
   data_in_shifted <- data.table::copy(data_in)
   data.table::set(data_in_shifted, j = "A", value = shift_additive(
     A = data_in$A, delta = delta
   ))
+  data.table::set(data_in_shifted, j = "C_cens", value = 1)
 
   # fit a logistic regression and extract the predicted probabilities
   if (fit_type == "glm" & !is.null(glm_formula)) {
@@ -384,33 +389,48 @@ est_Q <- function(Y,
     suppressWarnings(
       fit_Qn <- stats::glm(
         formula = stats::as.formula(glm_formula),
-        family = "binomial",
         data = data_in,
-        weights = ipc_weights
+        weights = ipc_weights,
+        subset = C_cens == 1,
+        family = "binomial"
       )
     )
 
-    # predict Qn for the un-shifted data (A = a)
-    pred_star_Qn <- unname(stats::predict(
-      object = fit_Qn,
-      newdata = data_in,
-      type = "response"
-    ))
+    # joint intervention to remove censoring before prediction
+    data.table::set(data_in, j = "C_cens", value = 1)
 
-    # predict Qn for the shifted data (A = a + delta)
-    pred_star_Qn_shifted <- unname(stats::predict(
-      object = fit_Qn,
-      newdata = data_in_shifted,
-      type = "response"
-    ))
+    # predict Qn for the un-shifted data do(A = a) & do(C = 1)
+    suppressWarnings(
+      pred_star_Qn <- unname(stats::predict(
+        object = fit_Qn,
+        newdata = data_in,
+        type = "response"
+      ))
+    )
+
+    suppressWarnings(
+      # predict Qn for the shifted data (A = a + delta)
+      pred_star_Qn_shifted <- unname(stats::predict(
+        object = fit_Qn,
+        newdata = data_in_shifted,
+        type = "response"
+      ))
+    )
   }
 
   # fit a binary Super Learner and get the predicted probabilities
   if (fit_type == "sl" & !is.null(sl_learners)) {
     # make sl3 task for original data
     task_noshift <- sl3::sl3_Task$new(
-      data = data_in,
-      covariates = c("A", names_W),
+      data = data_in[C_cens == 1, ],
+      covariates = c("C_cens", "A", names_W),
+      outcome = "Y",
+      outcome_type = "quasibinomial",
+      weights = "ipc_weights"
+    )
+    task_noshift_nocens <- sl3::sl3_Task$new(
+      data = data_in[, C_cens := 1],
+      covariates = c("C_cens", "A", names_W),
       outcome = "Y",
       outcome_type = "quasibinomial",
       weights = "ipc_weights"
@@ -419,15 +439,15 @@ est_Q <- function(Y,
     # make sl3 task for data with the shifted treatment
     task_shifted <- sl3::make_sl3_Task(
       data = data_in_shifted,
-      covariates = c("A", names_W),
+      covariates = c("C_cens", "A", names_W),
       outcome = "Y",
       outcome_type = "quasibinomial",
       weights = "ipc_weights"
     )
 
-    # fit new Super Learner to the no-shift data and predict
+    # fit new Super Learner to the natural (no shift) data and predict
     sl_fit_noshift <- sl_learners$train(task_noshift)
-    pred_star_Qn <- sl_fit_noshift$predict()
+    pred_star_Qn <- sl_fit_noshift$predict(task_noshift_nocens)
 
     # predict with Super Learner from unshifted data on the shifted data
     pred_star_Qn_shifted <- sl_fit_noshift$predict(task_shifted)

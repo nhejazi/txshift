@@ -15,7 +15,7 @@ est_g_cens(
 )
 }
 \arguments{
-\item{C_cens}{A \code{numeric} vector of loss of follow-up indicators.}
+\item{C_cens}{A \code{numeric} vector of loss to follow-up indicators.}
 
 \item{A}{A \code{numeric} vector of observed treatment values.}
 

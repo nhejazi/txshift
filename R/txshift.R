@@ -111,7 +111,7 @@
 #' Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
 #' C_samp <- rbinom(n_obs, 1, plogis(W + Y)) # two-phase sampling
 #'
-#' # construct a TML estimate (set estimator = "onestep" for the one-step)
+#' # construct a TML estimate
 #' tmle <- txshift(
 #'   W = W, A = A, Y = Y, delta = 0.5,
 #'   estimator = "tmle",
@@ -119,6 +119,26 @@
 #'     fit_type = "hal", n_bins = 5,
 #'     grid_type = "equal_range",
 #'     lambda_seq = exp(-1:-9)
+#'   ),
+#'   Q_fit_args = list(
+#'     fit_type = "glm",
+#'     glm_formula = "Y ~ ."
+#'   )
+#' )
+#'
+#' # add a natural censoring process and construct a TML estimate
+#' C_cens <- rbinom(n_obs, 1, plogis(rowSums(W) + 0.5))
+#' tmle <- txshift(
+#'   W = W, A = A, C_cens = C_cens, Y = Y, delta = 0.5,
+#'   estimator = "tmle",
+#'   g_exp_fit_args = list(
+#'     fit_type = "hal", n_bins = 5,
+#'     grid_type = "equal_range",
+#'     lambda_seq = exp(-1:-9)
+#'   ),
+#'   g_cens_fit_args = list(
+#'     fit_type = "glm",
+#'     glm_formula = "C_cens ~ ."
 #'   ),
 #'   Q_fit_args = list(
 #'     fit_type = "glm",
@@ -188,7 +208,6 @@ txshift <- function(W,
   fluctuation <- match.arg(fluctuation)
   eif_reg_type <- match.arg(eif_reg_type)
 
-  browser()
   # dissociate fit type from other arguments to simplify passing to do.call
   ipcw_fit_type <- unlist(ipcw_fit_args[names(ipcw_fit_args) == "fit_type"],
     use.names = FALSE
@@ -216,7 +235,7 @@ txshift <- function(W,
   }
 
   # subset data and implement IPC weighting for two-phase sampling corrections
-  if (!all(C_samp == 1) & !is.null(V)) {
+  if (!all(C_samp == 1) && !is.null(V)) {
     if (is.character(V)) {
       # combine censoring node information
       V_in <- data.table::as.data.table(mget(V))
@@ -235,14 +254,14 @@ txshift <- function(W,
       V_in <- V
     }
 
-    ipcw_estim_in <- list(
+    samp_estim_in <- list(
       V = V_in, Delta = C_samp,
       fit_type = ipcw_fit_type
     )
 
     # reshapes the list of args so that it can be passed to do.call
-    ipcw_estim_args <- unlist(
-      list(ipcw_estim_in, ipcw_fit_args),
+    samp_estim_args <- unlist(
+      list(samp_estim_in, ipcw_fit_args),
       recursive = FALSE
     )
 
@@ -313,12 +332,13 @@ txshift <- function(W,
                                    recursive = FALSE)
 
       # invoke function to estimate the natural censoring mechanism
-      gn_cens_estim <- do.call(est_g_cens, gn_cens_estim_args)
+      gn_cens_estim <- C_cens / do.call(est_g_cens, gn_cens_estim_args)
     }
   } else {
     gn_cens_estim <- rep(1, nrow(data_internal))
   }
 
+  browser()
   # initial estimate of the outcome mechanism
   if (!is.null(Qn_fit_ext) && Q_fit_type == "external") {
     Qn_estim <- Qn_fit_ext
@@ -326,6 +346,7 @@ txshift <- function(W,
     # generate and reshape args to pass to function for outcome regression
     Qn_estim_in <- list(
       Y = data_internal$Y,
+      C_cens = data_internal$C_cens,
       A = data_internal$A,
       W = data_internal[, W_names, with = FALSE],
       delta = delta,

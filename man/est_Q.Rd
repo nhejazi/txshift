@@ -6,6 +6,7 @@
 \usage{
 est_Q(
   Y,
+  C_cens,
   A,
   W,
   delta = 0,
@@ -17,6 +18,8 @@ est_Q(
 }
 \arguments{
 \item{Y}{A \code{numeric} vector of observed outcomes.}
+
+\item{C_cens}{A \code{numeric} vector of loss to follow-up indicators.}
 
 \item{A}{A \code{numeric} vector of observed treatment values.}
 

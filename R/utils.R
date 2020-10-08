@@ -1,4 +1,4 @@
-#' Print Method for Counterfactual Means
+#' Print Method for Counterfactual Mean of Stochastic Shift Intervention
 #'
 #' @details The \code{print} method for objects of class \code{txshift}.
 #'
@@ -87,7 +87,7 @@ print.txshift_msm <- function(x, ...) {
 
 ###############################################################################
 
-#' Summary for Counterfactual Mean Under Stochastic Intervention
+#' Summary for Counterfactual Mean of Stochastic Shift Intervention
 #'
 #' @details Print a convenient summary for objects computed using
 #'  \code{\link{txshift}}.

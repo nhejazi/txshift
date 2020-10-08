@@ -55,6 +55,7 @@
 #'  resulting estimate. The default is \code{TRUE}; set to \code{FALSE} to use
 #'  an IPC-weighted loss rather than the IPC-augmented influence function.
 #'
+#' @importFrom assertthat assert_that
 #' @importFrom data.table as.data.table setnames
 #' @importFrom stringr str_detect
 #' @importFrom Rdpack reprompt
@@ -66,7 +67,7 @@ tmle_txshift <- function(data_internal,
                          V = NULL,
                          delta = 0,
                          ipcw_estim,
-                         gn_cens_estim,
+                         gn_cens_weights,
                          Qn_estim,
                          Hn_estim,
                          fluctuation = c("standard", "weighted"),
@@ -82,8 +83,12 @@ tmle_txshift <- function(data_internal,
   samp_weights_norm <- samp_weights / sum(samp_weights)
 
   # invoke efficient IPCW-TMLE if satisfied; otherwise ineffecient variant
-  if (ipcw_efficiency & !all(C_samp == 1)
-      & !is.null(V) & !is.null(ipcw_estim)) {
+  if (ipcw_efficiency) {
+    # checks for necessary components for augmented EIF procedure
+    assertthat::assert_that(!all(C_samp == 1))
+    assertthat::assert_that(!is.null(ipcw_estim))
+    assertthat::assert_that(!is.null(V))
+
     # programmatic bookkeeping
     eif_mean <- Inf
     eif_tol <- 1 / length(samp_weights)

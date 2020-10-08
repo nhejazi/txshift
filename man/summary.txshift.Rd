@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{summary.txshift}
 \alias{summary.txshift}
-\title{Summary for Counterfactual Mean Under Stochastic Intervention}
+\title{Summary for Counterfactual Mean of Stochastic Shift Intervention}
 \usage{
 \method{summary}{txshift}(object, ..., ci_level = 0.95, digits = 4)
 }
@@ -24,7 +24,7 @@ None. Called for the side effect of printing a summary of particular
  slots of objects of class \code{txshift}.
 }
 \description{
-Summary for Counterfactual Mean Under Stochastic Intervention
+Summary for Counterfactual Mean of Stochastic Shift Intervention
 }
 \details{
 Print a convenient summary for objects computed using
