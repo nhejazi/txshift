@@ -2,13 +2,13 @@
 % Please edit documentation in R/fit_mechanisms.R
 \name{est_g_exp}
 \alias{est_g_exp}
-\title{Estimate the Treatment Mechanism (Generalized Propensity Score)}
+\title{Estimate the Exposure Mechanism via Generalized Propensity Score}
 \usage{
 est_g_exp(
   A,
   W,
   delta = 0,
-  ipc_weights = rep(1, length(A)),
+  samp_weights = rep(1, length(A)),
   fit_type = c("hal", "sl"),
   sl_learners_density = NULL,
   haldensify_args = list(n_bins = c(5, 10), grid_type = c("equal_range", "equal_mass"),
@@ -16,20 +16,20 @@ est_g_exp(
 )
 }
 \arguments{
-\item{A}{A \code{numeric} vector of observed treatment values.}
+\item{A}{A \code{numeric} vector of observed exposure values.}
 
 \item{W}{A \code{numeric} matrix of observed baseline covariate values.}
 
 \item{delta}{A \code{numeric} value identifying a shift in the observed
-value of the treatment under which observations are to be evaluated.}
+value of the exposure under which observations are to be evaluated.}
 
-\item{ipc_weights}{A \code{numeric} vector of observation-level sampling
+\item{samp_weights}{A \code{numeric} vector of observation-level sampling
 weights, as produced by the internal procedure to estimate the two-phase
-sampling mechanism \code{\link{est_ipcw}}.}
+sampling mechanism \code{\link{est_samp}}.}
 
 \item{fit_type}{A \code{character} specifying whether to use Super Learner
 (from \pkg{sl3}) or the Highly Adaptive Lasso (from \pkg{hal9001}) to
-estimate the conditional treatment density.}
+estimate the conditional exposure density.}
 
 \item{sl_learners_density}{Object containing a set of instantiated learners
 from \pkg{sl3}, to be used in fitting an ensemble model.}
@@ -46,11 +46,11 @@ A \code{data.table} with four columns, containing estimates of the
  (g(A + 2 delta) | W).
 }
 \description{
-Estimate the Treatment Mechanism (Generalized Propensity Score)
+Estimate the Exposure Mechanism via Generalized Propensity Score
 }
 \details{
-Compute the propensity score (treatment mechanism) for the observed
+Compute the propensity score (exposure mechanism) for the observed
  data, including the shift. This gives the propensity score for the observed
- data (at the observed A) the counterfactual shifts (at {A - delta},
- {A + delta}, and {A + 2 * delta}).
+ data (at the observed A) the counterfactual shifted exposure levels (at
+ {A - delta}, {A + delta}, and {A + 2 * delta}).
 }

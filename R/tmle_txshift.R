@@ -14,16 +14,16 @@
 #' @param V The covariates that are used in determining the sampling procedure
 #'  that gives rise to censoring. The default is \code{NULL} and corresponds to
 #'  scenarios in which there is no censoring (in which case all values in the
-#'  preceding argument \code{C} must be uniquely 1. To specify this, pass in a
+#'  preceding argument \code{C_samp} must be 1. To specify this, pass in a
 #'  NAMED \code{list} identifying variables amongst W, A, Y that are thought to
-#'  have played a role in defining the sampling/censoring mechanism (C).
+#'  have played a role in defining the sampling mechanism.
 #' @param delta A \code{numeric} value indicating the shift in the treatment to
 #'  be used in defining the target parameter. This is defined with respect to
 #'  the scale of the treatment (A).
-#' @param ipcw_estim An object providing the value of the censoring mechanism
+#' @param samp_estim An object providing the value of the sampling mechanism
 #'  evaluated across the full data. This object is passed in after being
-#'  constructed by a call to the internal function \code{\link{est_ipcw}}.
-#' @param gn_cens_estim TODO: document
+#'  constructed by a call to the internal function \code{\link{est_samp}}.
+#' @param gn_cens_weights TODO: document
 #' @param Qn_estim An object providing the value of the outcome evaluated after
 #'  imposing a shift in the treatment. This object is passed in after being
 #'  constructed by a call to the internal function \code{\link{est_Q}}.
@@ -44,12 +44,12 @@
 #'  Set this to \code{"glm"} to instead use a simple linear regression model.
 #'  In this step, the efficient influence function (EIF) is regressed against
 #'  covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).
-#' @param ipcw_fit_args A \code{list} of arguments, all but one of which are
-#'  passed to \code{\link{est_ipcw}}. For details, consult the documentation
-#'  for \code{\link{est_ipcw}}. The first element (i.e., \code{fit_type}) is
+#' @param samp_fit_args A \code{list} of arguments, all but one of which are
+#'  passed to \code{\link{est_samp}}. For details, consult the documentation
+#'  for \code{\link{est_samp}}. The first element (i.e., \code{fit_type}) is
 #'  used to determine how this regression is fit: "glm" for generalized linear
 #'  model, "sl" for a Super Learner, and "external" for a user-specified input
-#'  of the form produced by \code{\link{est_ipcw}}.
+#'  of the form produced by \code{\link{est_samp}}.
 #' @param ipcw_efficiency Whether to invoke an augmentation of the IPCW-TMLE
 #'  procedure that performs an iterative process to ensure efficiency of the
 #'  resulting estimate. The default is \code{TRUE}; set to \code{FALSE} to use
@@ -66,27 +66,27 @@ tmle_txshift <- function(data_internal,
                          C_samp = rep(1, nrow(data_internal)),
                          V = NULL,
                          delta = 0,
-                         ipcw_estim,
+                         samp_estim,
                          gn_cens_weights,
                          Qn_estim,
                          Hn_estim,
                          fluctuation = c("standard", "weighted"),
                          max_iter = 10,
                          eif_reg_type = c("hal", "glm"),
-                         ipcw_fit_args,
+                         samp_fit_args,
                          ipcw_efficiency = TRUE) {
   # initialize counter
   n_steps <- 0
 
-  # extract and normalize sampling mechanism weights
-  samp_weights <- C_samp / ipcw_estim$pi_mech
+  # normalize (two-phase) sampling mechanism weights
+  samp_weights <- C_samp / samp_estim
   samp_weights_norm <- samp_weights / sum(samp_weights)
 
   # invoke efficient IPCW-TMLE if satisfied; otherwise ineffecient variant
-  if (ipcw_efficiency) {
+  if (!all(C_samp == 1) && ipcw_efficiency) {
+    browser()
     # checks for necessary components for augmented EIF procedure
-    assertthat::assert_that(!all(C_samp == 1))
-    assertthat::assert_that(!is.null(ipcw_estim))
+    assertthat::assert_that(!is.null(samp_estim))
     assertthat::assert_that(!is.null(V))
 
     # programmatic bookkeeping
@@ -94,8 +94,8 @@ tmle_txshift <- function(data_internal,
     eif_tol <- 1 / length(samp_weights)
     conv_res <- matrix(replicate(3, rep(NA_real_, max_iter)), nrow = max_iter)
 
-    # quantities to be updated across iterations
-    pi_mech_star <- ipcw_estim$pi_mech
+    # quantities to be updated across targeting iterations
+    pi_mech_star <- samp_estim
     Qn_estim_updated <- Qn_estim
 
     # iterate procedure until convergence conditions are satisfied
@@ -173,7 +173,7 @@ tmle_txshift <- function(data_internal,
       Y = data_internal$Y,
       Qn_scaled = Qn_estim,
       Hn = Hn_estim,
-      ipc_weights = samp_weights[C_samp == 1],
+      ipc_weights = (gn_cens_weights * samp_weights),
       method = fluctuation
     )
 
@@ -185,8 +185,7 @@ tmle_txshift <- function(data_internal,
       estimator = "tmle",
       fluc_mod_out = fitted_fluc_mod,
       C_samp = C_samp,
-      ipc_weights = samp_weights[C_samp == 1],
-      ipc_weights_norm = samp_weights_norm[C_samp == 1]
+      ipc_weights = (gn_cens_weights * samp_weights)
     )
 
     # create output object
@@ -209,7 +208,7 @@ tmle_txshift <- function(data_internal,
   return(txshift_out)
 }
 
-################################################################################
+###############################################################################
 
 #' Fit One-Dimensional Fluctuation Model for Updating Initial Estimates
 #'
@@ -249,7 +248,7 @@ fit_fluctuation <- function(Y,
                             Hn,
                             ipc_weights = rep(1, length(Y)),
                             method = c("standard", "weighted"),
-                            flucmod_tol = 100) {
+                            flucmod_tol = 50) {
 
   # scale the outcome for the logit transform
   y_star <- scale_to_unit(

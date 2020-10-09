@@ -1,20 +1,20 @@
-#' Estimate the Treatment Mechanism (Generalized Propensity Score)
+#' Estimate the Exposure Mechanism via Generalized Propensity Score
 #'
-#' @details Compute the propensity score (treatment mechanism) for the observed
+#' @details Compute the propensity score (exposure mechanism) for the observed
 #'  data, including the shift. This gives the propensity score for the observed
-#'  data (at the observed A) the counterfactual shifts (at {A - delta},
-#'  {A + delta}, and {A + 2 * delta}).
+#'  data (at the observed A) the counterfactual shifted exposure levels (at
+#'  {A - delta}, {A + delta}, and {A + 2 * delta}).
 #'
-#' @param A A \code{numeric} vector of observed treatment values.
+#' @param A A \code{numeric} vector of observed exposure values.
 #' @param W A \code{numeric} matrix of observed baseline covariate values.
 #' @param delta A \code{numeric} value identifying a shift in the observed
-#'  value of the treatment under which observations are to be evaluated.
-#' @param ipc_weights A \code{numeric} vector of observation-level sampling
+#'  value of the exposure under which observations are to be evaluated.
+#' @param samp_weights A \code{numeric} vector of observation-level sampling
 #'  weights, as produced by the internal procedure to estimate the two-phase
-#'  sampling mechanism \code{\link{est_ipcw}}.
+#'  sampling mechanism \code{\link{est_samp}}.
 #' @param fit_type A \code{character} specifying whether to use Super Learner
 #'  (from \pkg{sl3}) or the Highly Adaptive Lasso (from \pkg{hal9001}) to
-#'  estimate the conditional treatment density.
+#'  estimate the conditional exposure density.
 #' @param sl_learners_density Object containing a set of instantiated learners
 #'  from \pkg{sl3}, to be used in fitting an ensemble model.
 #' @param haldensify_args A \code{list} of argument to be directly passed to
@@ -34,7 +34,7 @@
 est_g_exp <- function(A,
                       W,
                       delta = 0,
-                      ipc_weights = rep(1, length(A)),
+                      samp_weights = rep(1, length(A)),
                       fit_type = c("hal", "sl"),
                       sl_learners_density = NULL,
                       haldensify_args = list(
@@ -58,21 +58,21 @@ est_g_exp <- function(A,
   data_in <- data.table::as.data.table(cbind(A, W))
   if (!is.matrix(W)) W <- as.matrix(W)
   data.table::setnames(data_in, c("A", colnames(W)))
-  data.table::set(data_in, j = "ipc_weights", value = ipc_weights)
+  data.table::set(data_in, j = "ipc_weights", value = samp_weights)
 
-  # need a data set with the treatment stochastically shifted DOWNWARDS A-delta
+  # need a data set with the exposure stochastically shifted DOWNWARDS A-delta
   data_in_downshifted <- data.table::copy(data_in)
   data.table::set(data_in_downshifted, j = "A", value = shift_additive(
     A = data_in$A, delta = -delta
   ))
 
-  # need a data set with the treatment stochastically shifted UPWARDS A+delta
+  # need a data set with the exposure stochastically shifted UPWARDS A+delta
   data_in_upshifted <- data.table::copy(data_in)
   data.table::set(data_in_upshifted, j = "A", value = shift_additive(
     A = data_in$A, delta = delta
   ))
 
-  # need a data set with the treatment stochastically shifted UPWARDS A+2delta
+  # need a data set with the exposure stochastically shifted UPWARDS A+2delta
   data_in_upupshifted <- data.table::copy(data_in)
   data.table::set(data_in_upupshifted, j = "A", value = shift_additive(
     A = data_in$A, delta = 2 * delta
@@ -80,7 +80,7 @@ est_g_exp <- function(A,
 
   # if fitting sl3 density make sl3 tasks from the data
   if (fit_type == "sl" & !is.null(sl_learners_density)) {
-    # sl3 task for data with treatment UNSHIFTED
+    # sl3 task for data with natural (unshifted) exposure
     sl_task <- sl3::sl3_Task$new(
       data = data_in,
       outcome = "A",
@@ -88,7 +88,7 @@ est_g_exp <- function(A,
       weights = "ipc_weights"
     )
 
-    # sl3 task for data with treatment shifted DOWNWARDS A-delta
+    # sl3 task for data with exposure shifted DOWNWARDS A-delta
     sl_task_downshifted <- sl3::sl3_Task$new(
       data = data_in_downshifted,
       outcome = "A",
@@ -96,7 +96,7 @@ est_g_exp <- function(A,
       weights = "ipc_weights"
     )
 
-    # sl3 task for data with treatment shifted UPWARDS A+delta
+    # sl3 task for data with exposure shifted UPWARDS A+delta
     sl_task_upshifted <- sl3::sl3_Task$new(
       data = data_in_upshifted,
       outcome = "A",
@@ -104,7 +104,7 @@ est_g_exp <- function(A,
       weights = "ipc_weights"
     )
 
-    # sl3 task for data with treatment shifted UPWARDS A+2delta
+    # sl3 task for data with exposure shifted UPWARDS A+2delta
     sl_task_upupshifted <- sl3::sl3_Task$new(
       data = data_in_upupshifted,
       outcome = "A",
@@ -118,7 +118,7 @@ est_g_exp <- function(A,
     fit_args <- unlist(
       list(
         A = list(A), W = list(W),
-        wts = list(ipc_weights),
+        wts = list(samp_weights),
         haldensify_args
       ),
       recursive = FALSE
@@ -205,11 +205,11 @@ est_g_exp <- function(A,
 #'  apply a joint intervention for removing censoring by re-weighting.
 #'
 #' @param C_cens A \code{numeric} vector of loss to follow-up indicators.
-#' @param A A \code{numeric} vector of observed treatment values.
+#' @param A A \code{numeric} vector of observed exposure values.
 #' @param W A \code{numeric} matrix of observed baseline covariate values.
-#' @param ipc_weights A \code{numeric} vector of observation-level sampling
+#' @param samp_weights A \code{numeric} vector of observation-level sampling
 #'  weights, as produced by the internal procedure to estimate the two-phase
-#'  sampling mechanism \code{\link{est_ipcw}}.
+#'  sampling mechanism \code{\link{est_samp}}.
 #' @param fit_type A \code{character} indicating whether to use GLMs or Super
 #'  Learner to fit the censoring mechanism. If option "glm" is selected, the
 #'  argument \code{glm_formula} must NOT be \code{NULL}, instead containing a
@@ -218,8 +218,8 @@ est_g_exp <- function(A,
 #'  \code{NULL}; instead, an instantiated \code{\link[sl3]{Lrnr_sl}} object,
 #'  specifying learners and a metalearner for the Super Learner fit, must be
 #'  provided. Consult the documentation of \pkg{sl3} for details.
-#' @param glm_formula A \code{character} matching a \code{\link[stat]{formula}}
-#'  for use in fitting a generalized linear model via \code{\link[stats]{glm}}.
+#' @param glm_formula A \code{character} giving a \code{\link[stats]{formula}}
+#'  for fitting a (generalized) linear model via \code{\link[stats]{glm}}.
 #' @param sl_learners Object containing a set of instantiated learners from the
 #'  \pkg{sl3}, to be used in fitting an ensemble model.
 #'
@@ -232,7 +232,7 @@ est_g_exp <- function(A,
 est_g_cens <- function(C_cens,
                        A,
                        W,
-                       ipc_weights = rep(1, length(Y)),
+                       samp_weights = rep(1, length(Y)),
                        fit_type = c("sl", "glm"),
                        glm_formula = "C_cens ~ .",
                        sl_learners = NULL) {
@@ -253,7 +253,7 @@ est_g_cens <- function(C_cens,
   data.table::setnames(data_in, c("C_cens", "A",
                                   paste0("W", seq_len(ncol(W)))))
   names_W <- colnames(data_in)[stringr::str_detect(colnames(data_in), "W")]
-  data.table::set(data_in, j = "ipc_weights", value = ipc_weights)
+  data.table::set(data_in, j = "ipc_weights", value = samp_weights)
 
   # fit a logistic regression and extract the predicted probabilities
   if (fit_type == "glm" & !is.null(glm_formula)) {
@@ -266,7 +266,7 @@ est_g_cens <- function(C_cens,
         formula = stats::as.formula(glm_formula),
         family = "binomial",
         data = data_in,
-        weights = ipc_weights
+        weights = samp_weights
       )
     )
 
@@ -311,14 +311,14 @@ est_g_cens <- function(C_cens,
 #'
 #' @param Y A \code{numeric} vector of observed outcomes.
 #' @param C_cens A \code{numeric} vector of loss to follow-up indicators.
-#' @param A A \code{numeric} vector of observed treatment values.
+#' @param A A \code{numeric} vector of observed exposure values.
 #' @param W A \code{numeric} matrix of observed baseline covariate values.
 #' @param delta A \code{numeric} indicating the magnitude of the shift to be
-#'  computed for the treatment \code{A}. This is passed to the internal
+#'  computed for the exposure \code{A}. This is passed to the internal
 #'  \code{\link{shift_additive}} and is currently limited to additive shifts.
-#' @param ipc_weights A \code{numeric} vector of observation-level sampling
+#' @param samp_weights A \code{numeric} vector of observation-level sampling
 #'  weights, as produced by the internal procedure to estimate the two-phase
-#'  sampling mechanism \code{\link{est_ipcw}}.
+#'  sampling mechanism \code{\link{est_samp}}.
 #' @param fit_type A \code{character} indicating whether to use GLMs or Super
 #'  Learner to fit the outcome regression. If the option "glm" is selected, the
 #'  argument \code{glm_formula} must NOT be \code{NULL}, instead containing a
@@ -327,8 +327,8 @@ est_g_cens <- function(C_cens,
 #'  \code{NULL}; instead, an instantiated \code{\link[sl3]{Lrnr_sl}} object,
 #'  specifying learners and a metalearner for the Super Learner fit, must be
 #'  provided. Consult the documentation of \pkg{sl3} for details.
-#' @param glm_formula A \code{character} matching a \code{\link[stat]{formula}}
-#'  for use in fitting a generalized linear model via \code{\link[stats]{glm}}.
+#' @param glm_formula A \code{character} giving a \code{\link[stats]{formula}}
+#'  for fitting a (generalized) linear model via \code{\link[stats]{glm}}.
 #' @param sl_learners Object containing a set of instantiated learners from the
 #'  \pkg{sl3}, to be used in fitting an ensemble model.
 #'
@@ -345,7 +345,7 @@ est_Q <- function(Y,
                   A,
                   W,
                   delta = 0,
-                  ipc_weights = rep(1, length(Y)),
+                  samp_weights = rep(1, length(Y)),
                   fit_type = c("sl", "glm"),
                   glm_formula = "Y ~ .",
                   sl_learners = NULL) {
@@ -369,9 +369,9 @@ est_Q <- function(Y,
   data.table::setnames(data_in, c("Y", "C_cens", "A",
                                   paste0("W", seq_len(ncol(W)))))
   names_W <- colnames(data_in)[stringr::str_detect(colnames(data_in), "W")]
-  data.table::set(data_in, j = "ipc_weights", value = ipc_weights)
+  data.table::set(data_in, j = "ipc_weights", value = samp_weights)
 
-  # counterfactual data with treatment shifted do(A + delta)
+  # counterfactual data with exposure shifted do(A + delta)
   # NOTE: also introduce joint intervention on the censoring node do(C = 1)
   data_in_shifted <- data.table::copy(data_in)
   data.table::set(data_in_shifted, j = "A", value = shift_additive(
@@ -390,7 +390,7 @@ est_Q <- function(Y,
       fit_Qn <- stats::glm(
         formula = stats::as.formula(glm_formula),
         data = data_in,
-        weights = ipc_weights,
+        weights = samp_weights,
         subset = C_cens == 1,
         family = "binomial"
       )
@@ -436,7 +436,7 @@ est_Q <- function(Y,
       weights = "ipc_weights"
     )
 
-    # make sl3 task for data with the shifted treatment
+    # make sl3 task for data with the shifted exposure
     task_shifted <- sl3::make_sl3_Task(
       data = data_in_shifted,
       covariates = c("C_cens", "A", names_W),
@@ -454,7 +454,7 @@ est_Q <- function(Y,
   }
 
   # NOTE: clean up predictions and generate output
-  # avoid values that are exactly 0 or 1 in the scaled Qn and Qn_shifted
+  # avoid values that are exactly 0 or 1 in the scaled estimates
   pred_star_Qn <- bound_precision(vals = pred_star_Qn)
   pred_star_Qn_shifted <- bound_precision(vals = pred_star_Qn_shifted)
 
@@ -466,32 +466,29 @@ est_Q <- function(Y,
 
 ###############################################################################
 
-#' Estimate Inverse Probability of Censoring Weights for Two-Phase Sampling
+#' Estimate Probability of Censoring by Two-Phase Sampling
 #'
-#' @details Compute inverse probability of censoring weights for the two-phase
-#'  sampling mechanism. These inverse weights are based on the probability of
-#'  inclusion in the second-stage sample based on variables measured across all
-#'  participants.
+#' @details Compute estimates of the sampling probability for inclusion in the
+#'  the second-phase via the two-phase sampling mechanism. These estimates are
+#'  used for the creation of inverse probability weights.
 #'
 #' @param V A \code{numeric} vector, \code{matrix}, \code{data.frame} or
 #'  similar object giving the observed values of the covariates known to
-#'  potentially inform the censoring mechanism.
-#' @param C_samp A \code{numeric} vector giving observed values of the indicator
-#'  function corresponding to the censoring mechanism.
+#'  potentially inform the sampling mechanism.
+#' @param C_samp A \code{numeric} vector of observed values of the indicator
+#'  for inclusion in the second-phase sample.
 #' @param fit_type A \code{character} indicating whether to perform the fit
-#'  using GLMs or a Super Learner. If use of Super Learner is desired, then the
-#'  argument \code{sl_learners} must be provided.
+#'  using GLMs or a Super Learner ensemble model. If use of Super Learner is
+#'  desired, then the argument \code{sl_learners} must be provided.
 #' @param sl_learners An \code{\link[sl3]{Lrnr_sl}} object, a Super Learner
-#'  instantiated externally using \pkg{sl3}.
+#'  ensemble or learner instantiated externally using \pkg{sl3}.
 #'
 #' @importFrom stats glm predict binomial
 #' @importFrom data.table as.data.table setnames
 #' @importFrom assertthat assert_that
 #'
-#' @return A \code{list} containing a \code{numeric} vector corresponding to
-#'  the inverse probability of censoring weights required for computing an
-#'  IPCW-TMLE and \code{numeric} vector of the estimated sampling mechanism.
-est_ipcw <- function(V,
+#' @return A \code{numeric} vector of the estimated sampling mechanism.
+est_samp <- function(V,
                      C_samp,
                      fit_type = c("sl", "glm"),
                      sl_learners = NULL) {
@@ -525,57 +522,56 @@ est_ipcw <- function(V,
 
   # fit logistic regression or binomial SL to get class probabilities for IPCW
   if (fit_type == "glm" & is.null(sl_learners)) {
-    ipcw_reg <- stats::glm(
+    samp_reg <- stats::glm(
       as.formula("C_samp ~ ."),
       family = stats::binomial(),
       data = data_in
     )
-    ipcw_probs <- unname(stats::predict(
-      object = ipcw_reg,
+    samp_probs <- unname(stats::predict(
+      object = samp_reg,
       newdata = data_in,
       type = "response"
     ))
   } else if (fit_type == "sl" & !is.null(sl_learners)) {
     sl_fit <- sl_learners$train(sl_task)
-    ipcw_probs <- as.numeric(sl_fit$predict())
+    samp_probs <- as.numeric(sl_fit$predict())
   }
 
-  # compute the inverse weights as C_samp/Pi_n and return this vector
-  ipc_weights <- C_samp / ipcw_probs
-  ipc_weights_out <- ipc_weights[ipc_weights != 0]
-  return(list(pi_mech = ipcw_probs, ipc_weights = ipc_weights_out))
+  # the estimated sampling weights Pi_n for creating inverse weights
+  return(samp_probs)
 }
 
 ###############################################################################
 
 #' Estimate Auxiliary Covariate of Full Data Efficient Influence Function
 #'
-#' @details Compute an estimate of the auxiliary covariate required to update
-#'  initial estimates via logistic tilting models in targeted minimum loss
-#'  estimation.
+#' @details Compute an estimate of the auxiliary covariate of the efficient
+#'  influence function required to update initial estimates through logistic
+#'  tilting models for targeted minimum loss estimation.
 #'
-#' @param gn An estimate of the treatment probability (propensity score), using
-#'  the output provided by internal function \code{estimate-propensity_score}.
+#' @param gn_exp An estimate of the exposure density (a generalized propensity
+#'  score) using the output provided by \code{\link{est_g_exp}}.
 #'
 #' @importFrom data.table as.data.table setnames
 #'
 #' @return A \code{data.table} with two columns, containing estimates of the
 #'  auxiliary covariate at the natural value of the exposure H(A, W) and at the
 #'  shifted value of the exposure H(A + delta, W).
-est_Hn <- function(gn) {
+est_Hn <- function(gn_exp) {
   # set any g(a|w) = 0 values to a very small value above zero
-  gn$noshift <- bound_propensity(gn$noshift)
+  gn_exp$noshift <- bound_propensity(gn_exp$noshift)
 
   # compute the ratio of the propensity scores for Hn(A,W)
-  ratio_g_noshift <- (gn$downshift / gn$noshift) + as.numeric(gn$upshift == 0)
+  ratio_g_noshift <- (gn_exp$downshift / gn_exp$noshift) +
+    as.numeric(gn_exp$upshift == 0)
 
   # compute the ratio of the propensity scores for Hn(d(A,W),W)
-  ratio_g_shift <- (gn$noshift / gn$upshift) * as.numeric(gn$upshift != 0) +
-    as.numeric(gn$upupshift == 0)
+  ratio_g_shift <- (gn_exp$noshift / gn_exp$upshift) *
+    as.numeric(gn_exp$upshift != 0) + as.numeric(gn_exp$upupshift == 0)
   ratio_g_shift[is.na(ratio_g_shift)] <- 1
 
   # set up output table of auxiliary covariate under different shifts
-  H_n <- data.table::as.data.table(cbind(ratio_g_noshift, ratio_g_shift))
-  data.table::setnames(H_n, c("noshift", "shift"))
-  return(H_n)
+  aux_covar <- data.table::as.data.table(cbind(ratio_g_noshift, ratio_g_shift))
+  data.table::setnames(aux_covar, c("noshift", "shift"))
+  return(aux_covar)
 }

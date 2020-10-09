@@ -10,7 +10,7 @@ est_Q(
   A,
   W,
   delta = 0,
-  ipc_weights = rep(1, length(Y)),
+  samp_weights = rep(1, length(Y)),
   fit_type = c("sl", "glm"),
   glm_formula = "Y ~ .",
   sl_learners = NULL
@@ -21,17 +21,17 @@ est_Q(
 
 \item{C_cens}{A \code{numeric} vector of loss to follow-up indicators.}
 
-\item{A}{A \code{numeric} vector of observed treatment values.}
+\item{A}{A \code{numeric} vector of observed exposure values.}
 
 \item{W}{A \code{numeric} matrix of observed baseline covariate values.}
 
 \item{delta}{A \code{numeric} indicating the magnitude of the shift to be
-computed for the treatment \code{A}. This is passed to the internal
+computed for the exposure \code{A}. This is passed to the internal
 \code{\link{shift_additive}} and is currently limited to additive shifts.}
 
-\item{ipc_weights}{A \code{numeric} vector of observation-level sampling
+\item{samp_weights}{A \code{numeric} vector of observation-level sampling
 weights, as produced by the internal procedure to estimate the two-phase
-sampling mechanism \code{\link{est_ipcw}}.}
+sampling mechanism \code{\link{est_samp}}.}
 
 \item{fit_type}{A \code{character} indicating whether to use GLMs or Super
 Learner to fit the outcome regression. If the option "glm" is selected, the
@@ -42,8 +42,8 @@ the option "sl" is selected, the argument \code{sl_learners} must NOT be
 specifying learners and a metalearner for the Super Learner fit, must be
 provided. Consult the documentation of \pkg{sl3} for details.}
 
-\item{glm_formula}{A \code{character} matching a \code{\link[stat]{formula}}
-for use in fitting a generalized linear model via \code{\link[stats]{glm}}.}
+\item{glm_formula}{A \code{character} giving a \code{\link[stats]{formula}}
+for fitting a (generalized) linear model via \code{\link[stats]{glm}}.}
 
 \item{sl_learners}{Object containing a set of instantiated learners from the
 \pkg{sl3}, to be used in fitting an ensemble model.}

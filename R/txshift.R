@@ -37,30 +37,27 @@
 #'  tilting regression.
 #' @param max_iter A \code{numeric} integer giving the maximum number of steps
 #'  to be taken in iterating to a solution of the efficient influence function.
-#' @param ipcw_fit_args A \code{list} of arguments, all but one of which are
-#'  passed to \code{\link{est_ipcw}}. For details, consult the documentation of
-#'  \code{\link{est_ipcw}}. The first element (i.e., \code{fit_type}) is used
+#' @param samp_fit_args A \code{list} of arguments, all but one of which are
+#'  passed to \code{\link{est_samp}}. For details, consult the documentation of
+#'  \code{\link{est_samp}}. The first element (i.e., \code{fit_type}) is used
 #'  to determine how this regression is fit: generalized linear model ("glm")
 #'  or Super Learner ("sl"), and "external" a user-specified input of the form
-#'  produced by \code{\link{est_ipcw}}. NOTE THAT this first argument is not
-#'  passed to \code{\link{est_ipcw}}.
+#'  produced by \code{\link{est_samp}}.
 #' @param g_exp_fit_args A \code{list} of arguments, all but one of which are
-#'  passed to \code{\link{est_g}}. For details, consult the documentation of
-#'  \code{\link{est_g}}. The first element (i.e., \code{fit_type}) is used to
-#'  determine how this regression is fit: \code{"hal"} to estimate conditional
-#'  densities via the highly adaptive lasso (via \pkg{haldensify}), \code{"sl"}
-#'  for \pkg{sl3} learners used to fit Super Learner to densities via
+#'  passed to \code{\link{est_g_exp}}. For details, see the documentation of
+#'  \code{\link{est_g_exp}}. The 1st element (i.e., \code{fit_type}) specifies
+#'  how this regression is fit: \code{"hal"} to estimate conditional densities
+#'  via the highly adaptive lasso (via \pkg{haldensify}), \code{"sl"} for
+#'  \pkg{sl3} learners used to fit Super Learner ensembles to densities via
 #'  \code{\link[sl3]{Lrnr_haldensify}} or similar, and \code{"external"} for
-#'  user-specified input of the form produced by \code{\link{est_g}}. NOTE that
-#'  this first argument is not passed to \code{\link{est_g}}.
+#'  user-specified input of the form produced by \code{\link{est_g_exp}}.
 #' @param Q_fit_args A \code{list} of arguments, all but one of which are
 #'  passed to \code{\link{est_Q}}. For details, consult the documentation for
 #'  \code{\link{est_Q}}. The first element (i.e., \code{fit_type}) is used to
 #'  determine how this regression is fit: \code{"glm"} for a generalized linear
 #'  model for the outcome regression, \code{"sl"} for \pkg{sl3} learners used
 #'  to fit a Super Learner for the outcome regression, and \code{"external"}
-#'  for user-specified input of the form produced by \code{\link{est_Q}}. NOTE
-#'  that this first argument is not passed to \code{\link{est_g}}.
+#'  for user-specified input of the form produced by \code{\link{est_Q}}.
 #' @param eif_reg_type Whether a flexible nonparametric function ought to be
 #'  used in the dimension-reduced nuisance regression of the targeting step for
 #'  the censored data case. By default, the method used is a nonparametric
@@ -69,24 +66,21 @@
 #'  this step, the efficient influence function (EIF) is regressed against
 #'  covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).
 #' @param ipcw_efficiency Whether to use an augmented inverse probability of
-#'  censoring weighted estimating equation to ensure efficiency of the
-#'  resulting estimate. The default is \code{TRUE}; only set to \code{FALSE} if
-#'  possible inefficiency of the resultant estimator is not a concern.
-#' @param ipcw_fit_ext The results of an external fitting procedure used to
-#'  estimate the two-phase censoring mechanism, to be used in constructing the
+#'  censoring weighted EIF estimating equation to ensure efficiency of the
+#'  resultant estimate. The default is \code{TRUE}; the inefficient estimation
+#'  procedure specified by \code{FALSE} is only supported for completeness.
+#' @param samp_fit_ext The results of an external fitting procedure used to
+#'  estimate the two-phase sampling mechanism, to be used in constructing the
 #'  inverse probability of censoring weighted TML or one-step estimator. The
-#'  input provided must match the output of \code{\link{est_ipcw}} exactly;
-#'  thus, use of this argument is only recommended for power users.
+#'  input provided must match the output of \code{\link{est_samp}} exactly.
 #' @param gn_exp_fit_ext The results of an external fitting procedure used to
 #'  estimate the exposure mechanism (generalized propensity score), to be used
 #'  in constructing the TML or one-step estimator. The input provided must
-#'  match the output of \code{\link{est_g_exp}} exactly; use of this argument
-#'  is only recommended for power users.
+#'  match the output of \code{\link{est_g_exp}} exactly.
 #' @param gn_cens_fit_ext The results of an external fitting procedure used to
 #'  estimate the censoring mechanism (propensity score for missingness), to be
 #'  used in constructing the TML or one-step estimator. The input provided must
-#'  match the output of \code{\link{est_g_cens}} exactly; use of this argument
-#'  is only recommended for power users.
+#'  match the output of \code{\link{est_g_cens}} exactly.
 #' @param Qn_fit_ext The results of an external fitting procedure used to
 #'  estimate the outcome mechanism, to be used in constructing the TML or
 #'  one-step estimator. The input provided must match the output of
@@ -151,7 +145,7 @@
 #'   W = W, A = A, Y = Y, delta = 0.5,
 #'   C_samp = C_samp, V = c("W", "Y"),
 #'   estimator = "tmle", max_iter = 5,
-#'   ipcw_fit_args = list(fit_type = "glm"),
+#'   samp_fit_args = list(fit_type = "glm"),
 #'   g_exp_fit_args = list(
 #'     fit_type = "hal", n_bins = 5,
 #'     grid_type = "equal_range",
@@ -174,7 +168,7 @@ txshift <- function(W,
                     estimator = c("tmle", "onestep"),
                     fluctuation = c("standard", "weighted"),
                     max_iter = 10,
-                    ipcw_fit_args = list(
+                    samp_fit_args = list(
                       fit_type = c("glm", "sl", "external"),
                       sl_learners = NULL
                     ),
@@ -198,7 +192,7 @@ txshift <- function(W,
                     ),
                     eif_reg_type = c("hal", "glm"),
                     ipcw_efficiency = TRUE,
-                    ipcw_fit_ext = NULL,
+                    samp_fit_ext = NULL,
                     gn_exp_fit_ext = NULL,
                     gn_cens_fit_ext = NULL,
                     Qn_fit_ext = NULL) {
@@ -209,7 +203,7 @@ txshift <- function(W,
   eif_reg_type <- match.arg(eif_reg_type)
 
   # dissociate fit type from other arguments to simplify passing to do.call
-  ipcw_fit_type <- unlist(ipcw_fit_args[names(ipcw_fit_args) == "fit_type"],
+  samp_fit_type <- unlist(samp_fit_args[names(samp_fit_args) == "fit_type"],
     use.names = FALSE
   )
   g_exp_fit_type <- unlist(g_exp_fit_args[names(g_exp_fit_args) == "fit_type"],
@@ -221,7 +215,7 @@ txshift <- function(W,
   Q_fit_type <- unlist(Q_fit_args[names(Q_fit_args) == "fit_type"],
     use.names = FALSE
   )
-  ipcw_fit_args <- ipcw_fit_args[names(ipcw_fit_args) != "fit_type"]
+  samp_fit_args <- samp_fit_args[names(samp_fit_args) != "fit_type"]
   g_exp_fit_args <- g_exp_fit_args[names(g_exp_fit_args) != "fit_type"]
   g_cens_fit_args <- g_cens_fit_args[names(g_cens_fit_args) != "fit_type"]
   Q_fit_args <- Q_fit_args[names(Q_fit_args) != "fit_type"]
@@ -234,6 +228,7 @@ txshift <- function(W,
     colnames(W) <- W_names
   }
 
+  browser()
   # subset data and implement IPC weighting for two-phase sampling corrections
   if (!all(C_samp == 1) && !is.null(V)) {
     if (is.character(V)) {
@@ -255,25 +250,25 @@ txshift <- function(W,
     }
 
     samp_estim_in <- list(
-      V = V_in, Delta = C_samp,
-      fit_type = ipcw_fit_type
+      V = V_in, C_samp = C_samp,
+      fit_type = samp_fit_type
     )
 
     # reshapes the list of args so that it can be passed to do.call
     samp_estim_args <- unlist(
-      list(samp_estim_in, ipcw_fit_args),
+      list(samp_estim_in, samp_fit_args),
       recursive = FALSE
     )
 
     # compute the IPC weights by passing all args to the relevant function
-    if (!is.null(ipcw_fit_ext) && ipcw_fit_type == "external") {
-      ipcw_estim <- ipcw_fit_ext
+    if (!is.null(samp_fit_ext) && samp_fit_type == "external") {
+      samp_estim <- samp_fit_ext
     } else {
-      ipcw_estim <- do.call(est_ipcw, ipcw_estim_args)
+      samp_estim <- do.call(est_samp, samp_estim_args)
     }
 
     # extract IPC weights for censoring case and normalize weights
-    samp_weights <- ipcw_estim$ipc_weights
+    samp_weights <- C_Samp / samp_estim
 
     # remove column corresponding to indicator for censoring
     data_internal <- data.table::data.table(W, A, C_Cens, Y, C_samp)
@@ -283,8 +278,6 @@ txshift <- function(W,
     # if no two-phase sampling, we can use IPC weights that are identically 1
     V_in <- NULL
     samp_weights <- C_samp
-    ipcw_estim <- list(pi_mech = rep(1, length(C_samp)),
-                       ipc_weights = C_samp[C_samp == 1])
     data_internal <- data.table::data.table(W, A, C_cens, Y)
   }
 
@@ -296,7 +289,7 @@ txshift <- function(W,
       A = data_internal$A,
       W = data_internal[, W_names, with = FALSE],
       delta = delta,
-      ipc_weights = samp_weights,
+      samp_weights = samp_weights,
       fit_type = g_exp_fit_type
     )
     if (g_exp_fit_type == "hal") {
@@ -325,20 +318,20 @@ txshift <- function(W,
         C = data_internal$C_cens,
         A = data_internal$A,
         W = data_internal[, W_names, with = FALSE],
-        ipc_weights = samp_weights,
+        samp_weights = samp_weights,
         fit_type = g_cens_fit_type
       )
       gn_cens_estim_args <- unlist(list(gn_cens_estim_in, g_cens_fit_args),
                                    recursive = FALSE)
 
       # invoke function to estimate the natural censoring mechanism
-      gn_cens_estim <- C_cens / do.call(est_g_cens, gn_cens_estim_args)
+      gn_cens_weights <- C_cens / do.call(est_g_cens, gn_cens_estim_args)
     }
   } else {
-    gn_cens_estim <- rep(1, nrow(data_internal))
+    gn_cens_weights <- rep(1, nrow(data_internal))
   }
 
-  browser()
+  #browser()
   # initial estimate of the outcome mechanism
   if (!is.null(Qn_fit_ext) && Q_fit_type == "external") {
     Qn_estim <- Qn_fit_ext
@@ -350,7 +343,7 @@ txshift <- function(W,
       A = data_internal$A,
       W = data_internal[, W_names, with = FALSE],
       delta = delta,
-      ipc_weights = samp_weights,
+      samp_weights = samp_weights,
       fit_type = Q_fit_type
     )
     Qn_estim_args <- unlist(list(Qn_estim_in, Q_fit_args), recursive = FALSE)
@@ -370,14 +363,14 @@ txshift <- function(W,
       C_samp = C_samp,
       V = V_in,
       delta = delta,
-      ipcw_estim = ipcw_estim,
-      gn_cens_estim = gn_cens_estim,
+      samp_estim = samp_weights,
+      gn_cens_weights = gn_cens_weights,
       Qn_estim = Qn_estim,
       Hn_estim = Hn_estim,
       fluctuation = fluctuation,
       max_iter = max_iter,
       eif_reg_type = eif_reg_type,
-      ipcw_fit_args = ipcw_fit_args,
+      samp_fit_args = samp_fit_args,
       ipcw_efficiency = ipcw_efficiency
     )
 
@@ -392,12 +385,12 @@ txshift <- function(W,
       C_samp = C_samp,
       V = V_in,
       delta = delta,
-      ipcw_estim = ipcw_estim,
-      gn_cens_estim = gn_cens_estim,
+      samp_estim = samp_weights,
+      gn_cens_weights = gn_cens_weights,
       Qn_estim = Qn_estim,
       Hn_estim = Hn_estim,
       eif_reg_type = eif_reg_type,
-      ipcw_fit_args = ipcw_fit_args,
+      samp_fit_args = samp_fit_args,
       ipcw_efficiency = ipcw_efficiency
     )
 

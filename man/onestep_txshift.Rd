@@ -9,12 +9,12 @@ onestep_txshift(
   C_samp = rep(1, nrow(data_internal)),
   V = NULL,
   delta = 0,
-  ipcw_estim,
-  gn_cens_estim,
+  samp_estim,
+  gn_cens_weights,
   Qn_estim,
   Hn_estim,
   eif_reg_type = c("hal", "glm"),
-  ipcw_fit_args,
+  samp_fit_args,
   ipcw_efficiency = TRUE
 )
 }
@@ -39,11 +39,11 @@ have played a role in defining the sampling/censoring mechanism (C).}
 be used in defining the target parameter. This is defined with respect to
 the scale of the treatment (A).}
 
-\item{ipcw_estim}{An object providing the value of the censoring mechanism
+\item{samp_estim}{An object providing the value of the censoring mechanism
 evaluated across the full data. This object is passed in after being
-constructed by a call to the internal function \code{est_ipcw}.}
+constructed by a call to the internal function \code{\link{est_samp}}.}
 
-\item{gn_cens_estim}{TODO: document}
+\item{gn_cens_weights}{TODO: document}
 
 \item{Qn_estim}{An object providing the value of the outcome evaluated after
 imposing a shift in the treatment. This object is passed in after being
@@ -62,12 +62,12 @@ this to \code{"glm"} to instead use a simple linear regression model.
 In this step, the efficient influence function (EIF) is regressed against
 covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).}
 
-\item{ipcw_fit_args}{A \code{list} of arguments, all but one of which are
-passed to \code{\link{est_ipcw}}. For details, consult the documentation
-for \code{\link{est_ipcw}}. The first element (i.e., \code{fit_type}) is
+\item{samp_fit_args}{A \code{list} of arguments, all but one of which are
+passed to \code{\link{est_samp}}. For details, consult the documentation
+for \code{\link{est_samp}}. The first element (i.e., \code{fit_type}) is
 used to determine how this regression is fit: "glm" for generalized linear
 model, "sl" for a Super Learner, and "external" for a user-specified input
-of the form produced by \code{\link{est_ipcw}}.}
+of the form produced by \code{\link{est_samp}}.}
 
 \item{ipcw_efficiency}{Whether to invoke an augmentation of the IPCW-TMLE
 procedure that performs an iterative process to ensure efficiency of the

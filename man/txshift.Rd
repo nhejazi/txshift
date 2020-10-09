@@ -15,7 +15,7 @@ txshift(
   estimator = c("tmle", "onestep"),
   fluctuation = c("standard", "weighted"),
   max_iter = 10,
-  ipcw_fit_args = list(fit_type = c("glm", "sl", "external"), sl_learners = NULL),
+  samp_fit_args = list(fit_type = c("glm", "sl", "external"), sl_learners = NULL),
   g_exp_fit_args = list(fit_type = c("hal", "sl", "external"), n_bins = c(10, 25),
     grid_type = c("equal_range", "equal_range"), lambda_seq = exp(seq(-1, -13, length =
     300)), use_future = FALSE, sl_learners_density = NULL),
@@ -25,7 +25,7 @@ txshift(
     sl_learners = NULL),
   eif_reg_type = c("hal", "glm"),
   ipcw_efficiency = TRUE,
-  ipcw_fit_ext = NULL,
+  samp_fit_ext = NULL,
   gn_exp_fit_ext = NULL,
   gn_cens_fit_ext = NULL,
   Qn_fit_ext = NULL
@@ -73,23 +73,21 @@ tilting regression.}
 \item{max_iter}{A \code{numeric} integer giving the maximum number of steps
 to be taken in iterating to a solution of the efficient influence function.}
 
-\item{ipcw_fit_args}{A \code{list} of arguments, all but one of which are
-passed to \code{\link{est_ipcw}}. For details, consult the documentation of
-\code{\link{est_ipcw}}. The first element (i.e., \code{fit_type}) is used
+\item{samp_fit_args}{A \code{list} of arguments, all but one of which are
+passed to \code{\link{est_samp}}. For details, consult the documentation of
+\code{\link{est_samp}}. The first element (i.e., \code{fit_type}) is used
 to determine how this regression is fit: generalized linear model ("glm")
 or Super Learner ("sl"), and "external" a user-specified input of the form
-produced by \code{\link{est_ipcw}}. NOTE THAT this first argument is not
-passed to \code{\link{est_ipcw}}.}
+produced by \code{\link{est_samp}}.}
 
 \item{g_exp_fit_args}{A \code{list} of arguments, all but one of which are
-passed to \code{\link{est_g}}. For details, consult the documentation of
-\code{\link{est_g}}. The first element (i.e., \code{fit_type}) is used to
-determine how this regression is fit: \code{"hal"} to estimate conditional
-densities via the highly adaptive lasso (via \pkg{haldensify}), \code{"sl"}
-for \pkg{sl3} learners used to fit Super Learner to densities via
+passed to \code{\link{est_g_exp}}. For details, see the documentation of
+\code{\link{est_g_exp}}. The 1st element (i.e., \code{fit_type}) specifies
+how this regression is fit: \code{"hal"} to estimate conditional densities
+via the highly adaptive lasso (via \pkg{haldensify}), \code{"sl"} for
+\pkg{sl3} learners used to fit Super Learner ensembles to densities via
 \code{\link[sl3]{Lrnr_haldensify}} or similar, and \code{"external"} for
-user-specified input of the form produced by \code{\link{est_g}}. NOTE that
-this first argument is not passed to \code{\link{est_g}}.}
+user-specified input of the form produced by \code{\link{est_g_exp}}.}
 
 \item{Q_fit_args}{A \code{list} of arguments, all but one of which are
 passed to \code{\link{est_Q}}. For details, consult the documentation for
@@ -97,8 +95,7 @@ passed to \code{\link{est_Q}}. For details, consult the documentation for
 determine how this regression is fit: \code{"glm"} for a generalized linear
 model for the outcome regression, \code{"sl"} for \pkg{sl3} learners used
 to fit a Super Learner for the outcome regression, and \code{"external"}
-for user-specified input of the form produced by \code{\link{est_Q}}. NOTE
-that this first argument is not passed to \code{\link{est_g}}.}
+for user-specified input of the form produced by \code{\link{est_Q}}.}
 
 \item{eif_reg_type}{Whether a flexible nonparametric function ought to be
 used in the dimension-reduced nuisance regression of the targeting step for
@@ -109,27 +106,24 @@ this step, the efficient influence function (EIF) is regressed against
 covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).}
 
 \item{ipcw_efficiency}{Whether to use an augmented inverse probability of
-censoring weighted estimating equation to ensure efficiency of the
-resulting estimate. The default is \code{TRUE}; only set to \code{FALSE} if
-possible inefficiency of the resultant estimator is not a concern.}
+censoring weighted EIF estimating equation to ensure efficiency of the
+resultant estimate. The default is \code{TRUE}; the inefficient estimation
+procedure specified by \code{FALSE} is only supported for completeness.}
 
-\item{ipcw_fit_ext}{The results of an external fitting procedure used to
-estimate the two-phase censoring mechanism, to be used in constructing the
+\item{samp_fit_ext}{The results of an external fitting procedure used to
+estimate the two-phase sampling mechanism, to be used in constructing the
 inverse probability of censoring weighted TML or one-step estimator. The
-input provided must match the output of \code{\link{est_ipcw}} exactly;
-thus, use of this argument is only recommended for power users.}
+input provided must match the output of \code{\link{est_samp}} exactly.}
 
 \item{gn_exp_fit_ext}{The results of an external fitting procedure used to
 estimate the exposure mechanism (generalized propensity score), to be used
 in constructing the TML or one-step estimator. The input provided must
-match the output of \code{\link{est_g_exp}} exactly; use of this argument
-is only recommended for power users.}
+match the output of \code{\link{est_g_exp}} exactly.}
 
 \item{gn_cens_fit_ext}{The results of an external fitting procedure used to
 estimate the censoring mechanism (propensity score for missingness), to be
 used in constructing the TML or one-step estimator. The input provided must
-match the output of \code{\link{est_g_cens}} exactly; use of this argument
-is only recommended for power users.}
+match the output of \code{\link{est_g_cens}} exactly.}
 
 \item{Qn_fit_ext}{The results of an external fitting procedure used to
 estimate the outcome mechanism, to be used in constructing the TML or
@@ -162,7 +156,7 @@ A <- rnorm(n_obs, mean = 2 * W, sd = 1)
 Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
 C_samp <- rbinom(n_obs, 1, plogis(W + Y)) # two-phase sampling
 
-# construct a TML estimate (set estimator = "onestep" for the one-step)
+# construct a TML estimate
 tmle <- txshift(
   W = W, A = A, Y = Y, delta = 0.5,
   estimator = "tmle",
@@ -177,12 +171,32 @@ tmle <- txshift(
   )
 )
 
+# add a natural censoring process and construct a TML estimate
+C_cens <- rbinom(n_obs, 1, plogis(rowSums(W) + 0.5))
+tmle <- txshift(
+  W = W, A = A, C_cens = C_cens, Y = Y, delta = 0.5,
+  estimator = "tmle",
+  g_exp_fit_args = list(
+    fit_type = "hal", n_bins = 5,
+    grid_type = "equal_range",
+    lambda_seq = exp(-1:-9)
+  ),
+  g_cens_fit_args = list(
+    fit_type = "glm",
+    glm_formula = "C_cens ~ ."
+  ),
+  Q_fit_args = list(
+    fit_type = "glm",
+    glm_formula = "Y ~ ."
+  )
+)
+
 # construct a TML estimate under two-phase sampling
 ipcwtmle <- txshift(
   W = W, A = A, Y = Y, delta = 0.5,
   C_samp = C_samp, V = c("W", "Y"),
   estimator = "tmle", max_iter = 5,
-  ipcw_fit_args = list(fit_type = "glm"),
+  samp_fit_args = list(fit_type = "glm"),
   g_exp_fit_args = list(
     fit_type = "hal", n_bins = 5,
     grid_type = "equal_range",

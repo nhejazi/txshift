@@ -4,11 +4,11 @@
 \alias{est_Hn}
 \title{Estimate Auxiliary Covariate of Full Data Efficient Influence Function}
 \usage{
-est_Hn(gn)
+est_Hn(gn_exp)
 }
 \arguments{
-\item{gn}{An estimate of the treatment probability (propensity score), using
-the output provided by internal function \code{estimate-propensity_score}.}
+\item{gn_exp}{An estimate of the exposure density (a generalized propensity
+score) using the output provided by \code{\link{est_g_exp}}.}
 }
 \value{
 A \code{data.table} with two columns, containing estimates of the
@@ -19,7 +19,7 @@ A \code{data.table} with two columns, containing estimates of the
 Estimate Auxiliary Covariate of Full Data Efficient Influence Function
 }
 \details{
-Compute an estimate of the auxiliary covariate required to update
- initial estimates via logistic tilting models in targeted minimum loss
- estimation.
+Compute an estimate of the auxiliary covariate of the efficient
+ influence function required to update initial estimates through logistic
+ tilting models for targeted minimum loss estimation.
 }
