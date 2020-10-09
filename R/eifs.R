@@ -116,8 +116,6 @@ eif <- function(Y,
 #'  initial run of this function. Updated values of this vector are provided as
 #'  part of the output of this function, which may be used in subsequent calls
 #'  that allow convergence to a more efficient estimate.
-#' @param ipc_weights_norm A \code{numeric} vector of the weights described in
-#'  the previous argument. In this case, the weights are normalized.
 #' @param Qn_estim A \code{data.table} corresponding to the outcome regression.
 #'  This is produced by invoking the internal function \code{est_Q}.
 #' @param Hn_estim A \code{data.table} corresponding to values produced in the
@@ -154,12 +152,11 @@ ipcw_eif_update <- function(data_in,
                             V,
                             ipc_mech,
                             ipc_weights,
-                            ipc_weights_norm,
                             Qn_estim,
                             Hn_estim,
                             estimator = c("tmle", "onestep"),
                             fluctuation = NULL,
-                            flucmod_tol = 100,
+                            flucmod_tol = 50,
                             eif_reg_type = c("hal", "glm")) {
   # get names of columns in sampling mechanism
   v_names <- names(V)
@@ -188,8 +185,7 @@ ipcw_eif_update <- function(data_in,
     estimator = estimator,
     fluc_mod_out = fitted_fluc_mod,
     C_samp = C_samp,
-    ipc_weights = ipc_weights[C_samp == 1],
-    ipc_weights_norm = ipc_weights_norm[C_samp == 1]
+    ipc_weights = ipc_weights[C_samp == 1]
   )
 
   # NOTE: upon the first run of this procedure, the above two function calls
@@ -294,7 +290,6 @@ ipcw_eif_update <- function(data_in,
 
   # so, now we need weights to feed back into the previous steps
   ipc_weights <- C_samp / ipcw_pred
-  ipc_weights_norm <- ipc_weights / sum(ipc_weights)
 
   # as above, compute TMLE and EIF with NEW WEIGHTS and SUBMODEL FLUCTUATION
   # NOTE: since this is meant to update the EIF components based on the TMLE
@@ -317,8 +312,7 @@ ipcw_eif_update <- function(data_in,
       estimator = estimator,
       fluc_mod_out = fitted_fluc_mod,
       C_samp = C_samp,
-      ipc_weights = ipc_weights[C_samp == 1],
-      ipc_weights_norm = ipc_weights_norm[C_samp == 1]
+      ipc_weights = ipc_weights[C_samp == 1]
     )
   }
 
@@ -328,7 +322,6 @@ ipcw_eif_update <- function(data_in,
     fluc_mod_out = fitted_fluc_mod,
     pi_mech_star = ipcw_pred,
     ipc_weights = ipc_weights,
-    ipc_weights_norm = ipc_weights_norm,
     eif_eval = eif_eval,
     ipcw_eif_component = ipcw_eif_component
   )

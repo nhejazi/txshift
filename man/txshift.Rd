@@ -208,4 +208,22 @@ ipcwtmle <- txshift(
   ),
   eif_reg_type = "glm"
 )
+
+# construct a TML estimate under two-phase sampling and loss to follow-up
+ipcwtmle <- txshift(
+  W = W, A = A, C_cens = C_cens, Y = Y, delta = 0.5,
+  C_samp = C_samp, V = c("W", "Y"),
+  estimator = "tmle", max_iter = 5,
+  samp_fit_args = list(fit_type = "glm"),
+  g_exp_fit_args = list(
+    fit_type = "hal", n_bins = 5,
+    grid_type = "equal_range",
+    lambda_seq = exp(-1:-9)
+  ),
+  Q_fit_args = list(
+    fit_type = "glm",
+    glm_formula = "Y ~ ."
+  ),
+  eif_reg_type = "glm"
+)
 }

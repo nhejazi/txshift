@@ -157,6 +157,24 @@
 #'   ),
 #'   eif_reg_type = "glm"
 #' )
+#'
+#' # construct a TML estimate under two-phase sampling and loss to follow-up
+#' ipcwtmle <- txshift(
+#'   W = W, A = A, C_cens = C_cens, Y = Y, delta = 0.5,
+#'   C_samp = C_samp, V = c("W", "Y"),
+#'   estimator = "tmle", max_iter = 5,
+#'   samp_fit_args = list(fit_type = "glm"),
+#'   g_exp_fit_args = list(
+#'     fit_type = "hal", n_bins = 5,
+#'     grid_type = "equal_range",
+#'     lambda_seq = exp(-1:-9)
+#'   ),
+#'   Q_fit_args = list(
+#'     fit_type = "glm",
+#'     glm_formula = "Y ~ ."
+#'   ),
+#'   eif_reg_type = "glm"
+#' )
 #' @export
 txshift <- function(W,
                     A,
@@ -228,27 +246,18 @@ txshift <- function(W,
     colnames(W) <- W_names
   }
 
-  browser()
+  #browser()
   # subset data and implement IPC weighting for two-phase sampling corrections
   if (!all(C_samp == 1) && !is.null(V)) {
     if (is.character(V)) {
       # combine censoring node information
-      V_in <- data.table::as.data.table(mget(V))
-      # NOTE: resolves downstream naming error
-      V_names <- lapply(seq_along(V), function(j) {
-        node <- mget(V[j], inherits = TRUE)[[1]]
-        if (!is.null(dim(node))) {
-          colnames(node)
-        } else {
-          V[j]
-        }
-      })
-      colnames(V_in) <- do.call(c, V_names)
+      V_in <- data.table::as.data.table(do.call(cbind, mget(V)))
     } else {
       # assume V is a given matrix-type object with correctly set names
       V_in <- V
     }
 
+    # create arguments for sampling mechanism estimation
     samp_estim_in <- list(
       V = V_in, C_samp = C_samp,
       fit_type = samp_fit_type
@@ -267,11 +276,11 @@ txshift <- function(W,
       samp_estim <- do.call(est_samp, samp_estim_args)
     }
 
-    # extract IPC weights for censoring case and normalize weights
-    samp_weights <- C_Samp / samp_estim
+    # extract IPC weights for two-phase sampling
+    samp_weights <- (C_samp / samp_estim)[C_samp == 1]
 
     # remove column corresponding to indicator for censoring
-    data_internal <- data.table::data.table(W, A, C_Cens, Y, C_samp)
+    data_internal <- data.table::data.table(W, A, C_cens, Y, C_samp)
     data_internal <- data_internal[C_samp == 1, ] # NOTE: subset forces copy :(
     data_internal[, C_samp := NULL]
   } else {
@@ -363,7 +372,7 @@ txshift <- function(W,
       C_samp = C_samp,
       V = V_in,
       delta = delta,
-      samp_estim = samp_weights,
+      samp_estim = samp_estim,
       gn_cens_weights = gn_cens_weights,
       Qn_estim = Qn_estim,
       Hn_estim = Hn_estim,
@@ -385,7 +394,7 @@ txshift <- function(W,
       C_samp = C_samp,
       V = V_in,
       delta = delta,
-      samp_estim = samp_weights,
+      samp_estim = samp_estim,
       gn_cens_weights = gn_cens_weights,
       Qn_estim = Qn_estim,
       Hn_estim = Hn_estim,

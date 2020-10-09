@@ -65,7 +65,7 @@
 tmle_txshift <- function(data_internal,
                          C_samp = rep(1, nrow(data_internal)),
                          V = NULL,
-                         delta = 0,
+                         delta,
                          samp_estim,
                          gn_cens_weights,
                          Qn_estim,
@@ -78,9 +78,8 @@ tmle_txshift <- function(data_internal,
   # initialize counter
   n_steps <- 0
 
-  # normalize (two-phase) sampling mechanism weights
+  # construct (two-phase) sampling mechanism weights
   samp_weights <- C_samp / samp_estim
-  samp_weights_norm <- samp_weights / sum(samp_weights)
 
   # invoke efficient IPCW-TMLE if satisfied; otherwise ineffecient variant
   if (!all(C_samp == 1) && ipcw_efficiency) {
@@ -100,17 +99,13 @@ tmle_txshift <- function(data_internal,
 
     # iterate procedure until convergence conditions are satisfied
     while (abs(eif_mean) > eif_tol && n_steps <= max_iter) {
-      # iterate counter
-      n_steps <- n_steps + 1
-
       # update fluctuation model, re-compute EIF, overwrite EIF
       tmle_ipcw_eif <- ipcw_eif_update(
         data_in = data_internal,
-        C = C,
+        C = C_samp,
         V = V,
         ipc_mech = pi_mech_star,
         ipc_weights = samp_weights,
-        ipc_weights_norm = samp_weights_norm,
         Qn_estim = Qn_estim_updated,
         Hn_estim = Hn_estim, # N.B., g_n never gets updated in this procedure
         estimator = "tmle",
@@ -135,7 +130,6 @@ tmle_txshift <- function(data_internal,
       # updated sampling/censoring weights and stabilize
       samp_weights <- tmle_ipcw_eif$ipc_weights
       samp_weights <- samp_weights / mean(samp_weights)
-      samp_weights_norm <- tmle_ipcw_eif$ipc_weights_norm
       pi_mech_star <- tmle_ipcw_eif$pi_mech_star
 
       # compute updated mean of efficient influence function and save
@@ -147,6 +141,9 @@ tmle_txshift <- function(data_internal,
       # TMLE convergence criterion based on re-scaled standard error
       tol_scaling <- 1 / (max(10, log(length(samp_weights))))
       eif_tol <- sqrt(eif_var) * tol_scaling
+
+      # iterate counter
+      n_steps <- n_steps + 1
     }
     conv_res <- data.table::as.data.table(conv_res)
     data.table::setnames(conv_res, c("psi", "var", "eif_mean"))

@@ -10,12 +10,11 @@ ipcw_eif_update(
   V,
   ipc_mech,
   ipc_weights,
-  ipc_weights_norm,
   Qn_estim,
   Hn_estim,
   estimator = c("tmle", "onestep"),
   fluctuation = NULL,
-  flucmod_tol = 100,
+  flucmod_tol = 50,
   eif_reg_type = c("hal", "glm")
 )
 }
@@ -41,9 +40,6 @@ censoring weights. These are equivalent to \code{C / ipc_mech} in any
 initial run of this function. Updated values of this vector are provided as
 part of the output of this function, which may be used in subsequent calls
 that allow convergence to a more efficient estimate.}
-
-\item{ipc_weights_norm}{A \code{numeric} vector of the weights described in
-the previous argument. In this case, the weights are normalized.}
 
 \item{Qn_estim}{A \code{data.table} corresponding to the outcome regression.
 This is produced by invoking the internal function \code{est_Q}.}

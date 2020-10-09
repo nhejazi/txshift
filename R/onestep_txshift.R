@@ -58,7 +58,7 @@
 onestep_txshift <- function(data_internal,
                             C_samp = rep(1, nrow(data_internal)),
                             V = NULL,
-                            delta = 0,
+                            delta,
                             samp_estim,
                             gn_cens_weights,
                             Qn_estim,
