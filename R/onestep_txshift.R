@@ -72,7 +72,6 @@ onestep_txshift <- function(data_internal,
 
   # invoke efficient IPC-weighted one-step if necessary
   if (!all(C_samp == 1) && ipcw_efficiency) {
-    browser()
     # checks for necessary components for augmented EIF procedure
     assertthat::assert_that(!is.null(samp_estim))
     assertthat::assert_that(!is.null(V))
@@ -87,9 +86,11 @@ onestep_txshift <- function(data_internal,
       C_samp = C_samp,
       V = V,
       ipc_mech = pi_mech_star,
-      ipc_weights = samp_weights,
-      ipc_weights_norm = samp_weights_norm,
+      # NOTE: we update pi_mech_star and samp_weights in this procedure, so
+      #       only need to rescale by factor gn_cens_weights each iteration
+      ipc_weights = (gn_cens_weights * samp_weights[C_samp == 1]),
       Qn_estim = Qn_estim,
+      # NOTE: directly pass in Hn since gn never updated in this procedure
       Hn_estim = Hn_estim,
       estimator = "onestep",
       eif_reg_type = eif_reg_type
@@ -108,24 +109,26 @@ onestep_txshift <- function(data_internal,
       )
     )
     data.table::setnames(Qn_estim_updated, names(Qn_estim))
+
+    # updated sampling weights and stabilize
     samp_weights <- os_ipcw_eif$ipc_weights
-    samp_weights_norm <- os_ipcw_eif$ipc_weights_norm
     pi_mech_star <- os_ipcw_eif$pi_mech_star
 
     # compute updated mean of efficient influence function
-    eif_ipcw <- os_ipcw_eif$eif_eval$eif - os_ipcw_eif$ipcw_eif
-    eif_ipcw_var <- var(eif_ipcw) / length(C_samp)
+    eif_ipcw <- os_ipcw_eif$eif_eval$eif - os_ipcw_eif$ipcw_eif_component
+    eif_mean <- mean(eif_ipcw)
+    eif_var <- var(eif_ipcw) / length(samp_weights)
 
     # update the one-step estimator with mean of the 2nd half of augmented EIF
     # NOTE: the 2nd half of the EIF is actually a correction (with a minus sign
     #       in front of it) so the mean ought to be subtracted, not added
-    psi_onestep <- os_ipcw_eif$eif_eval$psi - mean(os_ipcw_eif$ipcw_eif)
+    psi_os <- os_ipcw_eif$eif_eval$psi - mean(os_ipcw_eif$ipcw_eif_component)
 
     # create output object
     txshift_out <- unlist(
       list(
-        psi = psi_onestep,
-        var = eif_ipcw_var,
+        psi = psi_os,
+        var = eif_var,
         eif = list(eif_ipcw),
         os_ipcw_eif$eif_eval,
         iter_res = NULL,
@@ -135,17 +138,15 @@ onestep_txshift <- function(data_internal,
       ),
       recursive = FALSE
     )
-
-    # standard (inefficient) one-step of the shift parameter
   } else {
-    # compute one-step estimate and EIF for the treatment shift parameter
+    # compute inefficient one-step estimate and EIF
     os_eif_out <- eif(
       Y = data_internal$Y,
       Qn = Qn_estim,
       Hn = Hn_estim,
       estimator = "onestep",
       C_samp = C_samp,
-      ipc_weights = (gn_cens_weights * samp_weights)
+      ipc_weights = (gn_cens_weights * samp_weights[C_samp == 1])
     )
 
     # create output object

@@ -1,4 +1,4 @@
-#' Estimate Counterfactual Mean Under Stochastic Shift in Exposure
+#' Efficient Estimate of Counterfactual Mean of Stochastic Shift Intervention
 #'
 #' @details Construct a one-step estimate or targeted minimum loss estimate of
 #'  the counterfactual mean under a modified treatment policy, automatically
@@ -108,7 +108,7 @@
 #' # construct a TML estimate
 #' tmle <- txshift(
 #'   W = W, A = A, Y = Y, delta = 0.5,
-#'   estimator = "tmle",
+#'   estimator = "onestep",
 #'   g_exp_fit_args = list(
 #'     fit_type = "hal", n_bins = 5,
 #'     grid_type = "equal_range",
@@ -124,7 +124,7 @@
 #' C_cens <- rbinom(n_obs, 1, plogis(rowSums(W) + 0.5))
 #' tmle <- txshift(
 #'   W = W, A = A, C_cens = C_cens, Y = Y, delta = 0.5,
-#'   estimator = "tmle",
+#'   estimator = "onestep",
 #'   g_exp_fit_args = list(
 #'     fit_type = "hal", n_bins = 5,
 #'     grid_type = "equal_range",
@@ -144,7 +144,7 @@
 #' ipcwtmle <- txshift(
 #'   W = W, A = A, Y = Y, delta = 0.5,
 #'   C_samp = C_samp, V = c("W", "Y"),
-#'   estimator = "tmle", max_iter = 5,
+#'   estimator = "onestep", max_iter = 5,
 #'   samp_fit_args = list(fit_type = "glm"),
 #'   g_exp_fit_args = list(
 #'     fit_type = "hal", n_bins = 5,
@@ -162,7 +162,7 @@
 #' ipcwtmle <- txshift(
 #'   W = W, A = A, C_cens = C_cens, Y = Y, delta = 0.5,
 #'   C_samp = C_samp, V = c("W", "Y"),
-#'   estimator = "tmle", max_iter = 5,
+#'   estimator = "onestep", max_iter = 5,
 #'   samp_fit_args = list(fit_type = "glm"),
 #'   g_exp_fit_args = list(
 #'     fit_type = "hal", n_bins = 5,
@@ -320,8 +320,7 @@ txshift <- function(W,
     gn_exp_estim <- do.call(est_g_exp, gn_exp_estim_args)
   }
 
-  # estimate the natural censoring mechanism for joint intervention to remove
-  # censoring (obviously only need to estimate this _if_ there is censoring)
+  # estimate the natural censoring mechanism for joint intervention
   if (any(C_cens != 1)) {
     if (!is.null(gn_cens_fit_ext) && g_cens_fit_type == "external") {
       gn_cens_estim <- gn_cens_fit_ext
@@ -337,7 +336,8 @@ txshift <- function(W,
                                    recursive = FALSE)
 
       # invoke function to estimate the natural censoring mechanism
-      gn_cens_weights <- C_cens / do.call(est_g_cens, gn_cens_estim_args)
+      gn_cens_estim <- do.call(est_g_cens, gn_cens_estim_args)
+      gn_cens_weights <- C_cens[C_samp == 1] / gn_cens_estim
     }
   } else {
     gn_cens_weights <- rep(1, nrow(data_internal))

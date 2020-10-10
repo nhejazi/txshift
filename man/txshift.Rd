@@ -2,7 +2,7 @@
 % Please edit documentation in R/txshift.R
 \name{txshift}
 \alias{txshift}
-\title{Estimate Counterfactual Mean Under Stochastic Shift in Exposure}
+\title{Efficient Estimate of Counterfactual Mean of Stochastic Shift Intervention}
 \usage{
 txshift(
   W,
@@ -139,7 +139,7 @@ S3 object of class \code{txshift} containing the results of the
  consistent and efficient when two-phase sampling is performed.
 }
 \description{
-Estimate Counterfactual Mean Under Stochastic Shift in Exposure
+Efficient Estimate of Counterfactual Mean of Stochastic Shift Intervention
 }
 \details{
 Construct a one-step estimate or targeted minimum loss estimate of
@@ -159,7 +159,7 @@ C_samp <- rbinom(n_obs, 1, plogis(W + Y)) # two-phase sampling
 # construct a TML estimate
 tmle <- txshift(
   W = W, A = A, Y = Y, delta = 0.5,
-  estimator = "tmle",
+  estimator = "onestep",
   g_exp_fit_args = list(
     fit_type = "hal", n_bins = 5,
     grid_type = "equal_range",
@@ -175,7 +175,7 @@ tmle <- txshift(
 C_cens <- rbinom(n_obs, 1, plogis(rowSums(W) + 0.5))
 tmle <- txshift(
   W = W, A = A, C_cens = C_cens, Y = Y, delta = 0.5,
-  estimator = "tmle",
+  estimator = "onestep",
   g_exp_fit_args = list(
     fit_type = "hal", n_bins = 5,
     grid_type = "equal_range",
@@ -195,7 +195,7 @@ tmle <- txshift(
 ipcwtmle <- txshift(
   W = W, A = A, Y = Y, delta = 0.5,
   C_samp = C_samp, V = c("W", "Y"),
-  estimator = "tmle", max_iter = 5,
+  estimator = "onestep", max_iter = 5,
   samp_fit_args = list(fit_type = "glm"),
   g_exp_fit_args = list(
     fit_type = "hal", n_bins = 5,
@@ -213,7 +213,7 @@ ipcwtmle <- txshift(
 ipcwtmle <- txshift(
   W = W, A = A, C_cens = C_cens, Y = Y, delta = 0.5,
   C_samp = C_samp, V = c("W", "Y"),
-  estimator = "tmle", max_iter = 5,
+  estimator = "onestep", max_iter = 5,
   samp_fit_args = list(fit_type = "glm"),
   g_exp_fit_args = list(
     fit_type = "hal", n_bins = 5,
