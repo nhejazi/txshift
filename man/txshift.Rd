@@ -220,6 +220,10 @@ ipcwtmle <- txshift(
     grid_type = "equal_range",
     lambda_seq = exp(-1:-9)
   ),
+  g_cens_fit_args = list(
+    fit_type = "glm",
+    glm_formula = "C_cens ~ ."
+  ),
   Q_fit_args = list(
     fit_type = "glm",
     glm_formula = "Y ~ ."

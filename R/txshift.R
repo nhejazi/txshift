@@ -169,6 +169,10 @@
 #'     grid_type = "equal_range",
 #'     lambda_seq = exp(-1:-9)
 #'   ),
+#'   g_cens_fit_args = list(
+#'     fit_type = "glm",
+#'     glm_formula = "C_cens ~ ."
+#'   ),
 #'   Q_fit_args = list(
 #'     fit_type = "glm",
 #'     glm_formula = "Y ~ ."
@@ -246,7 +250,6 @@ txshift <- function(W,
     colnames(W) <- W_names
   }
 
-  #browser()
   # subset data and implement IPC weighting for two-phase sampling corrections
   if (!all(C_samp == 1) && !is.null(V)) {
     if (is.character(V)) {
@@ -286,7 +289,7 @@ txshift <- function(W,
   } else {
     # if no two-phase sampling, we can use IPC weights that are identically 1
     V_in <- NULL
-    samp_weights <- C_samp
+    samp_weights <- samp_estim <- C_samp
     data_internal <- data.table::data.table(W, A, C_cens, Y)
   }
 
@@ -340,7 +343,6 @@ txshift <- function(W,
     gn_cens_weights <- rep(1, nrow(data_internal))
   }
 
-  #browser()
   # initial estimate of the outcome mechanism
   if (!is.null(Qn_fit_ext) && Q_fit_type == "external") {
     Qn_estim <- Qn_fit_ext

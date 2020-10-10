@@ -38,7 +38,7 @@ eif <- function(Y,
                 Qn,
                 Hn,
                 estimator = c("tmle", "onestep"),
-                fluc_mod_out = NULL,
+                fluc_mod_out,
                 C_samp = rep(1, length(Y)),
                 ipc_weights = rep(1, length(Y))) {
 
@@ -99,23 +99,19 @@ eif <- function(Y,
 #'  the IPC weights in an iterative process, until a convergence criteria is
 #'  satisfied.
 #'
-#' @param data_in A \code{data.table} containing variables and observations of
-#'  full data. That is, this corresponds to the data after application of a
-#'  censoring process.
+#' @param data_internal A \code{data.table} containing of the observations
+#'  selected into the second-phase sample.
 #' @param C_samp A \code{numeric} indicator for missingness due to exclusion
 #'  the from second-stage sample.
 #' @param V A \code{data.table} giving the values across all observations of
 #'  all variables that play a role in the censoring mechanism.
-#' @param ipc_mech A \code{numeric} vector containing values that describe the
-#'  censoring mechanism for all of the observations. Note that such values are
-#'  estimated by regressing the censoring covariates \code{V} on the observed
-#'  censoring \code{C_samp} and correspond to predicted probabilities of being
-#'  censored for each observation.
+#' @param ipc_mech A \code{numeric} vector of the censoring mechanism estimates
+#'  all of the observations, only for the two-phase sampling mechanism. Note
+#'  well that these values do NOT account for censoring from loss to follow-up.
 #' @param ipc_weights A \code{numeric} vector of inverse probability of
-#'  censoring weights. These are equivalent to \code{C / ipc_mech} in any
-#'  initial run of this function. Updated values of this vector are provided as
-#'  part of the output of this function, which may be used in subsequent calls
-#'  that allow convergence to a more efficient estimate.
+#'  censoring weights, including such weights for censoring due to loss to
+#'  follow-up. Without loss to follow-up, these are equivalent to \code{C_samp
+#'  / ipc_mech} in an initial run of this procedure.
 #' @param Qn_estim A \code{data.table} corresponding to the outcome regression.
 #'  This is produced by invoking the internal function \code{est_Q}.
 #' @param Hn_estim A \code{data.table} corresponding to values produced in the
@@ -144,10 +140,9 @@ eif <- function(Y,
 #'
 #' @return A \code{list} containing the estimated outcome mechanism, the fitted
 #'  fluctuation model for TML updates, the updated inverse probability of
-#'  censoring weights (IPCW), normalized versions of the same weights, the
-#'  updated estimate of the efficient influence function, and the estimated
-#'  IPCW component of the EIF.
-ipcw_eif_update <- function(data_in,
+#'  censoring weights (IPCW), the updated estimate of the efficient influence
+#'  function, and the estimated IPCW component of the EIF.
+ipcw_eif_update <- function(data_internal,
                             C_samp,
                             V,
                             ipc_mech,
@@ -165,10 +160,10 @@ ipcw_eif_update <- function(data_in,
   if (estimator == "tmle" & !is.null(fluctuation)) {
     # fit logistic regression for submodel fluctuation with updated weights
     fitted_fluc_mod <- fit_fluctuation(
-      Y = data_in$Y,
+      Y = data_internal$Y,
       Qn_scaled = Qn_estim,
       Hn = Hn_estim,
-      ipc_weights = ipc_weights[C_samp == 1],
+      ipc_weights = ipc_weights,
       method = fluctuation
     )
   } else if (estimator == "onestep" & is.null(fluctuation)) {
@@ -177,60 +172,48 @@ ipcw_eif_update <- function(data_in,
 
   # compute EIF using updated weights and updated fluctuation (if TMLE)
   # NOTE: for one-step, this adds the first half of the EIF as the correction
-  #       SO the second half (from the reduced regression) is still needed...
+  #       _SO_ the second half (from the reduced regression) is still needed...
   eif_eval <- eif(
-    Y = data_in$Y,
+    Y = data_internal$Y,
     Qn = Qn_estim,
     Hn = Hn_estim,
     estimator = estimator,
     fluc_mod_out = fitted_fluc_mod,
     C_samp = C_samp,
-    ipc_weights = ipc_weights[C_samp == 1]
+    ipc_weights = ipc_weights
   )
 
   # NOTE: upon the first run of this procedure, the above two function calls
   #       have computed only the inefficient IPCW-TMLE, i.e., by fitting the
   #       initial fluctuation model and updating the EIF accordingly
 
-  # organize EIF data for regression
-  eif_data <- data.table::copy(data_in)
-  eif_data <- eif_data[, ..v_names]
-  data.table::set(eif_data, j = "eif",
-                  value = eif_eval$eif_unweighted[C_samp == 1])
-
   # estimate the EIF nuisance regression using HAL
   if (eif_reg_type == "hal") {
-    # if flexibility specified, just fit a HAL regression
-    eif_reg_mat <- as.matrix(data.table::copy(eif_data)[, ..v_names])
-    colnames(eif_reg_mat) <- NULL
-
-    # fit HAL with somewhat customized arguments
+    # fit HAL regression
     eif_mod <- hal9001::fit_hal(
-      X = eif_reg_mat,
-      Y = as.numeric(eif_data$eif),
+      X = as.matrix(data_internal[, ..v_names]),
+      Y = as.numeric(eif_eval$eif_unweighted[C_samp == 1]),
       max_degree = NULL,
       fit_type = "glmnet",
       family = "gaussian",
-      return_lasso = TRUE,
+      return_lasso = FALSE,
       standardize = FALSE,
-      lambda.min.ratio = 1e-5,
+      lambda.min.ratio = 1e-2 * (1 / nrow(data_internal)),
       yolo = FALSE
     )
 
-    # compute expectation by invoking the predict method
-    eif_pred_mat <- as.matrix(V)
-    colnames(eif_pred_mat) <- NULL
-    eif_pred <- unname(stats::predict(
+    # conditional expectation E[D*|V]
+    eif_pred <- stats::predict(
       eif_mod,
-      new_data = eif_pred_mat
-    ))
+      new_data = as.matrix(V)
+    )
   } else if (eif_reg_type == "glm") {
     eif_mod <- stats::glm(
-      stats::as.formula("eif ~ ."),
-      data = eif_data
+      stats::as.formula(paste("eif ~", paste(v_names, collapse = " + "))),
+      data = data_internal[, eif := eif_eval$eif_unweighted[C_samp == 1]]
     )
 
-    # compute expectation by invoking the predict method
+    # conditional expectation E[D*|V]
     eif_pred <- unname(stats::predict(
       eif_mod,
       newdata = V
@@ -248,7 +231,7 @@ ipcw_eif_update <- function(data_in,
         )
       )
 
-    # fit fluctuation regression
+    # fit fluctuation model for targeting updates
     # NOTE: set `start` to zero to ensure updates are not too large
     suppressWarnings(
       ipcw_fluc <- stats::glm(
@@ -278,18 +261,18 @@ ipcw_eif_update <- function(data_in,
     }
 
     # fitted values following submodel fluctuation
-    ipcw_pred <- unname(stats::fitted(ipcw_fluc))
+    ipc_pred <- unname(stats::fitted(ipcw_fluc))
   } else {
     # just use the initial estimates of censoring probability for one-step
-    ipcw_pred <- ipc_mech
+    ipc_pred <- ipc_mech
   }
 
   # this is the second half of the IPCW-EIF (solved by pi_n fluctuation):
-  # 0 = ((C - pi_n) / pi_n) E[f(eif ~ V | C = 1)]
-  ipcw_eif_component <- ((C_samp - ipcw_pred) / ipcw_pred) * eif_pred
+  # 0 = ((C_samp - pi_n) / pi_n) E[f(eif ~ V | C_samp = 1)]
+  ipcw_eif_component <- ((C_samp - ipc_pred) / ipc_pred) * eif_pred
 
   # so, now we need weights to feed back into the previous steps
-  ipc_weights <- C_samp / ipcw_pred
+  ipc_weights <- C_samp / ipc_pred
 
   # as above, compute TMLE and EIF with NEW WEIGHTS and SUBMODEL FLUCTUATION
   # NOTE: since this is meant to update the EIF components based on the TMLE
@@ -297,7 +280,7 @@ ipcw_eif_update <- function(data_in,
   if (estimator == "tmle") {
     # NOTE: update fluctuation with new weights prior to re-computing EIF
     fitted_fluc_mod <- fit_fluctuation(
-      Y = data_in$Y,
+      Y = data_internal$Y,
       Qn_scaled = Qn_estim,
       Hn = Hn_estim,
       ipc_weights = ipc_weights[C_samp == 1],
@@ -306,7 +289,7 @@ ipcw_eif_update <- function(data_in,
 
     # now, update EIF after re-fitting fluctuation with updated weights
     eif_eval <- eif(
-      Y = data_in$Y,
+      Y = data_internal$Y,
       Qn = Qn_estim,
       Hn = Hn_estim,
       estimator = estimator,
@@ -320,7 +303,7 @@ ipcw_eif_update <- function(data_in,
   out <- list(
     Qn_estim = Qn_estim,
     fluc_mod_out = fitted_fluc_mod,
-    pi_mech_star = ipcw_pred,
+    pi_mech_star = ipc_pred,
     ipc_weights = ipc_weights,
     eif_eval = eif_eval,
     ipcw_eif_component = ipcw_eif_component

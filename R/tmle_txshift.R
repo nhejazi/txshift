@@ -83,12 +83,11 @@ tmle_txshift <- function(data_internal,
 
   # invoke efficient IPCW-TMLE if satisfied; otherwise ineffecient variant
   if (!all(C_samp == 1) && ipcw_efficiency) {
-    browser()
     # checks for necessary components for augmented EIF procedure
     assertthat::assert_that(!is.null(samp_estim))
     assertthat::assert_that(!is.null(V))
 
-    # programmatic bookkeeping
+    # bookkeeping for convergence of iterative procedure
     eif_mean <- Inf
     eif_tol <- 1 / length(samp_weights)
     conv_res <- matrix(replicate(3, rep(NA_real_, max_iter)), nrow = max_iter)
@@ -99,15 +98,21 @@ tmle_txshift <- function(data_internal,
 
     # iterate procedure until convergence conditions are satisfied
     while (abs(eif_mean) > eif_tol && n_steps <= max_iter) {
+      # iterate counter
+      n_steps <- n_steps + 1
+
       # update fluctuation model, re-compute EIF, overwrite EIF
       tmle_ipcw_eif <- ipcw_eif_update(
         data_in = data_internal,
         C = C_samp,
         V = V,
         ipc_mech = pi_mech_star,
-        ipc_weights = samp_weights,
+        # NOTE: we update pi_mech_star and samp_weights in this procedure, so
+        #       only need to rescale by factor gn_cens_weights each iteration
+        ipc_weights = (gn_cens_weights * samp_weights[C_samp == 1]),
         Qn_estim = Qn_estim_updated,
-        Hn_estim = Hn_estim, # N.B., g_n never gets updated in this procedure
+        # NOTE: directly pass in Hn since gn never updated in this procedure
+        Hn_estim = Hn_estim,
         estimator = "tmle",
         fluctuation = fluctuation,
         eif_reg_type = eif_reg_type
@@ -127,13 +132,14 @@ tmle_txshift <- function(data_internal,
       )
       data.table::setnames(Qn_estim_updated, names(Qn_estim))
 
-      # updated sampling/censoring weights and stabilize
+      # updated sampling weights and stabilize
       samp_weights <- tmle_ipcw_eif$ipc_weights
-      samp_weights <- samp_weights / mean(samp_weights)
+      #samp_weights <- samp_weights / mean(samp_weights)
       pi_mech_star <- tmle_ipcw_eif$pi_mech_star
 
       # compute updated mean of efficient influence function and save
-      eif_ipcw <- tmle_ipcw_eif$eif_eval$eif - tmle_ipcw_eif$ipcw_eif_component
+      eif_ipcw <- tmle_ipcw_eif$eif_eval$eif -
+        tmle_ipcw_eif$ipcw_eif_component
       eif_mean <- mean(eif_ipcw)
       eif_var <- var(eif_ipcw) / length(samp_weights)
       conv_res[n_steps, ] <- c(tmle_ipcw_eif$eif_eval$psi, eif_var, eif_mean)
@@ -141,14 +147,11 @@ tmle_txshift <- function(data_internal,
       # TMLE convergence criterion based on re-scaled standard error
       tol_scaling <- 1 / (max(10, log(length(samp_weights))))
       eif_tol <- sqrt(eif_var) * tol_scaling
-
-      # iterate counter
-      n_steps <- n_steps + 1
     }
+
+    # set to DT and subset to only the useful convergence results
     conv_res <- data.table::as.data.table(conv_res)
     data.table::setnames(conv_res, c("psi", "var", "eif_mean"))
-
-    # return only the useful convergence results
     conv_res <- conv_res[!is.na(rowSums(conv_res)), ]
 
     # create output object
@@ -170,7 +173,7 @@ tmle_txshift <- function(data_internal,
       Y = data_internal$Y,
       Qn_scaled = Qn_estim,
       Hn = Hn_estim,
-      ipc_weights = (gn_cens_weights * samp_weights),
+      ipc_weights = (gn_cens_weights * samp_weights[C_samp == 1]),
       method = fluctuation
     )
 
@@ -182,7 +185,7 @@ tmle_txshift <- function(data_internal,
       estimator = "tmle",
       fluc_mod_out = fitted_fluc_mod,
       C_samp = C_samp,
-      ipc_weights = (gn_cens_weights * samp_weights)
+      ipc_weights = (gn_cens_weights * samp_weights[C_samp == 1])
     )
 
     # create output object

@@ -9,7 +9,7 @@ eif(
   Qn,
   Hn,
   estimator = c("tmle", "onestep"),
-  fluc_mod_out = NULL,
+  fluc_mod_out,
   C_samp = rep(1, length(Y)),
   ipc_weights = rep(1, length(Y))
 )
