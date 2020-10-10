@@ -19,7 +19,7 @@
 #' txout <- txshift(
 #'   W = W, A = A, Y = Y, delta = 0.5,
 #'   estimator = "tmle",
-#'   g_fit_args = list(
+#'   g_exp_fit_args = list(
 #'     fit_type = "hal", n_bins = 5,
 #'     grid_type = "equal_mass",
 #'     lambda_seq = exp(-1:-9)
@@ -60,7 +60,7 @@ print.txshift <- function(x, ...) {
 #'   Y <- rbinom(n_obs, 1, plogis(2 * A - W))
 #'   msm <- msm_vimshift(
 #'     W = W, A = A, Y = Y, estimator = "tmle",
-#'     g_fit_args = list(
+#'     g_exp_fit_args = list(
 #'       fit_type = "sl",
 #'       sl_learners_density = Lrnr_density_hse$new(Lrnr_glm$new())
 #'     ),
@@ -117,7 +117,7 @@ print.txshift_msm <- function(x, ...) {
 #' txout <- txshift(
 #'   W = W, A = A, Y = Y, delta = 0.5,
 #'   estimator = "tmle",
-#'   g_fit_args = list(
+#'   g_exp_fit_args = list(
 #'     fit_type = "hal", n_bins = 5,
 #'     grid_type = "equal_mass",
 #'     lambda_seq = exp(-1:-9)

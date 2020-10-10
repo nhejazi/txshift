@@ -124,9 +124,9 @@ Qn_ext_fitted <- as.data.table(
 # fit TMLE
 tmle_txshift <- txshift(
   Y = Y, A = A, W = W, delta = delta_shift,
-  g_fit = list(fit_type = "external"),
-  gn_fit_ext = gn_ext_fitted,
-  Q_fit = list(fit_type = "external"),
+  g_exp_fit_args = list(fit_type = "external"),
+  gn_exp_fit_ext = gn_ext_fitted,
+  Q_fit_args = list(fit_type = "external"),
   Qn_fit_ext = Qn_ext_fitted
 )
 txshift_psi <- as.numeric(tmle_txshift$psi)

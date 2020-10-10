@@ -8,7 +8,7 @@ est_g_cens(
   C_cens,
   A,
   W,
-  samp_weights = rep(1, length(Y)),
+  samp_weights = rep(1, length(C_cens)),
   fit_type = c("sl", "glm"),
   glm_formula = "C_cens ~ .",
   sl_learners = NULL

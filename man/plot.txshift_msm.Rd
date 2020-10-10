@@ -29,7 +29,7 @@ if (require("sl3")) {
   Y <- rbinom(n_obs, 1, plogis(2 * A - W))
   msm <- msm_vimshift(
     W = W, A = A, Y = Y, estimator = "tmle",
-    g_fit_args = list(
+    g_exp_fit_args = list(
       fit_type = "sl",
       sl_learners_density = Lrnr_density_hse$new(Lrnr_glm$new())
     ),
@@ -49,7 +49,7 @@ if (require("sl3")) {
   Y <- rbinom(n_obs, 1, plogis(0.1 * A * (A >= 0) - 3 * A * (A < 0) - W))
   msm <- msm_vimshift(
     W = W, A = A, Y = Y, estimator = "tmle",
-    g_fit_args = list(
+    g_exp_fit_args = list(
       fit_type = "sl",
       sl_learners_density = Lrnr_density_hse$new(Lrnr_glm$new())
     ),

@@ -103,8 +103,8 @@ tmle_txshift <- function(data_internal,
 
       # update fluctuation model, re-compute EIF, overwrite EIF
       tmle_ipcw_eif <- ipcw_eif_update(
-        data_in = data_internal,
-        C = C_samp,
+        data_internal = data_internal,
+        C_samp = C_samp,
         V = V,
         ipc_mech = pi_mech_star,
         # NOTE: we update pi_mech_star and samp_weights in this procedure, so

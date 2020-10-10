@@ -232,7 +232,7 @@ est_g_exp <- function(A,
 est_g_cens <- function(C_cens,
                        A,
                        W,
-                       samp_weights = rep(1, length(Y)),
+                       samp_weights = rep(1, length(C_cens)),
                        fit_type = c("sl", "glm"),
                        glm_formula = "C_cens ~ .",
                        sl_learners = NULL) {

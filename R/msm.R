@@ -9,14 +9,18 @@
 #'  one-step or TML estimators, and also allows the construction of marginal or
 #'  simultaneous confidence intervals.
 #'
-#' @param Y A \code{numeric} vector of the observed outcomes.
+#' @param W A \code{matrix}, \code{data.frame}, or similar containing a set of
+#'  baseline covariates.
 #' @param A A \code{numeric} vector corresponding to a treatment variable. The
 #'  parameter of interest is defined as a location shift of this quantity.
-#' @param W A \code{matrix}, \code{data.frame}, or similar corresponding to a
-#'  set of baseline covariates.
-#' @param C A \code{numeric} indicator for whether a given observation was
-#'  subject to censoring in the two-phase sample. This is used to compute an
-#'  IPCW-TMLE in such cases. The default assumes no censoring.
+#' @param C_cens A \code{numeric} indicator for whether a given observation was
+#'  subject to censoring by way of loss to follow-up. The default assumes no
+#'  censoring due to loss to follow-up.
+#' @param Y A \code{numeric} vector of the observed outcomes.
+#' @param C_samp A \code{numeric} indicator for whether a given observation was
+#'  subject to censoring by being omitted from the second-stage sample, used to
+#'  compute an inverse probability of censoring weighted estimator in such
+#'  cases. The default assumes no censoring due to two-phase sampling.
 #' @param V The covariates that are used in determining the sampling procedure
 #'  that gives rise to censoring. The default is \code{NULL} and corresponds to
 #'  scenarios in which there is no censoring (in which case all values in the
@@ -65,7 +69,7 @@
 #'   Y <- rbinom(n_obs, 1, plogis(2 * A - W))
 #'   msm <- msm_vimshift(
 #'     W = W, A = A, Y = Y, estimator = "tmle",
-#'     g_fit_args = list(
+#'     g_exp_fit_args = list(
 #'       fit_type = "sl",
 #'       sl_learners_density = Lrnr_density_hse$new(Lrnr_glm$new())
 #'     ),
@@ -83,7 +87,7 @@
 #'   Y <- rbinom(n_obs, 1, plogis(0.1 * A * (A >= 0) - 3 * A * (A < 0) - W))
 #'   msm <- msm_vimshift(
 #'     W = W, A = A, Y = Y, estimator = "tmle",
-#'     g_fit_args = list(
+#'     g_exp_fit_args = list(
 #'       fit_type = "sl",
 #'       sl_learners_density = Lrnr_density_hse$new(Lrnr_glm$new())
 #'     ),
@@ -96,10 +100,11 @@
 #'   )
 #' }
 #' @export
-msm_vimshift <- function(Y,
+msm_vimshift <- function(W,
                          A,
-                         W,
-                         C = rep(1, length(Y)),
+                         C_cens = rep(1, length(Y)),
+                         Y,
+                         C_samp = rep(1, length(Y)),
                          V = NULL,
                          delta_grid = seq(-0.5, 0.5, 0.5),
                          msm_form = list(type = "linear", knot = NA),
@@ -131,7 +136,7 @@ msm_vimshift <- function(Y,
   est_over_grid <-
     lapply(delta_grid, function(shift) {
       est <- txshift(
-        W = W, A = A, Y = Y, C = C, V = V,
+        W = W, A = A, Y = Y, C_samp = C_samp, V = V,
         delta = shift, estimator = estimator,
         ...
       )
@@ -265,7 +270,7 @@ msm_vimshift <- function(Y,
 #'   Y <- rbinom(n_obs, 1, plogis(2 * A - W))
 #'   msm <- msm_vimshift(
 #'     W = W, A = A, Y = Y, estimator = "tmle",
-#'     g_fit_args = list(
+#'     g_exp_fit_args = list(
 #'       fit_type = "sl",
 #'       sl_learners_density = Lrnr_density_hse$new(Lrnr_glm$new())
 #'     ),
@@ -285,7 +290,7 @@ msm_vimshift <- function(Y,
 #'   Y <- rbinom(n_obs, 1, plogis(0.1 * A * (A >= 0) - 3 * A * (A < 0) - W))
 #'   msm <- msm_vimshift(
 #'     W = W, A = A, Y = Y, estimator = "tmle",
-#'     g_fit_args = list(
+#'     g_exp_fit_args = list(
 #'       fit_type = "sl",
 #'       sl_learners_density = Lrnr_density_hse$new(Lrnr_glm$new())
 #'     ),

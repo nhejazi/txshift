@@ -82,7 +82,7 @@ onestep_txshift <- function(data_internal,
 
     # update by submodel fluctuation, re-compute EIF, and update EIF
     os_ipcw_eif <- ipcw_eif_update(
-      data_in = data_internal,
+      data_internal = data_internal,
       C_samp = C_samp,
       V = V,
       ipc_mech = pi_mech_star,

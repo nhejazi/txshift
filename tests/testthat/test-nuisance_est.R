@@ -86,17 +86,17 @@ if (require("sl3")) {
   # fit TMLE and one-step for HAL and SL
   tmle_ml <- txshift(
     Y = Y, A = A, W = W, delta = delta_shift,
-    g_fit = list(fit_type = "external"),
-    gn_fit_ext = gn_est_hal,
-    Q_fit = list(fit_type = "external"),
+    g_exp_fit_args = list(fit_type = "external"),
+    gn_exp_fit_ext = gn_est_hal,
+    Q_fit_args = list(fit_type = "external"),
     Qn_fit_ext = Qn_est_sl,
     estimator = "tmle"
   )
   os_ml <- txshift(
     Y = Y, A = A, W = W, delta = delta_shift,
-    g_fit = list(fit_type = "external"),
-    gn_fit_ext = gn_est_hal,
-    Q_fit = list(fit_type = "external"),
+    g_exp_fit_args = list(fit_type = "external"),
+    gn_exp_fit_ext = gn_est_hal,
+    Q_fit_args = list(fit_type = "external"),
     Qn_fit_ext = Qn_est_sl,
     estimator = "onestep"
   )
@@ -110,17 +110,17 @@ if (require("sl3")) {
   # fit TMLE and one-step for GLMs
   tmle_glm <- txshift(
     Y = Y, A = A, W = W, delta = delta_shift,
-    g_fit = list(fit_type = "external"),
-    gn_fit_ext = gn_est_glm,
-    Q_fit = list(fit_type = "external"),
+    g_exp_fit_args = list(fit_type = "external"),
+    gn_exp_fit_ext = gn_est_glm,
+    Q_fit_args = list(fit_type = "external"),
     Qn_fit_ext = Qn_est_glm,
     estimator = "tmle"
   )
   os_glm <- txshift(
     Y = Y, A = A, W = W, delta = delta_shift,
-    g_fit = list(fit_type = "external"),
-    gn_fit_ext = gn_est_glm,
-    Q_fit = list(fit_type = "external"),
+    g_exp_fit_args = list(fit_type = "external"),
+    gn_exp_fit_ext = gn_est_glm,
+    Q_fit_args = list(fit_type = "external"),
     Qn_fit_ext = Qn_est_glm,
     estimator = "onestep"
   )
@@ -134,26 +134,26 @@ if (require("sl3")) {
   # fit IPCW-TMLE and IPCW-one-step with SL for censoring estimation
   ipcw_tmle_sl <- txshift(
     W = W, A = A, Y = Y, delta = delta_shift,
-    C = C, V = c("W", "Y"),
+    C_samp = C, V = c("W", "Y"),
     estimator = "tmle",
     max_iter = 5,
-    ipcw_fit_args = list(fit_type = "external"),
-    ipcw_fit_ext = ipcw_est_sl,
-    g_fit = list(fit_type = "external"),
-    gn_fit_ext = gn_est_hal[C == 1, ],
-    Q_fit = list(fit_type = "external"),
+    samp_fit_args = list(fit_type = "external"),
+    samp_fit_ext = ipcw_est_sl,
+    g_exp_fit_args = list(fit_type = "external"),
+    gn_exp_fit_ext = gn_est_hal[C == 1, ],
+    Q_fit_args = list(fit_type = "external"),
     Qn_fit_ext = Qn_est_sl[C == 1, ],
     eif_reg_type = "hal"
   )
   ipcw_os_sl <- txshift(
     W = W, A = A, Y = Y, delta = delta_shift,
-    C = C, V = c("W", "Y"),
+    C_samp = C, V = c("W", "Y"),
     estimator = "onestep",
-    ipcw_fit_args = list(fit_type = "external"),
-    ipcw_fit_ext = ipcw_est_sl,
-    g_fit = list(fit_type = "external"),
-    gn_fit_ext = gn_est_hal[C == 1, ],
-    Q_fit = list(fit_type = "external"),
+    samp_fit_args = list(fit_type = "external"),
+    samp_fit_ext = ipcw_est_sl,
+    g_exp_fit_args = list(fit_type = "external"),
+    gn_exp_fit_ext = gn_est_hal[C == 1, ],
+    Q_fit_args = list(fit_type = "external"),
     Qn_fit_ext = Qn_est_sl[C == 1, ],
     eif_reg_type = "hal"
   )
@@ -167,26 +167,26 @@ if (require("sl3")) {
   # fit IPCW-TMLE and IPCW-one-step with GLM for censoring estimation
   ipcw_tmle_glm <- txshift(
     W = W, A = A, Y = Y, delta = delta_shift,
-    C = C, V = c("W", "Y"),
+    C_samp = C, V = c("W", "Y"),
     estimator = "tmle",
     max_iter = 5,
-    ipcw_fit_args = list(fit_type = "external"),
-    ipcw_fit_ext = ipcw_est_glm,
-    g_fit = list(fit_type = "external"),
-    gn_fit_ext = gn_est_hal[C == 1, ],
-    Q_fit = list(fit_type = "external"),
+    samp_fit_args = list(fit_type = "external"),
+    samp_fit_ext = ipcw_est_glm,
+    g_exp_fit_args = list(fit_type = "external"),
+    gn_exp_fit_ext = gn_est_hal[C == 1, ],
+    Q_fit_args = list(fit_type = "external"),
     Qn_fit_ext = Qn_est_sl[C == 1, ],
     eif_reg_type = "hal"
   )
   ipcw_os_glm <- txshift(
     W = W, A = A, Y = Y, delta = delta_shift,
-    C = C, V = c("W", "Y"),
+    C_samp = C, V = c("W", "Y"),
     estimator = "onestep",
-    ipcw_fit_args = list(fit_type = "external"),
-    ipcw_fit_ext = ipcw_est_glm,
-    g_fit = list(fit_type = "external"),
-    gn_fit_ext = gn_est_hal[C == 1, ],
-    Q_fit = list(fit_type = "external"),
+    samp_fit_args = list(fit_type = "external"),
+    samp_fit_ext = ipcw_est_glm,
+    g_exp_fit_args = list(fit_type = "external"),
+    gn_exp_fit_ext = gn_est_hal[C == 1, ],
+    Q_fit_args = list(fit_type = "external"),
     Qn_fit_ext = Qn_est_sl[C == 1, ],
     eif_reg_type = "hal"
   )

@@ -51,12 +51,19 @@
 #'  \pkg{sl3} learners used to fit Super Learner ensembles to densities via
 #'  \code{\link[sl3]{Lrnr_haldensify}} or similar, and \code{"external"} for
 #'  user-specified input of the form produced by \code{\link{est_g_exp}}.
+#' @param g_cens_fit_args A \code{list} of arguments, all but one of which are
+#'  passed to \code{\link{est_g_cens}}. For details, see the documentation of
+#'  \code{\link{est_g_cens}}. The 1st element (i.e., \code{fit_type}) specifies
+#'  how this regression is fit: \code{"glm"} for a generalized linear model
+#'  or \code{"sl"} for \pkg{sl3} learners used to fit a Super Learner ensemble
+#'  for the censoring mechanism, and \code{"external"} for user-specified input
+#'  of the form produced by \code{\link{est_g_cens}}.
 #' @param Q_fit_args A \code{list} of arguments, all but one of which are
 #'  passed to \code{\link{est_Q}}. For details, consult the documentation for
 #'  \code{\link{est_Q}}. The first element (i.e., \code{fit_type}) is used to
 #'  determine how this regression is fit: \code{"glm"} for a generalized linear
-#'  model for the outcome regression, \code{"sl"} for \pkg{sl3} learners used
-#'  to fit a Super Learner for the outcome regression, and \code{"external"}
+#'  model for the outcome mechanism, \code{"sl"} for \pkg{sl3} learners used
+#'  to fit a Super Learner for the outcome mechanism, and \code{"external"}
 #'  for user-specified input of the form produced by \code{\link{est_Q}}.
 #' @param eif_reg_type Whether a flexible nonparametric function ought to be
 #'  used in the dimension-reduced nuisance regression of the targeting step for
@@ -364,7 +371,7 @@ txshift <- function(W,
   }
 
   # initial estimate of the auxiliary covariate
-  Hn_estim <- est_Hn(gn = gn_exp_estim)
+  Hn_estim <- est_Hn(gn_exp = gn_exp_estim)
 
   # compute whichever efficient estimator was asked for
   if (estimator == "tmle") {

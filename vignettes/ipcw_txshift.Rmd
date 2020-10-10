@@ -126,22 +126,17 @@ GLM.
 ### Inverse Probability Weighting with Targeted Maximum Likelihood Estimation
 
 ```{r ipcw_tmle_ghal_Qglm_1}
-tmle_hal_shift_1 <- txshift(W = W, A = A, Y = Y,
-                            C = C, V = c("W", "Y"),
-                            delta = delta,
-                            fluctuation = "standard",
-                            max_iter = 2,
-                            ipcw_fit_args = list(fit_type = "glm"),
-                            g_fit_args = list(fit_type = "hal",
-                                              n_bins = 5,
-                                              grid_type = "equal_mass",
-                                              lambda_seq =
-                                                exp(seq(-1, -9,
-                                                        length = 300))),
-                            Q_fit_args = list(fit_type = "glm",
-                                              glm_formula = "Y ~ ."),
-                            eif_reg_type = "glm"
-                           )
+tmle_hal_shift_1 <- txshift(
+  W = W, A = A, Y = Y, C_samp = C, V = c("W", "Y"),
+  delta = delta, fluctuation = "standard", max_iter = 2,
+  samp_fit_args = list(fit_type = "glm"),
+  g_exp_fit_args = list(fit_type = "hal",
+                        n_bins = 5,
+                        grid_type = "equal_mass",
+                        lambda_seq = exp(seq(-1, -9, length = 300))),
+  Q_fit_args = list(fit_type = "glm", glm_formula = "Y ~ ."),
+  eif_reg_type = "glm"
+)
 summary(tmle_hal_shift_1)
 ```
 
@@ -153,21 +148,16 @@ sometimes called the "clever covariate" in the literature) rather than using
 such a covariate directly in the submodel regression fit.
 
 ```{r ipcw_tmle_ghal_Qglm_2}
-tmle_hal_shift_2 <- txshift(W = W, A = A, Y = Y,
-                            C = C, V = c("W", "Y"),
-                            delta = delta,
-                            fluctuation = "weighted",
-                            max_iter = 2,
-                            ipcw_fit_args = list(fit_type = "glm"),
-                            g_fit_args = list(fit_type = "hal",
-                                              n_bins = 5,
-                                              grid_type = "equal_mass",
-                                              lambda_seq =
-                                                exp(seq(-1, -9,
-                                                        length = 300))),
-                            Q_fit_args = list(fit_type = "glm",
-                                              glm_formula = "Y ~ ."),
-                            eif_reg_type = "glm"
+tmle_hal_shift_2 <- txshift(
+  W = W, A = A, Y = Y, C_samp = C, V = c("W", "Y"),
+  delta = delta, fluctuation = "weighted", max_iter = 2,
+  samp_fit_args = list(fit_type = "glm"),
+  g_exp_fit_args = list(fit_type = "hal",
+                        n_bins = 5,
+                        grid_type = "equal_mass",
+                        lambda_seq = exp(seq(-1, -9, length = 300))),
+  Q_fit_args = list(fit_type = "glm", glm_formula = "Y ~ ."),
+  eif_reg_type = "glm"
                            )
 summary(tmle_hal_shift_2)
 ```
@@ -206,27 +196,22 @@ the nuisance parameters of the TML estimator may be fit with ensemble learning,
 using the cross-validation framework of the Super Learner algorithm of
 @vdl2007super. In principal, it would be desirable to estimate the parameter
 using data-adaptive stacked regressions for the sampling mechanism (via
-`ipcw_fit_args`, the treatment mechanism (via `g_fit_args`), and the outcome
+`ipcw_fit_args`, the treatment mechanism (via `g_exp_fit_args`), and the outcome
 mechanism (via `Q_fit_args`). This could be done with a call to the `txshift`
 function like the following; however, we avoid running the following code chunk
 for the sake of saving time in this vignette.
 
 
 ```{r ipcw_tmle_sl_1_not_run, eval=FALSE}
-tmle_sl_shift_1 <- txshift(W = W, A = A, Y = Y,
-                           C = C, V = c("W", "Y"),
-                           delta = delta,
-                           fluctuation = "standard",
-                           max_iter = 2,
-                           ipcw_fit_args = list(fit_type = "sl",
-                                                sl_learnrs = sl_learner),
-                           g_fit_args = list(fit_type = "sl",
-                                             sl_learners_density =
-                                               sl_learner_density),
-                           Q_fit_args = list(fit_type = "sl",
-                                             sl_learners = sl_learner),
-                           eif_reg_type = "glm"
-                          )
+tmle_sl_shift_1 <- txshift(
+  W = W, A = A, Y = Y, C_samp = C, V = c("W", "Y"),
+  delta = delta, fluctuation = "standard", max_iter = 2,
+  samp_fit_args = list(fit_type = "sl", sl_learnrs = sl_learner),
+  g_exp_fit_args = list(fit_type = "sl",
+                        sl_learners_density = sl_learner_density),
+  Q_fit_args = list(fit_type = "sl", sl_learners = sl_learner),
+  eif_reg_type = "glm"
+)
 summary(tmle_sl_shift_1)
 ```
 
@@ -237,23 +222,17 @@ that we again avoid running the following code chunk for the sake of saving time
 in this vignette.
 
 ```{r ipcw_tmle_sl_2_not_run, eval=FALSE}
-tmle_sl_shift_2 <- txshift(W = W, A = A, Y = Y,
-                           C = C, V = c("W", "Y"),
-                           delta = delta,
-                           fluctuation = "weighted",
-                           max_iter = 2,
-                           ipcw_fit_args = list(fit_type = "sl",
-                                                sl_learners = sl_learner),
-                           g_fit_args = list(fit_type = "hal",
-                                             n_bins = 5,
-                                             grid_type = "equal_mass",
-                                             lambda_seq =
-                                               exp(seq(-1, -9,
-                                                       length = 300))),
-                           Q_fit_args = list(fit_type = "sl",
-                                             sl_learners = sl_learner),
-                           eif_reg_type = "glm"
-                          )
+tmle_sl_shift_2 <- txshift(
+  W = W, A = A, Y = Y, C_samp = C, V = c("W", "Y"),
+  delta = delta, fluctuation = "weighted", max_iter = 2,
+  samp_fit_args = list(fit_type = "sl", sl_learners = sl_learner),
+  g_exp_fit_args = list(fit_type = "hal",
+                        n_bins = 5,
+                        grid_type = "equal_mass",
+                        lambda_seq = exp(seq(-1, -9, length = 300))),
+  Q_fit_args = list(fit_type = "sl", sl_learners = sl_learner),
+  eif_reg_type = "glm"
+)
 summary(tmle_sl_shift_2)
 ```
 
@@ -270,22 +249,17 @@ computed when censoring is detected; however, this may be disable by setting
 the `ipcw_efficiency` argument to `FALSE` like so
 
 ```{r ipcw_tmle_ghal_sl_inefficient, eval = FALSE}
-tmle_sl_ineffic <- txshift(W = W, A = A, Y = Y,
-                           C = C, V = c("W", "Y"),
-                           delta = delta,
-                           fluctuation = "standard",
-                           ipcw_fit_args = list(fit_type = "sl",
-                                                sl_learners = sl_learner),
-                           g_fit_args = list(fit_type = "hal",
-                                             n_bins = 5,
-                                             grid_type = "equal_mass",
-                                             lambda_seq =
-                                               exp(seq(-1, -9,
-                                                       length = 300))),
-                           Q_fit_args = list(fit_type = "sl",
-                                             sl_learners = sl_learner),
-                           ipcw_efficiency = FALSE
-                          )
+tmle_sl_ineffic <- txshift(
+  W = W, A = A, Y = Y, C_samp = C, V = c("W", "Y"),
+  delta = delta, fluctuation = "standard",
+  samp_fit_args = list(fit_type = "sl", sl_learners = sl_learner),
+  g_exp_fit_args = list(fit_type = "hal",
+                        n_bins = 5,
+                        grid_type = "equal_mass",
+                        lambda_seq = exp(seq(-1, -9, length = 300))),
+  Q_fit_args = list(fit_type = "sl", sl_learners = sl_learner),
+  ipcw_efficiency = FALSE
+)
 summary(tmle_sl_ineffic)
 ```
 
@@ -317,8 +291,7 @@ utilized. We present a case of using these arguments here:
 ```{r manual_ipcw_tmle}
 # compute the censoring mechanism and produce IPC weights externally
 pi_mech <- plogis(W)
-ipc_weights_out <- (as.numeric(C == 1) / pi_mech)[C == 1]
-ipcw_out <- list(pi_mech = pi_mech, ipc_weights = ipc_weights_out)
+ipcw_out <- pi_mech
 
 # compute treatment mechanism (propensity score) externally
 ## first, produce the down-shifted treatment data
@@ -345,17 +318,17 @@ Qn_out <- as.data.table(cbind(Qn_noshift, Qn_upshift))[C == 1, ]
 setnames(Qn_out, c("noshift", "upshift"))
 
 # invoke the wrapper function only to apply the targeting step
-tmle_shift_spec <- txshift(W = W, A = A, Y = Y, delta = delta,
-                           C = C, V = c("W", "Y"),
-                           fluctuation = "standard",
-                           max_iter = 2,
-                           ipcw_fit_args = list(fit_type = "external"),
-                           g_fit_args = list(fit_type = "external"),
-                           Q_fit_args = list(fit_type = "external"),
-                           ipcw_fit_ext = ipcw_out,
-                           gn_fit_ext = gn_out,
-                           Qn_fit_ext = Qn_out,
-                           eif_reg_type = "glm")
+tmle_shift_spec <- txshift(
+  W = W, A = A, Y = Y, C_samp = C, V = c("W", "Y"),
+  delta = delta, fluctuation = "standard", max_iter = 2,
+  samp_fit_args = list(fit_type = "external"),
+  g_exp_fit_args = list(fit_type = "external"),
+  Q_fit_args = list(fit_type = "external"),
+  samp_fit_ext = ipcw_out,
+  gn_exp_fit_ext = gn_out,
+  Qn_fit_ext = Qn_out,
+  eif_reg_type = "glm"
+)
 summary(tmle_shift_spec)
 ```
 

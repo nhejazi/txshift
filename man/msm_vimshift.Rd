@@ -5,10 +5,11 @@
 \title{Working marginal structural model for causal effects of an intervention grid}
 \usage{
 msm_vimshift(
-  Y,
-  A,
   W,
-  C = rep(1, length(Y)),
+  A,
+  C_cens = rep(1, length(Y)),
+  Y,
+  C_samp = rep(1, length(Y)),
   V = NULL,
   delta_grid = seq(-0.5, 0.5, 0.5),
   msm_form = list(type = "linear", knot = NA),
@@ -20,17 +21,22 @@ msm_vimshift(
 )
 }
 \arguments{
-\item{Y}{A \code{numeric} vector of the observed outcomes.}
+\item{W}{A \code{matrix}, \code{data.frame}, or similar containing a set of
+baseline covariates.}
 
 \item{A}{A \code{numeric} vector corresponding to a treatment variable. The
 parameter of interest is defined as a location shift of this quantity.}
 
-\item{W}{A \code{matrix}, \code{data.frame}, or similar corresponding to a
-set of baseline covariates.}
+\item{C_cens}{A \code{numeric} indicator for whether a given observation was
+subject to censoring by way of loss to follow-up. The default assumes no
+censoring due to loss to follow-up.}
 
-\item{C}{A \code{numeric} indicator for whether a given observation was
-subject to censoring in the two-phase sample. This is used to compute an
-IPCW-TMLE in such cases. The default assumes no censoring.}
+\item{Y}{A \code{numeric} vector of the observed outcomes.}
+
+\item{C_samp}{A \code{numeric} indicator for whether a given observation was
+subject to censoring by being omitted from the second-stage sample, used to
+compute an inverse probability of censoring weighted estimator in such
+cases. The default assumes no censoring due to two-phase sampling.}
 
 \item{V}{The covariates that are used in determining the sampling procedure
 that gives rise to censoring. The default is \code{NULL} and corresponds to
@@ -95,7 +101,7 @@ if (require("sl3")) {
   Y <- rbinom(n_obs, 1, plogis(2 * A - W))
   msm <- msm_vimshift(
     W = W, A = A, Y = Y, estimator = "tmle",
-    g_fit_args = list(
+    g_exp_fit_args = list(
       fit_type = "sl",
       sl_learners_density = Lrnr_density_hse$new(Lrnr_glm$new())
     ),
@@ -113,7 +119,7 @@ if (require("sl3")) {
   Y <- rbinom(n_obs, 1, plogis(0.1 * A * (A >= 0) - 3 * A * (A < 0) - W))
   msm <- msm_vimshift(
     W = W, A = A, Y = Y, estimator = "tmle",
-    g_fit_args = list(
+    g_exp_fit_args = list(
       fit_type = "sl",
       sl_learners_density = Lrnr_density_hse$new(Lrnr_glm$new())
     ),
