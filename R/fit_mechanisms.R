@@ -341,7 +341,7 @@ est_g_cens <- function(C_cens,
 #'  outcome mechanism at the natural value of the exposure Q(A, W) and an
 #'  upshift of the exposure Q(A + delta, W).
 est_Q <- function(Y,
-                  C_cens,
+                  C_cens = rep(1, length(Y)),
                   A,
                   W,
                   delta = 0,

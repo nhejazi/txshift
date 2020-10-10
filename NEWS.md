@@ -1,13 +1,17 @@
 # txshift 0.3.5
 
 As of October 2020:
-* Changes references to the argument `C` to `Delta` as the indicator of
+* Changes all references to the argument `C` to `C_samp` for the indicator of
   inclusion in the second-stage sample.
-* Co-opts the newly freed argument `C` to denote censoring prior to occurrence
-  of the outcome.
-* Adds a nuisance regression for censoring `C` and adjusts the estimation
-  procedure so as to use inverse censoring weights for this in the full-data
-  EIF procedure (not the augmented two-phase sampling correction).
+* Adds the new argument `C_cens` to denote censoring due to loss to follow-up,
+  i.e., prior to the occurrence of the outcome.
+* Adds a nuisance regression for censoring `C_cens` and adjusts the estimation
+  procedure so as to use inverse censoring weights in the full-data EIF
+  procedure (NOTE: these are not updated in the two-phase sampling correction).
+* Renaming of arguments to internal functions and functions themselves:
+  * From `est_g` to `est_g_exp` for the exposure mechanism density estimation
+  * From `est_ipcw` to `est_samp` for the two-phase sampling mechanism
+  * Add `est_g_cens` for the loss to follow-up censoring mechanism
 
 # txshift 0.3.4
 

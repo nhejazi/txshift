@@ -291,7 +291,7 @@ txshift <- function(W,
 
     # remove column corresponding to indicator for censoring
     data_internal <- data.table::data.table(W, A, C_cens, Y, C_samp)
-    data_internal <- data_internal[C_samp == 1, ] # NOTE: subset forces copy :(
+    data_internal <- data_internal[C_samp == 1, ] # subset forced copy :(
     data_internal[, C_samp := NULL]
   } else {
     # if no two-phase sampling, we can use IPC weights that are identically 1
@@ -330,7 +330,7 @@ txshift <- function(W,
   # estimate the natural censoring mechanism for joint intervention
   if (any(C_cens != 1)) {
     if (!is.null(gn_cens_fit_ext) && g_cens_fit_type == "external") {
-      gn_cens_estim <- gn_cens_fit_ext
+      gn_cens_weights <- C_cens[C_samp == 1] / gn_cens_fit_ext
     } else {
       gn_cens_estim_in <- list(
         C = data_internal$C_cens,

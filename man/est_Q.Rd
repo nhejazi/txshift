@@ -6,7 +6,7 @@
 \usage{
 est_Q(
   Y,
-  C_cens,
+  C_cens = rep(1, length(Y)),
   A,
   W,
   delta = 0,
