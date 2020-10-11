@@ -149,8 +149,10 @@ if (require("sl3")) {
   )
 
   # fit two-phase censoring mechanism with SL
-  ipcw_est_sl <- est_samp(V = V, C_samp = C_samp, fit_type = "sl",
-                          sl_learners = sl)
+  ipcw_est_sl <- est_samp(
+    V = V, C_samp = C_samp, fit_type = "sl",
+    sl_learners = sl
+  )
 
   # test for errors when arguments are set inconsistently
   test_that("SL-based nuisance estimation fails without SL library", {

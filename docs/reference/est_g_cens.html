@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Iterative IPCW Update Procedure of Augmented Efficient Influence Function — ipcw_eif_update • txshift</title>
+<title>Estimate the Censoring Mechanism — est_g_cens • txshift</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Iterative IPCW Update Procedure of Augmented Efficient Influence Function — ipcw_eif_update" />
-<meta property="og:description" content="Iterative IPCW Update Procedure of Augmented Efficient Influence Function" />
+<meta property="og:title" content="Estimate the Censoring Mechanism — est_g_cens" />
+<meta property="og:description" content="Estimate the Censoring Mechanism" />
 
 
 
@@ -126,113 +126,76 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Iterative IPCW Update Procedure of Augmented Efficient Influence Function</h1>
-    <small class="dont-index">Source: <a href='https://github.com/nhejazi/txshift/blob/master/R/eifs.R'><code>R/eifs.R</code></a></small>
-    <div class="hidden name"><code>ipcw_eif_update.Rd</code></div>
+    <h1>Estimate the Censoring Mechanism</h1>
+    <small class="dont-index">Source: <a href='https://github.com/nhejazi/txshift/blob/master/R/fit_mechanisms.R'><code>R/fit_mechanisms.R</code></a></small>
+    <div class="hidden name"><code>est_g_cens.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Iterative IPCW Update Procedure of Augmented Efficient Influence Function</p>
+    <p>Estimate the Censoring Mechanism</p>
     </div>
 
-    <pre class="usage"><span class='fu'>ipcw_eif_update</span><span class='op'>(</span>
-  <span class='va'>data_internal</span>,
-  <span class='va'>C_samp</span>,
-  <span class='va'>V</span>,
-  <span class='va'>ipc_mech</span>,
-  <span class='va'>ipc_weights</span>,
-  <span class='va'>Qn_estim</span>,
-  <span class='va'>Hn_estim</span>,
-  estimator <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"tmle"</span>, <span class='st'>"onestep"</span><span class='op'>)</span>,
-  fluctuation <span class='op'>=</span> <span class='cn'>NULL</span>,
-  flucmod_tol <span class='op'>=</span> <span class='fl'>50</span>,
-  eif_reg_type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"hal"</span>, <span class='st'>"glm"</span><span class='op'>)</span>
+    <pre class="usage"><span class='fu'>est_g_cens</span><span class='op'>(</span>
+  <span class='va'>C_cens</span>,
+  <span class='va'>A</span>,
+  <span class='va'>W</span>,
+  samp_weights <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>C_cens</span><span class='op'>)</span><span class='op'>)</span>,
+  fit_type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"sl"</span>, <span class='st'>"glm"</span><span class='op'>)</span>,
+  glm_formula <span class='op'>=</span> <span class='st'>"C_cens ~ ."</span>,
+  sl_learners <span class='op'>=</span> <span class='cn'>NULL</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>data_internal</th>
-      <td><p>A <code>data.table</code> containing of the observations
-selected into the second-phase sample.</p></td>
+      <th>C_cens</th>
+      <td><p>A <code>numeric</code> vector of loss to follow-up indicators.</p></td>
     </tr>
     <tr>
-      <th>C_samp</th>
-      <td><p>A <code>numeric</code> indicator for missingness due to exclusion
-the from second-stage sample.</p></td>
+      <th>A</th>
+      <td><p>A <code>numeric</code> vector of observed exposure values.</p></td>
     </tr>
     <tr>
-      <th>V</th>
-      <td><p>A <code>data.table</code> giving the values across all observations of
-all variables that play a role in the censoring mechanism.</p></td>
+      <th>W</th>
+      <td><p>A <code>numeric</code> matrix of observed baseline covariate values.</p></td>
     </tr>
     <tr>
-      <th>ipc_mech</th>
-      <td><p>A <code>numeric</code> vector of the censoring mechanism estimates
-all of the observations, only for the two-phase sampling mechanism. Note
-well that these values do NOT account for censoring from loss to follow-up.</p></td>
+      <th>samp_weights</th>
+      <td><p>A <code>numeric</code> vector of observation-level sampling
+weights, as produced by the internal procedure to estimate the two-phase
+sampling mechanism <code><a href='est_samp.html'>est_samp</a></code>.</p></td>
     </tr>
     <tr>
-      <th>ipc_weights</th>
-      <td><p>A <code>numeric</code> vector of inverse probability of
-censoring weights, including such weights for censoring due to loss to
-follow-up. Without loss to follow-up, these are equivalent to <code>C_samp
-/ ipc_mech</code> in an initial run of this procedure.</p></td>
+      <th>fit_type</th>
+      <td><p>A <code>character</code> indicating whether to use GLMs or Super
+Learner to fit the censoring mechanism. If option "glm" is selected, the
+argument <code>glm_formula</code> must NOT be <code>NULL</code>, instead containing a
+model formula (as per <code><a href='https://rdrr.io/r/stats/glm.html'>glm</a></code>) as a <code>character</code>. If
+the option "sl" is selected, the argument <code>sl_learners</code> must NOT be
+<code>NULL</code>; instead, an instantiated <code><a href='https://tlverse.org/sl3/reference/Lrnr_sl.html'>Lrnr_sl</a></code> object,
+specifying learners and a metalearner for the Super Learner fit, must be
+provided. Consult the documentation of <span class="pkg">sl3</span> for details.</p></td>
     </tr>
     <tr>
-      <th>Qn_estim</th>
-      <td><p>A <code>data.table</code> corresponding to the outcome regression.
-This is produced by invoking the internal function <code>est_Q</code>.</p></td>
+      <th>glm_formula</th>
+      <td><p>A <code>character</code> giving a <code><a href='https://rdrr.io/r/stats/formula.html'>formula</a></code>
+for fitting a (generalized) linear model via <code><a href='https://rdrr.io/r/stats/glm.html'>glm</a></code>.</p></td>
     </tr>
     <tr>
-      <th>Hn_estim</th>
-      <td><p>A <code>data.table</code> corresponding to values produced in the
-computation of the auxiliary ("clever") covariate. This is produced easily
-by invoking the internal function <code>est_Hn</code>.</p></td>
-    </tr>
-    <tr>
-      <th>estimator</th>
-      <td><p>The type of estimator to be fit, either <code>"tmle"</code> for
-targeted maximum likelihood estimation or <code>"onestep"</code> for a one-step
-estimator.</p></td>
-    </tr>
-    <tr>
-      <th>fluctuation</th>
-      <td><p>A <code>character</code> giving the type of regression to be
-used in traversing the fluctuation submodel. The choices are "weighted" and
-"standard".</p></td>
-    </tr>
-    <tr>
-      <th>flucmod_tol</th>
-      <td><p>A <code>numeric</code> indicating the largest value to be
-tolerated in the fluctuation model for the targeted minimum loss estimator.</p></td>
-    </tr>
-    <tr>
-      <th>eif_reg_type</th>
-      <td><p>Whether a flexible nonparametric function ought to be
-used in the dimension-reduced nuisance regression of the targeting step for
-the censored data case. By default, the method used is a nonparametric
-regression based on the Highly Adaptive Lasso (from <span class="pkg">hal9001</span>). Set
-this to <code>"glm"</code> to instead use a simple linear regression model. In
-this step, the efficient influence function (EIF) is regressed against
-covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).</p></td>
+      <th>sl_learners</th>
+      <td><p>Object containing a set of instantiated learners from the
+<span class="pkg">sl3</span>, to be used in fitting an ensemble model.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A <code>list</code> containing the estimated outcome mechanism, the fitted
- fluctuation model for TML updates, the updated inverse probability of
- censoring weights (IPCW), the updated estimate of the efficient influence
- function, and the estimated IPCW component of the EIF.</p>
+    <p>A <code>numeric</code> vector of the propensity score for censoring.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>An adaptation of the IPCW-TMLE for iteratively constructing an
- efficient inverse probability of censoring weighted TML or one-step
- estimator. The efficient influence function of the parameter and updating
- the IPC weights in an iterative process, until a convergence criteria is
- satisfied.</p>
+    <p>Compute the censoring mechanism for the observed data, in order to
+ apply a joint intervention for removing censoring by re-weighting.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

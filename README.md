@@ -52,7 +52,7 @@ estimating equation. `txshift` extends this approach to compute
 IPC-weighted one-step and TML estimators of the counterfactual mean
 outcome under a shift stochastic treatment regime. The package is
 designed to implement the statistical methodology described in Hejazi et
-al. (2020).
+al. (2020) and extensions thereof.
 
 -----
 
@@ -99,15 +99,16 @@ A <- rnorm(n_obs, mean = 2 * W, sd = 1)
 Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
 
 # now, let's introduce a a two-stage sampling process
-C <- rbinom(n_obs, 1, plogis(W + Y))
+C_samp <- rbinom(n_obs, 1, plogis(W + Y))
 
 # fit the full-data TMLE (ignoring two-phase sampling)
 tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                 estimator = "tmle",
-                g_fit_args = list(fit_type = "hal",
-                                  n_bins = 5,
-                                  grid_type = "equal_mass",
-                                  lambda_seq = exp(seq(-1, -9, length = 300))),
+                g_exp_fit_args = list(fit_type = "hal",
+                                      n_bins = 5,
+                                      grid_type = "equal_mass",
+                                      lambda_seq = exp(seq(-1, -9,
+                                                           length = 300))),
                 Q_fit_args = list(fit_type = "glm",
                                   glm_formula = "Y ~ .")
                )
@@ -118,10 +119,11 @@ summary(tmle)
 # fit a full-data one-step estimator for comparison (again, no sampling)
 os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
               estimator = "onestep",
-              g_fit_args = list(fit_type = "hal",
-                                n_bins = 5,
-                                grid_type = "equal_mass",
-                                lambda_seq = exp(seq(-1, -9, length = 300))),
+              g_exp_fit_args = list(fit_type = "hal",
+                                    n_bins = 5,
+                                    grid_type = "equal_mass",
+                                    lambda_seq = exp(seq(-1, -9,
+                                                         length = 300))),
               Q_fit_args = list(fit_type = "glm",
                                 glm_formula = "Y ~ .")
              )
@@ -133,15 +135,15 @@ summary(os)
 
 # fit an IPCW-TMLE to account for the two-phase sampling process
 ipcw_tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
-                     C = C, V = c("W", "Y"),
+                     C_samp = C_samp, V = c("W", "Y"),
                      estimator = "tmle",
                      max_iter = 5,
-                     ipcw_fit_args = list(fit_type = "glm"),
-                     g_fit_args = list(fit_type = "hal",
-                                       n_bins = 5,
-                                       grid_type = "equal_mass",
-                                       lambda_seq =
-                                         exp(seq(-1, -9, length = 300))),
+                     samp_fit_args = list(fit_type = "glm"),
+                     g_exp_fit_args = list(fit_type = "hal",
+                                           n_bins = 5,
+                                           grid_type = "equal_mass",
+                                           lambda_seq =
+                                             exp(seq(-1, -9, length = 300))),
                      Q_fit_args = list(fit_type = "glm",
                                        glm_formula = "Y ~ ."),
                      eif_reg_type = "glm"
@@ -154,14 +156,14 @@ summary(ipcw_tmle)
 
 # compare with an IPCW-agumented one-step estimator under two-phase sampling
 ipcw_os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
-                   C = C, V = c("W", "Y"),
+                   C_samp = C_samp, V = c("W", "Y"),
                    estimator = "onestep",
-                   ipcw_fit_args = list(fit_type = "glm"),
-                   g_fit_args = list(fit_type = "hal",
-                                     n_bins = 5,
-                                     grid_type = "equal_mass",
-                                     lambda_seq =
-                                       exp(seq(-1, -9, length = 300))),
+                   samp_fit_args = list(fit_type = "glm"),
+                   g_exp_fit_args = list(fit_type = "hal",
+                                         n_bins = 5,
+                                         grid_type = "equal_mass",
+                                         lambda_seq =
+                                           exp(seq(-1, -9, length = 300))),
                    Q_fit_args = list(fit_type = "glm",
                                      glm_formula = "Y ~ ."),
                    eif_reg_type = "glm"

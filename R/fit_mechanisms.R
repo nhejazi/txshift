@@ -250,8 +250,10 @@ est_g_cens <- function(C_cens,
   # generate the data objects for fitting the outcome regression
   data_in <- data.table::as.data.table(cbind(C_cens, A, W))
   if (!is.matrix(W)) W <- as.matrix(W)
-  data.table::setnames(data_in, c("C_cens", "A",
-                                  paste0("W", seq_len(ncol(W)))))
+  data.table::setnames(data_in, c(
+    "C_cens", "A",
+    paste0("W", seq_len(ncol(W)))
+  ))
   names_W <- colnames(data_in)[stringr::str_detect(colnames(data_in), "W")]
   data.table::set(data_in, j = "ipc_weights", value = samp_weights)
 
@@ -366,8 +368,10 @@ est_Q <- function(Y,
   # generate the data objects for fitting the outcome regression
   data_in <- data.table::as.data.table(cbind(y_star, C_cens, A, W))
   if (!is.matrix(W)) W <- as.matrix(W)
-  data.table::setnames(data_in, c("Y", "C_cens", "A",
-                                  paste0("W", seq_len(ncol(W)))))
+  data.table::setnames(data_in, c(
+    "Y", "C_cens", "A",
+    paste0("W", seq_len(ncol(W)))
+  ))
   names_W <- colnames(data_in)[stringr::str_detect(colnames(data_in), "W")]
   data.table::set(data_in, j = "ipc_weights", value = samp_weights)
 

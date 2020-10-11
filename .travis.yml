@@ -35,7 +35,7 @@ r_github_packages:
 
 after_success:
   ## coverage
-  - travis_wait 80 Rscript -e "covr::codecov(line_exclusions = list('R/utils.R'))"
+  - travis_wait 80 Rscript -e "covr::codecov(line_exclusions = list('R/utils.R', 'R/plots.R'))"
 
 on_failure:
   - "./travis-tool.sh dump_logs"

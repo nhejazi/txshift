@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.5</span>
       </span>
     </div>
 
@@ -129,6 +129,24 @@
       <small>Source: <a href='https://github.com/nhejazi/txshift/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="txshift-035" class="section level1">
+<h1 class="page-header" data-toc-text="0.3.5">
+<a href="#txshift-035" class="anchor"></a>txshift 0.3.5<small> Unreleased </small>
+</h1>
+<p>As of October 2020:</p>
+<ul>
+<li>Changes all references to the argument <code>C</code> to <code>C_samp</code> for the indicator of inclusion in the second-stage sample.</li>
+<li>Adds the new argument <code>C_cens</code> to denote censoring due to loss to follow-up, i.e., prior to the occurrence of the outcome.</li>
+<li>Adds a nuisance regression for censoring <code>C_cens</code> and adjusts the estimation procedure so as to use inverse censoring weights in the full-data EIF procedure (NOTE: these are not updated in the two-phase sampling correction).</li>
+<li>Renaming of arguments to internal functions and functions themselves:
+<ul>
+<li>From <code>est_g</code> to <code>est_g_exp</code> for the exposure mechanism density estimation</li>
+<li>From <code>est_ipcw</code> to <code>est_samp</code> for the two-phase sampling mechanism</li>
+<li>Add <code>est_g_cens</code> for the loss to follow-up censoring mechanism</li>
+</ul>
+</li>
+</ul>
+</div>
     <div id="txshift-034" class="section level1">
 <h1 class="page-header" data-toc-text="0.3.4">
 <a href="#txshift-034" class="anchor"></a>txshift 0.3.4<small> 2020-09-25 </small>

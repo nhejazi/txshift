@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.5</span>
       </span>
     </div>
 
@@ -177,25 +177,31 @@
         <td>
           <p><code><a href="est_Hn.html">est_Hn()</a></code> </p>
         </td>
-        <td><p>Estimate Auxiliary Covariate from Efficient Influence Function</p></td>
+        <td><p>Estimate Auxiliary Covariate of Full Data Efficient Influence Function</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="est_Q.html">est_Q()</a></code> </p>
         </td>
-        <td><p>Estimate the Outcome Regression</p></td>
+        <td><p>Estimate the Outcome Mechanism</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="est_g.html">est_g()</a></code> </p>
+          <p><code><a href="est_g_cens.html">est_g_cens()</a></code> </p>
         </td>
-        <td><p>Estimate the Generalized Propensity Score (Treatment Mechanism)</p></td>
+        <td><p>Estimate the Censoring Mechanism</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="est_ipcw.html">est_ipcw()</a></code> </p>
+          <p><code><a href="est_g_exp.html">est_g_exp()</a></code> </p>
         </td>
-        <td><p>Estimate Inverse Probability of Censoring Weights</p></td>
+        <td><p>Estimate the Exposure Mechanism via Generalized Propensity Score</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="est_samp.html">est_samp()</a></code> </p>
+        </td>
+        <td><p>Estimate Probability of Censoring by Two-Phase Sampling</p></td>
       </tr><tr>
         
         <td>
@@ -207,7 +213,7 @@
         <td>
           <p><code><a href="ipcw_eif_update.html">ipcw_eif_update()</a></code> </p>
         </td>
-        <td><p>Iterative IPCW Update Procedure of Efficient Influence Function</p></td>
+        <td><p>Iterative IPCW Update Procedure of Augmented Efficient Influence Function</p></td>
       </tr><tr>
         
         <td>
@@ -219,8 +225,7 @@
         <td>
           <p><code><a href="onestep_txshift.html">onestep_txshift()</a></code> </p>
         </td>
-        <td><p>Compute One-Step Estimate of Counterfactual Mean Under Stochastic Shift
-Intervention</p></td>
+        <td><p>One-Step Estimate of Counterfactual Mean of Stochastic Shift Intervention</p></td>
       </tr><tr>
         
         <td>
@@ -232,7 +237,7 @@ Intervention</p></td>
         <td>
           <p><code><a href="print.txshift.html">print(<i>&lt;txshift&gt;</i>)</a></code> </p>
         </td>
-        <td><p>Print Method for Counterfactual Means</p></td>
+        <td><p>Print Method for Counterfactual Mean of Stochastic Shift Intervention</p></td>
       </tr><tr>
         
         <td>
@@ -262,20 +267,20 @@ Intervention</p></td>
         <td>
           <p><code><a href="summary.txshift.html">summary(<i>&lt;txshift&gt;</i>)</a></code> </p>
         </td>
-        <td><p>Summary for Counterfactual Mean Under Stochastic Intervention</p></td>
+        <td><p>Summary for Counterfactual Mean of Stochastic Shift Intervention</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="tmle_txshift.html">tmle_txshift()</a></code> </p>
         </td>
-        <td><p>Compute Targeted Minimum Loss Estimate of Counterfactual Mean Under
-Stochastic Shift Intervention</p></td>
+        <td><p>Targeted Minimum Loss Estimate of Counterfactual Mean of Stochastic Shift
+Intervention</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="txshift.html">txshift()</a></code> </p>
         </td>
-        <td><p>Estimate Counterfactual Mean Under Stochastic Shift in Exposure</p></td>
+        <td><p>Efficient Estimate of Counterfactual Mean of Stochastic Shift Intervention</p></td>
       </tr>
     </tbody>
     </table>

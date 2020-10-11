@@ -6,8 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Compute Targeted Minimum Loss Estimate of Counterfactual Mean Under
-Stochastic Shift Intervention — tmle_txshift • txshift</title>
+<title>Targeted Minimum Loss Estimate of Counterfactual Mean of Stochastic Shift
+Intervention — tmle_txshift • txshift</title>
 
 
 <!-- jquery -->
@@ -40,10 +40,10 @@ Stochastic Shift Intervention — tmle_txshift • txshift</title>
 
 
 
-<meta property="og:title" content="Compute Targeted Minimum Loss Estimate of Counterfactual Mean Under
-Stochastic Shift Intervention — tmle_txshift" />
-<meta property="og:description" content="Compute Targeted Minimum Loss Estimate of Counterfactual Mean Under
-Stochastic Shift Intervention" />
+<meta property="og:title" content="Targeted Minimum Loss Estimate of Counterfactual Mean of Stochastic Shift
+Intervention — tmle_txshift" />
+<meta property="og:description" content="Targeted Minimum Loss Estimate of Counterfactual Mean of Stochastic Shift
+Intervention" />
 
 
 
@@ -75,7 +75,7 @@ Stochastic Shift Intervention" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.5</span>
       </span>
     </div>
 
@@ -129,31 +129,32 @@ Stochastic Shift Intervention" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Compute Targeted Minimum Loss Estimate of Counterfactual Mean Under
-Stochastic Shift Intervention</h1>
+    <h1>Targeted Minimum Loss Estimate of Counterfactual Mean of Stochastic Shift
+Intervention</h1>
     <small class="dont-index">Source: <a href='https://github.com/nhejazi/txshift/blob/master/R/tmle_txshift.R'><code>R/tmle_txshift.R</code></a></small>
     <div class="hidden name"><code>tmle_txshift.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Compute Targeted Minimum Loss Estimate of Counterfactual Mean Under
-Stochastic Shift Intervention</p>
+    <p>Targeted Minimum Loss Estimate of Counterfactual Mean of Stochastic Shift
+Intervention</p>
     </div>
 
-    <pre class="usage"><span class='fu'>tmle_txshift</span>(
-  <span class='kw'>data_internal</span>,
-  C = <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='kw'>data_internal</span>)),
-  V = <span class='kw'>NULL</span>,
-  <span class='kw'>delta</span>,
-  <span class='kw'>ipcw_estim</span>,
-  <span class='kw'>Qn_estim</span>,
-  <span class='kw'>Hn_estim</span>,
-  fluctuation = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"standard"</span>, <span class='st'>"weighted"</span>),
-  max_iter = <span class='fl'>10</span>,
-  eif_reg_type = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"hal"</span>, <span class='st'>"glm"</span>),
-  <span class='kw'>ipcw_fit_args</span>,
-  ipcw_efficiency = <span class='fl'>TRUE</span>
-)</pre>
+    <pre class="usage"><span class='fu'>tmle_txshift</span><span class='op'>(</span>
+  <span class='va'>data_internal</span>,
+  C_samp <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>data_internal</span><span class='op'>)</span><span class='op'>)</span>,
+  V <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>delta</span>,
+  <span class='va'>samp_estim</span>,
+  <span class='va'>gn_cens_weights</span>,
+  <span class='va'>Qn_estim</span>,
+  <span class='va'>Hn_estim</span>,
+  fluctuation <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"standard"</span>, <span class='st'>"weighted"</span><span class='op'>)</span>,
+  max_iter <span class='op'>=</span> <span class='fl'>10</span>,
+  eif_reg_type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"hal"</span>, <span class='st'>"glm"</span><span class='op'>)</span>,
+  <span class='va'>samp_fit_args</span>,
+  ipcw_efficiency <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -161,23 +162,24 @@ Stochastic Shift Intervention</p>
     <tr>
       <th>data_internal</th>
       <td><p>A <code>data.table</code> constructed internally by a call to
-<code><a href='txshift.html'>txshift</a></code>. This contains most of the data for computing the TML
-estimator.</p></td>
+<code><a href='txshift.html'>txshift</a></code>. This contains most of the data for computing the
+targeted minimum loss (TML) estimator.</p></td>
     </tr>
     <tr>
-      <th>C</th>
+      <th>C_samp</th>
       <td><p>A <code>numeric</code> indicator for whether a given observation was
-subject to censoring, used to compute an IPCW-TMLE in cases where two-stage
-sampling is performed. Default assumes no censoring.</p></td>
+included in the second-stage sample, used to compute an IPC-weighted
+one-step estimator in cases where two-stage sampling is performed. Default
+assumes no censoring due to sampling.</p></td>
     </tr>
     <tr>
       <th>V</th>
       <td><p>The covariates that are used in determining the sampling procedure
 that gives rise to censoring. The default is <code>NULL</code> and corresponds to
 scenarios in which there is no censoring (in which case all values in the
-preceding argument <code>C</code> must be uniquely 1. To specify this, pass in a
+preceding argument <code>C_samp</code> must be 1. To specify this, pass in a
 NAMED <code>list</code> identifying variables amongst W, A, Y that are thought to
-have played a role in defining the sampling/censoring mechanism (C).</p></td>
+have played a role in defining the sampling mechanism.</p></td>
     </tr>
     <tr>
       <th>delta</th>
@@ -186,10 +188,14 @@ be used in defining the target parameter. This is defined with respect to
 the scale of the treatment (A).</p></td>
     </tr>
     <tr>
-      <th>ipcw_estim</th>
-      <td><p>An object providing the value of the censoring mechanism
+      <th>samp_estim</th>
+      <td><p>An object providing the value of the sampling mechanism
 evaluated across the full data. This object is passed in after being
-constructed by a call to the internal function <code><a href='est_ipcw.html'>est_ipcw</a></code>.</p></td>
+constructed by a call to the internal function <code><a href='est_samp.html'>est_samp</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>gn_cens_weights</th>
+      <td><p>TODO: document</p></td>
     </tr>
     <tr>
       <th>Qn_estim</th>
@@ -227,13 +233,13 @@ In this step, the efficient influence function (EIF) is regressed against
 covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).</p></td>
     </tr>
     <tr>
-      <th>ipcw_fit_args</th>
+      <th>samp_fit_args</th>
       <td><p>A <code>list</code> of arguments, all but one of which are
-passed to <code><a href='est_ipcw.html'>est_ipcw</a></code>. For details, consult the documentation
-for <code><a href='est_ipcw.html'>est_ipcw</a></code>. The first element (i.e., <code>fit_type</code>) is
+passed to <code><a href='est_samp.html'>est_samp</a></code>. For details, consult the documentation
+for <code><a href='est_samp.html'>est_samp</a></code>. The first element (i.e., <code>fit_type</code>) is
 used to determine how this regression is fit: "glm" for generalized linear
 model, "sl" for a Super Learner, and "external" for a user-specified input
-of the form produced by <code><a href='est_ipcw.html'>est_ipcw</a></code>.</p></td>
+of the form produced by <code><a href='est_samp.html'>est_samp</a></code>.</p></td>
     </tr>
     <tr>
       <th>ipcw_efficiency</th>

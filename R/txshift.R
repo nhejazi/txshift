@@ -240,7 +240,8 @@ txshift <- function(W,
   )
   g_cens_fit_type <-
     unlist(g_cens_fit_args[names(g_cens_fit_args) == "fit_type"],
-           use.names = FALSE)
+      use.names = FALSE
+    )
   Q_fit_type <- unlist(Q_fit_args[names(Q_fit_args) == "fit_type"],
     use.names = FALSE
   )
@@ -320,7 +321,8 @@ txshift <- function(W,
     } else if (g_exp_fit_type == "sl") {
       # reshapes list of args to make passing to do.call possible
       gn_exp_estim_args <- unlist(list(gn_exp_estim_in, g_exp_fit_args),
-                                  recursive = FALSE)
+        recursive = FALSE
+      )
     }
 
     # pass the relevant args for computing the propensity score
@@ -340,7 +342,8 @@ txshift <- function(W,
         fit_type = g_cens_fit_type
       )
       gn_cens_estim_args <- unlist(list(gn_cens_estim_in, g_cens_fit_args),
-                                   recursive = FALSE)
+        recursive = FALSE
+      )
 
       # invoke function to estimate the natural censoring mechanism
       gn_cens_estim <- do.call(est_g_cens, gn_cens_estim_args)
@@ -395,7 +398,6 @@ txshift <- function(W,
     # return output object created by the TML estimation routine
     tmle_fit$call <- call
     return(tmle_fit)
-
   } else if (estimator == "onestep") {
     # compute the efficient one-step estimator
     onestep_fit <- onestep_txshift(

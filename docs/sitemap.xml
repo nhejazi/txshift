@@ -22,10 +22,13 @@
     <loc>https://code.nimahejazi.org/txshift/reference/est_Q.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/txshift/reference/est_g.html</loc>
+    <loc>https://code.nimahejazi.org/txshift/reference/est_g_cens.html</loc>
   </url>
   <url>
-    <loc>https://code.nimahejazi.org/txshift/reference/est_ipcw.html</loc>
+    <loc>https://code.nimahejazi.org/txshift/reference/est_g_exp.html</loc>
+  </url>
+  <url>
+    <loc>https://code.nimahejazi.org/txshift/reference/est_samp.html</loc>
   </url>
   <url>
     <loc>https://code.nimahejazi.org/txshift/reference/fit_fluctuation.html</loc>

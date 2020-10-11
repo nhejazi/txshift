@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Estimate the Outcome Regression — est_Q • txshift</title>
+<title>Estimate the Outcome Mechanism — est_Q • txshift</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Estimate the Outcome Regression — est_Q" />
-<meta property="og:description" content="Estimate the Outcome Regression" />
+<meta property="og:title" content="Estimate the Outcome Mechanism — est_Q" />
+<meta property="og:description" content="Estimate the Outcome Mechanism" />
 
 
 
@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.5</span>
       </span>
     </div>
 
@@ -126,25 +126,26 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Estimate the Outcome Regression</h1>
+    <h1>Estimate the Outcome Mechanism</h1>
     <small class="dont-index">Source: <a href='https://github.com/nhejazi/txshift/blob/master/R/fit_mechanisms.R'><code>R/fit_mechanisms.R</code></a></small>
     <div class="hidden name"><code>est_Q.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Estimate the Outcome Regression</p>
+    <p>Estimate the Outcome Mechanism</p>
     </div>
 
-    <pre class="usage"><span class='fu'>est_Q</span>(
-  <span class='kw'>Y</span>,
-  <span class='kw'>A</span>,
-  <span class='kw'>W</span>,
-  delta = <span class='fl'>0</span>,
-  ipc_weights = <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='kw'>Y</span>)),
-  fit_type = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"sl"</span>, <span class='st'>"glm"</span>),
-  glm_formula = <span class='st'>"Y ~ ."</span>,
-  sl_learners = <span class='kw'>NULL</span>
-)</pre>
+    <pre class="usage"><span class='fu'>est_Q</span><span class='op'>(</span>
+  <span class='va'>Y</span>,
+  C_cens <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>Y</span><span class='op'>)</span><span class='op'>)</span>,
+  <span class='va'>A</span>,
+  <span class='va'>W</span>,
+  delta <span class='op'>=</span> <span class='fl'>0</span>,
+  samp_weights <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>Y</span><span class='op'>)</span><span class='op'>)</span>,
+  fit_type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"sl"</span>, <span class='st'>"glm"</span><span class='op'>)</span>,
+  glm_formula <span class='op'>=</span> <span class='st'>"Y ~ ."</span>,
+  sl_learners <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -154,8 +155,12 @@
       <td><p>A <code>numeric</code> vector of observed outcomes.</p></td>
     </tr>
     <tr>
+      <th>C_cens</th>
+      <td><p>A <code>numeric</code> vector of loss to follow-up indicators.</p></td>
+    </tr>
+    <tr>
       <th>A</th>
-      <td><p>A <code>numeric</code> vector of observed treatment values.</p></td>
+      <td><p>A <code>numeric</code> vector of observed exposure values.</p></td>
     </tr>
     <tr>
       <th>W</th>
@@ -164,13 +169,14 @@
     <tr>
       <th>delta</th>
       <td><p>A <code>numeric</code> indicating the magnitude of the shift to be
-computed for the treatment <code>A</code>. This is passed to the internal
+computed for the exposure <code>A</code>. This is passed to the internal
 <code><a href='shift_additive.html'>shift_additive</a></code> and is currently limited to additive shifts.</p></td>
     </tr>
     <tr>
-      <th>ipc_weights</th>
-      <td><p>A <code>numeric</code> vector of observation-level weights, as
-produced by the internal procedure to estimate the censoring mechanism.</p></td>
+      <th>samp_weights</th>
+      <td><p>A <code>numeric</code> vector of observation-level sampling
+weights, as produced by the internal procedure to estimate the two-phase
+sampling mechanism <code><a href='est_samp.html'>est_samp</a></code>.</p></td>
     </tr>
     <tr>
       <th>fit_type</th>
@@ -185,8 +191,8 @@ provided. Consult the documentation of <span class="pkg">sl3</span> for details.
     </tr>
     <tr>
       <th>glm_formula</th>
-      <td><p>A <code>character</code> corresponding to a <code>formula</code> to
-be used in fitting a generalized linear model via <code><a href='https://rdrr.io/r/stats/glm.html'>glm</a></code>.</p></td>
+      <td><p>A <code>character</code> giving a <code><a href='https://rdrr.io/r/stats/formula.html'>formula</a></code>
+for fitting a (generalized) linear model via <code><a href='https://rdrr.io/r/stats/glm.html'>glm</a></code>.</p></td>
     </tr>
     <tr>
       <th>sl_learners</th>
@@ -203,8 +209,9 @@ be used in fitting a generalized linear model via <code><a href='https://rdrr.io
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>Compute the outcome regression for the observed data, including
- with the shift imposed by the intervention. This returns the propensity
- score for the observed data (at A_i) and the shift (at A_i - delta).</p>
+ with the shift imposed by the intervention. This returns the outcome
+ regression for the observed data (at A) and under the counterfactual shift
+ shift (at A + delta).</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
