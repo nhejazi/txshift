@@ -24,6 +24,8 @@ knitr::opts_chunk$set(
 [![CRAN downloads](https://cranlogs.r-pkg.org/badges/txshift)](https://CRAN.R-project.org/package=txshift)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4070042.svg)](https://doi.org/10.5281/zenodo.4070042)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.02447/status.svg)](https://doi.org/10.21105/joss.02447)
 
 > Efficient Estimation of the Causal Effects of Stochastic Interventions
 
@@ -66,6 +68,17 @@ For standard use, we recommend installing the package from
 
 ```{r cran-installation, eval = FALSE}
 install.packages("txshift")
+```
+
+_Note:_ If `txshift` is installed from
+[CRAN](https://CRAN.R-project.org/package=txshift), the `sl3`, an enhancing
+dependency that allows ensemble machine learning to be used for nuisance
+parameter estimation, won't be included. We highly recommend additionally
+installing `sl3` from GitHub via
+[`remotes`](https://CRAN.R-project.org/package=remotes):
+
+```{r sl3-gh-master-installation, eval = FALSE}
+remotes::install_github("tlverse/sl3@master")
 ```
 
 For the latest features, install the most recent _stable version_  of `txshift`
@@ -187,15 +200,16 @@ prior to submitting a pull request.
 
 After using the `txshift` R package, please cite the following:
 
-        @article{hejazi2020efficient-biom,
+        @article{hejazi2020efficient,
           author = {Hejazi, Nima S and {van der Laan}, Mark J and Janes, Holly
             E and Gilbert, Peter B and Benkeser, David C},
           title = {Efficient nonparametric inference on the effects of
             stochastic interventions under two-phase sampling, with
             applications to vaccine efficacy trials},
-          year  = {2020},
-          url = {http://arxiv.org/abs/2003.13771},
-          journal = {Biometrics (Methodology)},
+          year = {2020},
+          doi = {10.1111/biom.13375},
+          url = {https://doi.org/10.1111/biom.13375},
+          journal = {Biometrics},
           publisher = {Wiley Online Library}
         }
 
@@ -204,7 +218,9 @@ After using the `txshift` R package, please cite the following:
           title = {{txshift}: Efficient estimation of the causal effects of
             stochastic interventions in {R}},
           year  = {2020},
-          journal = {under review at Journal of Open Source Software},
+          doi = {10.21105/joss.02447},
+          url = {https://10.21105.joss.02447},
+          journal = {Journal of Open Source Software},
           publisher = {The Open Journal}
         }
 
@@ -213,7 +229,8 @@ After using the `txshift` R package, please cite the following:
           title = {{txshift}: Efficient Estimation of the Causal Effects of
             Stochastic Interventions},
           year  = {2020},
-          url = {https://github.com/nhejazi/txshift},
+          doi = {10.5281/zenodo.4070042},
+          url = {https://CRAN.R-project.org/package=txshift},
           note = {R package version 0.3.4}
         }
 
@@ -237,9 +254,9 @@ After using the `txshift` R package, please cite the following:
 * [R/`haldensify`](https://github.com/nhejazi/haldensify) - A minimal package
   for estimating the conditional density treatment mechanism component of this
   parameter based on using the [highly adaptive
-  lasso](https://github.com/tlverse/hal9001) [@coyle2020hal9001] in combination
-  with a pooled hazard regression. This package implements the methodology
-  proposed by @diaz2011super.
+  lasso](https://github.com/tlverse/hal9001) [@coyle2020hal9001-rpkg;
+  @hejazi2020hal9001-joss] in combination with a pooled hazard regression. This
+  package implements a variant of the approach advocated by @diaz2011super.
 
 ---
 

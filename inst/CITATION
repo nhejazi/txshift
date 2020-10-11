@@ -1,6 +1,6 @@
 citHeader("Please cite the following works when using the 'txshift' software
-           package, including both the software tool and the article describing
-           the statistical methodology.")
+           package, including both the software tool and articles describing
+           the software package and statistical methodology.")
 
 year <- format(Sys.Date(), "%Y")
 note <- sprintf("R package version %s", meta$Version)
@@ -11,11 +11,20 @@ bibentry(bibtype = "Manual",
                     person("David", "Benkeser", "C")),
          year = year,
          note = note,
-         doi = "",
-         url = "https://github.com/nhejazi/txshift")
+         doi = "10.5281/zenodo.4070042",
+         url = "https://CRAN.R-project.org/package=txshift")
 
 bibentry(bibtype = "Article",
-         journal = "Biometrics (Methodology)",
+         title = "{txshift}: Efficient estimation of the causal effects of stochastic interventions in {R}",
+         author = c(person("Nima", "Hejazi", "S"),
+                    person("David", "Benkeser", "C")),
+         year = "2020",
+         journal = "Journal of Open Source Software",
+         publisher = "The Open Journal",
+         doi = "10.21105.joss.02447",
+         url = "https://doi.org/10.21105.joss.02447")
+
+bibentry(bibtype = "Article",
          title = "Efficient nonparametric inference on the effects of stochastic interventions under two-phase sampling, with applications to vaccine efficacy trials",
          author = c(person("Nima", "Hejazi", "S"),
                     person("Mark", "van der Laan", "J"),
@@ -23,5 +32,7 @@ bibentry(bibtype = "Article",
                     person("Peter", "Gilbert", "B"),
                     person("David", "Benkeser", "C")),
          year = "2020",
-         doi = "",
-         url = "https://arxiv.org/abs/2003.13771")
+         journal = "Biometrics",
+         publisher = "Wiley Online Library",
+         doi = "10.1111/biom.13375",
+         url = "https://doi.org/10.1111/biom.13375")
