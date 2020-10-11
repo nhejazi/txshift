@@ -1,0 +1,11 @@
+pandoc: '2.5'
+pkgdown: 1.6.1
+pkgdown_sha: ~
+articles:
+  intro_txshift: intro_txshift.html
+  ipcw_txshift: ipcw_txshift.html
+last_built: 2020-10-11T01:07Z
+urls:
+  reference: https://code.nimahejazi.org/txshift/reference
+  article: https://code.nimahejazi.org/txshift/articles
+
