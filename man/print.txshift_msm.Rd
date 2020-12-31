@@ -12,8 +12,8 @@
 \item{...}{Other options (not currently used).}
 }
 \value{
-None. Called for the side effect of printing particular slots of
- objects of class \code{txshift_msm}.
+None. Called for the side effect of printing an informative summary
+ of slots of objects of class \code{txshift_msm}.
 }
 \description{
 Print Method for Marginal Structural Models

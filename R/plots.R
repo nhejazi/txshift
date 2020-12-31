@@ -81,21 +81,50 @@ plot.txshift_msm <- function(x, ...) {
     )
   }
 
+  # error bars for marginal CIs but band for simultaneous CIs
+  if (FALSE) {
+    if (x$ci_type == "marginal") {
+      geom_ci <- ggplot2::geom_errorbar(
+        data = x[["msm_data"]],
+        ggplot2::aes_string(
+          ymin = "ci_lwr",
+          ymax = "ci_upr"
+        ),
+        #position = "dodge",
+        linetype = "dotted",
+        width = 0.05
+      )
+    } else if (x$ci_type == "simultaneous") {
+      geom_ci <- ggplot2::geom_ribbon(
+        data = x[["msm_data"]],
+        ggplot2::aes_string(
+          ymin = "ci_lwr",
+          ymax = "ci_upr"
+        ),
+        fill = "grey",
+        alpha = 0.3
+      )
+    }
+  }
+
   # create plot
   p_msm <- ggplot2::ggplot(
     data = x[["msm_data"]],
     ggplot2::aes_string("x", "y")
   ) +
+    #geom_ci +
     ggplot2::geom_point(size = 3, alpha = 0.75) +
-    ggplot2::geom_errorbar(
-      ggplot2::aes_string(
-        ymin = "ci_lwr",
-        ymax = "ci_upr"
-      ),
-      position = "dodge", linetype = "dotted",
-      width = 0.05
-    ) +
-    geom_msm +
+  ggplot2::geom_errorbar(
+        data = x[["msm_data"]],
+        ggplot2::aes_string(
+          ymin = "ci_lwr",
+          ymax = "ci_upr"
+        ),
+        #position = "dodge",
+        linetype = "dotted",
+        width = 0.05
+      ) +
+  geom_msm +
     ggplot2::labs(
       x = latex2exp::TeX("Shift in treatment $\\delta$"),
       y = latex2exp::TeX("Counterfactual mean $EY_{A + \\delta(W)}$"),

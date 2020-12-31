@@ -129,9 +129,6 @@ msm_vimshift <- function(W,
   # make sure more than one parameter is to be estimated for trend test
   assertthat::assert_that(length(delta_grid) > 1)
 
-  # multiplier for CI construction
-  ci_mult <- c(1, -1) * stats::qnorm((1 - ci_level) / 2)
-
   # fit TML or one-step estimator for each value of shift in the grid
   est_over_grid <-
     lapply(delta_grid, function(shift) {
@@ -140,17 +137,27 @@ msm_vimshift <- function(W,
         delta = shift, estimator = estimator,
         ...
       )
-      est_with_ci <- stats::confint(est)
-      return(list(
-        est_with_ci = est_with_ci,
-        eif_from_est = est[["eif"]]
-      ))
     })
 
   # matrix of EIF(O_i) values and estimates across each parameter estimated
-  eif_mat <- do.call(cbind, lapply(est_over_grid, `[[`, "eif_from_est"))
-  psi_with_ci <- do.call(rbind, lapply(est_over_grid, `[[`, "est_with_ci"))
-  psi_vec <- psi_with_ci[, 2]
+  eif_mat <- do.call(cbind, lapply(est_over_grid, `[[`, "eif"))
+  psi_vec <- do.call(c, lapply(est_over_grid, `[[`, "psi"))
+
+  # multiplier for CI construction: simultaneous confidence interval
+  if (ci_type == "simultaneous" && (ncol(eif_mat) > 1)) {
+    # compute correlation based on covariance of EIF
+    var_eif <- stats::cov(eif_mat)
+    rho_eif <- var_eif / sqrt(tcrossprod(diag(var_eif)))
+    mvt_eif <- mvtnorm::qmvnorm(ci_level, tail = "both", corr = rho_eif)
+    # NOTE: c(-1, 1) instead of c(1, -1): mvtnorm call differs from qnorm
+    ci_mult <- c(-1, 1) * mvt_eif$quantile
+  } else {
+    ci_mult <- c(1, -1) * stats::qnorm((1 - ci_level) / 2)
+  }
+  # create confidence intervals, overriding default multiplier
+  wald_cis <- do.call(rbind, lapply(est_over_grid, function(est) {
+    stats::confint(est, ci_mult = ci_mult)
+  }))
 
   # set weights to be the inverse of the variance of each TML estimate
   if (weighting == "variance") {
@@ -182,17 +189,6 @@ msm_vimshift <- function(W,
   msm_var <- diag(stats::cov(msm_eif))
   msm_se <- sqrt(msm_var / nrow(msm_eif))
 
-  # simultaneous confidence interval
-  if (ci_type == "simultaneous" && (ncol(eif_mat) > 1)) {
-    # compute correlation based on covariance of EIF
-    var_eif <- stats::cov(eif_mat)
-    rho_eif <- var_eif / sqrt(tcrossprod(diag(var_eif)))
-    mvt_eif <- mvtnorm::qmvnorm(ci_level, tail = "both", corr = rho_eif)
-    # for simultaneous interval, update the quantiles for the CI
-    # NOTE: c(-1, 1) instead of c(1, -1): mvtnorm call differs from qnorm
-    ci_mult <- c(-1, 1) * mvt_eif$quantile
-  }
-
   # build confidence intervals and hypothesis tests for EIF(msm)
   ci_msm_param <- msm_se %*% t(ci_mult) + msm_param
   pval_msm_param <- 2 * stats::pnorm(-abs(msm_param / msm_se))
@@ -201,9 +197,9 @@ msm_vimshift <- function(W,
   vimshift_out <- data.table::as.data.table(
     list(
       delta = delta_grid,
-      ci_lwr = psi_with_ci[, 1],
+      ci_lwr = wald_cis[, 1],
       psi = psi_vec,
-      ci_upr = psi_with_ci[, 3]
+      ci_upr = wald_cis[, 3]
     )
   )
 
@@ -238,7 +234,11 @@ msm_vimshift <- function(W,
     msm_est = msm_out,
     msm_type = msm_form[["type"]],
     msm_data = msm_data,
-    msm_fit = msm_fit
+    msm_fit = msm_fit,
+    estimator = estimator,
+    delta_grid = delta_grid,
+    ci_type = ci_type,
+    ci_level = ci_level
   )
   class(out) <- "txshift_msm"
   return(out)

@@ -134,7 +134,8 @@ onestep_txshift <- function(data_internal,
         iter_res = NULL,
         n_iter = 0,
         estimator = "onestep",
-        outcome = list(data_internal$Y)
+        outcome = list(data_internal$Y),
+        delta = delta
       ),
       recursive = FALSE
     )
@@ -158,7 +159,8 @@ onestep_txshift <- function(data_internal,
         iter_res = NULL,
         n_iter = 0,
         estimator = "onestep",
-        outcome = list(data_internal$Y)
+        outcome = list(data_internal$Y),
+        delta = delta
       ),
       recursive = FALSE
     )

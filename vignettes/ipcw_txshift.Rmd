@@ -137,7 +137,7 @@ tmle_hal_shift_1 <- txshift(
   Q_fit_args = list(fit_type = "glm", glm_formula = "Y ~ ."),
   eif_reg_type = "glm"
 )
-summary(tmle_hal_shift_1)
+tmle_hal_shift_1
 ```
 
 When computing any such TML estimator, we may, of course, vary the regressions
@@ -159,7 +159,7 @@ tmle_hal_shift_2 <- txshift(
   Q_fit_args = list(fit_type = "glm", glm_formula = "Y ~ ."),
   eif_reg_type = "glm"
                            )
-summary(tmle_hal_shift_2)
+tmle_hal_shift_2
 ```
 
 ### Interlude: Constructing Optimal Stacked Regressions with `sl3`
@@ -212,7 +212,7 @@ tmle_sl_shift_1 <- txshift(
   Q_fit_args = list(fit_type = "sl", sl_learners = sl_learner),
   eif_reg_type = "glm"
 )
-summary(tmle_sl_shift_1)
+tmle_sl_shift_1
 ```
 
 As before, we may vary the regression for the submodel fluctuation procedure by
@@ -233,7 +233,7 @@ tmle_sl_shift_2 <- txshift(
   Q_fit_args = list(fit_type = "sl", sl_learners = sl_learner),
   eif_reg_type = "glm"
 )
-summary(tmle_sl_shift_2)
+tmle_sl_shift_2
 ```
 
 ### Estimating _Inefficient_ IPCW-TMLEs with Optimal Stacked Regressions
@@ -260,7 +260,7 @@ tmle_sl_ineffic <- txshift(
   Q_fit_args = list(fit_type = "sl", sl_learners = sl_learner),
   ipcw_efficiency = FALSE
 )
-summary(tmle_sl_ineffic)
+tmle_sl_ineffic
 ```
 
 Please note that in such cases, the value of `n_iter` in the resulting output
@@ -329,7 +329,7 @@ tmle_shift_spec <- txshift(
   Qn_fit_ext = Qn_out,
   eif_reg_type = "glm"
 )
-summary(tmle_shift_spec)
+tmle_shift_spec
 ```
 
 ---

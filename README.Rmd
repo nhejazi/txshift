@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 
 # R/`txshift`
 
-[![Travis-CI Build Status](https://travis-ci.org/nhejazi/txshift.svg?branch=master)](https://travis-ci.org/nhejazi/txshift)
+[![Travis-CI Build Status](https://travis-ci.com/nhejazi/txshift.svg?branch=master)](https://travis-ci.com/nhejazi/txshift)
 [![AppVeyor Build  Status](https://ci.appveyor.com/api/projects/status/github/nhejazi/txshift?branch=master&svg=true)](https://ci.appveyor.com/project/nhejazi/txshift)
 [![Coverage Status](https://img.shields.io/codecov/c/github/nhejazi/txshift/master.svg)](https://codecov.io/github/nhejazi/txshift?branch=master)
 [![CRAN](http://www.r-pkg.org/badges/version/txshift)](http://www.r-pkg.org/pkg/txshift)
@@ -127,7 +127,7 @@ tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                 Q_fit_args = list(fit_type = "glm",
                                   glm_formula = "Y ~ .")
                )
-summary(tmle)
+tmle
 
 # fit a full-data one-step estimator for comparison (again, no sampling)
 os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
@@ -140,7 +140,7 @@ os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
               Q_fit_args = list(fit_type = "glm",
                                 glm_formula = "Y ~ .")
              )
-summary(os)
+os
 
 # fit an IPCW-TMLE to account for the two-phase sampling process
 ipcw_tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
@@ -157,7 +157,7 @@ ipcw_tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                                        glm_formula = "Y ~ ."),
                      eif_reg_type = "glm"
                     )
-summary(ipcw_tmle)
+ipcw_tmle
 
 # compare with an IPCW-agumented one-step estimator under two-phase sampling
 ipcw_os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
@@ -173,7 +173,7 @@ ipcw_os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                                      glm_formula = "Y ~ ."),
                    eif_reg_type = "glm"
                   )
-summary(ipcw_os)
+ipcw_os
 ```
 
 ---

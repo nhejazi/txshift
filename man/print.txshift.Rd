@@ -4,16 +4,19 @@
 \alias{print.txshift}
 \title{Print Method for Counterfactual Mean of Stochastic Shift Intervention}
 \usage{
-\method{print}{txshift}(x, ...)
+\method{print}{txshift}(x, ..., ci_level = 0.95)
 }
 \arguments{
 \item{x}{An object of class \code{txshift}.}
 
 \item{...}{Other options (not currently used).}
+
+\item{ci_level}{A \code{numeric} indicating the level of the confidence
+interval to be computed.}
 }
 \value{
-None. Called for the side effect of printing particular slots of
- objects of class \code{txshift}.
+None. Called for the side effect of printing an informative summary
+ of slots of objects of class \code{txshift}.
 }
 \description{
 Print Method for Counterfactual Mean of Stochastic Shift Intervention

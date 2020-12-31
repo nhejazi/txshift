@@ -4,7 +4,7 @@
 \alias{confint.txshift}
 \title{Confidence Intervals for Counterfactual Mean Under Stochastic Intervention}
 \usage{
-\method{confint}{txshift}(object, parm = seq_len(object$psi), level = 0.95, ...)
+\method{confint}{txshift}(object, parm = seq_len(object$psi), level = 0.95, ..., ci_mult = NULL)
 }
 \arguments{
 \item{object}{An object of class \code{txshift}, as produced by invoking
@@ -18,6 +18,10 @@ for which to return confidence intervals.}
 interval to be computed.}
 
 \item{...}{Other arguments. Not currently used.}
+
+\item{ci_mult}{Pre-computed multiplier for generating confidence intervals.
+The default of \code{NULL} should generally NOT be changed and is only used
+by the internal machinery for creating simultaneous confidence bands.}
 }
 \value{
 A named \code{numeric} vector containing the parameter estimate from

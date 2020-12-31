@@ -163,7 +163,8 @@ tmle_txshift <- function(data_internal,
         iter_res = list(conv_res),
         n_iter = n_steps,
         estimator = "tmle",
-        outcome = list(data_internal$Y)
+        outcome = list(data_internal$Y),
+        delta = delta
       ),
       recursive = FALSE
     )
@@ -197,7 +198,8 @@ tmle_txshift <- function(data_internal,
         iter_res = NULL,
         n_iter = n_steps,
         estimator = "tmle",
-        outcome = list(data_internal$Y)
+        outcome = list(data_internal$Y),
+        delta = delta
       ),
       recursive = FALSE
     )

@@ -48,8 +48,10 @@ Imports:
     lspline,
     ggplot2,
     tibble,
+    scales,
     latex2exp,
-    Rdpack
+    Rdpack,
+    cli
 Suggests:
     testthat,
     knitr,
