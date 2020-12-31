@@ -154,6 +154,7 @@ msm_vimshift <- function(W,
   } else {
     ci_mult <- c(1, -1) * stats::qnorm((1 - ci_level) / 2)
   }
+
   # create confidence intervals, overriding default multiplier
   wald_cis <- do.call(rbind, lapply(est_over_grid, function(est) {
     stats::confint(est, ci_mult = ci_mult)

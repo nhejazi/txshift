@@ -57,7 +57,6 @@
 #' }
 #' @export
 plot.txshift_msm <- function(x, ...) {
-  #browser()
   # build geom for MSM in plot
   if (x$.msm_type == "piecewise") {
     geom_msm <- ggplot2::geom_smooth(
@@ -71,41 +70,39 @@ plot.txshift_msm <- function(x, ...) {
   } else if (x$.msm_type == "linear") {
     intercept <- x$msm_est$param_est[1]
     slope <- x$msm_est$param_est[2]
+    delta_grid <- x$.delta_grid
     geom_msm <- ggplot2::geom_segment(
       ggplot2::aes(
-        x = min(x$.delta_grid),
-        xend = max(x$.delta_grid),
-        y = intercept + min(x$.delta_grid) * slope,
-        yend = intercept + max(x$.delta_grid) * slope
+        x = min(delta_grid),
+        xend = max(delta_grid),
+        y = intercept + min(delta_grid) * slope,
+        yend = intercept + max(delta_grid) * slope
       ),
       size = 0.5, color = "black", linetype = "dashed"
     )
   }
 
   # error bars for marginal CIs but band for simultaneous CIs
-  if (FALSE) {
-    if (x$ci_type == "marginal") {
-      geom_ci <- ggplot2::geom_errorbar(
-        data = x$.msm_data,
-        ggplot2::aes_string(
-          ymin = "ci_lwr",
-          ymax = "ci_upr"
-        ),
-        #position = "dodge",
-        linetype = "dotted",
-        width = 0.05
-      )
-    } else if (x$ci_type == "simultaneous") {
-      geom_ci <- ggplot2::geom_ribbon(
-        data = x$.msm_data,
-        ggplot2::aes_string(
-          ymin = "ci_lwr",
-          ymax = "ci_upr"
-        ),
-        fill = "grey",
-        alpha = 0.3
-      )
-    }
+  if (x$.ci_type == "marginal") {
+    geom_ci <- ggplot2::geom_errorbar(
+      data = x$.msm_data,
+      ggplot2::aes_string(
+        ymin = "ci_lwr",
+        ymax = "ci_upr"
+      ),
+      linetype = "dotted",
+      width = 0.05
+    )
+  } else if (x$.ci_type == "simultaneous") {
+    geom_ci <- ggplot2::geom_ribbon(
+      data = x$.msm_data,
+      ggplot2::aes_string(
+        ymin = "ci_lwr",
+        ymax = "ci_upr"
+      ),
+      fill = "grey",
+      alpha = 0.3
+    )
   }
 
   # create plot
@@ -113,19 +110,9 @@ plot.txshift_msm <- function(x, ...) {
     data = x$.msm_data,
     ggplot2::aes_string("x", "y")
   ) +
-    #geom_ci +
+    geom_msm +
     ggplot2::geom_point(size = 3, alpha = 0.75) +
-  ggplot2::geom_errorbar(
-        data = x$.msm_data,
-        ggplot2::aes_string(
-          ymin = "ci_lwr",
-          ymax = "ci_upr"
-        ),
-        #position = "dodge",
-        linetype = "dotted",
-        width = 0.05
-      ) +
-  geom_msm +
+    geom_ci +
     ggplot2::labs(
       x = latex2exp::TeX("Shift in treatment $\\delta$"),
       y = latex2exp::TeX("Counterfactual mean $EY_{A + \\delta(W)}$"),

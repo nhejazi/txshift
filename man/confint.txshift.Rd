@@ -19,7 +19,7 @@ interval to be computed.}
 
 \item{...}{Other arguments. Not currently used.}
 
-\item{ci_mult}{Pre-computed multiplier for generating confidence intervals.
+\item{ci_mult}{Pre-computed multipliers for generating confidence intervals.
 The default of \code{NULL} should generally NOT be changed and is only used
 by the internal machinery for creating simultaneous confidence bands.}
 }

@@ -96,13 +96,13 @@ print.txshift_msm <- function(x, ...) {
   cli::cli_text("{.strong MSM ({x$.msm_type}) for Grid of Shifted Treatments}")
   cli::cli_text(cat("    "), "{.strong Intervention Grid}: ",
                 cli::col_red("Treatment + ({x$.delta_grid})"))
-  if (msm$.msm_type == "piecewise") {
-    cli::cli_text(cat("    "), "{.strong Knot point}: ",
+  if (x$.msm_type == "piecewise") {
+    cli::cli_text(cat("    "), "{.strong Knot Point}: ",
                   cli::col_blue("Shift = {x$.msm_knot}"))
   }
   cat("\n")
   cli::cli_text("{.strong txshift MSM Estimator}: {x$estimator}")
-  if (msm$.msm_type == "piecewise") {
+  if (x$.msm_type == "piecewise") {
     cli::cli_text(cat("    "), "{.strong Estimated Slopes}:
                   {round(x$msm_est$param_est[2], 4)},
                   {round(x$msm_est$param_est[3], 4)}")
