@@ -232,13 +232,14 @@ msm_vimshift <- function(W,
   out <- list(
     param_est = vimshift_out,
     msm_est = msm_out,
-    msm_type = msm_form[["type"]],
-    msm_data = msm_data,
+    .msm_type = msm_form[["type"]],
+    .msm_knot = msm_form[["knot"]],
+    .msm_data = msm_data,
     msm_fit = msm_fit,
     estimator = estimator,
-    delta_grid = delta_grid,
-    ci_type = ci_type,
-    ci_level = ci_level
+    .delta_grid = delta_grid,
+    .ci_type = ci_type,
+    .ci_level = ci_level
   )
   class(out) <- "txshift_msm"
   return(out)

@@ -57,25 +57,26 @@
 #' }
 #' @export
 plot.txshift_msm <- function(x, ...) {
+  #browser()
   # build geom for MSM in plot
-  if (x[["msm_type"]] == "piecewise") {
+  if (x$.msm_type == "piecewise") {
     geom_msm <- ggplot2::geom_smooth(
       method = "lm",
-      formula = stats::formula(x[["msm_fit"]]),
+      formula = stats::formula(x$msm_fit),
       se = FALSE,
       color = "black",
       size = 0.5,
       linetype = "dashed"
     )
-  } else if (x[["msm_type"]] == "linear") {
-    delta_grid <- x[["param_est"]][["delta"]]
-    intercept <- x[["msm_est"]][["param_est"]][1]
-    slope <- x[["msm_est"]][["param_est"]][2]
+  } else if (x$.msm_type == "linear") {
+    intercept <- x$msm_est$param_est[1]
+    slope <- x$msm_est$param_est[2]
     geom_msm <- ggplot2::geom_segment(
       ggplot2::aes(
-        x = min(delta_grid), xend = max(delta_grid),
-        y = intercept + min(delta_grid) * slope,
-        yend = intercept + max(delta_grid) * slope
+        x = min(x$.delta_grid),
+        xend = max(x$.delta_grid),
+        y = intercept + min(x$.delta_grid) * slope,
+        yend = intercept + max(x$.delta_grid) * slope
       ),
       size = 0.5, color = "black", linetype = "dashed"
     )
@@ -85,7 +86,7 @@ plot.txshift_msm <- function(x, ...) {
   if (FALSE) {
     if (x$ci_type == "marginal") {
       geom_ci <- ggplot2::geom_errorbar(
-        data = x[["msm_data"]],
+        data = x$.msm_data,
         ggplot2::aes_string(
           ymin = "ci_lwr",
           ymax = "ci_upr"
@@ -96,7 +97,7 @@ plot.txshift_msm <- function(x, ...) {
       )
     } else if (x$ci_type == "simultaneous") {
       geom_ci <- ggplot2::geom_ribbon(
-        data = x[["msm_data"]],
+        data = x$.msm_data,
         ggplot2::aes_string(
           ymin = "ci_lwr",
           ymax = "ci_upr"
@@ -109,13 +110,13 @@ plot.txshift_msm <- function(x, ...) {
 
   # create plot
   p_msm <- ggplot2::ggplot(
-    data = x[["msm_data"]],
+    data = x$.msm_data,
     ggplot2::aes_string("x", "y")
   ) +
     #geom_ci +
     ggplot2::geom_point(size = 3, alpha = 0.75) +
   ggplot2::geom_errorbar(
-        data = x[["msm_data"]],
+        data = x$.msm_data,
         ggplot2::aes_string(
           ymin = "ci_lwr",
           ymax = "ci_upr"
@@ -130,8 +131,8 @@ plot.txshift_msm <- function(x, ...) {
       y = latex2exp::TeX("Counterfactual mean $EY_{A + \\delta(W)}$"),
       title = "Estimated mean counterfactual outcome under shifted treatment",
       subtitle = paste(
-        "with marginal confidence intervals and",
-        x[["msm_type"]], "working MSM for summarization"
+        "with", x$.ci_type, "confidence intervals and",
+        x$.msm_type, "working MSM for summarization"
       )
     ) +
     ggplot2::theme_bw()

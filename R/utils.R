@@ -42,9 +42,9 @@ print.txshift <- function(x, ..., ci_level = 0.95) {
   ci <- stats::confint(x, level = ci_level)
 
   # construct and print output
-  cli::cli_text("{.strong Counterfactual Mean for Shifted Treatment}")
-  cli::cli_text(cat("    "), "{.strong Intervention}: Treatment + ",
-                cli::col_red("{x$delta}"))
+  cli::cli_text("{.strong Counterfactual Mean of Shifted Treatment}")
+  cli::cli_text(cat("    "), "{.strong Intervention}: ",
+                cli::col_red("Treatment + {x$.delta}"))
   cat("\n")
   cli::cli_text("{.strong txshift Estimator}: {x$estimator}")
   cli::cli_text(cat("    "), "{.strong Estimate}: {round(x$psi, 4)}")
@@ -93,24 +93,41 @@ print.txshift <- function(x, ..., ci_level = 0.95) {
 #' @export
 print.txshift_msm <- function(x, ...) {
   # construct and print output
-  cli::cli_text("{.strong {x$msm_type} MSM over Grid of Shifts in Treatment}")
-  cli::cli_text(cat("    "), "{.strong Intervention Grid}: Treatment + (",
-                cli::col_red("{x$delta_grid}"), ")")
-  if (x[["msm_type"]] == "piecewise") {
+  cli::cli_text("{.strong MSM ({x$.msm_type}) for Grid of Shifted Treatments}")
+  cli::cli_text(cat("    "), "{.strong Intervention Grid}: ",
+                cli::col_red("Treatment + ({x$.delta_grid})"))
+  if (msm$.msm_type == "piecewise") {
     cli::cli_text(cat("    "), "{.strong Knot point}: ",
-                  cli::col_blue("{x$msm_knot}"))
+                  cli::col_blue("Shift = {x$.msm_knot}"))
   }
   cat("\n")
   cli::cli_text("{.strong txshift MSM Estimator}: {x$estimator}")
-  cli::cli_text(cat("    "), "{.strong Estimated Slope}:
-                {round(x$msm_est$param_est[2], 4)}")
-  cli::cli_text(cat("    "), "{.strong Std. Error}:
-                {round(x$msm_est$param_se[2], 4)}")
-  cli::cli_text(cat("    "), "{.strong {scales::percent(x$ci_level)} CI}:
-                [{round(x$msm_est$ci_lwr[2], 4)},
-                 {round(x$msm_est$ci_upr[2], 4)}]")
-  cli::cli_text(cat("    "), "{.strong p-value (vs. no trend)}:
-                {round(x$msm_est$p_value[2], 4)}")
+  if (msm$.msm_type == "piecewise") {
+    cli::cli_text(cat("    "), "{.strong Estimated Slopes}:
+                  {round(x$msm_est$param_est[2], 4)},
+                  {round(x$msm_est$param_est[3], 4)}")
+    cli::cli_text(cat("    "), "{.strong Std. Errors}:
+                  {round(x$msm_est$param_se[2], 4)},
+                  {round(x$msm_est$param_se[3], 4)}")
+    cli::cli_text(cat("    "), "{.strong {scales::percent(x$.ci_level)} CIs}:
+                  [{round(x$msm_est$ci_lwr[2], 4)},
+                   {round(x$msm_est$ci_upr[2], 4)}],
+                  [{round(x$msm_est$ci_lwr[3], 4)},
+                   {round(x$msm_est$ci_upr[3], 4)}]")
+    cli::cli_text(cat("    "), "{.strong p-values (vs. no trend)}:
+                  {round(x$msm_est$p_value[2], 4)},
+                  {round(x$msm_est$p_value[3], 4)}")
+  } else {
+    cli::cli_text(cat("    "), "{.strong Estimated Slope}:
+                  {round(x$msm_est$param_est[2], 4)}")
+    cli::cli_text(cat("    "), "{.strong Std. Error}:
+                  {round(x$msm_est$param_se[2], 4)}")
+    cli::cli_text(cat("    "), "{.strong {scales::percent(x$.ci_level)} CI}:
+                  [{round(x$msm_est$ci_lwr[2], 4)},
+                   {round(x$msm_est$ci_upr[2], 4)}]")
+    cli::cli_text(cat("    "), "{.strong p-value (vs. no trend)}:
+                  {round(x$msm_est$p_value[2], 4)}")
+  }
 }
 
 ###############################################################################

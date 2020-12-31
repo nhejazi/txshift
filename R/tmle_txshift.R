@@ -160,11 +160,11 @@ tmle_txshift <- function(data_internal,
         psi = as.numeric(unlist(conv_res[n_steps, "psi"])),
         var = as.numeric(unlist(conv_res[n_steps, "var"])),
         eif = list(eif_ipcw),
-        iter_res = list(conv_res),
+        .iter_res = list(conv_res),
         n_iter = n_steps,
         estimator = "tmle",
-        outcome = list(data_internal$Y),
-        delta = delta
+        .outcome = list(data_internal$Y),
+        .delta = delta
       ),
       recursive = FALSE
     )
@@ -195,11 +195,11 @@ tmle_txshift <- function(data_internal,
         psi = tmle_eif_out[["psi"]],
         var = tmle_eif_out[["var"]],
         eif = list(tmle_eif_out[["eif"]]),
-        iter_res = NULL,
+        .iter_res = NULL,
         n_iter = n_steps,
         estimator = "tmle",
-        outcome = list(data_internal$Y),
-        delta = delta
+        .outcome = list(data_internal$Y),
+        .delta = delta
       ),
       recursive = FALSE
     )

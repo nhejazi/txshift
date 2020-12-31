@@ -131,11 +131,11 @@ onestep_txshift <- function(data_internal,
         var = eif_var,
         eif = list(eif_ipcw),
         os_ipcw_eif$eif_eval,
-        iter_res = NULL,
+        .iter_res = NULL,
         n_iter = 0,
         estimator = "onestep",
-        outcome = list(data_internal$Y),
-        delta = delta
+        .outcome = list(data_internal$Y),
+        .delta = delta
       ),
       recursive = FALSE
     )
@@ -156,11 +156,11 @@ onestep_txshift <- function(data_internal,
         psi = os_eif_out[["psi"]],
         var = os_eif_out[["var"]],
         eif = list(os_eif_out[["eif"]]),
-        iter_res = NULL,
+        .iter_res = NULL,
         n_iter = 0,
         estimator = "onestep",
-        outcome = list(data_internal$Y),
-        delta = delta
+        .outcome = list(data_internal$Y),
+        .delta = delta
       ),
       recursive = FALSE
     )
