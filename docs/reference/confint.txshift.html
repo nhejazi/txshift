@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -109,7 +109,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/nhejazi/txshift/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -136,7 +136,7 @@
     </div>
 
     <pre class="usage"><span class='co'># S3 method for txshift</span>
-<span class='fu'><a href='https://rdrr.io/r/stats/confint.html'>confint</a></span><span class='op'>(</span><span class='va'>object</span>, parm <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_len</a></span><span class='op'>(</span><span class='va'>object</span><span class='op'>$</span><span class='va'>psi</span><span class='op'>)</span>, level <span class='op'>=</span> <span class='fl'>0.95</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+<span class='fu'><a href='https://rdrr.io/r/stats/confint.html'>confint</a></span><span class='op'>(</span><span class='va'>object</span>, parm <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_len</a></span><span class='op'>(</span><span class='va'>object</span><span class='op'>$</span><span class='va'>psi</span><span class='op'>)</span>, level <span class='op'>=</span> <span class='fl'>0.95</span>, <span class='va'>...</span>, ci_mult <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -160,6 +160,12 @@ interval to be computed.</p></td>
     <tr>
       <th>...</th>
       <td><p>Other arguments. Not currently used.</p></td>
+    </tr>
+    <tr>
+      <th>ci_mult</th>
+      <td><p>Pre-computed multipliers for generating confidence intervals.
+The default of <code>NULL</code> should generally NOT be changed and is only used
+by the internal machinery for creating simultaneous confidence bands.</p></td>
     </tr>
     </table>
 

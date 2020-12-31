@@ -55,7 +55,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -84,7 +84,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/nhejazi/txshift/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -121,25 +121,25 @@
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p>For standard use, we recommend installing the package from <a href="https://CRAN.R-project.org/package=txshift">CRAN</a> via</p>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"txshift"</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"txshift"</span><span class="op">)</span></code></pre></div>
 <p><em>Note:</em> If <code>txshift</code> is installed from <a href="https://CRAN.R-project.org/package=txshift">CRAN</a>, the <code>sl3</code>, an enhancing dependency that allows ensemble machine learning to be used for nuisance parameter estimation, won’t be included. We highly recommend additionally installing <code>sl3</code> from GitHub via <a href="https://CRAN.R-project.org/package=remotes"><code>remotes</code></a>:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"tlverse/sl3@master"</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"tlverse/sl3@master"</span><span class="op">)</span></code></pre></div>
 <p>For the latest features, install the most recent <em>stable version</em> of <code>txshift</code> from GitHub via <a href="https://CRAN.R-project.org/package=remotes"><code>remotes</code></a>:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"nhejazi/txshift@master"</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"nhejazi/txshift@master"</span><span class="op">)</span></code></pre></div>
 <p>To contribute, install the <em>development version</em> of <code>txshift</code> from GitHub via <a href="https://CRAN.R-project.org/package=remotes"><code>remotes</code></a>:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit">
-<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"nhejazi/txshift@devel"</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"nhejazi/txshift@devel"</span><span class="op">)</span></code></pre></div>
 <hr>
 </div>
 <div id="example" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example" class="anchor"></a>Example</h2>
 <p>To illustrate how <code>txshift</code> may be used to ascertain the effect of a treatment, consider the following example:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit">
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/nhejazi/txshift">txshift</a></span><span class="op">)</span>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/nhejazi/txshift">txshift</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/nhejazi/haldensify">haldensify</a></span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">429153</span><span class="op">)</span>
 
@@ -163,10 +163,9 @@
                 Q_fit_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>fit_type <span class="op">=</span> <span class="st">"glm"</span>,
                                   glm_formula <span class="op">=</span> <span class="st">"Y ~ ."</span><span class="op">)</span>
                <span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">tmle</span><span class="op">)</span>
-<span class="co">#&gt;     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator     n_iter </span>
-<span class="co">#&gt;     0.7474     0.7782     0.8061      2e-04 7.0199e-11       tmle          0</span>
-
+<span class="va">tmle</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
 <span class="co"># fit a full-data one-step estimator for comparison (again, no sampling)</span>
 <span class="va">os</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/txshift.html">txshift</a></span><span class="op">(</span>W <span class="op">=</span> <span class="va">W</span>, A <span class="op">=</span> <span class="va">A</span>, Y <span class="op">=</span> <span class="va">Y</span>, delta <span class="op">=</span> <span class="fl">0.5</span>,
               estimator <span class="op">=</span> <span class="st">"onestep"</span>,
@@ -178,12 +177,9 @@
               Q_fit_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>fit_type <span class="op">=</span> <span class="st">"glm"</span>,
                                 glm_formula <span class="op">=</span> <span class="st">"Y ~ ."</span><span class="op">)</span>
              <span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">os</span><span class="op">)</span>
-<span class="co">#&gt;      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator </span>
-<span class="co">#&gt;      0.7472      0.7779      0.8059       2e-04 -1.6704e-03     onestep </span>
-<span class="co">#&gt;      n_iter </span>
-<span class="co">#&gt;           0</span>
-
+<span class="va">os</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
 <span class="co"># fit an IPCW-TMLE to account for the two-phase sampling process</span>
 <span class="va">ipcw_tmle</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/txshift.html">txshift</a></span><span class="op">(</span>W <span class="op">=</span> <span class="va">W</span>, A <span class="op">=</span> <span class="va">A</span>, Y <span class="op">=</span> <span class="va">Y</span>, delta <span class="op">=</span> <span class="fl">0.5</span>,
                      C_samp <span class="op">=</span> <span class="va">C_samp</span>, V <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"W"</span>, <span class="st">"Y"</span><span class="op">)</span>,
@@ -199,12 +195,9 @@
                                        glm_formula <span class="op">=</span> <span class="st">"Y ~ ."</span><span class="op">)</span>,
                      eif_reg_type <span class="op">=</span> <span class="st">"glm"</span>
                     <span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">ipcw_tmle</span><span class="op">)</span>
-<span class="co">#&gt;      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator </span>
-<span class="co">#&gt;      0.7435      0.7765      0.8063       3e-04 -4.0365e-05        tmle </span>
-<span class="co">#&gt;      n_iter </span>
-<span class="co">#&gt;           1</span>
-
+<span class="va">ipcw_tmle</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
 <span class="co"># compare with an IPCW-agumented one-step estimator under two-phase sampling</span>
 <span class="va">ipcw_os</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/txshift.html">txshift</a></span><span class="op">(</span>W <span class="op">=</span> <span class="va">W</span>, A <span class="op">=</span> <span class="va">A</span>, Y <span class="op">=</span> <span class="va">Y</span>, delta <span class="op">=</span> <span class="fl">0.5</span>,
                    C_samp <span class="op">=</span> <span class="va">C_samp</span>, V <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"W"</span>, <span class="st">"Y"</span><span class="op">)</span>,
@@ -219,11 +212,7 @@
                                      glm_formula <span class="op">=</span> <span class="st">"Y ~ ."</span><span class="op">)</span>,
                    eif_reg_type <span class="op">=</span> <span class="st">"glm"</span>
                   <span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">ipcw_os</span><span class="op">)</span>
-<span class="co">#&gt;      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator </span>
-<span class="co">#&gt;      0.7427      0.7758      0.8058       3e-04 -2.0555e-03     onestep </span>
-<span class="co">#&gt;      n_iter </span>
-<span class="co">#&gt;           0</span></pre></div>
+<span class="va">ipcw_os</span></code></pre></div>
 <hr>
 </div>
 <div id="issues" class="section level2">
@@ -298,27 +287,27 @@
 <a href="#license" class="anchor"></a>License</h2>
 <p>© 2017-2020 <a href="https://nimahejazi.org">Nima S. Hejazi</a></p>
 <p>The contents of this repository are distributed under the MIT license. See below for details:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">MIT License</a>
-<a class="sourceLine" id="cb7-2" title="2"></a>
-<a class="sourceLine" id="cb7-3" title="3"><span class="kw">Copyright</span> (c) <span class="dv">2017-2020</span> Nima S. Hejazi</a>
-<a class="sourceLine" id="cb7-4" title="4"></a>
-<a class="sourceLine" id="cb7-5" title="5">Permission is hereby granted, free of charge, to any person obtaining a copy</a>
-<a class="sourceLine" id="cb7-6" title="6">of this software and associated documentation <span class="kw">files</span> (the <span class="st">"Software"</span>), to deal</a>
-<a class="sourceLine" id="cb7-7" title="7"><span class="cf">in</span> the Software without restriction, including without limitation the rights</a>
-<a class="sourceLine" id="cb7-8" title="8">to use, copy, modify, merge, publish, distribute, sublicense, and<span class="op">/</span>or sell</a>
-<a class="sourceLine" id="cb7-9" title="9">copies of the Software, and to permit persons to whom the Software is</a>
-<a class="sourceLine" id="cb7-10" title="10">furnished to do so, subject to the following conditions<span class="op">:</span></a>
-<a class="sourceLine" id="cb7-11" title="11"></a>
-<a class="sourceLine" id="cb7-12" title="12">The above copyright notice and this permission notice shall be included <span class="cf">in</span> all</a>
-<a class="sourceLine" id="cb7-13" title="13">copies or substantial portions of the Software.</a>
-<a class="sourceLine" id="cb7-14" title="14"></a>
-<a class="sourceLine" id="cb7-15" title="15">THE SOFTWARE IS PROVIDED <span class="st">"AS IS"</span>, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</a>
-<a class="sourceLine" id="cb7-16" title="16">IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</a>
-<a class="sourceLine" id="cb7-17" title="17">FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</a>
-<a class="sourceLine" id="cb7-18" title="18">AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</a>
-<a class="sourceLine" id="cb7-19" title="19">LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</a>
-<a class="sourceLine" id="cb7-20" title="20">OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</a>
-<a class="sourceLine" id="cb7-21" title="21">SOFTWARE.</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">MIT License</a>
+<a class="sourceLine" id="cb10-2" title="2"></a>
+<a class="sourceLine" id="cb10-3" title="3"><span class="kw">Copyright</span> (c) <span class="dv">2017-2020</span> Nima S. Hejazi</a>
+<a class="sourceLine" id="cb10-4" title="4"></a>
+<a class="sourceLine" id="cb10-5" title="5">Permission is hereby granted, free of charge, to any person obtaining a copy</a>
+<a class="sourceLine" id="cb10-6" title="6">of this software and associated documentation <span class="kw">files</span> (the <span class="st">"Software"</span>), to deal</a>
+<a class="sourceLine" id="cb10-7" title="7"><span class="cf">in</span> the Software without restriction, including without limitation the rights</a>
+<a class="sourceLine" id="cb10-8" title="8">to use, copy, modify, merge, publish, distribute, sublicense, and<span class="op">/</span>or sell</a>
+<a class="sourceLine" id="cb10-9" title="9">copies of the Software, and to permit persons to whom the Software is</a>
+<a class="sourceLine" id="cb10-10" title="10">furnished to do so, subject to the following conditions<span class="op">:</span></a>
+<a class="sourceLine" id="cb10-11" title="11"></a>
+<a class="sourceLine" id="cb10-12" title="12">The above copyright notice and this permission notice shall be included <span class="cf">in</span> all</a>
+<a class="sourceLine" id="cb10-13" title="13">copies or substantial portions of the Software.</a>
+<a class="sourceLine" id="cb10-14" title="14"></a>
+<a class="sourceLine" id="cb10-15" title="15">THE SOFTWARE IS PROVIDED <span class="st">"AS IS"</span>, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</a>
+<a class="sourceLine" id="cb10-16" title="16">IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</a>
+<a class="sourceLine" id="cb10-17" title="17">FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</a>
+<a class="sourceLine" id="cb10-18" title="18">AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</a>
+<a class="sourceLine" id="cb10-19" title="19">LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</a>
+<a class="sourceLine" id="cb10-20" title="20">OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</a>
+<a class="sourceLine" id="cb10-21" title="21">SOFTWARE.</a></code></pre></div>
 <hr>
 </div>
 <div id="references" class="section level2">
@@ -404,7 +393,7 @@
   <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://travis-ci.org/nhejazi/txshift"><img src="https://travis-ci.org/nhejazi/txshift.svg?branch=master" alt="Travis-CI Build Status"></a></li>
+<li><a href="https://travis-ci.com/nhejazi/txshift"><img src="https://travis-ci.com/nhejazi/txshift.svg?branch=master" alt="Travis-CI Build Status"></a></li>
 <li><a href="https://ci.appveyor.com/project/nhejazi/txshift"><img src="https://ci.appveyor.com/api/projects/status/github/nhejazi/txshift?branch=master&amp;svg=true" alt="AppVeyor Build Status"></a></li>
 <li><a href="https://codecov.io/github/nhejazi/txshift?branch=master"><img src="https://img.shields.io/codecov/c/github/nhejazi/txshift/master.svg" alt="Coverage Status"></a></li>
 <li><a href="http://www.r-pkg.org/pkg/txshift"><img src="http://www.r-pkg.org/badges/version/txshift" alt="CRAN"></a></li>

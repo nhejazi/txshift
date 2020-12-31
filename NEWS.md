@@ -2,10 +2,10 @@
 
 As of December 2020:
 * A `delta` slot has been added to the `txshift` class to record the shift.
-* Slots have been similarly added to the `txshift_msm` class.
+* Hidden slots have been similarly added to the `txshift_msm` class.
 * The `summary` method has been removed, with the functionality now supported
   by the `print` methods for the `txshift` and `txshift_msm` classes.
-* The `plot` method has been amended to allow simultaneous confidence bands.
+* The `plot` method has been amended to support simultaneous confidence bands.
 
 As of October 2020:
 * Changes all references to the argument `C` to `C_samp` for the indicator of

@@ -4,7 +4,7 @@
 # R/`txshift`
 
 [![Travis-CI Build
-Status](https://travis-ci.org/nhejazi/txshift.svg?branch=master)](https://travis-ci.org/nhejazi/txshift)
+Status](https://travis-ci.com/nhejazi/txshift.svg?branch=master)](https://travis-ci.com/nhejazi/txshift)
 [![AppVeyor Build
 Status](https://ci.appveyor.com/api/projects/status/github/nhejazi/txshift?branch=master&svg=true)](https://ci.appveyor.com/project/nhejazi/txshift)
 [![Coverage
@@ -125,9 +125,10 @@ tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                 Q_fit_args = list(fit_type = "glm",
                                   glm_formula = "Y ~ .")
                )
-summary(tmle)
-#>     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator     n_iter 
-#>     0.7474     0.7782     0.8061      2e-04 7.0199e-11       tmle          0
+tmle
+```
+
+``` r
 
 # fit a full-data one-step estimator for comparison (again, no sampling)
 os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
@@ -140,11 +141,10 @@ os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
               Q_fit_args = list(fit_type = "glm",
                                 glm_formula = "Y ~ .")
              )
-summary(os)
-#>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-#>      0.7472      0.7779      0.8059       2e-04 -1.6704e-03     onestep 
-#>      n_iter 
-#>           0
+os
+```
+
+``` r
 
 # fit an IPCW-TMLE to account for the two-phase sampling process
 ipcw_tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
@@ -161,11 +161,10 @@ ipcw_tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                                        glm_formula = "Y ~ ."),
                      eif_reg_type = "glm"
                     )
-summary(ipcw_tmle)
-#>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-#>      0.7435      0.7765      0.8063       3e-04 -4.0365e-05        tmle 
-#>      n_iter 
-#>           1
+ipcw_tmle
+```
+
+``` r
 
 # compare with an IPCW-agumented one-step estimator under two-phase sampling
 ipcw_os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
@@ -181,11 +180,7 @@ ipcw_os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                                      glm_formula = "Y ~ ."),
                    eif_reg_type = "glm"
                   )
-summary(ipcw_os)
-#>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-#>      0.7427      0.7758      0.8058       3e-04 -2.0555e-03     onestep 
-#>      n_iter 
-#>           0
+ipcw_os
 ```
 
 -----

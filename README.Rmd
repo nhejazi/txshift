@@ -127,7 +127,7 @@ tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                 Q_fit_args = list(fit_type = "glm",
                                   glm_formula = "Y ~ .")
                )
-tmle
+print(tmle)
 
 # fit a full-data one-step estimator for comparison (again, no sampling)
 os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
@@ -140,7 +140,7 @@ os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
               Q_fit_args = list(fit_type = "glm",
                                 glm_formula = "Y ~ .")
              )
-os
+print(os)
 
 # fit an IPCW-TMLE to account for the two-phase sampling process
 ipcw_tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
@@ -157,7 +157,7 @@ ipcw_tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                                        glm_formula = "Y ~ ."),
                      eif_reg_type = "glm"
                     )
-ipcw_tmle
+print(ipcw_tmle)
 
 # compare with an IPCW-agumented one-step estimator under two-phase sampling
 ipcw_os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
@@ -173,7 +173,7 @@ ipcw_os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                                      glm_formula = "Y ~ ."),
                    eif_reg_type = "glm"
                   )
-ipcw_os
+print(ipcw_os)
 ```
 
 ---

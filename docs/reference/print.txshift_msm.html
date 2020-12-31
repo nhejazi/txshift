@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -109,7 +109,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/nhejazi/txshift/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -153,8 +153,8 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>None. Called for the side effect of printing particular slots of
- objects of class <code>txshift_msm</code>.</p>
+    <p>None. Called for the side effect of printing an informative summary
+ of slots of objects of class <code>txshift_msm</code>.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The <code>print</code> method for objects of class <code>txshift_msm</code>.</p>
@@ -180,12 +180,8 @@
   <span class='op'>)</span>
   <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>msm</span><span class='op'>)</span>
 <span class='op'>}</span>
-</div><div class='output co'>#&gt; [1] "linear MSM"
-#&gt; <span style='color: #555555;'># A tibble: 2 x 6</span><span>
-#&gt;   param       ci_lwr param_est ci_upr param_se   p_value
-#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>        </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>    </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>
-#&gt; </span><span style='color: #555555;'>1</span><span> (Intercept)  0.677     0.703  0.729  0.013</span><span style='text-decoration: underline;'>3</span><span>  0.  </span><span style='color: #555555;'> </span><span>    
-#&gt; </span><span style='color: #555555;'>2</span><span> delta        0.193     0.212  0.230  0.009</span><span style='text-decoration: underline;'>51</span><span> 9.11</span><span style='color: #555555;'>e</span><span style='color: #BB0000;'>-110</span><span></div></span></pre>
+</div><div class='output co'>#&gt; <span class='message'><span style='font-weight: bold;'>MSM (linear) for Grid of Shifted Treatments</span><span></span></div><div class='output co'>#&gt;     </div><div class='output co'>#&gt; <span class='message'></span><span style='font-weight: bold;'>Intervention Grid</span><span>: </span><span style='color: #BB0000;'>Treatment + (-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, and</span><span></span>
+#&gt; <span class='message'></span><span style='color: #BB0000;'>1)</span><span></span></div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'></span><span style='font-weight: bold;'>txshift MSM Estimator</span><span>: tmle</span></div><div class='output co'>#&gt;     </div><div class='output co'>#&gt; <span class='message'></span><span style='font-weight: bold;'>Estimated Slope</span><span>: 0.2118</span></div><div class='output co'>#&gt;     </div><div class='output co'>#&gt; <span class='message'></span><span style='font-weight: bold;'>Std. Error</span><span>: 0.0095</span></div><div class='output co'>#&gt;     </div><div class='output co'>#&gt; <span class='message'></span><span style='font-weight: bold;'>95% CI</span><span>: [0.1931, 0.2304]</span></div><div class='output co'>#&gt;     </div><div class='output co'>#&gt; <span class='message'></span><span style='font-weight: bold;'>p-value (vs. no trend)</span><span>: 0</span></div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
