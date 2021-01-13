@@ -125,7 +125,7 @@ tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                 Q_fit_args = list(fit_type = "glm",
                                   glm_formula = "Y ~ .")
                )
-tmle
+print(tmle)
 ```
 
 ``` r
@@ -141,7 +141,7 @@ os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
               Q_fit_args = list(fit_type = "glm",
                                 glm_formula = "Y ~ .")
              )
-os
+print(os)
 ```
 
 ``` r
@@ -161,7 +161,7 @@ ipcw_tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                                        glm_formula = "Y ~ ."),
                      eif_reg_type = "glm"
                     )
-ipcw_tmle
+print(ipcw_tmle)
 ```
 
 ``` r
@@ -180,7 +180,7 @@ ipcw_os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                                      glm_formula = "Y ~ ."),
                    eif_reg_type = "glm"
                   )
-ipcw_os
+print(ipcw_os)
 ```
 
 -----
@@ -282,14 +282,14 @@ LM012417-02](https://projectreporter.nih.gov/project_info_description.cfm?aid=92
 
 ## License
 
-© 2017-2020 [Nima S. Hejazi](https://nimahejazi.org)
+© 2017-2021 [Nima S. Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the MIT license.
 See below for details:
 
     MIT License
     
-    Copyright (c) 2017-2020 Nima S. Hejazi
+    Copyright (c) 2017-2021 Nima S. Hejazi
     
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal

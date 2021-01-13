@@ -90,7 +90,7 @@
 <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://www.sph.emory.edu/faculty/profile/#!dbenkes">David Benkeser</a>
 </h4>
             
-            <h4 class="date">2020-12-30</h4>
+            <h4 class="date">2021-01-12</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nhejazi/txshift/blob/master/vignettes/intro_txshift.Rmd"><code>vignettes/intro_txshift.Rmd</code></a></small>
       <div class="hidden name"><code>intro_txshift.Rmd</code></div>
@@ -107,7 +107,7 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://Rdatatable.gitlab.io/data.table">data.table</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/nhejazi/haldensify">haldensify</a></span><span class="op">)</span></code></pre></div>
-<pre><code>## haldensify v0.0.6: Highly Adaptive Lasso Conditional Density Estimation</code></pre>
+<pre><code>## haldensify v0.0.7: Highly Adaptive Lasso Conditional Density Estimation</code></pre>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/nhejazi/txshift">txshift</a></span><span class="op">)</span></code></pre></div>
 <pre><code>## txshift v0.3.5: Efficient Estimation of the Causal Effects of Stochastic Interventions</code></pre>
@@ -170,7 +170,7 @@
 <pre><code>## Counterfactual Mean of Shifted Treatment</code></pre>
 <pre><code>## Intervention: Treatment + 0.5</code></pre>
 <pre><code>## txshift Estimator: tmle</code></pre>
-<pre><code>## Estimate: 2.0528</code></pre>
+<pre><code>## Estimate: 2.0529</code></pre>
 <pre><code>## Std. Error: 0.0678</code></pre>
 <pre><code>## 95% CI: [1.9199, 2.1858]</code></pre>
 <p>When computing any such TML estimator, we may, of course, vary the regressions used in fitting the nuisance parameters; however, an even simpler variation is to fit the step for the fluctuation submodels with a <em>weighted</em> method, simply weighting each observation by an auxiliary covariate (often denoted <span class="math inline">\(H_n\)</span>, and sometimes called the “clever covariate” in the literature) rather than using such a covariate directly in the submodel regression fit.</p>
@@ -257,7 +257,7 @@
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="op">(</span><span class="va">ci_param</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/confint.html">confint</a></span><span class="op">(</span><span class="va">tmle_hal_shift_1</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>##   lwr_ci      est   upr_ci 
-## 1.919883 2.052831 2.185778</code></pre>
+## 1.919907 2.052852 2.185797</code></pre>
 </div>
 </div>
 <div id="advanced-usage-user-specified-regressions" class="section level2">

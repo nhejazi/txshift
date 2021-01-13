@@ -134,7 +134,6 @@ tmle_txshift <- function(data_internal,
 
       # updated sampling weights and stabilize
       samp_weights <- tmle_ipcw_eif$ipc_weights
-      # samp_weights <- samp_weights / mean(samp_weights)
       pi_mech_star <- tmle_ipcw_eif$pi_mech_star
 
       # compute updated mean of efficient influence function and save

@@ -68,7 +68,6 @@ onestep_txshift <- function(data_internal,
                             ipcw_efficiency = TRUE) {
   # extract and normalize sampling mechanism weights
   samp_weights <- C_samp / samp_estim
-  samp_weights_norm <- samp_weights / sum(samp_weights)
 
   # invoke efficient IPC-weighted one-step if necessary
   if (!all(C_samp == 1) && ipcw_efficiency) {
@@ -76,43 +75,18 @@ onestep_txshift <- function(data_internal,
     assertthat::assert_that(!is.null(samp_estim))
     assertthat::assert_that(!is.null(V))
 
-    # quantities to be updated across targeting iterations
-    pi_mech_star <- samp_estim
-    Qn_estim_updated <- Qn_estim
-
     # update by submodel fluctuation, re-compute EIF, and update EIF
     os_ipcw_eif <- ipcw_eif_update(
       data_internal = data_internal,
       C_samp = C_samp,
       V = V,
-      ipc_mech = pi_mech_star,
-      # NOTE: we update pi_mech_star and samp_weights in this procedure, so
-      #       only need to rescale by factor gn_cens_weights each iteration
+      ipc_mech = samp_estim,
       ipc_weights = (gn_cens_weights * samp_weights[C_samp == 1]),
       Qn_estim = Qn_estim,
-      # NOTE: directly pass in Hn since gn never updated in this procedure
       Hn_estim = Hn_estim,
       estimator = "onestep",
       eif_reg_type = eif_reg_type
     )
-
-    # overwrite and update quantities to be used in the next iteration
-    Qn_estim_updated <- data.table::as.data.table(
-      list(
-        # NOTE: need to re-scale estimated outcomes values within bounds of Y
-        scale_to_unit(
-          vals = os_ipcw_eif$Qn_estim$noshift
-        ),
-        scale_to_unit(
-          vals = os_ipcw_eif$Qn_estim$upshift
-        )
-      )
-    )
-    data.table::setnames(Qn_estim_updated, names(Qn_estim))
-
-    # updated sampling weights and stabilize
-    samp_weights <- os_ipcw_eif$ipc_weights
-    pi_mech_star <- os_ipcw_eif$pi_mech_star
 
     # compute updated mean of efficient influence function
     eif_ipcw <- os_ipcw_eif$eif_eval$eif - os_ipcw_eif$ipcw_eif_component

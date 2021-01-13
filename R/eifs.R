@@ -62,7 +62,7 @@ eif <- function(Y,
   param_obs_est[C_samp == 1] <- ipc_weights_norm * Qn_shift
   psi <- sum(param_obs_est)
 
-  # compute the efficient influence function (EIF) / canonical gradient (D*)
+  # compute the efficient influence function (EIF)
   eif <- rep(0, length(C_samp))
   eif[C_samp == 1] <-
     ipc_weights * (Hn$noshift * (Y - Qn_noshift) + (Qn_shift - psi))
@@ -89,7 +89,7 @@ eif <- function(Y,
   return(out)
 }
 
-################################################################################
+###############################################################################
 
 #' Iterative IPCW Update Procedure of Augmented Efficient Influence Function
 #'
@@ -198,7 +198,9 @@ ipcw_eif_update <- function(data_internal,
       family = "gaussian",
       return_lasso = FALSE,
       standardize = FALSE,
-      lambda.min.ratio = 1e-2 * (1 / nrow(data_internal)),
+      type.measure = "mse",
+      nlambda = 1000,
+      lambda.min.ratio = 1 / nrow(data_internal),
       yolo = FALSE
     )
 
