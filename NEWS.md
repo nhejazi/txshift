@@ -1,5 +1,13 @@
 # txshift 0.3.5
 
+As of January 2021:
+* Simulation experiments testing the performance of the procedures in the
+  presence of loss to follow-up censoring indicate that the TML estimator
+  outperforms the one-step for the EIF-based two-phase sampling correction.
+  Generally, we recommend use of the TML estimator (which remains the default)
+  in all settings, though performance of the one-step estimator is not severely
+  degraded.
+
 As of December 2020:
 * A `delta` slot has been added to the `txshift` class to record the shift.
 * Hidden slots have been similarly added to the `txshift_msm` class.
