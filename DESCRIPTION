@@ -43,7 +43,7 @@ Imports:
     data.table,
     assertthat,
     mvtnorm,
-    hal9001 (>= 0.2.7),
+    hal9001 (>= 0.2.6),
     haldensify (>= 0.0.6),
     lspline,
     ggplot2,
