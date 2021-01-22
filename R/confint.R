@@ -11,6 +11,9 @@
 #' @param level A \code{numeric} indicating the level of the confidence
 #'  interval to be computed.
 #' @param ... Other arguments. Not currently used.
+#' @param ci_mult Pre-computed multipliers for generating confidence intervals.
+#'  The default of \code{NULL} should generally NOT be changed and is only used
+#'  by the internal machinery for creating simultaneous confidence bands.
 #'
 #' @importFrom stats qnorm plogis qlogis
 #'
@@ -29,7 +32,7 @@
 #' txout <- txshift(
 #'   W = W, A = A, Y = Y, delta = 0.5,
 #'   estimator = "tmle",
-#'   g_fit_args = list(
+#'   g_exp_fit_args = list(
 #'     fit_type = "hal", n_bins = 5,
 #'     grid_type = "equal_mass",
 #'     lambda_seq = exp(-1:-9)
@@ -44,23 +47,26 @@
 confint.txshift <- function(object,
                             parm = seq_len(object$psi),
                             level = 0.95,
-                            ...) {
+                            ...,
+                            ci_mult = NULL) {
   # first, let's get Z_(1 - alpha)
-  norm_bounds <- c(-1, 1) * abs(stats::qnorm(p = (1 - level) / 2))
+  if (is.null(ci_mult)) {
+    ci_mult <- c(-1, 1) * abs(stats::qnorm(p = (1 - level) / 2))
+  }
 
-  if (length(unique(object$outcome)) > 2) { # assume continuous outcome
+  if (length(unique(object$.outcome)) > 2) { # assume continuous outcome
     # compute the EIF variance multiplier for the CI
     # NOTE: the variance value is already scaled by length of observations
     sd_eif <- sqrt(object$var)
 
     # compute the interval around the point estimate
-    ci_psi <- norm_bounds * sd_eif + object$psi
-  } else if (length(unique(object$outcome)) == 2) { # binary outcome
+    ci_psi <- ci_mult * sd_eif + object$psi
+  } else if (length(unique(object$.outcome)) == 2) { # binary outcome
     # for binary outcome case, compute on the logit scale and back-transform
     psi_ratio <- stats::qlogis(object$psi)
     grad_ratio_delta <- (1 / object$psi) + (1 / (1 - object$psi))
     se_eif_logit <- sqrt(grad_ratio_delta^2 * object$var)
-    ci_psi <- stats::plogis(norm_bounds * se_eif_logit + psi_ratio)
+    ci_psi <- stats::plogis(ci_mult * se_eif_logit + psi_ratio)
   } else {
     stop("The outcome has fewer than 2 levels: this case is not supported.")
   }

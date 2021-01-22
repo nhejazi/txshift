@@ -1,14 +1,20 @@
-#' Print Method for Counterfactual Means
+#' Print Method for Counterfactual Mean of Stochastic Shift Intervention
 #'
 #' @details The \code{print} method for objects of class \code{txshift}.
 #'
 #' @param x An object of class \code{txshift}.
 #' @param ... Other options (not currently used).
+#' @param ci_level A \code{numeric} indicating the level of the confidence
+#'  interval to be computed.
 #'
 #' @method print txshift
 #'
-#' @return None. Called for the side effect of printing particular slots of
-#'  objects of class \code{txshift}.
+#' @importFrom stats confint
+#' @importFrom scales percent
+#' @importFrom cli cli_text col_red
+#'
+#' @return None. Called for the side effect of printing an informative summary
+#'  of slots of objects of class \code{txshift}.
 #'
 #' @examples
 #' set.seed(429153)
@@ -19,7 +25,7 @@
 #' txout <- txshift(
 #'   W = W, A = A, Y = Y, delta = 0.5,
 #'   estimator = "tmle",
-#'   g_fit_args = list(
+#'   g_exp_fit_args = list(
 #'     fit_type = "hal", n_bins = 5,
 #'     grid_type = "equal_mass",
 #'     lambda_seq = exp(-1:-9)
@@ -31,8 +37,20 @@
 #' )
 #' print(txout)
 #' @export
-print.txshift <- function(x, ...) {
-  print(x[c("psi", "var", "estimator", "n_iter")])
+print.txshift <- function(x, ..., ci_level = 0.95) {
+  # compute confidence interval
+  ci <- stats::confint(x, level = ci_level)
+
+  # construct and print output
+  cli::cli_text("{.strong Counterfactual Mean of Shifted Treatment}")
+  cli::cli_text(cat("    "), "{.strong Intervention}: ",
+                cli::col_red("Treatment + {x$.delta}"))
+  cat("\n")
+  cli::cli_text("{.strong txshift Estimator}: {x$estimator}")
+  cli::cli_text(cat("    "), "{.strong Estimate}: {round(x$psi, 4)}")
+  cli::cli_text(cat("    "), "{.strong Std. Error}: {round(sqrt(x$var), 4)}")
+  cli::cli_text(cat("    "), "{.strong {scales::percent(ci_level)} CI}:
+                [{round(ci[1], 4)}, {round(ci[3], 4)}]")
 }
 
 ###############################################################################
@@ -46,10 +64,10 @@ print.txshift <- function(x, ...) {
 #'
 #' @method print txshift_msm
 #'
-#' @importFrom tibble as_tibble
+#' @importFrom cli cli_text col_red col_blue
 #'
-#' @return None. Called for the side effect of printing particular slots of
-#'  objects of class \code{txshift_msm}.
+#' @return None. Called for the side effect of printing an informative summary
+#'  of slots of objects of class \code{txshift_msm}.
 #'
 #' @examples
 #' if (require("sl3")) {
@@ -60,7 +78,7 @@ print.txshift <- function(x, ...) {
 #'   Y <- rbinom(n_obs, 1, plogis(2 * A - W))
 #'   msm <- msm_vimshift(
 #'     W = W, A = A, Y = Y, estimator = "tmle",
-#'     g_fit_args = list(
+#'     g_exp_fit_args = list(
 #'       fit_type = "sl",
 #'       sl_learners_density = Lrnr_density_hse$new(Lrnr_glm$new())
 #'     ),
@@ -74,81 +92,42 @@ print.txshift <- function(x, ...) {
 #' }
 #' @export
 print.txshift_msm <- function(x, ...) {
-  if (x[["msm_type"]] == "piecewise") {
-    print(paste(
-      x[["msm_type"]], "MSM with knot point at x =",
-      x[["msm_knot"]]
-    ))
-  } else {
-    print(paste(x[["msm_type"]], "MSM"))
+  # construct and print output
+  cli::cli_text("{.strong MSM ({x$.msm_type}) for Grid of Shifted Treatments}")
+  cli::cli_text(cat("    "), "{.strong Intervention Grid}: ",
+                cli::col_red("Treatment + ({x$.delta_grid})"))
+  if (x$.msm_type == "piecewise") {
+    cli::cli_text(cat("    "), "{.strong Knot Point}: ",
+                  cli::col_blue("Shift = {x$.msm_knot}"))
   }
-  print(tibble::as_tibble(x[["msm_est"]]))
-}
-
-###############################################################################
-
-#' Summary for Counterfactual Mean Under Stochastic Intervention
-#'
-#' @details Print a convenient summary for objects computed using
-#'  \code{\link{txshift}}.
-#'
-#' @param object An object of class \code{txshift}, as produced by invoking
-#'  the function \code{\link{txshift}}, for which a confidence interval is to
-#'  be computed.
-#' @param ... Other arguments. Not currently used.
-#' @param ci_level A \code{numeric} indicating the level of the confidence
-#'  interval to be computed.
-#' @param digits A \code{numeric} scalar giving the number of digits to be
-#'  displayed or to round results to.
-#'
-#' @importFrom stats confint
-#'
-#' @method summary txshift
-#'
-#' @return None. Called for the side effect of printing a summary of particular
-#'  slots of objects of class \code{txshift}.
-#'
-#' @examples
-#' set.seed(429153)
-#' n_obs <- 100
-#' W <- replicate(2, rbinom(n_obs, 1, 0.5))
-#' A <- rnorm(n_obs, mean = 2 * W, sd = 1)
-#' Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
-#' txout <- txshift(
-#'   W = W, A = A, Y = Y, delta = 0.5,
-#'   estimator = "tmle",
-#'   g_fit_args = list(
-#'     fit_type = "hal", n_bins = 5,
-#'     grid_type = "equal_mass",
-#'     lambda_seq = exp(-1:-9)
-#'   ),
-#'   Q_fit_args = list(
-#'     fit_type = "glm",
-#'     glm_formula = "Y ~ ."
-#'   )
-#' )
-#' summary(txout)
-#' @export
-summary.txshift <- function(object,
-                            ...,
-                            ci_level = 0.95,
-                            digits = 4) {
-  # compute confidence interval using the pre-defined method
-  ci <- stats::confint(object, level = ci_level)
-
-  # only print useful info about the mean of the efficient influence function
-  eif_mean <- formatC(mean(object$eif), digits = digits, format = "e")
-
-  # create output table from input object and confidence interval results
-  out <- c(
-    round(c(ci, object$var), digits = digits), eif_mean,
-    object$estimator, object$n_iter
-  )
-  names(out) <- c(
-    "lwr_ci", "param_est", "upr_ci", "param_var",
-    "eif_mean", "estimator", "n_iter"
-  )
-  print(noquote(out))
+  cat("\n")
+  cli::cli_text("{.strong txshift MSM Estimator}: {x$estimator}")
+  if (x$.msm_type == "piecewise") {
+    cli::cli_text(cat("    "), "{.strong Estimated Slopes}:
+                  {round(x$msm_est$param_est[2], 4)},
+                  {round(x$msm_est$param_est[3], 4)}")
+    cli::cli_text(cat("    "), "{.strong Std. Errors}:
+                  {round(x$msm_est$param_se[2], 4)},
+                  {round(x$msm_est$param_se[3], 4)}")
+    cli::cli_text(cat("    "), "{.strong {scales::percent(x$.ci_level)} CIs}:
+                  [{round(x$msm_est$ci_lwr[2], 4)},
+                   {round(x$msm_est$ci_upr[2], 4)}],
+                  [{round(x$msm_est$ci_lwr[3], 4)},
+                   {round(x$msm_est$ci_upr[3], 4)}]")
+    cli::cli_text(cat("    "), "{.strong p-values (vs. no trend)}:
+                  {round(x$msm_est$p_value[2], 4)},
+                  {round(x$msm_est$p_value[3], 4)}")
+  } else {
+    cli::cli_text(cat("    "), "{.strong Estimated Slope}:
+                  {round(x$msm_est$param_est[2], 4)}")
+    cli::cli_text(cat("    "), "{.strong Std. Error}:
+                  {round(x$msm_est$param_se[2], 4)}")
+    cli::cli_text(cat("    "), "{.strong {scales::percent(x$.ci_level)} CI}:
+                  [{round(x$msm_est$ci_lwr[2], 4)},
+                   {round(x$msm_est$ci_upr[2], 4)}]")
+    cli::cli_text(cat("    "), "{.strong p-value (vs. no trend)}:
+                  {round(x$msm_est$p_value[2], 4)}")
+  }
 }
 
 ###############################################################################

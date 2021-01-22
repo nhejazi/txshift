@@ -2,48 +2,40 @@
 % Please edit documentation in R/eifs.R
 \name{ipcw_eif_update}
 \alias{ipcw_eif_update}
-\title{Iterative IPCW Update Procedure of Efficient Influence Function}
+\title{Iterative IPCW Update Procedure of Augmented Efficient Influence Function}
 \usage{
 ipcw_eif_update(
-  data_in,
-  C,
+  data_internal,
+  C_samp,
   V,
   ipc_mech,
   ipc_weights,
-  ipc_weights_norm,
   Qn_estim,
   Hn_estim,
   estimator = c("tmle", "onestep"),
   fluctuation = NULL,
-  flucmod_tol = 100,
+  flucmod_tol = 50,
   eif_reg_type = c("hal", "glm")
 )
 }
 \arguments{
-\item{data_in}{A \code{data.table} containing variables and observations of
-full data. That is, this corresponds to the data after application of a
-censoring process.}
+\item{data_internal}{A \code{data.table} containing of the observations
+selected into the second-phase sample.}
 
-\item{C}{A \code{numeric} binary vector giving the censoring status of a
-given observation.}
+\item{C_samp}{A \code{numeric} indicator for missingness due to exclusion
+the from second-stage sample.}
 
 \item{V}{A \code{data.table} giving the values across all observations of
 all variables that play a role in the censoring mechanism.}
 
-\item{ipc_mech}{A \code{numeric} vector containing values that describe the
-censoring mechanism for all of the observations. Note that such values are
-estimated by regressing the censoring covariates \code{V} on the observed
-censoring \code{C} and thus correspond to predicted probabilities of being
-censored for each observation.}
+\item{ipc_mech}{A \code{numeric} vector of the censoring mechanism estimates
+all of the observations, only for the two-phase sampling mechanism. Note
+well that these values do NOT account for censoring from loss to follow-up.}
 
 \item{ipc_weights}{A \code{numeric} vector of inverse probability of
-censoring weights. These are equivalent to \code{C / ipc_mech} in any
-initial run of this function. Updated values of this vector are provided as
-part of the output of this function, which may be used in subsequent calls
-that allow convergence to a more efficient estimate.}
-
-\item{ipc_weights_norm}{A \code{numeric} vector of the weights described in
-the previous argument. In this case, the weights are normalized.}
+censoring weights, including such weights for censoring due to loss to
+follow-up. Without loss to follow-up, these are equivalent to \code{C_samp
+/ ipc_mech} in an initial run of this procedure.}
 
 \item{Qn_estim}{A \code{data.table} corresponding to the outcome regression.
 This is produced by invoking the internal function \code{est_Q}.}
@@ -74,12 +66,11 @@ covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).}
 \value{
 A \code{list} containing the estimated outcome mechanism, the fitted
  fluctuation model for TML updates, the updated inverse probability of
- censoring weights (IPCW), normalized versions of the same weights, the
- updated estimate of the efficient influence function, and the estimated
- IPCW component of the EIF.
+ censoring weights (IPCW), the updated estimate of the efficient influence
+ function, and the estimated IPCW component of the EIF.
 }
 \description{
-Iterative IPCW Update Procedure of Efficient Influence Function
+Iterative IPCW Update Procedure of Augmented Efficient Influence Function
 }
 \details{
 An adaptation of the IPCW-TMLE for iteratively constructing an

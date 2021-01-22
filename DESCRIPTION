@@ -1,6 +1,6 @@
 Package: txshift
 Title: Efficient Estimation of the Causal Effects of Stochastic Interventions
-Version: 0.3.4
+Version: 0.3.5
 Authors@R: c(
     person("Nima", "Hejazi", email = "nh@nimahejazi.org",
            role = c("aut", "cre", "cph"),
@@ -48,8 +48,10 @@ Imports:
     lspline,
     ggplot2,
     tibble,
+    scales,
     latex2exp,
-    Rdpack
+    Rdpack,
+    cli
 Suggests:
     testthat,
     knitr,

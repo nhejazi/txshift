@@ -2,28 +2,32 @@
 % Please edit documentation in R/txshift.R
 \name{txshift}
 \alias{txshift}
-\title{Estimate Counterfactual Mean Under Stochastic Shift in Exposure}
+\title{Efficient Estimate of Counterfactual Mean of Stochastic Shift Intervention}
 \usage{
 txshift(
   W,
   A,
+  C_cens = rep(1, length(A)),
   Y,
-  C = rep(1, length(Y)),
+  C_samp = rep(1, length(Y)),
   V = NULL,
   delta = 0,
   estimator = c("tmle", "onestep"),
   fluctuation = c("standard", "weighted"),
   max_iter = 10,
-  ipcw_fit_args = list(fit_type = c("glm", "sl", "external"), sl_learners = NULL),
-  g_fit_args = list(fit_type = c("hal", "sl", "external"), n_bins = c(10, 25),
+  samp_fit_args = list(fit_type = c("glm", "sl", "external"), sl_learners = NULL),
+  g_exp_fit_args = list(fit_type = c("hal", "sl", "external"), n_bins = c(10, 25),
     grid_type = c("equal_range", "equal_range"), lambda_seq = exp(seq(-1, -13, length =
     300)), use_future = FALSE, sl_learners_density = NULL),
+  g_cens_fit_args = list(fit_type = c("glm", "sl", "external"), glm_formula =
+    "C_cens ~ .", sl_learners = NULL),
   Q_fit_args = list(fit_type = c("glm", "sl", "external"), glm_formula = "Y ~ .",
     sl_learners = NULL),
   eif_reg_type = c("hal", "glm"),
   ipcw_efficiency = TRUE,
-  ipcw_fit_ext = NULL,
-  gn_fit_ext = NULL,
+  samp_fit_ext = NULL,
+  gn_exp_fit_ext = NULL,
+  gn_cens_fit_ext = NULL,
   Qn_fit_ext = NULL
 )
 }
@@ -34,18 +38,23 @@ baseline covariates.}
 \item{A}{A \code{numeric} vector corresponding to a treatment variable. The
 parameter of interest is defined as a location shift of this quantity.}
 
+\item{C_cens}{A \code{numeric} indicator for whether a given observation was
+subject to censoring by way of loss to follow-up. The default assumes no
+censoring due to loss to follow-up.}
+
 \item{Y}{A \code{numeric} vector of the observed outcomes.}
 
-\item{C}{A \code{numeric} indicator for whether a given observation was
-subject to censoring, used to compute an IPC-weighted estimator in cases
-where two-stage sampling is performed. The default assumes no censoring.}
+\item{C_samp}{A \code{numeric} indicator for whether a given observation was
+subject to censoring by being omitted from the second-stage sample, used to
+compute an inverse probability of censoring weighted estimator in such
+cases. The default assumes no censoring due to two-phase sampling.}
 
 \item{V}{The covariates that are used in determining the sampling procedure
 that gives rise to censoring. The default is \code{NULL} and corresponds to
 scenarios in which there is no censoring (in which case all values in the
-preceding argument \code{C} must be uniquely 1). To specify this, pass in a
-\code{character} vector identifying variables amongst W, A, Y thought to
-have played a role in defining the sampling/censoring mechanism (C). This
+preceding argument \code{C_samp} must be uniquely 1). To specify this, pass
+in a \code{character} vector identifying variables amongst W, A, Y thought
+to have impacted the definition of the sampling mechanism (C_samp). This
 argument also accepts a \code{data.table} (or similar) object composed of
 combinations of variables W, A, Y; use of this option is NOT recommended.}
 
@@ -64,32 +73,37 @@ tilting regression.}
 \item{max_iter}{A \code{numeric} integer giving the maximum number of steps
 to be taken in iterating to a solution of the efficient influence function.}
 
-\item{ipcw_fit_args}{A \code{list} of arguments, all but one of which are
-passed to \code{\link{est_ipcw}}. For details, consult the documentation of
-\code{\link{est_ipcw}}. The first element (i.e., \code{fit_type}) is used
+\item{samp_fit_args}{A \code{list} of arguments, all but one of which are
+passed to \code{\link{est_samp}}. For details, consult the documentation of
+\code{\link{est_samp}}. The first element (i.e., \code{fit_type}) is used
 to determine how this regression is fit: generalized linear model ("glm")
 or Super Learner ("sl"), and "external" a user-specified input of the form
-produced by \code{\link{est_ipcw}}. NOTE THAT this first argument is not
-passed to \code{\link{est_ipcw}}.}
+produced by \code{\link{est_samp}}.}
 
-\item{g_fit_args}{A \code{list} of arguments, all but one of which are
-passed to \code{\link{est_g}}. For details, consult the documentation of
-\code{\link{est_g}}. The first element (i.e., \code{fit_type}) is used to
-determine how this regression is fit: \code{"hal"} to estimate conditional
-densities via the highly adaptive lasso (via \pkg{haldensify}), \code{"sl"}
-for \pkg{sl3} learners used to fit Super Learner to densities via
+\item{g_exp_fit_args}{A \code{list} of arguments, all but one of which are
+passed to \code{\link{est_g_exp}}. For details, see the documentation of
+\code{\link{est_g_exp}}. The 1st element (i.e., \code{fit_type}) specifies
+how this regression is fit: \code{"hal"} to estimate conditional densities
+via the highly adaptive lasso (via \pkg{haldensify}), \code{"sl"} for
+\pkg{sl3} learners used to fit Super Learner ensembles to densities via
 \code{\link[sl3]{Lrnr_haldensify}} or similar, and \code{"external"} for
-user-specified input of the form produced by \code{\link{est_g}}. NOTE that
-this first argument is not passed to \code{\link{est_g}}.}
+user-specified input of the form produced by \code{\link{est_g_exp}}.}
+
+\item{g_cens_fit_args}{A \code{list} of arguments, all but one of which are
+passed to \code{\link{est_g_cens}}. For details, see the documentation of
+\code{\link{est_g_cens}}. The 1st element (i.e., \code{fit_type}) specifies
+how this regression is fit: \code{"glm"} for a generalized linear model
+or \code{"sl"} for \pkg{sl3} learners used to fit a Super Learner ensemble
+for the censoring mechanism, and \code{"external"} for user-specified input
+of the form produced by \code{\link{est_g_cens}}.}
 
 \item{Q_fit_args}{A \code{list} of arguments, all but one of which are
 passed to \code{\link{est_Q}}. For details, consult the documentation for
 \code{\link{est_Q}}. The first element (i.e., \code{fit_type}) is used to
 determine how this regression is fit: \code{"glm"} for a generalized linear
-model for the outcome regression, \code{"sl"} for \pkg{sl3} learners used
-to fit a Super Learner for the outcome regression, and \code{"external"}
-for user-specified input of the form produced by \code{\link{est_Q}}. NOTE
-that this first argument is not passed to \code{\link{est_g}}.}
+model for the outcome mechanism, \code{"sl"} for \pkg{sl3} learners used
+to fit a Super Learner for the outcome mechanism, and \code{"external"}
+for user-specified input of the form produced by \code{\link{est_Q}}.}
 
 \item{eif_reg_type}{Whether a flexible nonparametric function ought to be
 used in the dimension-reduced nuisance regression of the targeting step for
@@ -99,28 +113,31 @@ this to \code{"glm"} to instead use a simple linear regression model. In
 this step, the efficient influence function (EIF) is regressed against
 covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).}
 
-\item{ipcw_efficiency}{Whether to invoke an augmentation of the IPCW-TMLE
-procedure that performs an iterative process to ensure efficiency of the
-resulting estimate. The default is \code{TRUE}; only set to \code{FALSE} if
-possible inefficiency of the IPCW-TMLE is not a concern.}
+\item{ipcw_efficiency}{Whether to use an augmented inverse probability of
+censoring weighted EIF estimating equation to ensure efficiency of the
+resultant estimate. The default is \code{TRUE}; the inefficient estimation
+procedure specified by \code{FALSE} is only supported for completeness.}
 
-\item{ipcw_fit_ext}{The results of an external fitting procedure used to
-estimate the two-phase censoring mechanism, to be used in constructing the
+\item{samp_fit_ext}{The results of an external fitting procedure used to
+estimate the two-phase sampling mechanism, to be used in constructing the
 inverse probability of censoring weighted TML or one-step estimator. The
-input provided must match the output of \code{\link{est_ipcw}} exactly;
-thus, use of this argument is only recommended for power users.}
+input provided must match the output of \code{\link{est_samp}} exactly.}
 
-\item{gn_fit_ext}{The results of an external fitting procedure used to
+\item{gn_exp_fit_ext}{The results of an external fitting procedure used to
 estimate the exposure mechanism (generalized propensity score), to be used
 in constructing the TML or one-step estimator. The input provided must
-match the output of \code{\link{est_g}} exactly; thus, use of this argument
-is only recommended for power users.}
+match the output of \code{\link{est_g_exp}} exactly.}
+
+\item{gn_cens_fit_ext}{The results of an external fitting procedure used to
+estimate the censoring mechanism (propensity score for missingness), to be
+used in constructing the TML or one-step estimator. The input provided must
+match the output of \code{\link{est_g_cens}} exactly.}
 
 \item{Qn_fit_ext}{The results of an external fitting procedure used to
 estimate the outcome mechanism, to be used in constructing the TML or
 one-step estimator. The input provided must match the output of
-\code{\link{est_Q}} exactly; thus, use of this argument is only recommended
-for power users.}
+\code{\link{est_Q}} exactly; use of this argument is only recommended for
+power users.}
 }
 \value{
 S3 object of class \code{txshift} containing the results of the
@@ -130,7 +147,7 @@ S3 object of class \code{txshift} containing the results of the
  consistent and efficient when two-phase sampling is performed.
 }
 \description{
-Estimate Counterfactual Mean Under Stochastic Shift in Exposure
+Efficient Estimate of Counterfactual Mean of Stochastic Shift Intervention
 }
 \details{
 Construct a one-step estimate or targeted minimum loss estimate of
@@ -145,13 +162,13 @@ n_obs <- 100
 W <- replicate(2, rbinom(n_obs, 1, 0.5))
 A <- rnorm(n_obs, mean = 2 * W, sd = 1)
 Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
-C <- rbinom(n_obs, 1, plogis(W + Y)) # two-phase sampling
+C_samp <- rbinom(n_obs, 1, plogis(W + Y)) # two-phase sampling
 
-# construct a TML estimate (set estimator = "onestep" for the one-step)
+# construct a TML estimate
 tmle <- txshift(
   W = W, A = A, Y = Y, delta = 0.5,
-  estimator = "tmle",
-  g_fit_args = list(
+  estimator = "onestep",
+  g_exp_fit_args = list(
     fit_type = "hal", n_bins = 5,
     grid_type = "equal_range",
     lambda_seq = exp(-1:-9)
@@ -162,16 +179,58 @@ tmle <- txshift(
   )
 )
 
-# construct a TML estimate under two-phase sampling
-ipcwtmle <- txshift(
-  W = W, A = A, Y = Y, delta = 0.5,
-  C = C, V = c("W", "Y"),
-  estimator = "tmle", max_iter = 5,
-  ipcw_fit_args = list(fit_type = "glm"),
-  g_fit_args = list(
+# add a natural censoring process and construct a TML estimate
+C_cens <- rbinom(n_obs, 1, plogis(rowSums(W) + 0.5))
+tmle <- txshift(
+  W = W, A = A, C_cens = C_cens, Y = Y, delta = 0.5,
+  estimator = "onestep",
+  g_exp_fit_args = list(
     fit_type = "hal", n_bins = 5,
     grid_type = "equal_range",
     lambda_seq = exp(-1:-9)
+  ),
+  g_cens_fit_args = list(
+    fit_type = "glm",
+    glm_formula = "C_cens ~ ."
+  ),
+  Q_fit_args = list(
+    fit_type = "glm",
+    glm_formula = "Y ~ ."
+  )
+)
+
+# construct a TML estimate under two-phase sampling
+ipcwtmle <- txshift(
+  W = W, A = A, Y = Y, delta = 0.5,
+  C_samp = C_samp, V = c("W", "Y"),
+  estimator = "onestep", max_iter = 5,
+  samp_fit_args = list(fit_type = "glm"),
+  g_exp_fit_args = list(
+    fit_type = "hal", n_bins = 5,
+    grid_type = "equal_range",
+    lambda_seq = exp(-1:-9)
+  ),
+  Q_fit_args = list(
+    fit_type = "glm",
+    glm_formula = "Y ~ ."
+  ),
+  eif_reg_type = "glm"
+)
+
+# construct a TML estimate under two-phase sampling and loss to follow-up
+ipcwtmle <- txshift(
+  W = W, A = A, C_cens = C_cens, Y = Y, delta = 0.5,
+  C_samp = C_samp, V = c("W", "Y"),
+  estimator = "onestep", max_iter = 5,
+  samp_fit_args = list(fit_type = "glm"),
+  g_exp_fit_args = list(
+    fit_type = "hal", n_bins = 5,
+    grid_type = "equal_range",
+    lambda_seq = exp(-1:-9)
+  ),
+  g_cens_fit_args = list(
+    fit_type = "glm",
+    glm_formula = "C_cens ~ ."
   ),
   Q_fit_args = list(
     fit_type = "glm",

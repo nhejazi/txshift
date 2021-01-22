@@ -58,9 +58,9 @@ Qn_ext_fitted <- as.data.table(
 # fit TMLE
 tmle_txshift_std <- txshift(
   Y = Y, A = A, W = W, delta = delta_shift,
-  g_fit = list(fit_type = "external"),
-  gn_fit_ext = gn_ext_fitted,
-  Q_fit = list(fit_type = "external"),
+  g_exp_fit_args = list(fit_type = "external"),
+  gn_exp_fit_ext = gn_ext_fitted,
+  Q_fit_args = list(fit_type = "external"),
   Qn_fit_ext = Qn_ext_fitted,
   estimator = "tmle",
   fluctuation = "standard"
@@ -70,9 +70,9 @@ psi_std <- as.numeric(tmle_txshift_std$psi)
 # fit one-step
 tmle_txshift_wts <- txshift(
   Y = Y, A = A, W = W, delta = delta_shift,
-  g_fit = list(fit_type = "external"),
-  gn_fit_ext = gn_ext_fitted,
-  Q_fit = list(fit_type = "external"),
+  g_exp_fit_args = list(fit_type = "external"),
+  gn_exp_fit_ext = gn_ext_fitted,
+  Q_fit_args = list(fit_type = "external"),
   Qn_fit_ext = Qn_ext_fitted,
   estimator = "tmle",
   fluctuation = "weighted"
@@ -87,13 +87,13 @@ test_that("TMLEs match for weighted v. standard fluctuation", {
 # Example of IPCW-based estimators by adding censoring node
 ipcw_tmle_glm_std <- txshift(
   W = W, A = A, Y = Y, delta = delta_shift,
-  C = C, V = c("W", "Y"),
+  C_samp = C, V = c("W", "Y"),
   estimator = "tmle",
   max_iter = 5,
-  ipcw_fit_args = list(fit_type = "glm"),
-  g_fit = list(fit_type = "external"),
-  gn_fit_ext = gn_ext_fitted[C == 1, ],
-  Q_fit = list(fit_type = "external"),
+  samp_fit_args = list(fit_type = "glm"),
+  g_exp_fit_args = list(fit_type = "external"),
+  gn_exp_fit_ext = gn_ext_fitted[C == 1, ],
+  Q_fit_args = list(fit_type = "external"),
   Qn_fit_ext = Qn_ext_fitted[C == 1, ],
   eif_reg_type = "glm",
   fluctuation = "standard"
@@ -102,13 +102,13 @@ psi_ipcw_tmle_glm_std <- as.numeric(ipcw_tmle_glm_std$psi)
 
 ipcw_tmle_glm_wts <- txshift(
   W = W, A = A, Y = Y, delta = delta_shift,
-  C = C, V = c("W", "Y"),
+  C_samp = C, V = c("W", "Y"),
   estimator = "tmle",
   max_iter = 5,
-  ipcw_fit_args = list(fit_type = "glm"),
-  g_fit = list(fit_type = "external"),
-  gn_fit_ext = gn_ext_fitted[C == 1, ],
-  Q_fit = list(fit_type = "external"),
+  samp_fit_args = list(fit_type = "glm"),
+  g_exp_fit_args = list(fit_type = "external"),
+  gn_exp_fit_ext = gn_ext_fitted[C == 1, ],
+  Q_fit_args = list(fit_type = "external"),
   Qn_fit_ext = Qn_ext_fitted[C == 1, ],
   eif_reg_type = "glm",
   fluctuation = "weighted"
@@ -123,13 +123,13 @@ test_that("IPCW-TMLEs w/ EIF-GLM match for weighted v. standard fluctuation", {
 # Example of IPCW-based estimators by adding censoring node
 ipcw_tmle_hal_std <- txshift(
   W = W, A = A, Y = Y, delta = delta_shift,
-  C = C, V = c("W", "Y"),
+  C_samp = C, V = c("W", "Y"),
   estimator = "tmle",
   max_iter = 5,
-  ipcw_fit_args = list(fit_type = "glm"),
-  g_fit = list(fit_type = "external"),
-  gn_fit_ext = gn_ext_fitted[C == 1, ],
-  Q_fit = list(fit_type = "external"),
+  samp_fit_args = list(fit_type = "glm"),
+  g_exp_fit_args = list(fit_type = "external"),
+  gn_exp_fit_ext = gn_ext_fitted[C == 1, ],
+  Q_fit_args = list(fit_type = "external"),
   Qn_fit_ext = Qn_ext_fitted[C == 1, ],
   eif_reg_type = "hal",
   fluctuation = "standard"
@@ -138,13 +138,13 @@ psi_ipcw_tmle_hal_std <- as.numeric(ipcw_tmle_hal_std$psi)
 
 ipcw_tmle_hal_wts <- txshift(
   W = W, A = A, Y = Y, delta = delta_shift,
-  C = C, V = c("W", "Y"),
+  C_samp = C, V = c("W", "Y"),
   estimator = "tmle",
   max_iter = 5,
-  ipcw_fit_args = list(fit_type = "glm"),
-  g_fit = list(fit_type = "external"),
-  gn_fit_ext = gn_ext_fitted[C == 1, ],
-  Q_fit = list(fit_type = "external"),
+  samp_fit_args = list(fit_type = "glm"),
+  g_exp_fit_args = list(fit_type = "external"),
+  gn_exp_fit_ext = gn_ext_fitted[C == 1, ],
+  Q_fit_args = list(fit_type = "external"),
   Qn_fit_ext = Qn_ext_fitted[C == 1, ],
   eif_reg_type = "hal",
   fluctuation = "weighted"

@@ -10,7 +10,7 @@ fit_fluctuation(
   Hn,
   ipc_weights = rep(1, length(Y)),
   method = c("standard", "weighted"),
-  flucmod_tol = 100
+  flucmod_tol = 50
 )
 }
 \arguments{

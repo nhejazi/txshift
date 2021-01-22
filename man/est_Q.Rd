@@ -2,14 +2,15 @@
 % Please edit documentation in R/fit_mechanisms.R
 \name{est_Q}
 \alias{est_Q}
-\title{Estimate the Outcome Regression}
+\title{Estimate the Outcome Mechanism}
 \usage{
 est_Q(
   Y,
+  C_cens = rep(1, length(Y)),
   A,
   W,
   delta = 0,
-  ipc_weights = rep(1, length(Y)),
+  samp_weights = rep(1, length(Y)),
   fit_type = c("sl", "glm"),
   glm_formula = "Y ~ .",
   sl_learners = NULL
@@ -18,16 +19,19 @@ est_Q(
 \arguments{
 \item{Y}{A \code{numeric} vector of observed outcomes.}
 
-\item{A}{A \code{numeric} vector of observed treatment values.}
+\item{C_cens}{A \code{numeric} vector of loss to follow-up indicators.}
+
+\item{A}{A \code{numeric} vector of observed exposure values.}
 
 \item{W}{A \code{numeric} matrix of observed baseline covariate values.}
 
 \item{delta}{A \code{numeric} indicating the magnitude of the shift to be
-computed for the treatment \code{A}. This is passed to the internal
+computed for the exposure \code{A}. This is passed to the internal
 \code{\link{shift_additive}} and is currently limited to additive shifts.}
 
-\item{ipc_weights}{A \code{numeric} vector of observation-level weights, as
-produced by the internal procedure to estimate the censoring mechanism.}
+\item{samp_weights}{A \code{numeric} vector of observation-level sampling
+weights, as produced by the internal procedure to estimate the two-phase
+sampling mechanism \code{\link{est_samp}}.}
 
 \item{fit_type}{A \code{character} indicating whether to use GLMs or Super
 Learner to fit the outcome regression. If the option "glm" is selected, the
@@ -38,8 +42,8 @@ the option "sl" is selected, the argument \code{sl_learners} must NOT be
 specifying learners and a metalearner for the Super Learner fit, must be
 provided. Consult the documentation of \pkg{sl3} for details.}
 
-\item{glm_formula}{A \code{character} corresponding to a \code{formula} to
-be used in fitting a generalized linear model via \code{\link[stats]{glm}}.}
+\item{glm_formula}{A \code{character} giving a \code{\link[stats]{formula}}
+for fitting a (generalized) linear model via \code{\link[stats]{glm}}.}
 
 \item{sl_learners}{Object containing a set of instantiated learners from the
 \pkg{sl3}, to be used in fitting an ensemble model.}
@@ -50,10 +54,11 @@ A \code{data.table} with two columns, containing estimates of the
  upshift of the exposure Q(A + delta, W).
 }
 \description{
-Estimate the Outcome Regression
+Estimate the Outcome Mechanism
 }
 \details{
 Compute the outcome regression for the observed data, including
- with the shift imposed by the intervention. This returns the propensity
- score for the observed data (at A_i) and the shift (at A_i - delta).
+ with the shift imposed by the intervention. This returns the outcome
+ regression for the observed data (at A) and under the counterfactual shift
+ shift (at A + delta).
 }

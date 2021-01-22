@@ -4,7 +4,7 @@
 \alias{confint.txshift}
 \title{Confidence Intervals for Counterfactual Mean Under Stochastic Intervention}
 \usage{
-\method{confint}{txshift}(object, parm = seq_len(object$psi), level = 0.95, ...)
+\method{confint}{txshift}(object, parm = seq_len(object$psi), level = 0.95, ..., ci_mult = NULL)
 }
 \arguments{
 \item{object}{An object of class \code{txshift}, as produced by invoking
@@ -18,6 +18,10 @@ for which to return confidence intervals.}
 interval to be computed.}
 
 \item{...}{Other arguments. Not currently used.}
+
+\item{ci_mult}{Pre-computed multipliers for generating confidence intervals.
+The default of \code{NULL} should generally NOT be changed and is only used
+by the internal machinery for creating simultaneous confidence bands.}
 }
 \value{
 A named \code{numeric} vector containing the parameter estimate from
@@ -40,7 +44,7 @@ Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
 txout <- txshift(
   W = W, A = A, Y = Y, delta = 0.5,
   estimator = "tmle",
-  g_fit_args = list(
+  g_exp_fit_args = list(
     fit_type = "hal", n_bins = 5,
     grid_type = "equal_mass",
     lambda_seq = exp(-1:-9)

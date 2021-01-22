@@ -4,7 +4,7 @@
 # R/`txshift`
 
 [![Travis-CI Build
-Status](https://travis-ci.org/nhejazi/txshift.svg?branch=master)](https://travis-ci.org/nhejazi/txshift)
+Status](https://travis-ci.com/nhejazi/txshift.svg?branch=master)](https://travis-ci.com/nhejazi/txshift)
 [![AppVeyor Build
 Status](https://ci.appveyor.com/api/projects/status/github/nhejazi/txshift?branch=master&svg=true)](https://ci.appveyor.com/project/nhejazi/txshift)
 [![Coverage
@@ -54,7 +54,7 @@ estimating equation. `txshift` extends this approach to compute
 IPC-weighted one-step and TML estimators of the counterfactual mean
 outcome under a shift stochastic treatment regime. The package is
 designed to implement the statistical methodology described in Hejazi et
-al. (2020).
+al. (2020) and extensions thereof.
 
 -----
 
@@ -112,78 +112,75 @@ A <- rnorm(n_obs, mean = 2 * W, sd = 1)
 Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
 
 # now, let's introduce a a two-stage sampling process
-C <- rbinom(n_obs, 1, plogis(W + Y))
+C_samp <- rbinom(n_obs, 1, plogis(W + Y))
 
 # fit the full-data TMLE (ignoring two-phase sampling)
 tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
                 estimator = "tmle",
-                g_fit_args = list(fit_type = "hal",
-                                  n_bins = 5,
-                                  grid_type = "equal_mass",
-                                  lambda_seq = exp(seq(-1, -9, length = 300))),
+                g_exp_fit_args = list(fit_type = "hal",
+                                      n_bins = 5,
+                                      grid_type = "equal_mass",
+                                      lambda_seq = exp(seq(-1, -9,
+                                                           length = 300))),
                 Q_fit_args = list(fit_type = "glm",
                                   glm_formula = "Y ~ .")
                )
-summary(tmle)
-#>     lwr_ci  param_est     upr_ci  param_var   eif_mean  estimator     n_iter 
-#>     0.7474     0.7782     0.8061      2e-04 7.0199e-11       tmle          0
+print(tmle)
+```
+
+``` r
 
 # fit a full-data one-step estimator for comparison (again, no sampling)
 os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
               estimator = "onestep",
-              g_fit_args = list(fit_type = "hal",
-                                n_bins = 5,
-                                grid_type = "equal_mass",
-                                lambda_seq = exp(seq(-1, -9, length = 300))),
+              g_exp_fit_args = list(fit_type = "hal",
+                                    n_bins = 5,
+                                    grid_type = "equal_mass",
+                                    lambda_seq = exp(seq(-1, -9,
+                                                         length = 300))),
               Q_fit_args = list(fit_type = "glm",
                                 glm_formula = "Y ~ .")
              )
-summary(os)
-#>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-#>      0.7472      0.7779      0.8059       2e-04 -1.6704e-03     onestep 
-#>      n_iter 
-#>           0
+print(os)
+```
+
+``` r
 
 # fit an IPCW-TMLE to account for the two-phase sampling process
 ipcw_tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
-                     C = C, V = c("W", "Y"),
+                     C_samp = C_samp, V = c("W", "Y"),
                      estimator = "tmle",
                      max_iter = 5,
-                     ipcw_fit_args = list(fit_type = "glm"),
-                     g_fit_args = list(fit_type = "hal",
-                                       n_bins = 5,
-                                       grid_type = "equal_mass",
-                                       lambda_seq =
-                                         exp(seq(-1, -9, length = 300))),
+                     samp_fit_args = list(fit_type = "glm"),
+                     g_exp_fit_args = list(fit_type = "hal",
+                                           n_bins = 5,
+                                           grid_type = "equal_mass",
+                                           lambda_seq =
+                                             exp(seq(-1, -9, length = 300))),
                      Q_fit_args = list(fit_type = "glm",
                                        glm_formula = "Y ~ ."),
                      eif_reg_type = "glm"
                     )
-summary(ipcw_tmle)
-#>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-#>      0.7435      0.7765      0.8063       3e-04 -4.0365e-05        tmle 
-#>      n_iter 
-#>           1
+print(ipcw_tmle)
+```
+
+``` r
 
 # compare with an IPCW-agumented one-step estimator under two-phase sampling
 ipcw_os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
-                   C = C, V = c("W", "Y"),
+                   C_samp = C_samp, V = c("W", "Y"),
                    estimator = "onestep",
-                   ipcw_fit_args = list(fit_type = "glm"),
-                   g_fit_args = list(fit_type = "hal",
-                                     n_bins = 5,
-                                     grid_type = "equal_mass",
-                                     lambda_seq =
-                                       exp(seq(-1, -9, length = 300))),
+                   samp_fit_args = list(fit_type = "glm"),
+                   g_exp_fit_args = list(fit_type = "hal",
+                                         n_bins = 5,
+                                         grid_type = "equal_mass",
+                                         lambda_seq =
+                                           exp(seq(-1, -9, length = 300))),
                    Q_fit_args = list(fit_type = "glm",
                                      glm_formula = "Y ~ ."),
                    eif_reg_type = "glm"
                   )
-summary(ipcw_os)
-#>      lwr_ci   param_est      upr_ci   param_var    eif_mean   estimator 
-#>      0.7427      0.7758      0.8058       3e-04 -2.0555e-03     onestep 
-#>      n_iter 
-#>           0
+print(ipcw_os)
 ```
 
 -----
@@ -285,14 +282,14 @@ LM012417-02](https://projectreporter.nih.gov/project_info_description.cfm?aid=92
 
 ## License
 
-© 2017-2020 [Nima S. Hejazi](https://nimahejazi.org)
+© 2017-2021 [Nima S. Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the MIT license.
 See below for details:
 
     MIT License
     
-    Copyright (c) 2017-2020 Nima S. Hejazi
+    Copyright (c) 2017-2021 Nima S. Hejazi
     
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal

@@ -43,7 +43,7 @@ if (require("sl3")) {
   tmle_fits <- lapply(delta_grid, function(delta) {
     tmle <- txshift(
       Y = Y, A = A, W = W, delta = delta, estimator = "tmle",
-      g_fit_args = list(fit_type = "sl", sl_learners_density = sl_density),
+      g_exp_fit_args = list(fit_type = "sl", sl_learners_density = sl_density),
       Q_fit_args = list(fit_type = "sl", sl_learners = sl)
     )
     return(tmle)
@@ -53,7 +53,7 @@ if (require("sl3")) {
   msm_tmle <- msm_vimshift(
     W = W, A = A, Y = Y,
     delta_grid = delta_grid, estimator = "tmle", ci_type = "marginal",
-    g_fit_args = list(fit_type = "sl", sl_learners_density = sl_density),
+    g_exp_fit_args = list(fit_type = "sl", sl_learners_density = sl_density),
     Q_fit_args = list(fit_type = "sl", sl_learners = sl)
   )
 
@@ -65,7 +65,7 @@ if (require("sl3")) {
   os_fits <- lapply(delta_grid, function(delta) {
     os <- txshift(
       Y = Y, A = A, W = W, delta = delta, estimator = "onestep",
-      g_fit_args = list(fit_type = "sl", sl_learners_density = sl_density),
+      g_exp_fit_args = list(fit_type = "sl", sl_learners_density = sl_density),
       Q_fit_args = list(fit_type = "sl", sl_learners = sl)
     )
     return(os)
@@ -74,7 +74,7 @@ if (require("sl3")) {
 
   msm_os <- msm_vimshift(
     W = W, A = A, Y = Y, estimator = "onestep", ci_type = "marginal",
-    g_fit_args = list(fit_type = "sl", sl_learners_density = sl_density),
+    g_exp_fit_args = list(fit_type = "sl", sl_learners_density = sl_density),
     Q_fit_args = list(fit_type = "sl", sl_learners = sl),
   )
 

@@ -14,12 +14,15 @@ warnings_are_errors: true
 r_build_args: '--no-manual'
 r_check_args: '--no-build-vignettes --no-manual'
 
+addons:
+  apt:
+    packages:
+      - libgit2-dev
+
 r:
+  - oldrel
   - release
   - devel
-
-before_install:
-  - Rscript -e 'update.packages(ask = FALSE)'
 
 r_packages:
   - devtools
@@ -31,13 +34,11 @@ r_packages:
 r_github_packages:
   - r-lib/covr
   - r-lib/sessioninfo
-  - tlverse/hal9001
-  - nhejazi/haldensify
   - tlverse/sl3
 
 after_success:
   ## coverage
-  - travis_wait 80 Rscript -e "covr::codecov(line_exclusions = list('R/utils.R'))"
+  - travis_wait 80 Rscript -e "covr::codecov(line_exclusions = list('R/utils.R', 'R/plots.R'))"
 
 on_failure:
   - "./travis-tool.sh dump_logs"

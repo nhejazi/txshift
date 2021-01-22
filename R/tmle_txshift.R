@@ -1,27 +1,29 @@
-#' Compute Targeted Minimum Loss Estimate of Counterfactual Mean Under
-#' Stochastic Shift Intervention
+#' Targeted Minimum Loss Estimate of Counterfactual Mean of Stochastic Shift
+#' Intervention
 #'
 #' @details Invokes the procedure to construct a targeted minimum loss estimate
 #'  (TMLE) of the counterfactual mean under a modified treatment policy.
 #'
 #' @param data_internal A \code{data.table} constructed internally by a call to
-#'  \code{\link{txshift}}. This contains most of the data for computing the TML
-#'  estimator.
-#' @param C A \code{numeric} indicator for whether a given observation was
-#'  subject to censoring, used to compute an IPCW-TMLE in cases where two-stage
-#'  sampling is performed. Default assumes no censoring.
+#'  \code{\link{txshift}}. This contains most of the data for computing the
+#'  targeted minimum loss (TML) estimator.
+#' @param C_samp A \code{numeric} indicator for whether a given observation was
+#'  included in the second-stage sample, used to compute an IPC-weighted
+#'  one-step estimator in cases where two-stage sampling is performed. Default
+#'  assumes no censoring due to sampling.
 #' @param V The covariates that are used in determining the sampling procedure
 #'  that gives rise to censoring. The default is \code{NULL} and corresponds to
 #'  scenarios in which there is no censoring (in which case all values in the
-#'  preceding argument \code{C} must be uniquely 1. To specify this, pass in a
+#'  preceding argument \code{C_samp} must be 1. To specify this, pass in a
 #'  NAMED \code{list} identifying variables amongst W, A, Y that are thought to
-#'  have played a role in defining the sampling/censoring mechanism (C).
+#'  have played a role in defining the sampling mechanism.
 #' @param delta A \code{numeric} value indicating the shift in the treatment to
 #'  be used in defining the target parameter. This is defined with respect to
 #'  the scale of the treatment (A).
-#' @param ipcw_estim An object providing the value of the censoring mechanism
+#' @param samp_estim An object providing the value of the sampling mechanism
 #'  evaluated across the full data. This object is passed in after being
-#'  constructed by a call to the internal function \code{\link{est_ipcw}}.
+#'  constructed by a call to the internal function \code{\link{est_samp}}.
+#' @param gn_cens_weights TODO: document
 #' @param Qn_estim An object providing the value of the outcome evaluated after
 #'  imposing a shift in the treatment. This object is passed in after being
 #'  constructed by a call to the internal function \code{\link{est_Q}}.
@@ -42,17 +44,18 @@
 #'  Set this to \code{"glm"} to instead use a simple linear regression model.
 #'  In this step, the efficient influence function (EIF) is regressed against
 #'  covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).
-#' @param ipcw_fit_args A \code{list} of arguments, all but one of which are
-#'  passed to \code{\link{est_ipcw}}. For details, consult the documentation
-#'  for \code{\link{est_ipcw}}. The first element (i.e., \code{fit_type}) is
+#' @param samp_fit_args A \code{list} of arguments, all but one of which are
+#'  passed to \code{\link{est_samp}}. For details, consult the documentation
+#'  for \code{\link{est_samp}}. The first element (i.e., \code{fit_type}) is
 #'  used to determine how this regression is fit: "glm" for generalized linear
 #'  model, "sl" for a Super Learner, and "external" for a user-specified input
-#'  of the form produced by \code{\link{est_ipcw}}.
+#'  of the form produced by \code{\link{est_samp}}.
 #' @param ipcw_efficiency Whether to invoke an augmentation of the IPCW-TMLE
 #'  procedure that performs an iterative process to ensure efficiency of the
 #'  resulting estimate. The default is \code{TRUE}; set to \code{FALSE} to use
 #'  an IPC-weighted loss rather than the IPC-augmented influence function.
 #'
+#' @importFrom assertthat assert_that
 #' @importFrom data.table as.data.table setnames
 #' @importFrom stringr str_detect
 #' @importFrom Rdpack reprompt
@@ -60,33 +63,37 @@
 #' @return S3 object of class \code{txshift} containing the results of the
 #'  procedure to compute a TML estimate of the treatment shift parameter.
 tmle_txshift <- function(data_internal,
-                         C = rep(1, nrow(data_internal)),
+                         C_samp = rep(1, nrow(data_internal)),
                          V = NULL,
                          delta,
-                         ipcw_estim,
+                         samp_estim,
+                         gn_cens_weights,
                          Qn_estim,
                          Hn_estim,
                          fluctuation = c("standard", "weighted"),
                          max_iter = 10,
                          eif_reg_type = c("hal", "glm"),
-                         ipcw_fit_args,
+                         samp_fit_args,
                          ipcw_efficiency = TRUE) {
   # initialize counter
   n_steps <- 0
 
-  # extract and normalize sampling mechanism weights
-  cens_weights <- C / ipcw_estim$pi_mech
-  cens_weights_norm <- cens_weights / sum(cens_weights)
+  # construct (two-phase) sampling mechanism weights
+  samp_weights <- C_samp / samp_estim
 
   # invoke efficient IPCW-TMLE if satisfied; otherwise ineffecient variant
-  if (ipcw_efficiency & !all(C == 1) & !is.null(V) & !is.null(ipcw_estim)) {
-    # programmatic bookkeeping
+  if (!all(C_samp == 1) && ipcw_efficiency) {
+    # checks for necessary components for augmented EIF procedure
+    assertthat::assert_that(!is.null(samp_estim))
+    assertthat::assert_that(!is.null(V))
+
+    # bookkeeping for convergence of iterative procedure
     eif_mean <- Inf
-    eif_tol <- 1 / length(cens_weights)
+    eif_tol <- 1 / length(samp_weights)
     conv_res <- matrix(replicate(3, rep(NA_real_, max_iter)), nrow = max_iter)
 
-    # quantities to be updated across iterations
-    pi_mech_star <- ipcw_estim$pi_mech
+    # quantities to be updated across targeting iterations
+    pi_mech_star <- samp_estim
     Qn_estim_updated <- Qn_estim
 
     # iterate procedure until convergence conditions are satisfied
@@ -96,14 +103,16 @@ tmle_txshift <- function(data_internal,
 
       # update fluctuation model, re-compute EIF, overwrite EIF
       tmle_ipcw_eif <- ipcw_eif_update(
-        data_in = data_internal,
-        C = C,
+        data_internal = data_internal,
+        C_samp = C_samp,
         V = V,
         ipc_mech = pi_mech_star,
-        ipc_weights = cens_weights,
-        ipc_weights_norm = cens_weights_norm,
+        # NOTE: we update pi_mech_star and samp_weights in this procedure, so
+        #       only need to rescale by factor gn_cens_weights each iteration
+        ipc_weights = (gn_cens_weights * samp_weights[C_samp == 1]),
         Qn_estim = Qn_estim_updated,
-        Hn_estim = Hn_estim, # N.B., g_n never gets updated in this procedure
+        # NOTE: directly pass in Hn since gn never updated in this procedure
+        Hn_estim = Hn_estim,
         estimator = "tmle",
         fluctuation = fluctuation,
         eif_reg_type = eif_reg_type
@@ -123,26 +132,25 @@ tmle_txshift <- function(data_internal,
       )
       data.table::setnames(Qn_estim_updated, names(Qn_estim))
 
-      # updated sampling/censoring weights and stabilize
-      cens_weights <- tmle_ipcw_eif$ipc_weights
-      cens_weights <- cens_weights / mean(cens_weights)
-      cens_weights_norm <- tmle_ipcw_eif$ipc_weights_norm
+      # updated sampling weights and stabilize
+      samp_weights <- tmle_ipcw_eif$ipc_weights
       pi_mech_star <- tmle_ipcw_eif$pi_mech_star
 
       # compute updated mean of efficient influence function and save
-      eif_ipcw <- tmle_ipcw_eif$eif_eval$eif - tmle_ipcw_eif$ipcw_eif_component
+      eif_ipcw <- tmle_ipcw_eif$eif_eval$eif -
+        tmle_ipcw_eif$ipcw_eif_component
       eif_mean <- mean(eif_ipcw)
-      eif_var <- var(eif_ipcw) / length(cens_weights)
+      eif_var <- var(eif_ipcw) / length(samp_weights)
       conv_res[n_steps, ] <- c(tmle_ipcw_eif$eif_eval$psi, eif_var, eif_mean)
 
       # TMLE convergence criterion based on re-scaled standard error
-      tol_scaling <- 1 / (max(10, log(length(cens_weights))))
+      tol_scaling <- 1 / (max(10, log(length(samp_weights))))
       eif_tol <- sqrt(eif_var) * tol_scaling
     }
+
+    # set to DT and subset to only the useful convergence results
     conv_res <- data.table::as.data.table(conv_res)
     data.table::setnames(conv_res, c("psi", "var", "eif_mean"))
-
-    # return only the useful convergence results
     conv_res <- conv_res[!is.na(rowSums(conv_res)), ]
 
     # create output object
@@ -151,10 +159,11 @@ tmle_txshift <- function(data_internal,
         psi = as.numeric(unlist(conv_res[n_steps, "psi"])),
         var = as.numeric(unlist(conv_res[n_steps, "var"])),
         eif = list(eif_ipcw),
-        iter_res = list(conv_res),
+        .iter_res = list(conv_res),
         n_iter = n_steps,
         estimator = "tmle",
-        outcome = list(data_internal$Y)
+        .outcome = list(data_internal$Y),
+        .delta = delta
       ),
       recursive = FALSE
     )
@@ -164,7 +173,7 @@ tmle_txshift <- function(data_internal,
       Y = data_internal$Y,
       Qn_scaled = Qn_estim,
       Hn = Hn_estim,
-      ipc_weights = cens_weights[C == 1],
+      ipc_weights = (gn_cens_weights * samp_weights[C_samp == 1]),
       method = fluctuation
     )
 
@@ -175,9 +184,8 @@ tmle_txshift <- function(data_internal,
       Hn = Hn_estim,
       estimator = "tmle",
       fluc_mod_out = fitted_fluc_mod,
-      Delta = C,
-      ipc_weights = cens_weights[C == 1],
-      ipc_weights_norm = cens_weights_norm[C == 1]
+      C_samp = C_samp,
+      ipc_weights = (gn_cens_weights * samp_weights[C_samp == 1])
     )
 
     # create output object
@@ -186,10 +194,11 @@ tmle_txshift <- function(data_internal,
         psi = tmle_eif_out[["psi"]],
         var = tmle_eif_out[["var"]],
         eif = list(tmle_eif_out[["eif"]]),
-        iter_res = NULL,
+        .iter_res = NULL,
         n_iter = n_steps,
         estimator = "tmle",
-        outcome = list(data_internal$Y)
+        .outcome = list(data_internal$Y),
+        .delta = delta
       ),
       recursive = FALSE
     )
@@ -200,7 +209,7 @@ tmle_txshift <- function(data_internal,
   return(txshift_out)
 }
 
-################################################################################
+###############################################################################
 
 #' Fit One-Dimensional Fluctuation Model for Updating Initial Estimates
 #'
@@ -240,7 +249,7 @@ fit_fluctuation <- function(Y,
                             Hn,
                             ipc_weights = rep(1, length(Y)),
                             method = c("standard", "weighted"),
-                            flucmod_tol = 100) {
+                            flucmod_tol = 50) {
 
   # scale the outcome for the logit transform
   y_star <- scale_to_unit(

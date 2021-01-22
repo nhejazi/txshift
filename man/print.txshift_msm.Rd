@@ -12,8 +12,8 @@
 \item{...}{Other options (not currently used).}
 }
 \value{
-None. Called for the side effect of printing particular slots of
- objects of class \code{txshift_msm}.
+None. Called for the side effect of printing an informative summary
+ of slots of objects of class \code{txshift_msm}.
 }
 \description{
 Print Method for Marginal Structural Models
@@ -30,7 +30,7 @@ if (require("sl3")) {
   Y <- rbinom(n_obs, 1, plogis(2 * A - W))
   msm <- msm_vimshift(
     W = W, A = A, Y = Y, estimator = "tmle",
-    g_fit_args = list(
+    g_exp_fit_args = list(
       fit_type = "sl",
       sl_learners_density = Lrnr_density_hse$new(Lrnr_glm$new())
     ),

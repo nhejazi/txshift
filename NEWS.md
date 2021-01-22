@@ -1,3 +1,33 @@
+# txshift 0.3.5
+
+As of January 2021:
+* Simulation experiments testing the performance of the procedures in the
+  presence of loss to follow-up censoring indicate that the TML estimator
+  outperforms the one-step for the EIF-based two-phase sampling correction.
+  Generally, we recommend use of the TML estimator (which remains the default)
+  in all settings, though performance of the one-step estimator is not severely
+  degraded.
+
+As of December 2020:
+* A `delta` slot has been added to the `txshift` class to record the shift.
+* Hidden slots have been similarly added to the `txshift_msm` class.
+* The `summary` method has been removed, with the functionality now supported
+  by the `print` methods for the `txshift` and `txshift_msm` classes.
+* The `plot` method has been amended to support simultaneous confidence bands.
+
+As of October 2020:
+* Changes all references to the argument `C` to `C_samp` for the indicator of
+  inclusion in the second-stage sample.
+* Adds the new argument `C_cens` to denote censoring due to loss to follow-up,
+  i.e., prior to the occurrence of the outcome.
+* Adds a nuisance regression for censoring `C_cens` and adjusts the estimation
+  procedure so as to use inverse censoring weights in the full-data EIF
+  procedure (NOTE: these are not updated in the two-phase sampling correction).
+* Renaming of arguments to internal functions and functions themselves:
+  * From `est_g` to `est_g_exp` for the exposure mechanism density estimation
+  * From `est_ipcw` to `est_samp` for the two-phase sampling mechanism
+  * Add `est_g_cens` for the loss to follow-up censoring mechanism
+
 # txshift 0.3.4
 
 As of September 2020:

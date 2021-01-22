@@ -82,8 +82,8 @@ if (require("sl3")) {
   # fit TMLE
   tmle <- txshift(
     Y = Y, A = A, W = W, delta = delta_shift,
-    g_fit = list(fit_type = "external"),
-    gn_fit_ext = gn_ext_fitted,
+    g_exp_fit_args = list(fit_type = "external"),
+    gn_exp_fit_ext = gn_ext_fitted,
     Q_fit = list(fit_type = "external"),
     Qn_fit_ext = Qn_ext_fitted,
     estimator = "tmle"
@@ -93,9 +93,9 @@ if (require("sl3")) {
   # fit one-step
   os <- txshift(
     Y = Y, A = A, W = W, delta = delta_shift,
-    g_fit = list(fit_type = "external"),
-    gn_fit_ext = gn_ext_fitted,
-    Q_fit = list(fit_type = "external"),
+    g_exp_fit_args = list(fit_type = "external"),
+    gn_exp_fit_ext = gn_ext_fitted,
+    Q_fit_args = list(fit_type = "external"),
     Qn_fit_ext = Qn_ext_fitted,
     estimator = "onestep"
   )
@@ -109,7 +109,7 @@ if (require("sl3")) {
   # fit TMLE for delta = 0
   tmle_noshift <- txshift(
     Y = Y, A = A, W = W, delta = 0, estimator = "tmle",
-    g_fit_args = list(fit_type = "sl", sl_learners_density = sl_density),
+    g_exp_fit_args = list(fit_type = "sl", sl_learners_density = sl_density),
     Q_fit_args = list(fit_type = "sl", sl_learners = sl)
   )
   tmle_psi_noshift <- as.numeric(tmle_noshift$psi)
@@ -117,7 +117,7 @@ if (require("sl3")) {
   # fit one-step for delta = 0
   os_noshift <- txshift(
     Y = Y, A = A, W = W, delta = 0, estimator = "onestep",
-    g_fit_args = list(fit_type = "sl", sl_learners_density = sl_density),
+    g_exp_fit_args = list(fit_type = "sl", sl_learners_density = sl_density),
     Q_fit_args = list(fit_type = "sl", sl_learners = sl)
   )
   os_psi_noshift <- as.numeric(os_noshift$psi)
@@ -131,13 +131,13 @@ if (require("sl3")) {
   # IPCW-based estimators by adding censoring node
   ipcw_tmle <- txshift(
     W = W, A = A, Y = Y, delta = delta_shift,
-    C = C, V = c("W", "Y"),
+    C_samp = C, V = c("W", "Y"),
     estimator = "tmle",
     max_iter = 5,
-    ipcw_fit_args = list(fit_type = "glm"),
-    g_fit = list(fit_type = "external"),
-    gn_fit_ext = gn_ext_fitted[C == 1, ],
-    Q_fit = list(fit_type = "external"),
+    samp_fit_args = list(fit_type = "glm"),
+    g_exp_fit_args = list(fit_type = "external"),
+    gn_exp_fit_ext = gn_ext_fitted[C == 1, ],
+    Q_fit_args = list(fit_type = "external"),
     Qn_fit_ext = Qn_ext_fitted[C == 1, ],
     eif_reg_type = "glm"
   )
@@ -145,12 +145,12 @@ if (require("sl3")) {
 
   ipcw_os <- txshift(
     W = W, A = A, Y = Y, delta = delta_shift,
-    C = C, V = c("W", "Y"),
+    C_samp = C, V = c("W", "Y"),
     estimator = "onestep",
-    ipcw_fit_args = list(fit_type = "glm"),
-    g_fit = list(fit_type = "external"),
-    gn_fit_ext = gn_ext_fitted[C == 1, ],
-    Q_fit = list(fit_type = "external"),
+    samp_fit_args = list(fit_type = "glm"),
+    g_exp_fit_args = list(fit_type = "external"),
+    gn_exp_fit_ext = gn_ext_fitted[C == 1, ],
+    Q_fit_args = list(fit_type = "external"),
     Qn_fit_ext = Qn_ext_fitted[C == 1, ],
     eif_reg_type = "glm"
   )
