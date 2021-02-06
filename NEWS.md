@@ -1,5 +1,9 @@
 # txshift 0.3.5
 
+As of February 2021:
+* Remove cross-linking to `sl3` functions as per request from CRAN. This can be
+  reversed once `sl3` is available on CRAN.
+
 As of January 2021:
 * Simulation experiments testing the performance of the procedures in the
   presence of loss to follow-up censoring indicate that the TML estimator

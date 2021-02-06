@@ -86,7 +86,7 @@ passed to \code{\link{est_g_exp}}. For details, see the documentation of
 how this regression is fit: \code{"hal"} to estimate conditional densities
 via the highly adaptive lasso (via \pkg{haldensify}), \code{"sl"} for
 \pkg{sl3} learners used to fit Super Learner ensembles to densities via
-\code{\link[sl3]{Lrnr_haldensify}} or similar, and \code{"external"} for
+\pkg{sl3}'s \code{Lrnr_haldensify} or similar, and \code{"external"} for
 user-specified input of the form produced by \code{\link{est_g_exp}}.}
 
 \item{g_cens_fit_args}{A \code{list} of arguments, all but one of which are

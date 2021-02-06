@@ -18,7 +18,7 @@ for inclusion in the second-phase sample.}
 using GLMs or a Super Learner ensemble model. If use of Super Learner is
 desired, then the argument \code{sl_learners} must be provided.}
 
-\item{sl_learners}{An \code{\link[sl3]{Lrnr_sl}} object, a Super Learner
+\item{sl_learners}{An \pkg{sl3} \code{Lrnr_sl} object, a Super Learner
 ensemble or learner instantiated externally using \pkg{sl3}.}
 }
 \value{

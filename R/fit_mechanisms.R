@@ -215,7 +215,7 @@ est_g_exp <- function(A,
 #'  argument \code{glm_formula} must NOT be \code{NULL}, instead containing a
 #'  model formula (as per \code{\link[stats]{glm}}) as a \code{character}. If
 #'  the option "sl" is selected, the argument \code{sl_learners} must NOT be
-#'  \code{NULL}; instead, an instantiated \code{\link[sl3]{Lrnr_sl}} object,
+#'  \code{NULL}; instead, an instantiated \pkg{sl3} \code{Lrnr_sl} object,
 #'  specifying learners and a metalearner for the Super Learner fit, must be
 #'  provided. Consult the documentation of \pkg{sl3} for details.
 #' @param glm_formula A \code{character} giving a \code{\link[stats]{formula}}
@@ -326,7 +326,7 @@ est_g_cens <- function(C_cens,
 #'  argument \code{glm_formula} must NOT be \code{NULL}, instead containing a
 #'  model formula (as per \code{\link[stats]{glm}}) as a \code{character}. If
 #'  the option "sl" is selected, the argument \code{sl_learners} must NOT be
-#'  \code{NULL}; instead, an instantiated \code{\link[sl3]{Lrnr_sl}} object,
+#'  \code{NULL}; instead, an instantiated \pkg{sl3} \code{Lrnr_sl} object,
 #'  specifying learners and a metalearner for the Super Learner fit, must be
 #'  provided. Consult the documentation of \pkg{sl3} for details.
 #' @param glm_formula A \code{character} giving a \code{\link[stats]{formula}}
@@ -484,7 +484,7 @@ est_Q <- function(Y,
 #' @param fit_type A \code{character} indicating whether to perform the fit
 #'  using GLMs or a Super Learner ensemble model. If use of Super Learner is
 #'  desired, then the argument \code{sl_learners} must be provided.
-#' @param sl_learners An \code{\link[sl3]{Lrnr_sl}} object, a Super Learner
+#' @param sl_learners An \pkg{sl3} \code{Lrnr_sl} object, a Super Learner
 #'  ensemble or learner instantiated externally using \pkg{sl3}.
 #'
 #' @importFrom stats glm predict binomial

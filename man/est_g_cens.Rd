@@ -30,7 +30,7 @@ Learner to fit the censoring mechanism. If option "glm" is selected, the
 argument \code{glm_formula} must NOT be \code{NULL}, instead containing a
 model formula (as per \code{\link[stats]{glm}}) as a \code{character}. If
 the option "sl" is selected, the argument \code{sl_learners} must NOT be
-\code{NULL}; instead, an instantiated \code{\link[sl3]{Lrnr_sl}} object,
+\code{NULL}; instead, an instantiated \pkg{sl3} \code{Lrnr_sl} object,
 specifying learners and a metalearner for the Super Learner fit, must be
 provided. Consult the documentation of \pkg{sl3} for details.}
 
