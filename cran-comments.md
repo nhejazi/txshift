@@ -1,9 +1,9 @@
 ## Test environments
-* local Ubuntu 20.04: R 4.0.2 (stable)
-* remote Ubuntu 16.04 on travis-ci:
+* local Ubuntu 20.04: R 4.0.3 (stable)
+* remote Ubuntu 18.04 on Travis-CI:
   * R 3.6.3 (old-stable)
-  * R 4.0.2 (stable)
-* Windows (on appveyor and winbuilder): R 4.0.2
+  * R 4.0.3 (stable)
+* Windows (on Appveyor and Winbuilder): R 4.0.3
 
 ## R CMD check results
 * There were 0 ERRORs.
@@ -14,11 +14,7 @@
 * Nothing to report.
 
 ## Additional Notes
-* This is a new CRAN submission.
-* In the initial attempt, there were two significant issues:
-  * A few more links throughout used `http`; these have been moved to `https`
-    or otherwise changed entirely.
-  * The old URL `https://sl3.tlverse.org` has been replaced by a corrected
-    version `https://tlverse.org/sl3/`
-  * Changing of user options via calls to `options()` in the vignettes have
-    been removed entirely.
+* This is an updated CRAN submission to fix an issue raised by CRAN.
+* The issue fixed concerns cross-referencing a package not available on CRAN:
+  * Instances of `\code{\link[sl3]{...}}` in the documentation were changed to
+      remove the `\link[]` statement.
