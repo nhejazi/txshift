@@ -9,7 +9,7 @@ Status](https://travis-ci.com/nhejazi/txshift.svg?branch=master)](https://travis
 Status](https://ci.appveyor.com/api/projects/status/github/nhejazi/txshift?branch=master&svg=true)](https://ci.appveyor.com/project/nhejazi/txshift)
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/nhejazi/txshift/master.svg)](https://codecov.io/github/nhejazi/txshift?branch=master)
-[![CRAN](http://www.r-pkg.org/badges/version/txshift)](http://www.r-pkg.org/pkg/txshift)
+[![CRAN](https://www.r-pkg.org/badges/version/txshift)](https://www.r-pkg.org/pkg/txshift)
 [![CRAN
 downloads](https://cranlogs.r-pkg.org/badges/txshift)](https://CRAN.R-project.org/package=txshift)
 [![Project Status: Active – The project has reached a stable, usable

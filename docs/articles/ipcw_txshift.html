@@ -90,7 +90,7 @@
 <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://www.sph.emory.edu/faculty/profile/#!dbenkes">David Benkeser</a>
 </h4>
             
-            <h4 class="date">2021-01-22</h4>
+            <h4 class="date">2021-02-06</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nhejazi/txshift/blob/master/vignettes/ipcw_txshift.Rmd"><code>vignettes/ipcw_txshift.Rmd</code></a></small>
       <div class="hidden name"><code>ipcw_txshift.Rmd</code></div>
@@ -107,7 +107,7 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://Rdatatable.gitlab.io/data.table">data.table</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/nhejazi/haldensify">haldensify</a></span><span class="op">)</span></code></pre></div>
-<pre><code>## haldensify v0.0.7: Highly Adaptive Lasso Conditional Density Estimation</code></pre>
+<pre><code>## haldensify v0.0.6: Highly Adaptive Lasso Conditional Density Estimation</code></pre>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/nhejazi/txshift">txshift</a></span><span class="op">)</span></code></pre></div>
 <pre><code>## txshift v0.3.5: Efficient Estimation of the Causal Effects of Stochastic Interventions</code></pre>
@@ -198,8 +198,8 @@
 <pre><code>## Intervention: Treatment + 0.5</code></pre>
 <pre><code>## txshift Estimator: tmle</code></pre>
 <pre><code>## Estimate: 2.0747</code></pre>
-<pre><code>## Std. Error: 0.093</code></pre>
-<pre><code>## 95% CI: [1.8925, 2.2569]</code></pre>
+<pre><code>## Std. Error: 0.0929</code></pre>
+<pre><code>## 95% CI: [1.8925, 2.2568]</code></pre>
 </div>
 <div id="interlude-constructing-optimal-stacked-regressions-with-sl3" class="section level3">
 <h3 class="hasAnchor">
@@ -280,7 +280,7 @@
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="op">(</span><span class="va">ci_shift</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/confint.html">confint</a></span><span class="op">(</span><span class="va">tmle_hal_shift_1</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>##   lwr_ci      est   upr_ci 
-## 1.891688 2.073788 2.255887</code></pre>
+## 1.891689 2.073784 2.255878</code></pre>
 </div>
 </div>
 <div id="advanced-usage-user-specified-regressions" class="section level2">

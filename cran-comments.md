@@ -14,7 +14,13 @@
 * Nothing to report.
 
 ## Additional Notes
-* This is an updated CRAN submission to fix an issue raised by CRAN.
-* The issue fixed concerns cross-referencing a package not available on CRAN:
+* This is a re-submission of a CRAN update that fixed an issue raised by CRAN:
   * Instances of `\code{\link[sl3]{...}}` in the documentation were changed to
-      remove the `\link[]` statement.
+      remove the `\link[]` statement referencing a package unavailable on CRAN.
+  * This re-submission fixes an issue concerning http vs. https links:
+                    Found the following (possibly) invalid URLs:
+                    URL: http://www.r-pkg.org/pkg/txshift (moved to
+                      https://www.r-pkg.org/pkg/txshift)
+                             From: README.md
+                             Status: 200
+                             Message: OK
