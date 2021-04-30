@@ -12,6 +12,8 @@ Status](https://img.shields.io/codecov/c/github/nhejazi/txshift/master.svg)](htt
 [![CRAN](https://www.r-pkg.org/badges/version/txshift)](https://www.r-pkg.org/pkg/txshift)
 [![CRAN
 downloads](https://cranlogs.r-pkg.org/badges/txshift)](https://CRAN.R-project.org/package=txshift)
+[![CRAN total
+downloads](http://cranlogs.r-pkg.org/badges/grand-total/txshift)](https://CRAN.R-project.org/package=txshift)
 [![Project Status: Active – The project has reached a stable, usable
 state and is being actively
 developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
@@ -102,11 +104,13 @@ treatment, consider the following example:
 
 ``` r
 library(txshift)
-library(haldensify)
+#> txshift v0.3.6: Efficient Estimation of the Causal Effects of Stochastic
+#> Interventions
+library(sl3)
 set.seed(429153)
 
 # simulate simple data
-n_obs <- 1000
+n_obs <- 500
 W <- replicate(2, rbinom(n_obs, 1, 0.5))
 A <- rnorm(n_obs, mean = 2 * W, sd = 1)
 Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
@@ -115,72 +119,78 @@ Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
 C_samp <- rbinom(n_obs, 1, plogis(W + Y))
 
 # fit the full-data TMLE (ignoring two-phase sampling)
-tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
-                estimator = "tmle",
-                g_exp_fit_args = list(fit_type = "hal",
-                                      n_bins = 5,
-                                      grid_type = "equal_mass",
-                                      lambda_seq = exp(seq(-1, -9,
-                                                           length = 300))),
-                Q_fit_args = list(fit_type = "glm",
-                                  glm_formula = "Y ~ .")
-               )
-print(tmle)
-```
-
-``` r
+tmle <- txshift(
+  W = W, A = A, Y = Y, delta = 0.5,
+  estimator = "tmle",
+  g_exp_fit_args = list(
+    fit_type = "sl",
+    sl_learners_density = Lrnr_density_hse$new(Lrnr_hal9001$new())
+  ),
+  Q_fit_args = list(fit_type = "glm", glm_formula = "Y ~ .")
+)
+tmle
+#> Counterfactual Mean of Shifted Treatment
+#> Intervention: Treatment + 0.5
+#> txshift Estimator: tmle
+#> Estimate: 0.7672
+#> Std. Error: 0.0192
+#> 95% CI: [0.7275, 0.8027]
 
 # fit a full-data one-step estimator for comparison (again, no sampling)
-os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
-              estimator = "onestep",
-              g_exp_fit_args = list(fit_type = "hal",
-                                    n_bins = 5,
-                                    grid_type = "equal_mass",
-                                    lambda_seq = exp(seq(-1, -9,
-                                                         length = 300))),
-              Q_fit_args = list(fit_type = "glm",
-                                glm_formula = "Y ~ .")
-             )
-print(os)
-```
-
-``` r
+os <- txshift(
+  W = W, A = A, Y = Y, delta = 0.5,
+  estimator = "onestep",
+  g_exp_fit_args = list(
+    fit_type = "sl",
+    sl_learners_density = Lrnr_density_hse$new(Lrnr_hal9001$new())
+  ),
+  Q_fit_args = list(fit_type = "glm", glm_formula = "Y ~ .")
+)
+os
+#> Counterfactual Mean of Shifted Treatment
+#> Intervention: Treatment + 0.5
+#> txshift Estimator: onestep
+#> Estimate: 0.7671
+#> Std. Error: 0.0192
+#> 95% CI: [0.7274, 0.8027]
 
 # fit an IPCW-TMLE to account for the two-phase sampling process
-ipcw_tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
-                     C_samp = C_samp, V = c("W", "Y"),
-                     estimator = "tmle",
-                     max_iter = 5,
-                     samp_fit_args = list(fit_type = "glm"),
-                     g_exp_fit_args = list(fit_type = "hal",
-                                           n_bins = 5,
-                                           grid_type = "equal_mass",
-                                           lambda_seq =
-                                             exp(seq(-1, -9, length = 300))),
-                     Q_fit_args = list(fit_type = "glm",
-                                       glm_formula = "Y ~ ."),
-                     eif_reg_type = "glm"
-                    )
-print(ipcw_tmle)
-```
-
-``` r
+tmle_ipcw <- txshift(
+  W = W, A = A, Y = Y, delta = 0.5, C_samp = C_samp, V = c("W", "Y"),
+  estimator = "tmle", max_iter = 5, eif_reg_type = "glm",
+  samp_fit_args = list(fit_type = "glm"),
+  g_exp_fit_args = list(
+    fit_type = "sl",
+    sl_learners_density = Lrnr_density_hse$new(Lrnr_hal9001$new())
+  ),
+  Q_fit_args = list(fit_type = "glm", glm_formula = "Y ~ .")
+)
+tmle_ipcw
+#> Counterfactual Mean of Shifted Treatment
+#> Intervention: Treatment + 0.5
+#> txshift Estimator: tmle
+#> Estimate: 0.7602
+#> Std. Error: 0.0203
+#> 95% CI: [0.7181, 0.7978]
 
 # compare with an IPCW-agumented one-step estimator under two-phase sampling
-ipcw_os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
-                   C_samp = C_samp, V = c("W", "Y"),
-                   estimator = "onestep",
-                   samp_fit_args = list(fit_type = "glm"),
-                   g_exp_fit_args = list(fit_type = "hal",
-                                         n_bins = 5,
-                                         grid_type = "equal_mass",
-                                         lambda_seq =
-                                           exp(seq(-1, -9, length = 300))),
-                   Q_fit_args = list(fit_type = "glm",
-                                     glm_formula = "Y ~ ."),
-                   eif_reg_type = "glm"
-                  )
-print(ipcw_os)
+os_ipcw <- txshift(
+  W = W, A = A, Y = Y, delta = 0.5, C_samp = C_samp, V = c("W", "Y"),
+  estimator = "onestep", eif_reg_type = "glm",
+  samp_fit_args = list(fit_type = "glm"),
+  g_exp_fit_args = list(
+    fit_type = "sl",
+    sl_learners_density = Lrnr_density_hse$new(Lrnr_hal9001$new())
+  ),
+  Q_fit_args = list(fit_type = "glm", glm_formula = "Y ~ .")
+)
+os_ipcw
+#> Counterfactual Mean of Shifted Treatment
+#> Intervention: Treatment + 0.5
+#> txshift Estimator: onestep
+#> Estimate: 0.76
+#> Std. Error: 0.0204
+#> 95% CI: [0.7179, 0.7976]
 ```
 
 -----

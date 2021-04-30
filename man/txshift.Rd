@@ -169,9 +169,8 @@ tmle <- txshift(
   W = W, A = A, Y = Y, delta = 0.5,
   estimator = "onestep",
   g_exp_fit_args = list(
-    fit_type = "hal", n_bins = 5,
-    grid_type = "equal_range",
-    lambda_seq = exp(-1:-9)
+    fit_type = "sl",
+    sl_learners_density = Lrnr_density_hse$new(Lrnr_hal9001$new())
   ),
   Q_fit_args = list(
     fit_type = "glm",
@@ -185,9 +184,8 @@ tmle <- txshift(
   W = W, A = A, C_cens = C_cens, Y = Y, delta = 0.5,
   estimator = "onestep",
   g_exp_fit_args = list(
-    fit_type = "hal", n_bins = 5,
-    grid_type = "equal_range",
-    lambda_seq = exp(-1:-9)
+    fit_type = "sl",
+    sl_learners_density = Lrnr_density_hse$new(Lrnr_hal9001$new())
   ),
   g_cens_fit_args = list(
     fit_type = "glm",
@@ -206,9 +204,8 @@ ipcwtmle <- txshift(
   estimator = "onestep", max_iter = 5,
   samp_fit_args = list(fit_type = "glm"),
   g_exp_fit_args = list(
-    fit_type = "hal", n_bins = 5,
-    grid_type = "equal_range",
-    lambda_seq = exp(-1:-9)
+    fit_type = "sl",
+    sl_learners_density = Lrnr_density_hse$new(Lrnr_hal9001$new())
   ),
   Q_fit_args = list(
     fit_type = "glm",
@@ -224,9 +221,8 @@ ipcwtmle <- txshift(
   estimator = "onestep", max_iter = 5,
   samp_fit_args = list(fit_type = "glm"),
   g_exp_fit_args = list(
-    fit_type = "hal", n_bins = 5,
-    grid_type = "equal_range",
-    lambda_seq = exp(-1:-9)
+    fit_type = "sl",
+    sl_learners_density = Lrnr_density_hse$new(Lrnr_hal9001$new())
   ),
   g_cens_fit_args = list(
     fit_type = "glm",

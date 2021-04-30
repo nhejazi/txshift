@@ -1,6 +1,6 @@
 Package: txshift
 Title: Efficient Estimation of the Causal Effects of Stochastic Interventions
-Version: 0.3.5
+Version: 0.3.6
 Authors@R: c(
     person("Nima", "Hejazi", email = "nh@nimahejazi.org",
            role = c("aut", "cre", "cph"),
@@ -72,5 +72,5 @@ BugReports: https://github.com/nhejazi/txshift/issues
 Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.1.9001
 RdMacros: Rdpack

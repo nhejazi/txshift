@@ -1,3 +1,10 @@
+# txshift 0.3.6
+
+As of April 2021:
+* The `print()` methods have been updated to remove the use of [`cli`
+  functions](https://github.com/r-lib/cli), which, for simplicity, has been
+  replaced by the use of `message()`.
+
 # txshift 0.3.5
 
 As of February 2021:

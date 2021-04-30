@@ -104,6 +104,8 @@
 #'  by a scalar amount \code{delta}. These estimates can be augmented to be
 #'  consistent and efficient when two-phase sampling is performed.
 #'
+#' @export
+#'
 #' @examples
 #' set.seed(429153)
 #' n_obs <- 100
@@ -117,9 +119,8 @@
 #'   W = W, A = A, Y = Y, delta = 0.5,
 #'   estimator = "onestep",
 #'   g_exp_fit_args = list(
-#'     fit_type = "hal", n_bins = 5,
-#'     grid_type = "equal_range",
-#'     lambda_seq = exp(-1:-9)
+#'     fit_type = "sl",
+#'     sl_learners_density = Lrnr_density_hse$new(Lrnr_hal9001$new())
 #'   ),
 #'   Q_fit_args = list(
 #'     fit_type = "glm",
@@ -133,9 +134,8 @@
 #'   W = W, A = A, C_cens = C_cens, Y = Y, delta = 0.5,
 #'   estimator = "onestep",
 #'   g_exp_fit_args = list(
-#'     fit_type = "hal", n_bins = 5,
-#'     grid_type = "equal_range",
-#'     lambda_seq = exp(-1:-9)
+#'     fit_type = "sl",
+#'     sl_learners_density = Lrnr_density_hse$new(Lrnr_hal9001$new())
 #'   ),
 #'   g_cens_fit_args = list(
 #'     fit_type = "glm",
@@ -154,9 +154,8 @@
 #'   estimator = "onestep", max_iter = 5,
 #'   samp_fit_args = list(fit_type = "glm"),
 #'   g_exp_fit_args = list(
-#'     fit_type = "hal", n_bins = 5,
-#'     grid_type = "equal_range",
-#'     lambda_seq = exp(-1:-9)
+#'     fit_type = "sl",
+#'     sl_learners_density = Lrnr_density_hse$new(Lrnr_hal9001$new())
 #'   ),
 #'   Q_fit_args = list(
 #'     fit_type = "glm",
@@ -172,9 +171,8 @@
 #'   estimator = "onestep", max_iter = 5,
 #'   samp_fit_args = list(fit_type = "glm"),
 #'   g_exp_fit_args = list(
-#'     fit_type = "hal", n_bins = 5,
-#'     grid_type = "equal_range",
-#'     lambda_seq = exp(-1:-9)
+#'     fit_type = "sl",
+#'     sl_learners_density = Lrnr_density_hse$new(Lrnr_hal9001$new())
 #'   ),
 #'   g_cens_fit_args = list(
 #'     fit_type = "glm",
@@ -186,7 +184,6 @@
 #'   ),
 #'   eif_reg_type = "glm"
 #' )
-#' @export
 txshift <- function(W,
                     A,
                     C_cens = rep(1, length(A)),
