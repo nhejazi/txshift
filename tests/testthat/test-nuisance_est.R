@@ -46,8 +46,7 @@ if (require("sl3")) {
     haldensify_args = list(
       n_bins = 5,
       grid_type = "equal_mass",
-      lambda_seq = exp(seq(-1, -13, length = 300)),
-      use_future = FALSE
+      lambda_seq = exp(seq(-1, -13, length = 300))
     )
   )
   gn_est_sl <- est_g_exp(

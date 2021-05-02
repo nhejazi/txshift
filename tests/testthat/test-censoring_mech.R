@@ -24,8 +24,10 @@ gn_exp_hal <- est_g_exp(
   haldensify_args = list(
     n_bins = 5,
     grid_type = "equal_mass",
-    lambda_seq = exp(seq(-1, -13, length = 300)),
-    use_future = FALSE
+    lambda_seq = exp(seq(-1, -10, length = 300)),
+    # the following arguments are passed to hal9001::fit_hal()
+    max_degree = 3, smoothness_orders = 0, num_knots = NULL,
+    reduce_basis = 1 / sqrt(length(A))
   )
 )
 

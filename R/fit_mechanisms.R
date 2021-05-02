@@ -38,10 +38,8 @@ est_g_exp <- function(A,
                       fit_type = c("hal", "sl"),
                       sl_learners_density = NULL,
                       haldensify_args = list(
-                        n_bins = c(5, 10),
-                        grid_type = c("equal_range", "equal_mass"),
-                        lambda_seq = exp(seq(-1, -13, length = 300)),
-                        use_future = FALSE
+                        grid_type = "equal_range",
+                        lambda_seq = exp(seq(-1, -13, length = 300))
                       )) {
   # set defaults and check arguments
   fit_type <- match.arg(fit_type)

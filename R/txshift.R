@@ -113,14 +113,16 @@
 #' A <- rnorm(n_obs, mean = 2 * W, sd = 1)
 #' Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
 #' C_samp <- rbinom(n_obs, 1, plogis(W + Y)) # two-phase sampling
+#' C_cens <- rbinom(n_obs, 1, plogis(rowSums(W) + 0.5))
 #'
-#' # construct a TML estimate
+#' # construct a TML estimate, ignoring censoring
 #' tmle <- txshift(
 #'   W = W, A = A, Y = Y, delta = 0.5,
 #'   estimator = "onestep",
 #'   g_exp_fit_args = list(
-#'     fit_type = "sl",
-#'     sl_learners_density = Lrnr_density_hse$new(Lrnr_hal9001$new())
+#'     fit_type = "hal",
+#'     n_bins = 5,
+#'     lambda_seq = exp(seq(-1, -13, length = 50))
 #'   ),
 #'   Q_fit_args = list(
 #'     fit_type = "glm",
@@ -128,14 +130,14 @@
 #'   )
 #' )
 #'
-#' # add a natural censoring process and construct a TML estimate
-#' C_cens <- rbinom(n_obs, 1, plogis(rowSums(W) + 0.5))
+#' # construct a TML estimate, accounting for censoring
 #' tmle <- txshift(
 #'   W = W, A = A, C_cens = C_cens, Y = Y, delta = 0.5,
 #'   estimator = "onestep",
 #'   g_exp_fit_args = list(
-#'     fit_type = "sl",
-#'     sl_learners_density = Lrnr_density_hse$new(Lrnr_hal9001$new())
+#'     fit_type = "hal",
+#'     n_bins = 5,
+#'     lambda_seq = exp(seq(-1, -13, length = 50))
 #'   ),
 #'   g_cens_fit_args = list(
 #'     fit_type = "glm",
@@ -147,15 +149,16 @@
 #'   )
 #' )
 #'
-#' # construct a TML estimate under two-phase sampling
+#' # construct a TML estimate under two-phase sampling, ignoring censoring
 #' ipcwtmle <- txshift(
 #'   W = W, A = A, Y = Y, delta = 0.5,
 #'   C_samp = C_samp, V = c("W", "Y"),
 #'   estimator = "onestep", max_iter = 5,
 #'   samp_fit_args = list(fit_type = "glm"),
 #'   g_exp_fit_args = list(
-#'     fit_type = "sl",
-#'     sl_learners_density = Lrnr_density_hse$new(Lrnr_hal9001$new())
+#'     fit_type = "hal",
+#'     n_bins = 5,
+#'     lambda_seq = exp(seq(-1, -13, length = 50))
 #'   ),
 #'   Q_fit_args = list(
 #'     fit_type = "glm",
@@ -164,15 +167,16 @@
 #'   eif_reg_type = "glm"
 #' )
 #'
-#' # construct a TML estimate under two-phase sampling and loss to follow-up
+#' # construct a TML estimate acconting for two-phase sampling and censoring
 #' ipcwtmle <- txshift(
 #'   W = W, A = A, C_cens = C_cens, Y = Y, delta = 0.5,
 #'   C_samp = C_samp, V = c("W", "Y"),
 #'   estimator = "onestep", max_iter = 5,
 #'   samp_fit_args = list(fit_type = "glm"),
 #'   g_exp_fit_args = list(
-#'     fit_type = "sl",
-#'     sl_learners_density = Lrnr_density_hse$new(Lrnr_hal9001$new())
+#'     fit_type = "hal",
+#'     n_bins = 5,
+#'     lambda_seq = exp(seq(-1, -13, length = 50))
 #'   ),
 #'   g_cens_fit_args = list(
 #'     fit_type = "glm",
@@ -200,10 +204,7 @@ txshift <- function(W,
                     ),
                     g_exp_fit_args = list(
                       fit_type = c("hal", "sl", "external"),
-                      n_bins = c(10, 25),
-                      grid_type = c("equal_range", "equal_range"),
                       lambda_seq = exp(seq(-1, -13, length = 300)),
-                      use_future = FALSE,
                       sl_learners_density = NULL
                     ),
                     g_cens_fit_args = list(

@@ -193,14 +193,13 @@ ipcw_eif_update <- function(data_internal,
     eif_mod <- hal9001::fit_hal(
       X = as.matrix(data_internal[, ..v_names]),
       Y = as.numeric(eif_eval$eif_unweighted[C_samp == 1]),
-      max_degree = NULL,
-      fit_type = "glmnet",
+      max_degree = length(v_names),
       family = "gaussian",
+      fit_control = list(
+        cv_select = TRUE,
+        type.measure = "mse"
+      ),
       return_lasso = FALSE,
-      standardize = FALSE,
-      type.measure = "mse",
-      nlambda = 1000,
-      lambda.min.ratio = 1 / nrow(data_internal),
       yolo = FALSE
     )
 

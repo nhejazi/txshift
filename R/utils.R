@@ -48,8 +48,10 @@ print.txshift <- function(x, ..., ci_level = 0.95) {
   message("txshift Estimator: ", x$estimator)
   message("Estimate: ", round(x$psi, 4))
   message("Std. Error: ", round(sqrt(x$var), 4))
-  message(paste0(scales::percent(ci_level), " CI: [",
-                 round(ci[1], 4), ", ", round(ci[3], 4), "]"))
+  message(paste0(
+    scales::percent(ci_level), " CI: [",
+    round(ci[1], 4), ", ", round(ci[3], 4), "]"
+  ))
 }
 
 ###############################################################################
@@ -94,35 +96,49 @@ print.txshift <- function(x, ..., ci_level = 0.95) {
 print.txshift_msm <- function(x, ...) {
   # construct and print output
   message("MSM (", x$.msm_type, ") for Grid of Shifted Treatments")
-  message("Intervention Grid: ", "Treatment + ",
-          paste0("{", paste(x$.delta_grid, collapse = ", "), "}"))
+  message(
+    "Intervention Grid: ", "Treatment + ",
+    paste0("{", paste(x$.delta_grid, collapse = ", "), "}")
+  )
   if (x$.msm_type == "piecewise") {
     message("Knot Point: Shift = ", x$.msm_knot)
   }
   message("txshift MSM Estimator: ", x$estimator)
   if (x$.msm_type == "piecewise") {
-    message("Estimated Slopes: ",
-            round(x$msm_est$param_est[2], 4), ", ",
-            round(x$msm_est$param_est[3], 4))
-    message("Std. Errors: ",
-            round(x$msm_est$param_se[2], 4), ", ",
-            round(x$msm_est$param_se[3], 4))
-    message(scales::percent(x$.ci_level), " CIs: ",
-            "[", round(x$msm_est$ci_lwr[2], 4), ", ",
-            round(x$msm_est$ci_upr[2], 4), "]", ", ",
-            "[", round(x$msm_est$ci_lwr[3], 4), ", ",
-            round(x$msm_est$ci_upr[3], 4), "]")
-    message("p-values (vs. no trend): ",
-            round(x$msm_est$p_value[2], 4), ", ",
-            round(x$msm_est$p_value[3], 4))
+    message(
+      "Estimated Slopes: ",
+      round(x$msm_est$param_est[2], 4), ", ",
+      round(x$msm_est$param_est[3], 4)
+    )
+    message(
+      "Std. Errors: ",
+      round(x$msm_est$param_se[2], 4), ", ",
+      round(x$msm_est$param_se[3], 4)
+    )
+    message(
+      scales::percent(x$.ci_level), " CIs: ",
+      "[", round(x$msm_est$ci_lwr[2], 4), ", ",
+      round(x$msm_est$ci_upr[2], 4), "]", ", ",
+      "[", round(x$msm_est$ci_lwr[3], 4), ", ",
+      round(x$msm_est$ci_upr[3], 4), "]"
+    )
+    message(
+      "p-values (vs. no trend): ",
+      round(x$msm_est$p_value[2], 4), ", ",
+      round(x$msm_est$p_value[3], 4)
+    )
   } else {
     message("Estimated Slope: ", round(x$msm_est$param_est[2], 4))
     message("Std. Error: ", round(x$msm_est$param_se[2], 4))
-    message(scales::percent(x$.ci_level), " CI: [",
-            round(x$msm_est$ci_lwr[2], 4), ", ",
-            round(x$msm_est$ci_upr[2], 4), "]")
-    message("p-value (vs. no trend): ",
-            round(x$msm_est$p_value[2], 4))
+    message(
+      scales::percent(x$.ci_level), " CI: [",
+      round(x$msm_est$ci_lwr[2], 4), ", ",
+      round(x$msm_est$ci_upr[2], 4), "]"
+    )
+    message(
+      "p-value (vs. no trend): ",
+      round(x$msm_est$p_value[2], 4)
+    )
   }
 }
 

@@ -1,5 +1,13 @@
 # txshift 0.3.6
 
+As of May 2021:
+* The use of `hal9001::fit_hal()` internally for evaluation of a conditional
+  mean of the full-data EIF has been revised for compatibility with v0.4.0+ of
+  that package.
+* Defaults passed in through the argument `g_exp_fit_args`, and to the function
+  `est_g_exp()`, have been updated for compatibility with v0.1.5+ of the
+  `haldensify` package.
+
 As of April 2021:
 * The `print()` methods have been updated to remove the use of [`cli`
   functions](https://github.com/r-lib/cli), which, for simplicity, has been

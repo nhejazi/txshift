@@ -43,15 +43,14 @@ Imports:
     data.table,
     assertthat,
     mvtnorm,
-    hal9001 (>= 0.2.6),
-    haldensify (>= 0.0.6),
+    hal9001 (>= 0.4.0),
+    haldensify (>= 0.1.5),
     lspline,
     ggplot2,
     tibble,
     scales,
     latex2exp,
-    Rdpack,
-    cli
+    Rdpack
 Suggests:
     testthat,
     knitr,
@@ -65,7 +64,11 @@ Suggests:
     nnls,
     rlang
 Enhances:
-    sl3 (>= 1.3.7)
+    sl3 (>= 1.4.3)
+Remotes:
+    tlverse/hal9001@devel,
+    tlverse/sl3@devel,
+    nhejazi/haldensify
 License: MIT + file LICENSE
 URL: https://github.com/nhejazi/txshift
 BugReports: https://github.com/nhejazi/txshift/issues
