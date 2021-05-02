@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.6</span>
       </span>
     </div>
 
@@ -147,9 +147,8 @@
   fluctuation <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"standard"</span>, <span class='st'>"weighted"</span><span class='op'>)</span>,
   max_iter <span class='op'>=</span> <span class='fl'>10</span>,
   samp_fit_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>fit_type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"glm"</span>, <span class='st'>"sl"</span>, <span class='st'>"external"</span><span class='op'>)</span>, sl_learners <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>,
-  g_exp_fit_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>fit_type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"hal"</span>, <span class='st'>"sl"</span>, <span class='st'>"external"</span><span class='op'>)</span>, n_bins <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>10</span>, <span class='fl'>25</span><span class='op'>)</span>,
-    grid_type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"equal_range"</span>, <span class='st'>"equal_range"</span><span class='op'>)</span>, lambda_seq <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>1</span>, <span class='op'>-</span><span class='fl'>13</span>, length <span class='op'>=</span>
-    <span class='fl'>300</span><span class='op'>)</span><span class='op'>)</span>, use_future <span class='op'>=</span> <span class='cn'>FALSE</span>, sl_learners_density <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>,
+  g_exp_fit_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>fit_type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"hal"</span>, <span class='st'>"sl"</span>, <span class='st'>"external"</span><span class='op'>)</span>, lambda_seq <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>1</span>,
+    <span class='op'>-</span><span class='fl'>13</span>, length <span class='op'>=</span> <span class='fl'>300</span><span class='op'>)</span><span class='op'>)</span>, sl_learners_density <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>,
   g_cens_fit_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>fit_type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"glm"</span>, <span class='st'>"sl"</span>, <span class='st'>"external"</span><span class='op'>)</span>, glm_formula <span class='op'>=</span>
     <span class='st'>"C_cens ~ ."</span>, sl_learners <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>,
   Q_fit_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>fit_type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"glm"</span>, <span class='st'>"sl"</span>, <span class='st'>"external"</span><span class='op'>)</span>, glm_formula <span class='op'>=</span> <span class='st'>"Y ~ ."</span>,
@@ -336,15 +335,16 @@ power users.</p></td>
 <span class='va'>A</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='va'>n_obs</span>, mean <span class='op'>=</span> <span class='fl'>2</span> <span class='op'>*</span> <span class='va'>W</span>, sd <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>
 <span class='va'>Y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span><span class='op'>(</span><span class='va'>n_obs</span>, <span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Logistic.html'>plogis</a></span><span class='op'>(</span><span class='va'>A</span> <span class='op'>+</span> <span class='va'>W</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='va'>n_obs</span>, mean <span class='op'>=</span> <span class='fl'>0</span>, sd <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
 <span class='va'>C_samp</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span><span class='op'>(</span><span class='va'>n_obs</span>, <span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Logistic.html'>plogis</a></span><span class='op'>(</span><span class='va'>W</span> <span class='op'>+</span> <span class='va'>Y</span><span class='op'>)</span><span class='op'>)</span> <span class='co'># two-phase sampling</span>
+<span class='va'>C_cens</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span><span class='op'>(</span><span class='va'>n_obs</span>, <span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Logistic.html'>plogis</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>rowSums</a></span><span class='op'>(</span><span class='va'>W</span><span class='op'>)</span> <span class='op'>+</span> <span class='fl'>0.5</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='co'># construct a TML estimate</span>
+<span class='co'># construct a TML estimate, ignoring censoring</span>
 <span class='va'>tmle</span> <span class='op'>&lt;-</span> <span class='fu'>txshift</span><span class='op'>(</span>
   W <span class='op'>=</span> <span class='va'>W</span>, A <span class='op'>=</span> <span class='va'>A</span>, Y <span class='op'>=</span> <span class='va'>Y</span>, delta <span class='op'>=</span> <span class='fl'>0.5</span>,
   estimator <span class='op'>=</span> <span class='st'>"onestep"</span>,
   g_exp_fit_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
-    fit_type <span class='op'>=</span> <span class='st'>"hal"</span>, n_bins <span class='op'>=</span> <span class='fl'>5</span>,
-    grid_type <span class='op'>=</span> <span class='st'>"equal_range"</span>,
-    lambda_seq <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>1</span><span class='op'>:</span><span class='op'>-</span><span class='fl'>9</span><span class='op'>)</span>
+    fit_type <span class='op'>=</span> <span class='st'>"hal"</span>,
+    n_bins <span class='op'>=</span> <span class='fl'>5</span>,
+    lambda_seq <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>1</span>, <span class='op'>-</span><span class='fl'>13</span>, length <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span><span class='op'>)</span>
   <span class='op'>)</span>,
   Q_fit_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
     fit_type <span class='op'>=</span> <span class='st'>"glm"</span>,
@@ -352,15 +352,14 @@ power users.</p></td>
   <span class='op'>)</span>
 <span class='op'>)</span>
 
-<span class='co'># add a natural censoring process and construct a TML estimate</span>
-<span class='va'>C_cens</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span><span class='op'>(</span><span class='va'>n_obs</span>, <span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Logistic.html'>plogis</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>rowSums</a></span><span class='op'>(</span><span class='va'>W</span><span class='op'>)</span> <span class='op'>+</span> <span class='fl'>0.5</span><span class='op'>)</span><span class='op'>)</span>
+<span class='co'># construct a TML estimate, accounting for censoring</span>
 <span class='va'>tmle</span> <span class='op'>&lt;-</span> <span class='fu'>txshift</span><span class='op'>(</span>
   W <span class='op'>=</span> <span class='va'>W</span>, A <span class='op'>=</span> <span class='va'>A</span>, C_cens <span class='op'>=</span> <span class='va'>C_cens</span>, Y <span class='op'>=</span> <span class='va'>Y</span>, delta <span class='op'>=</span> <span class='fl'>0.5</span>,
   estimator <span class='op'>=</span> <span class='st'>"onestep"</span>,
   g_exp_fit_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
-    fit_type <span class='op'>=</span> <span class='st'>"hal"</span>, n_bins <span class='op'>=</span> <span class='fl'>5</span>,
-    grid_type <span class='op'>=</span> <span class='st'>"equal_range"</span>,
-    lambda_seq <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>1</span><span class='op'>:</span><span class='op'>-</span><span class='fl'>9</span><span class='op'>)</span>
+    fit_type <span class='op'>=</span> <span class='st'>"hal"</span>,
+    n_bins <span class='op'>=</span> <span class='fl'>5</span>,
+    lambda_seq <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>1</span>, <span class='op'>-</span><span class='fl'>13</span>, length <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span><span class='op'>)</span>
   <span class='op'>)</span>,
   g_cens_fit_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
     fit_type <span class='op'>=</span> <span class='st'>"glm"</span>,
@@ -372,16 +371,16 @@ power users.</p></td>
   <span class='op'>)</span>
 <span class='op'>)</span>
 
-<span class='co'># construct a TML estimate under two-phase sampling</span>
+<span class='co'># construct a TML estimate under two-phase sampling, ignoring censoring</span>
 <span class='va'>ipcwtmle</span> <span class='op'>&lt;-</span> <span class='fu'>txshift</span><span class='op'>(</span>
   W <span class='op'>=</span> <span class='va'>W</span>, A <span class='op'>=</span> <span class='va'>A</span>, Y <span class='op'>=</span> <span class='va'>Y</span>, delta <span class='op'>=</span> <span class='fl'>0.5</span>,
   C_samp <span class='op'>=</span> <span class='va'>C_samp</span>, V <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"W"</span>, <span class='st'>"Y"</span><span class='op'>)</span>,
   estimator <span class='op'>=</span> <span class='st'>"onestep"</span>, max_iter <span class='op'>=</span> <span class='fl'>5</span>,
   samp_fit_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>fit_type <span class='op'>=</span> <span class='st'>"glm"</span><span class='op'>)</span>,
   g_exp_fit_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
-    fit_type <span class='op'>=</span> <span class='st'>"hal"</span>, n_bins <span class='op'>=</span> <span class='fl'>5</span>,
-    grid_type <span class='op'>=</span> <span class='st'>"equal_range"</span>,
-    lambda_seq <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>1</span><span class='op'>:</span><span class='op'>-</span><span class='fl'>9</span><span class='op'>)</span>
+    fit_type <span class='op'>=</span> <span class='st'>"hal"</span>,
+    n_bins <span class='op'>=</span> <span class='fl'>5</span>,
+    lambda_seq <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>1</span>, <span class='op'>-</span><span class='fl'>13</span>, length <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span><span class='op'>)</span>
   <span class='op'>)</span>,
   Q_fit_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
     fit_type <span class='op'>=</span> <span class='st'>"glm"</span>,
@@ -390,16 +389,16 @@ power users.</p></td>
   eif_reg_type <span class='op'>=</span> <span class='st'>"glm"</span>
 <span class='op'>)</span>
 
-<span class='co'># construct a TML estimate under two-phase sampling and loss to follow-up</span>
+<span class='co'># construct a TML estimate acconting for two-phase sampling and censoring</span>
 <span class='va'>ipcwtmle</span> <span class='op'>&lt;-</span> <span class='fu'>txshift</span><span class='op'>(</span>
   W <span class='op'>=</span> <span class='va'>W</span>, A <span class='op'>=</span> <span class='va'>A</span>, C_cens <span class='op'>=</span> <span class='va'>C_cens</span>, Y <span class='op'>=</span> <span class='va'>Y</span>, delta <span class='op'>=</span> <span class='fl'>0.5</span>,
   C_samp <span class='op'>=</span> <span class='va'>C_samp</span>, V <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"W"</span>, <span class='st'>"Y"</span><span class='op'>)</span>,
   estimator <span class='op'>=</span> <span class='st'>"onestep"</span>, max_iter <span class='op'>=</span> <span class='fl'>5</span>,
   samp_fit_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>fit_type <span class='op'>=</span> <span class='st'>"glm"</span><span class='op'>)</span>,
   g_exp_fit_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
-    fit_type <span class='op'>=</span> <span class='st'>"hal"</span>, n_bins <span class='op'>=</span> <span class='fl'>5</span>,
-    grid_type <span class='op'>=</span> <span class='st'>"equal_range"</span>,
-    lambda_seq <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>1</span><span class='op'>:</span><span class='op'>-</span><span class='fl'>9</span><span class='op'>)</span>
+    fit_type <span class='op'>=</span> <span class='st'>"hal"</span>,
+    n_bins <span class='op'>=</span> <span class='fl'>5</span>,
+    lambda_seq <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>1</span>, <span class='op'>-</span><span class='fl'>13</span>, length <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span><span class='op'>)</span>
   <span class='op'>)</span>,
   g_cens_fit_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
     fit_type <span class='op'>=</span> <span class='st'>"glm"</span>,
