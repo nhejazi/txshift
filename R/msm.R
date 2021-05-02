@@ -238,6 +238,7 @@ msm_vimshift <- function(W,
     .msm_data = msm_data,
     msm_fit = msm_fit,
     estimator = estimator,
+    .eif_mat = eif_mat,
     .delta_grid = delta_grid,
     .ci_type = ci_type,
     .ci_level = ci_level

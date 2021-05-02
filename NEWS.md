@@ -12,6 +12,8 @@ As of April 2021:
 * The `print()` methods have been updated to remove the use of [`cli`
   functions](https://github.com/r-lib/cli), which, for simplicity, has been
   replaced by the use of `message()`.
+* Addition of a hidden slot `.eif_mat` to the `txshift_msm` class, supporting
+  export of the matrix of EIF estimates for each shift in `delta_grid`.
 
 # txshift 0.3.5
 
