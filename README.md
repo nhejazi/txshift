@@ -132,9 +132,9 @@ tmle
 #> Counterfactual Mean of Shifted Treatment
 #> Intervention: Treatment + 0.5
 #> txshift Estimator: tmle
-#> Estimate: 0.7672
-#> Std. Error: 0.0192
-#> 95% CI: [0.7275, 0.8027]
+#> Estimate: 0.7685
+#> Std. Error: 0.019
+#> 95% CI: [0.7292, 0.8037]
 
 # fit a full-data one-step estimator for comparison (again, no sampling)
 os <- txshift(
@@ -150,9 +150,9 @@ os
 #> Counterfactual Mean of Shifted Treatment
 #> Intervention: Treatment + 0.5
 #> txshift Estimator: onestep
-#> Estimate: 0.7671
-#> Std. Error: 0.0192
-#> 95% CI: [0.7274, 0.8027]
+#> Estimate: 0.7685
+#> Std. Error: 0.019
+#> 95% CI: [0.7292, 0.8037]
 
 # fit an IPCW-TMLE to account for the two-phase sampling process
 tmle_ipcw <- txshift(
@@ -169,9 +169,9 @@ tmle_ipcw
 #> Counterfactual Mean of Shifted Treatment
 #> Intervention: Treatment + 0.5
 #> txshift Estimator: tmle
-#> Estimate: 0.7602
-#> Std. Error: 0.0203
-#> 95% CI: [0.7181, 0.7978]
+#> Estimate: 0.7603
+#> Std. Error: 0.0204
+#> 95% CI: [0.718, 0.798]
 
 # compare with an IPCW-agumented one-step estimator under two-phase sampling
 os_ipcw <- txshift(
@@ -188,9 +188,9 @@ os_ipcw
 #> Counterfactual Mean of Shifted Treatment
 #> Intervention: Treatment + 0.5
 #> txshift Estimator: onestep
-#> Estimate: 0.76
+#> Estimate: 0.7601
 #> Std. Error: 0.0204
-#> 95% CI: [0.7179, 0.7976]
+#> 95% CI: [0.7178, 0.7979]
 ```
 
 -----
@@ -284,9 +284,12 @@ After using the `txshift` R package, please cite the following:
 
 ## Funding
 
-The development of this software was supported in part through a grant
-from the National Institutes of Health: [T32
-LM012417-02](https://projectreporter.nih.gov/project_info_description.cfm?aid=9248418&icde=37849831&ddparam=&ddvalue=&ddsub=&cr=1&csb=default&cs=ASC&pball=).
+The development of this software was supported in part through grants
+from the National Library of Medicine (award number [T32
+LM012417](https://reporter.nih.gov/project-details/9248418)) and the
+National Institute of Allergy and Infectious Diseases (award number [R01
+AI074345](https://reporter.nih.gov/project-details/9926564)) of the
+National Institutess of Health.
 
 -----
 

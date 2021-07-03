@@ -168,9 +168,9 @@
 <span class="co">#&gt; Counterfactual Mean of Shifted Treatment</span>
 <span class="co">#&gt; Intervention: Treatment + 0.5</span>
 <span class="co">#&gt; txshift Estimator: tmle</span>
-<span class="co">#&gt; Estimate: 0.7672</span>
-<span class="co">#&gt; Std. Error: 0.0192</span>
-<span class="co">#&gt; 95% CI: [0.7275, 0.8027]</span>
+<span class="co">#&gt; Estimate: 0.7685</span>
+<span class="co">#&gt; Std. Error: 0.019</span>
+<span class="co">#&gt; 95% CI: [0.7292, 0.8037]</span>
 
 <span class="co"># fit a full-data one-step estimator for comparison (again, no sampling)</span>
 <span class="va">os</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/txshift.html">txshift</a></span><span class="op">(</span>
@@ -186,9 +186,9 @@
 <span class="co">#&gt; Counterfactual Mean of Shifted Treatment</span>
 <span class="co">#&gt; Intervention: Treatment + 0.5</span>
 <span class="co">#&gt; txshift Estimator: onestep</span>
-<span class="co">#&gt; Estimate: 0.7671</span>
-<span class="co">#&gt; Std. Error: 0.0192</span>
-<span class="co">#&gt; 95% CI: [0.7274, 0.8027]</span>
+<span class="co">#&gt; Estimate: 0.7685</span>
+<span class="co">#&gt; Std. Error: 0.019</span>
+<span class="co">#&gt; 95% CI: [0.7292, 0.8037]</span>
 
 <span class="co"># fit an IPCW-TMLE to account for the two-phase sampling process</span>
 <span class="va">tmle_ipcw</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/txshift.html">txshift</a></span><span class="op">(</span>
@@ -205,9 +205,9 @@
 <span class="co">#&gt; Counterfactual Mean of Shifted Treatment</span>
 <span class="co">#&gt; Intervention: Treatment + 0.5</span>
 <span class="co">#&gt; txshift Estimator: tmle</span>
-<span class="co">#&gt; Estimate: 0.7602</span>
-<span class="co">#&gt; Std. Error: 0.0203</span>
-<span class="co">#&gt; 95% CI: [0.7181, 0.7978]</span>
+<span class="co">#&gt; Estimate: 0.7603</span>
+<span class="co">#&gt; Std. Error: 0.0204</span>
+<span class="co">#&gt; 95% CI: [0.718, 0.798]</span>
 
 <span class="co"># compare with an IPCW-agumented one-step estimator under two-phase sampling</span>
 <span class="va">os_ipcw</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/txshift.html">txshift</a></span><span class="op">(</span>
@@ -224,9 +224,9 @@
 <span class="co">#&gt; Counterfactual Mean of Shifted Treatment</span>
 <span class="co">#&gt; Intervention: Treatment + 0.5</span>
 <span class="co">#&gt; txshift Estimator: onestep</span>
-<span class="co">#&gt; Estimate: 0.76</span>
+<span class="co">#&gt; Estimate: 0.7601</span>
 <span class="co">#&gt; Std. Error: 0.0204</span>
-<span class="co">#&gt; 95% CI: [0.7179, 0.7976]</span></code></pre></div>
+<span class="co">#&gt; 95% CI: [0.7178, 0.7979]</span></code></pre></div>
 <hr>
 </div>
 <div id="issues" class="section level2">
@@ -293,7 +293,7 @@
 <div id="funding" class="section level2">
 <h2 class="hasAnchor">
 <a href="#funding" class="anchor"></a>Funding</h2>
-<p>The development of this software was supported in part through a grant from the National Institutes of Health: <a href="https://projectreporter.nih.gov/project_info_description.cfm?aid=9248418&amp;icde=37849831&amp;ddparam=&amp;ddvalue=&amp;ddsub=&amp;cr=1&amp;csb=default&amp;cs=ASC&amp;pball=">T32 LM012417-02</a>.</p>
+<p>The development of this software was supported in part through grants from the National Library of Medicine (award number <a href="https://reporter.nih.gov/project-details/9248418">T32 LM012417</a>) and the National Institute of Allergy and Infectious Diseases (award number <a href="https://reporter.nih.gov/project-details/9926564">R01 AI074345</a>) of the National Institutess of Health.</p>
 <hr>
 </div>
 <div id="license" class="section level2">
