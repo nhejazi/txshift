@@ -3,10 +3,12 @@
 
 # R/`txshift`
 
-[![Travis-CI Build
-Status](https://travis-ci.com/nhejazi/txshift.svg?branch=master)](https://travis-ci.com/nhejazi/txshift)
 [![AppVeyor Build
 Status](https://ci.appveyor.com/api/projects/status/github/nhejazi/txshift?branch=master&svg=true)](https://ci.appveyor.com/project/nhejazi/txshift)
+
+<!-- badges: start -->
+
+[![R-CMD-check](https://github.com/nhejazi/txshift/workflows/R-CMD-check/badge.svg)](https://github.com/nhejazi/txshift/actions)
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/nhejazi/txshift/master.svg)](https://codecov.io/github/nhejazi/txshift?branch=master)
 [![CRAN](https://www.r-pkg.org/badges/version/txshift)](https://www.r-pkg.org/pkg/txshift)
@@ -21,6 +23,7 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4070042.svg)](https://doi.org/10.5281/zenodo.4070042)
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.02447/status.svg)](https://doi.org/10.21105/joss.02447)
+<!-- badges: end -->
 
 > Efficient Estimation of the Causal Effects of Stochastic Interventions
 

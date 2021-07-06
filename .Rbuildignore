@@ -18,3 +18,4 @@
 ^paper$
 ^docs$
 ^CRAN-RELEASE$
+^\.github$
