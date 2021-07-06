@@ -153,5 +153,5 @@ psi_ipcw_tmle_hal_wts <- as.numeric(ipcw_tmle_hal_wts$psi)
 
 # test for reasonable equality between estimators
 test_that("IPCW-TMLEs w/ EIF-HAL match for weighted v. standard fluctuation", {
-  expect_equal(psi_ipcw_tmle_hal_std, psi_ipcw_tmle_hal_wts, tol = 1e-3)
+  expect_equal(psi_ipcw_tmle_hal_std, psi_ipcw_tmle_hal_wts, tol = 5e-3)
 })
