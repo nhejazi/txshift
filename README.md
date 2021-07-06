@@ -3,9 +3,6 @@
 
 # R/`txshift`
 
-[![AppVeyor Build
-Status](https://ci.appveyor.com/api/projects/status/github/nhejazi/txshift?branch=master&svg=true)](https://ci.appveyor.com/project/nhejazi/txshift)
-
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/nhejazi/txshift/workflows/R-CMD-check/badge.svg)](https://github.com/nhejazi/txshift/actions)
