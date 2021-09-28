@@ -1,9 +1,7 @@
 ## Test environments
-* local Ubuntu 20.04: R 4.0.3 (stable)
-* remote Ubuntu 18.04 on Travis-CI:
-  * R 3.6.3 (old-stable)
-  * R 4.0.3 (stable)
-* Windows (on Appveyor and Winbuilder): R 4.0.3
+* ubuntu 20.04 (local + GitHub Actions), R 4.1.1
+* macOS 10.15 (local + GitHub Actions), R 4.1.1
+* windows 2019 (on GitHub Actions), R 4.1.1
 
 ## R CMD check results
 * There were 0 ERRORs.
@@ -11,16 +9,9 @@
 * There were 0 NOTEs.
 
 ## Downstream dependencies
-* Nothing to report.
+* There are no downstream dependencies.
 
-## Additional Notes
-* This is a re-submission of a CRAN update that fixed an issue raised by CRAN:
-  * Instances of `\code{\link[sl3]{...}}` in the documentation were changed to
-      remove the `\link[]` statement referencing a package unavailable on CRAN.
-  * This re-submission fixes an issue concerning http vs. https links:
-                    Found the following (possibly) invalid URLs:
-                    URL: http://www.r-pkg.org/pkg/txshift (moved to
-                      https://www.r-pkg.org/pkg/txshift)
-                             From: README.md
-                             Status: 200
-                             Message: OK
+## Additional notes
+* This is an update to an existing CRAN package, submitted to correct build
+  failures introduced by a very recent update to a dependency `hal9001`, per
+  correspondence with CRAN maintainers.

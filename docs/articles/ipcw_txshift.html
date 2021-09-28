@@ -90,7 +90,7 @@
 <a href="https://nimahejazi.org">Nima Hejazi</a> and <a href="https://www.sph.emory.edu/faculty/profile/#!dbenkes">David Benkeser</a>
 </h4>
             
-            <h4 class="date">2021-07-03</h4>
+            <h4 class="date">2021-09-28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nhejazi/txshift/blob/master/vignettes/ipcw_txshift.Rmd"><code>vignettes/ipcw_txshift.Rmd</code></a></small>
       <div class="hidden name"><code>ipcw_txshift.Rmd</code></div>
@@ -107,7 +107,7 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com">data.table</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/nhejazi/haldensify">haldensify</a></span><span class="op">)</span></code></pre></div>
-<pre><code>## haldensify v0.1.5: Highly Adaptive Lasso Conditional Density Estimation</code></pre>
+<pre><code>## haldensify v0.2.0: Highly Adaptive Lasso Conditional Density Estimation</code></pre>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/nhejazi/txshift">txshift</a></span><span class="op">)</span></code></pre></div>
 <pre><code>## txshift v0.3.6: Efficient Estimation of the Causal Effects of Stochastic Interventions</code></pre>
@@ -172,16 +172,20 @@
                         lambda_seq <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">9</span>, length <span class="op">=</span> <span class="fl">300</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,
   Q_fit_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>fit_type <span class="op">=</span> <span class="st">"glm"</span>, glm_formula <span class="op">=</span> <span class="st">"Y ~ ."</span><span class="op">)</span>,
   eif_reg_type <span class="op">=</span> <span class="st">"glm"</span>
-<span class="op">)</span>
-<span class="va">tmle_hal_shift_1</span></code></pre></div>
+<span class="op">)</span></code></pre></div>
+<pre><code>## 0.62% of observations outside training support...predictions trimmed.</code></pre>
+<pre><code>## 0.93% of observations outside training support...predictions trimmed.</code></pre>
+<pre><code>## 5.3% of observations outside training support...predictions trimmed.</code></pre>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tmle_hal_shift_1</span></code></pre></div>
 <pre><code>## Counterfactual Mean of Shifted Treatment</code></pre>
 <pre><code>## Intervention: Treatment + 0.5</code></pre>
 <pre><code>## txshift Estimator: tmle</code></pre>
-<pre><code>## Estimate: 2.0788</code></pre>
-<pre><code>## Std. Error: 0.0944</code></pre>
-<pre><code>## 95% CI: [1.8938, 2.2639]</code></pre>
+<pre><code>## Estimate: 2.076</code></pre>
+<pre><code>## Std. Error: 0.0923</code></pre>
+<pre><code>## 95% CI: [1.895, 2.257]</code></pre>
 <p>When computing any such TML estimator, we may, of course, vary the regressions used in fitting the nuisance parameters; however, an even simpler variation is to fit the step for the fluctuation submodels with a <em>weighted</em> method, simply weighting each observation by an auxiliary covariate (often denoted <span class="math inline">\(H_n\)</span>, and sometimes called the “clever covariate” in the literature) rather than using such a covariate directly in the submodel regression fit.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tmle_hal_shift_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/txshift.html">txshift</a></span><span class="op">(</span>
   W <span class="op">=</span> <span class="va">W</span>, A <span class="op">=</span> <span class="va">A</span>, Y <span class="op">=</span> <span class="va">Y</span>, C_samp <span class="op">=</span> <span class="va">C</span>, V <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"W"</span>, <span class="st">"Y"</span><span class="op">)</span>,
   delta <span class="op">=</span> <span class="va">delta</span>, fluctuation <span class="op">=</span> <span class="st">"weighted"</span>, max_iter <span class="op">=</span> <span class="fl">2</span>,
@@ -192,21 +196,25 @@
                         lambda_seq <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">9</span>, length <span class="op">=</span> <span class="fl">300</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,
   Q_fit_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>fit_type <span class="op">=</span> <span class="st">"glm"</span>, glm_formula <span class="op">=</span> <span class="st">"Y ~ ."</span><span class="op">)</span>,
   eif_reg_type <span class="op">=</span> <span class="st">"glm"</span>
-                           <span class="op">)</span>
-<span class="va">tmle_hal_shift_2</span></code></pre></div>
+                           <span class="op">)</span></code></pre></div>
+<pre><code>## 0.62% of observations outside training support...predictions trimmed.</code></pre>
+<pre><code>## 0.93% of observations outside training support...predictions trimmed.</code></pre>
+<pre><code>## 5.3% of observations outside training support...predictions trimmed.</code></pre>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tmle_hal_shift_2</span></code></pre></div>
 <pre><code>## Counterfactual Mean of Shifted Treatment</code></pre>
 <pre><code>## Intervention: Treatment + 0.5</code></pre>
 <pre><code>## txshift Estimator: tmle</code></pre>
-<pre><code>## Estimate: 2.0802</code></pre>
-<pre><code>## Std. Error: 0.0945</code></pre>
-<pre><code>## 95% CI: [1.895, 2.2654]</code></pre>
+<pre><code>## Estimate: 2.0766</code></pre>
+<pre><code>## Std. Error: 0.0924</code></pre>
+<pre><code>## 95% CI: [1.8955, 2.2577]</code></pre>
 </div>
 <div id="interlude-constructing-optimal-stacked-regressions-with-sl3" class="section level3">
 <h3 class="hasAnchor">
 <a href="#interlude-constructing-optimal-stacked-regressions-with-sl3" class="anchor"></a>Interlude: Constructing Optimal Stacked Regressions with <code>sl3</code>
 </h3>
 <p>To easily incorporate ensemble machine learning into the estimation procedure, we rely on the facilities provided in the <a href="https://tlverse.org/sl3/"><code>sl3</code> R package</a> <span class="citation">(Coyle et al. 2020)</span>. For a complete guide on using the <code>sl3</code> R package, consider consulting <a href="https://tlverse.org/sl3/" class="uri">https://tlverse.org/sl3/</a> and <a href="https://tlverse.org/tlverse-handbook/sl3.html" class="uri">https://tlverse.org/tlverse-handbook/sl3.html</a>.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># SL learners to be used for most fits (e.g., IPCW, outcome regression)</span>
 <span class="va">lrnr_lib</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tlverse.org/sl3/reference/make_learner_stack.html">make_learner_stack</a></span><span class="op">(</span><span class="st">"Lrnr_mean"</span>, <span class="st">"Lrnr_glm"</span>, <span class="st">"Lrnr_ranger"</span><span class="op">)</span>
 <span class="va">sl_learner</span> <span class="op">&lt;-</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_sl.html">Lrnr_sl</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>learners <span class="op">=</span> <span class="va">lrnr_lib</span>, metalearner <span class="op">=</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_nnls.html">Lrnr_nnls</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
@@ -228,7 +236,7 @@
 <h3 class="hasAnchor">
 <a href="#estimating-the-ipcw-tmle-with-optimal-stacked-regressions" class="anchor"></a>Estimating the IPCW-TMLE with Optimal Stacked Regressions</h3>
 <p>Using the framework provided by the <a href="https://tlverse.org/sl3/"><code>sl3</code> package</a>, the nuisance parameters of the TML estimator may be fit with ensemble learning, using the cross-validation framework of the Super Learner algorithm of <span class="citation">van der Laan, Polley, and Hubbard (2007)</span>. In principal, it would be desirable to estimate the parameter using data-adaptive stacked regressions for the sampling mechanism (via <code>ipcw_fit_args</code>, the treatment mechanism (via <code>g_exp_fit_args</code>), and the outcome mechanism (via <code>Q_fit_args</code>). This could be done with a call to the <code>txshift</code> function like the following; however, we avoid running the following code chunk for the sake of saving time in this vignette.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tmle_sl_shift_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/txshift.html">txshift</a></span><span class="op">(</span>
   W <span class="op">=</span> <span class="va">W</span>, A <span class="op">=</span> <span class="va">A</span>, Y <span class="op">=</span> <span class="va">Y</span>, C_samp <span class="op">=</span> <span class="va">C</span>, V <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"W"</span>, <span class="st">"Y"</span><span class="op">)</span>,
   delta <span class="op">=</span> <span class="va">delta</span>, fluctuation <span class="op">=</span> <span class="st">"standard"</span>, max_iter <span class="op">=</span> <span class="fl">2</span>,
@@ -240,7 +248,7 @@
 <span class="op">)</span>
 <span class="va">tmle_sl_shift_1</span></code></pre></div>
 <p>As before, we may vary the regression for the submodel fluctuation procedure by weighting each observation by the value of the auxiliary covariate rather than using such an auxiliary covariate directly in the regression procedure. Note that we again avoid running the following code chunk for the sake of saving time in this vignette.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tmle_sl_shift_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/txshift.html">txshift</a></span><span class="op">(</span>
   W <span class="op">=</span> <span class="va">W</span>, A <span class="op">=</span> <span class="va">A</span>, Y <span class="op">=</span> <span class="va">Y</span>, C_samp <span class="op">=</span> <span class="va">C</span>, V <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"W"</span>, <span class="st">"Y"</span><span class="op">)</span>,
   delta <span class="op">=</span> <span class="va">delta</span>, fluctuation <span class="op">=</span> <span class="st">"weighted"</span>, max_iter <span class="op">=</span> <span class="fl">2</span>,
@@ -258,7 +266,7 @@
 <h3 class="hasAnchor">
 <a href="#estimating-inefficient-ipcw-tmles-with-optimal-stacked-regressions" class="anchor"></a>Estimating <em>Inefficient</em> IPCW-TMLEs with Optimal Stacked Regressions</h3>
 <p>Utilizing the <code>sl3</code> R package in exactly the same manner, it is also possible to estimate <em>inefficient</em> IPCW-TML estimators with <code>txshift</code>. The inefficient IPCW-TMLE performs nearly all of the same computations as the efficient version of the estimator, eschewing only the iterative targeting procedure performed over a more complex efficient influence function; the interested reader is referred to <span class="citation">Rose and van der Laan (2011)</span> for further details on the differences between the efficient and inefficient IPCW-TMLEs. By default, an efficient IPCW-TMLE is computed when censoring is detected; however, this may be disable by setting the <code>ipcw_efficiency</code> argument to <code>FALSE</code> like so</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tmle_sl_ineffic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/txshift.html">txshift</a></span><span class="op">(</span>
   W <span class="op">=</span> <span class="va">W</span>, A <span class="op">=</span> <span class="va">A</span>, Y <span class="op">=</span> <span class="va">Y</span>, C_samp <span class="op">=</span> <span class="va">C</span>, V <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"W"</span>, <span class="st">"Y"</span><span class="op">)</span>,
   delta <span class="op">=</span> <span class="va">delta</span>, fluctuation <span class="op">=</span> <span class="st">"standard"</span>,
@@ -277,17 +285,17 @@
 <h3 class="hasAnchor">
 <a href="#statistical-inference-for-targeted-maximum-likelihood-estimates" class="anchor"></a>Statistical Inference for Targeted Maximum Likelihood Estimates</h3>
 <p>For a discussion of the procedure for obtaining statistical inference for TML estimators, the interested reader is referred to the introductory vignette of this package. Here, we focus on addressing the issue of how censoring impacts the inferential procedure…</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="op">(</span><span class="va">ci_shift</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/confint.html">confint</a></span><span class="op">(</span><span class="va">tmle_hal_shift_1</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>##   lwr_ci      est   upr_ci 
-## 1.893813 2.078843 2.263873</code></pre>
+## 1.895045 2.076044 2.257044</code></pre>
 </div>
 </div>
 <div id="advanced-usage-user-specified-regressions" class="section level2">
 <h2 class="hasAnchor">
 <a href="#advanced-usage-user-specified-regressions" class="anchor"></a><em>Advanced Usage:</em> User-Specified Regressions</h2>
 <p>In some special cases it may be useful for the experienced user to compute the censoring mechanism, treatment mechanism, and outcome mechanism regressions separately (i.e., outside of the <code>txshift</code> wrapper function), instead applying this user-facing wrapper only to invoke the <em>targeting</em> steps involved in computing the TML estimator for the treatment shift parameter. In such cases, the optional arguments <code>ipcw_fit_ext</code>, <code>gn_fit_ext</code> and <code>Qn_fit_ext</code> may be utilized. We present a case of using these arguments here:</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># compute the censoring mechanism and produce IPC weights externally</span>
 <span class="va">pi_mech</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">plogis</a></span><span class="op">(</span><span class="va">W</span><span class="op">)</span>
 <span class="va">ipcw_out</span> <span class="op">&lt;-</span> <span class="va">pi_mech</span>

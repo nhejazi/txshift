@@ -23,12 +23,13 @@
     inefficient and efficient one-step and targeted minimum loss estimators.
     The causal parameter and its estimation were first described by Díaz and van
     der Laan (2013) &lt;doi:10.1111/j.1541-0420.2011.01685.x&gt;, while the multiply
-    robust estimation procedure and its application to data arising in two-phase
-    sampling designs was detailed in NS Hejazi, MJ van der Laan, HE Janes, PB
-    Gilbert, and DC Benkeser (2020) &lt;doi:10.1111/biom.13375&gt;. Estimation of
-    nuisance parameters may be enhanced through the Super Learner ensemble model
-    in sl3, available for download from GitHub using
-    remotes::install_github("tlverse/sl3").'>
+    robust estimation procedure and its application to data from two-phase
+    sampling designs is detailed in NS Hejazi, MJ van der Laan, HE Janes, PB
+    Gilbert, and DC Benkeser (2020) &lt;doi:10.1111/biom.13375&gt;. Implementation of
+    this methodology is described in NS Hejazi and DC Benkeser (2020)
+    &lt;doi:10.21105/joss.02447&gt;. Estimation of nuisance parameters may be
+    enhanced through the Super Learner ensemble model in sl3, available for
+    download from GitHub using remotes::install_github("tlverse/sl3").'>
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -104,6 +105,7 @@
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#rtxshift" class="anchor"></a>R/<code>txshift</code>
 </h1></div>
+<!-- badges: start -->
 
 <blockquote>
 <p>Efficient Estimation of the Causal Effects of Stochastic Interventions</p>
@@ -171,7 +173,6 @@
 <span class="co">#&gt; Estimate: 0.7685</span>
 <span class="co">#&gt; Std. Error: 0.019</span>
 <span class="co">#&gt; 95% CI: [0.7292, 0.8037]</span>
-
 <span class="co"># fit a full-data one-step estimator for comparison (again, no sampling)</span>
 <span class="va">os</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/txshift.html">txshift</a></span><span class="op">(</span>
   W <span class="op">=</span> <span class="va">W</span>, A <span class="op">=</span> <span class="va">A</span>, Y <span class="op">=</span> <span class="va">Y</span>, delta <span class="op">=</span> <span class="fl">0.5</span>,
@@ -189,7 +190,6 @@
 <span class="co">#&gt; Estimate: 0.7685</span>
 <span class="co">#&gt; Std. Error: 0.019</span>
 <span class="co">#&gt; 95% CI: [0.7292, 0.8037]</span>
-
 <span class="co"># fit an IPCW-TMLE to account for the two-phase sampling process</span>
 <span class="va">tmle_ipcw</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/txshift.html">txshift</a></span><span class="op">(</span>
   W <span class="op">=</span> <span class="va">W</span>, A <span class="op">=</span> <span class="va">A</span>, Y <span class="op">=</span> <span class="va">Y</span>, delta <span class="op">=</span> <span class="fl">0.5</span>, C_samp <span class="op">=</span> <span class="va">C_samp</span>, V <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"W"</span>, <span class="st">"Y"</span><span class="op">)</span>,
@@ -208,7 +208,6 @@
 <span class="co">#&gt; Estimate: 0.7603</span>
 <span class="co">#&gt; Std. Error: 0.0204</span>
 <span class="co">#&gt; 95% CI: [0.718, 0.798]</span>
-
 <span class="co"># compare with an IPCW-agumented one-step estimator under two-phase sampling</span>
 <span class="va">os_ipcw</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/txshift.html">txshift</a></span><span class="op">(</span>
   W <span class="op">=</span> <span class="va">W</span>, A <span class="op">=</span> <span class="va">A</span>, Y <span class="op">=</span> <span class="va">Y</span>, delta <span class="op">=</span> <span class="fl">0.5</span>, C_samp <span class="op">=</span> <span class="va">C_samp</span>, V <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"W"</span>, <span class="st">"Y"</span><span class="op">)</span>,
@@ -407,8 +406,7 @@
   <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://travis-ci.com/nhejazi/txshift"><img src="https://travis-ci.com/nhejazi/txshift.svg?branch=master" alt="Travis-CI Build Status"></a></li>
-<li><a href="https://ci.appveyor.com/project/nhejazi/txshift"><img src="https://ci.appveyor.com/api/projects/status/github/nhejazi/txshift?branch=master&amp;svg=true" alt="AppVeyor Build Status"></a></li>
+<li><a href="https://github.com/nhejazi/txshift/actions"><img src="https://github.com/nhejazi/txshift/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://codecov.io/github/nhejazi/txshift?branch=master"><img src="https://img.shields.io/codecov/c/github/nhejazi/txshift/master.svg" alt="Coverage Status"></a></li>
 <li><a href="https://www.r-pkg.org/pkg/txshift"><img src="https://www.r-pkg.org/badges/version/txshift" alt="CRAN"></a></li>
 <li><a href="https://CRAN.R-project.org/package=txshift"><img src="https://cranlogs.r-pkg.org/badges/txshift" alt="CRAN downloads"></a></li>

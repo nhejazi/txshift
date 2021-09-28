@@ -351,7 +351,7 @@ power users.</p></td>
     glm_formula <span class='op'>=</span> <span class='st'>"Y ~ ."</span>
   <span class='op'>)</span>
 <span class='op'>)</span>
-
+</div><div class='output co'>#&gt; <span class='message'>1% of observations outside training support...predictions trimmed.</span></div><div class='output co'>#&gt; <span class='message'>1% of observations outside training support...predictions trimmed.</span></div><div class='output co'>#&gt; <span class='message'>2% of observations outside training support...predictions trimmed.</span></div><div class='input'>
 <span class='co'># construct a TML estimate, accounting for censoring</span>
 <span class='va'>tmle</span> <span class='op'>&lt;-</span> <span class='fu'>txshift</span><span class='op'>(</span>
   W <span class='op'>=</span> <span class='va'>W</span>, A <span class='op'>=</span> <span class='va'>A</span>, C_cens <span class='op'>=</span> <span class='va'>C_cens</span>, Y <span class='op'>=</span> <span class='va'>Y</span>, delta <span class='op'>=</span> <span class='fl'>0.5</span>,
@@ -370,7 +370,7 @@ power users.</p></td>
     glm_formula <span class='op'>=</span> <span class='st'>"Y ~ ."</span>
   <span class='op'>)</span>
 <span class='op'>)</span>
-
+</div><div class='output co'>#&gt; <span class='message'>1% of observations outside training support...predictions trimmed.</span></div><div class='output co'>#&gt; <span class='message'>1% of observations outside training support...predictions trimmed.</span></div><div class='output co'>#&gt; <span class='message'>2% of observations outside training support...predictions trimmed.</span></div><div class='input'>
 <span class='co'># construct a TML estimate under two-phase sampling, ignoring censoring</span>
 <span class='va'>ipcwtmle</span> <span class='op'>&lt;-</span> <span class='fu'>txshift</span><span class='op'>(</span>
   W <span class='op'>=</span> <span class='va'>W</span>, A <span class='op'>=</span> <span class='va'>A</span>, Y <span class='op'>=</span> <span class='va'>Y</span>, delta <span class='op'>=</span> <span class='fl'>0.5</span>,
@@ -388,7 +388,7 @@ power users.</p></td>
   <span class='op'>)</span>,
   eif_reg_type <span class='op'>=</span> <span class='st'>"glm"</span>
 <span class='op'>)</span>
-
+</div><div class='output co'>#&gt; <span class='message'>5.88% of observations outside training support...predictions trimmed.</span></div><div class='output co'>#&gt; <span class='message'>1.47% of observations outside training support...predictions trimmed.</span></div><div class='output co'>#&gt; <span class='message'>2.94% of observations outside training support...predictions trimmed.</span></div><div class='input'>
 <span class='co'># construct a TML estimate acconting for two-phase sampling and censoring</span>
 <span class='va'>ipcwtmle</span> <span class='op'>&lt;-</span> <span class='fu'>txshift</span><span class='op'>(</span>
   W <span class='op'>=</span> <span class='va'>W</span>, A <span class='op'>=</span> <span class='va'>A</span>, C_cens <span class='op'>=</span> <span class='va'>C_cens</span>, Y <span class='op'>=</span> <span class='va'>Y</span>, delta <span class='op'>=</span> <span class='fl'>0.5</span>,
@@ -410,7 +410,7 @@ power users.</p></td>
   <span class='op'>)</span>,
   eif_reg_type <span class='op'>=</span> <span class='st'>"glm"</span>
 <span class='op'>)</span>
-</div></pre>
+</div><div class='output co'>#&gt; <span class='message'>5.88% of observations outside training support...predictions trimmed.</span></div><div class='output co'>#&gt; <span class='message'>1.47% of observations outside training support...predictions trimmed.</span></div><div class='output co'>#&gt; <span class='message'>2.94% of observations outside training support...predictions trimmed.</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

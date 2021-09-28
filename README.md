@@ -135,7 +135,6 @@ tmle
 #> Estimate: 0.7685
 #> Std. Error: 0.019
 #> 95% CI: [0.7292, 0.8037]
-
 # fit a full-data one-step estimator for comparison (again, no sampling)
 os <- txshift(
   W = W, A = A, Y = Y, delta = 0.5,
@@ -153,7 +152,6 @@ os
 #> Estimate: 0.7685
 #> Std. Error: 0.019
 #> 95% CI: [0.7292, 0.8037]
-
 # fit an IPCW-TMLE to account for the two-phase sampling process
 tmle_ipcw <- txshift(
   W = W, A = A, Y = Y, delta = 0.5, C_samp = C_samp, V = c("W", "Y"),
@@ -172,7 +170,6 @@ tmle_ipcw
 #> Estimate: 0.7603
 #> Std. Error: 0.0204
 #> 95% CI: [0.718, 0.798]
-
 # compare with an IPCW-agumented one-step estimator under two-phase sampling
 os_ipcw <- txshift(
   W = W, A = A, Y = Y, delta = 0.5, C_samp = C_samp, V = c("W", "Y"),
