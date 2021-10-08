@@ -1,9 +1,17 @@
 # txshift 0.3.6
 
+As of October 2021:
+* Minor updates to ensure compatibility with v0.4.1 of `hal9001` and v0.2.1 of
+  `haldensify`, both recently updated on CRAN.
+* Removal of the `LazyData` field from the `DESCRIPTION`, since no `data`
+  directory is included with the package.
+* Minor tweaks to existing unit tests to remove `rlang` from the `Suggests`
+  field of the `DESCRIPTION`.
+
 As of May 2021:
 * The use of `hal9001::fit_hal()` internally for evaluation of a conditional
   mean of the full-data EIF has been revised for compatibility with v0.4.0+ of
-  that package.
+  the `hal9001` package.
 * Defaults passed in through the argument `g_exp_fit_args`, and to the function
   `est_g_exp()`, have been updated for compatibility with v0.1.5+ of the
   `haldensify` package.
@@ -25,9 +33,8 @@ As of January 2021:
 * Simulation experiments testing the performance of the procedures in the
   presence of loss to follow-up censoring indicate that the TML estimator
   outperforms the one-step for the EIF-based two-phase sampling correction.
-  Generally, we recommend use of the TML estimator (which remains the default)
-  in all settings, though performance of the one-step estimator is not severely
-  degraded.
+  Generally, we recommend use of the TML estimator (the default) across all
+  settings, though performance of the one-step estimator is much worse.
 
 As of December 2020:
 * A `delta` slot has been added to the `txshift` class to record the shift.

@@ -1,6 +1,5 @@
 context("One-step and TML estimators produce similar results")
 library(data.table)
-library(rlang)
 set.seed(172943)
 
 if (require("sl3")) {
@@ -70,14 +69,16 @@ if (require("sl3")) {
         gn_out <- gn.0(A = A + shift_value, W = W)
       }
     )
-  ) %>% set_names(c("downshift", "noshift", "upshift", "upupshift"))
+  )
+  setnames(gn_ext_fitted, c("downshift", "noshift", "upshift", "upupshift"))
 
   # NOTE: should also use true Q for good measure (truth includes interactions)
   Qn_ext_fitted <- as.data.table(
     lapply(c(0, delta_shift), function(shift_value) {
       Qn_out <- Qn.0(A = A + shift_value, W = W)
     })
-  ) %>% set_names(c("noshift", "upshift"))
+  )
+  setnames(Qn_ext_fitted, c("noshift", "upshift"))
 
   # fit TMLE
   tmle <- txshift(
@@ -123,9 +124,9 @@ if (require("sl3")) {
   os_psi_noshift <- as.numeric(os_noshift$psi)
 
   # test for reasonable equality between estimators
-  test_that("TMLE and one-step match EY exactly for delta = 0", {
-    expect_equal(tmle_psi_noshift, EY, tol = 1e-5)
-    expect_equal(os_psi_noshift, EY, tol = 1e-5)
+  test_that("TMLE and one-step match EY very closely for delta = 0", {
+    expect_equal(tmle_psi_noshift, EY, tol = 1e-3)
+    expect_equal(os_psi_noshift, EY, tol = 1e-3)
   })
 
   # IPCW-based estimators by adding censoring node
