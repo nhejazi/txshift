@@ -40,8 +40,9 @@ likelihood (TML) estimator of such a causal parameter, originally
 proposed by Dı́az and van der Laan (2018), and makes use of analogous
 machinery to compute an efficient one-step estimator (Pfanzagl and
 Wefelmeyer 1985). `txshift` integrates with the [`sl3`
-package](https://github.com/tlverse/sl3) (Coyle et al. 2020) to allow
-for ensemble machine learning to be leveraged in the estimation
+package](https://github.com/tlverse/sl3)
+(<span class="citeproc-not-found" data-reference-id="coyle2020sl3">**???**</span>)
+to allow for ensemble machine learning to be leveraged in the estimation
 procedure.
 
 For many practical applications (e.g., vaccine efficacy trials),
@@ -135,6 +136,7 @@ tmle
 #> Estimate: 0.7685
 #> Std. Error: 0.019
 #> 95% CI: [0.7292, 0.8037]
+
 # fit a full-data one-step estimator for comparison (again, no sampling)
 os <- txshift(
   W = W, A = A, Y = Y, delta = 0.5,
@@ -152,6 +154,7 @@ os
 #> Estimate: 0.7685
 #> Std. Error: 0.019
 #> 95% CI: [0.7292, 0.8037]
+
 # fit an IPCW-TMLE to account for the two-phase sampling process
 tmle_ipcw <- txshift(
   W = W, A = A, Y = Y, delta = 0.5, C_samp = C_samp, V = c("W", "Y"),
@@ -170,6 +173,7 @@ tmle_ipcw
 #> Estimate: 0.7603
 #> Std. Error: 0.0204
 #> 95% CI: [0.718, 0.798]
+
 # compare with an IPCW-agumented one-step estimator under two-phase sampling
 os_ipcw <- txshift(
   W = W, A = A, Y = Y, delta = 0.5, C_samp = C_samp, V = c("W", "Y"),
@@ -234,7 +238,7 @@ After using the `txshift` R package, please cite the following:
         stochastic interventions in {R}},
       year  = {2020},
       doi = {10.21105/joss.02447},
-      url = {https://10.21105.joss.02447},
+      url = {https://doi.org/10.21105/joss.02447},
       journal = {Journal of Open Source Software},
       publisher = {The Open Journal}
     }
@@ -272,10 +276,11 @@ After using the `txshift` R package, please cite the following:
   - [R/`haldensify`](https://github.com/nhejazi/haldensify) - A minimal
     package for estimating the conditional density treatment mechanism
     component of this parameter based on using the [highly adaptive
-    lasso](https://github.com/tlverse/hal9001) (Coyle, Hejazi, and van
-    der Laan 2020; Hejazi, Coyle, and van der Laan 2020) in combination
-    with a pooled hazard regression. This package implements a variant
-    of the approach advocated by Dı́az and van der Laan (2011).
+    lasso](https://github.com/tlverse/hal9001)
+    (<span class="citeproc-not-found" data-reference-id="coyle2020hal9001-rpkg">**???**</span>;
+    Hejazi, Coyle, and van der Laan 2020) in combination with a pooled
+    hazard regression. This package implements a variant of the approach
+    advocated by Dı́az and van der Laan (2011).
 
 -----
 
@@ -324,24 +329,6 @@ See below for details:
 ## References
 
 <div id="refs" class="references">
-
-<div id="ref-coyle2020sl3">
-
-Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2020.
-*sl3: Modern Pipelines for Machine Learning and Super Learning*.
-<https://github.com/tlverse/sl3>.
-<https://doi.org/10.5281/zenodo.1342293>.
-
-</div>
-
-<div id="ref-coyle2020hal9001-rpkg">
-
-Coyle, Jeremy R, Nima S Hejazi, and Mark J van der Laan. 2020. *hal9001:
-The Scalable Highly Adaptive Lasso*.
-<https://github.com/tlverse/hal9001>.
-<https://doi.org/10.5281/zenodo.3558313>.
-
-</div>
 
 <div id="ref-diaz2020causal">
 

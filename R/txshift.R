@@ -129,7 +129,6 @@
 #'     glm_formula = "Y ~ ."
 #'   )
 #' )
-#'
 #' \dontrun{
 #' # construct a TML estimate, accounting for censoring
 #' tmle <- txshift(

@@ -94,10 +94,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/intro_txshift.html">Targeted Learning with Stochastic Treatment Regimes</a>
-    </li>
-    <li>
-      <a href="../articles/ipcw_txshift.html">IPCW-TMLEs with Stochastic Treatment Regimes</a>
+      <a href="../articles/intro_txshift.html">Evaluating Causal Effects of Modified Treatment Policies</a>
     </li>
   </ul>
 </li>
@@ -133,9 +130,16 @@
 <h1 class="page-header" data-toc-text="0.3.6">
 <a href="#txshift-036" class="anchor"></a>txshift 0.3.6<small> Unreleased </small>
 </h1>
+<p>As of October 2021:</p>
+<ul>
+<li>Minor updates to ensure compatibility with v0.4.1 of <code>hal9001</code> and v0.2.1 of <code>haldensify</code>, both recently updated on CRAN.</li>
+<li>Removal of the <code>LazyData</code> field from the <code>DESCRIPTION</code>, since no <code>data</code> directory is included with the package.</li>
+<li>Minor tweaks to existing unit tests to remove <code>rlang</code> from the <code>Suggests</code> field of the <code>DESCRIPTION</code>.</li>
+<li>Vignettes for the standard and IPCW-augmented estimation procedures have been combined to reduce redundancy and reduce build time per CRAN requests.</li>
+</ul>
 <p>As of May 2021:</p>
 <ul>
-<li>The use of <code><a href="https://rdrr.io/pkg/hal9001/man/fit_hal.html">hal9001::fit_hal()</a></code> internally for evaluation of a conditional mean of the full-data EIF has been revised for compatibility with v0.4.0+ of that package.</li>
+<li>The use of <code><a href="https://rdrr.io/pkg/hal9001/man/fit_hal.html">hal9001::fit_hal()</a></code> internally for evaluation of a conditional mean of the full-data EIF has been revised for compatibility with v0.4.0+ of the <code>hal9001</code> package.</li>
 <li>Defaults passed in through the argument <code>g_exp_fit_args</code>, and to the function <code><a href="../reference/est_g_exp.html">est_g_exp()</a></code>, have been updated for compatibility with v0.1.5+ of the <code>haldensify</code> package.</li>
 </ul>
 <p>As of April 2021:</p>
@@ -154,7 +158,7 @@
 </ul>
 <p>As of January 2021:</p>
 <ul>
-<li>Simulation experiments testing the performance of the procedures in the presence of loss to follow-up censoring indicate that the TML estimator outperforms the one-step for the EIF-based two-phase sampling correction. Generally, we recommend use of the TML estimator (which remains the default) in all settings, though performance of the one-step estimator is not severely degraded.</li>
+<li>Simulation experiments testing the performance of the procedures in the presence of loss to follow-up censoring indicate that the TML estimator outperforms the one-step for the EIF-based two-phase sampling correction. Generally, we recommend use of the TML estimator (the default) across all settings, though performance of the one-step estimator is much worse.</li>
 </ul>
 <p>As of December 2020:</p>
 <ul>
