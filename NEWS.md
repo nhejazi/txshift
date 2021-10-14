@@ -7,6 +7,8 @@ As of October 2021:
   directory is included with the package.
 * Minor tweaks to existing unit tests to remove `rlang` from the `Suggests`
   field of the `DESCRIPTION`.
+* Vignettes for the standard and IPCW-augmented estimation procedures have been
+  combined to reduce redundancy and reduce build time per CRAN requests.
 
 As of May 2021:
 * The use of `hal9001::fit_hal()` internally for evaluation of a conditional

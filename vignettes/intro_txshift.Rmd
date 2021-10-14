@@ -143,6 +143,8 @@ using the `sl3` R package, consider consulting [the chapter on Super
 Learning](https://tlverse.org/tlverse-handbook/sl3.html) in @vdl2022targeted.
 
 ```{r setup_sl, eval = FALSE}
+library(sl3)
+
 # SL learners to be used for most fits (e.g., IPCW, outcome regression)
 mean_learner <- Lrnr_mean$new()
 glm_learner <- Lrnr_glm$new()
@@ -200,7 +202,8 @@ specified:
 
 ```{r ipcw_est_shift}
 est_shift_ipcw <- txshift(
-  W = W, A = A, Y = Y, C_samp = C, V = c("W", "Y"), delta = delta,
+  W = W, A = A, Y = Y, delta = delta,
+  C_samp = Delta_samp, V = c("W", "Y"),
   samp_fit_args = list(fit_type = "glm"),
   g_exp_fit_args = list(
     fit_type = "hal", n_bins = 5,
