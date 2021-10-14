@@ -21,8 +21,8 @@ bibentry(bibtype = "Article",
          year = "2020",
          journal = "Journal of Open Source Software",
          publisher = "The Open Journal",
-         doi = "10.21105.joss.02447",
-         url = "https://doi.org/10.21105.joss.02447")
+         doi = "10.21105/joss.02447",
+         url = "https://doi.org/10.21105/joss.02447")
 
 bibentry(bibtype = "Article",
          title = "Efficient nonparametric inference on the effects of stochastic interventions under two-phase sampling, with applications to vaccine efficacy trials",

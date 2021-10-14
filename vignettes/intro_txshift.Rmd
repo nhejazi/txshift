@@ -1,148 +1,148 @@
 ---
-title: "Targeted Learning with Stochastic Treatment Regimes"
+title: "Evaluating Causal Effects of Modified Treatment Policies"
 author: "[Nima Hejazi](https://nimahejazi.org) and [David
   Benkeser](https://www.sph.emory.edu/faculty/profile/#!dbenkes)"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: ../inst/REFERENCES.bib
 vignette: >
-  %\VignetteIndexEntry{Targeted Learning with Stochastic Treatment Regimes}
+  %\VignetteIndexEntry{Evaluating Causal Effects of Modified Treatment Policies}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 ## Introduction
 
-Stochastic treatment regimes present a relatively simple manner in which to
-assess the effects of continuous treatments by way of parameters that examine
-the effects induced by the counterfactual shifting of the observed values of a
-treatment of interest. Here, we present an implementation of a new algorithm for
-computing targeted minimum loss-based estimates of treatment shift parameters
-defined based on a shifting function $d(A,W)$. For a technical presentation of
-the algorithm, the interested reader is invited to consult @diaz2018stochastic.
-For additional background on Targeted Learning and previous work on stochastic
-treatment regimes, please consider consulting @vdl2011targeted,
-@vdl2018targeted, and @diaz2012population.
+Stochastic treatment regimes constitute a flexible framework for evaluating the
+effects of continuous-valued exposures/treatments. _Modified treatment
+policies_, one such technique within this framework, examine the effects
+attributable to shifting the observed ("natural") value of a treatment, usually
+up or down by some scalar $\delta$. The `txshift` package implements algorithms
+for computing one-step or targeted minimum loss-based (TML) estimates of the
+counterfactual means induced by additive modified treatment policies (MTPs),
+defined by a shifting function $\delta(A,W)$. For a technical presentation, the
+interested reader is invited to consult @diaz2018stochastic or the earlier work
+of @diaz2012population.  For background on Targeted Learning, consider
+consulting @vdl2011targeted, @vdl2018targeted, and @vdl2022targeted.
 
-To start, let's load the packages we'll use and set a seed for simulation:
+To start, let's load the packages we'll need and set a seed for simulation:
 
 ```{r setup}
 library(data.table)
 library(haldensify)
 library(txshift)
-set.seed(429153)
+set.seed(11249)
 ```
 
 ---
 
 ## Data and Notation
 
-Consider $n$ observed units $O_1, \ldots, O_n$, where each random variable $O =
-(W, A, Y)$ corresponds to a single observational unit. Let $W$ denote baseline
-covariates (e.g., age, sex, education level), $A$ an intervention variable of
-interest (e.g., nutritional supplements), and $Y$ an outcome of interest (e.g.,
-disease status). Though it need not be the case, let $A$ be continuous-valued,
-i.e. $A \in \mathbb{R}$. Let $O_i \sim \mathcal{P} \in \mathcal{M}$, where
-$\mathcal{M}$ is the nonparametric statistical model defined as the set of
-continuous densities on $O$ with respect to some dominating measure. To
-formalize the definition of stochastic interventions and their corresponding
-causal effects, we introduce a nonparametric structural equation model (NPSEM),
-based on @pearl2000causality, to define how the system changes under posited
-interventions:
+We'll consider $n$ observed units $O_1, \ldots, O_n$, where each random variable
+$O = (W, A, Y)$ corresponds to the data available on a single unit. Within $O$,
+$W$ denotes baseline covariates (e.g., age, biological sex, BMI), $A \in
+\mathbb{R}$ a continuous-valued exposure (e.g., dosage of nutritional
+supplements taken), and $Y$ an outcome of interest (e.g., disease status).  To
+minimize unjustifiable assumptions, we let $O \sim \mathcal{P} \in \mathcal{M}$,
+where $\mathcal{P}$ is simply any distribution within the nonparametric
+statistical model $\mathcal{M}$. To formalize the definition of stochastic
+interventions and their corresponding causal effects, we consider a
+nonparametric structural equation model (NPSEM), introduced by
+@pearl2000causality, to define how the system changes under interventions of
+interest:
 \begin{align*}\label{eqn:npsem}
   W &= f_W(U_W) \\ A &= f_A(W, U_A) \\ Y &= f_Y(A, W, U_Y),
 \end{align*}
 We denote the observed data structure $O = (W, A, Y)$
 
-Letting $A$ denote a continuous-valued treatment, we assume that the
-distribution of $A$ conditional on $W = w$ has support in the interval
-$(l(w), u(w))$ -- for convenience, let this support be _a.e._ That is, the
-minimum natural value of treatment $A$ for an individual with covariates
-$W = w$ is $l(w)$; similarly, the maximum is $u(w)$. Then, a simple stochastic
-intervention, based on a shift $\delta$, may be defined
+Assuming that the distribution of $A$ conditional on $W = w$ has support in the
+interval $(l(w), u(w))$ -- for convenience, we assume that the minimum natural
+value of treatment $A$ for an individual with covariates $W = w$ is $l(w)$,
+while, similarly, the maximum is $u(w)$ -- a simple MTP based on a shift
+$\delta$, is
 \begin{equation}\label{eqn:shift}
-  d(a, w) =
+  \delta(a, w) =
   \begin{cases}
     a - \delta & \text{if } a > l(w) + \delta \\
     a & \text{if } a \leq l(w) + \delta,
   \end{cases}
 \end{equation}
-where $0 \leq \delta \leq u(w)$ is an arbitrary pre-specified value that
-defines the degree to which the observed value $A$ is to be shifted, where
-possible. For the purpose of using such a shift in practice, the present
-software provides estimators for a shift function that assumes that the density
-of treatment $A$, conditional on the covariates $W$, has support _a.e._
+where $0 \leq \delta$ is an arbitrary pre-specified value that defines the
+degree to which the observed value $A$ is to be shifted, where possible.
+
+In case-cohort studies, it is common practice to make use of outcome-dependent
+two-phase sampling designs, which allow for expensive measurements made on the
+exposure (e.g., genomic sequencing of immune markers) to be avoided. As a
+complication, such sampling schemes alter the observed data structure from the
+simpler $O = (W, A, Y)$ to $O = (W, \Delta A, Y, \Delta)$, where the sampling
+indicator $\Delta$ may itself be a function of the variables $\{W, Y\}$. In this
+revised data structure, the value of $A$ is only observed for units in the
+two-phase sample, for whom $\Delta = 1$. @hejazi2020efficient provide a detailed
+investigation of the methodological details of efficient estimation under such
+designs in the context of vaccine efficacy trials; their work was used in the
+analysis of immune correlates of protection for HIV-1 [@hejazi2020efficient] and
+COVID-19 [@gilbert2021covpn].  Of course, one may also account for loss to
+follow-up (i.e., censoring), which the `txshift` package supports (through the
+`C_cens` argument of the eponymous `txshift` function), though we avoid this
+complication in our subsequent examples in the interest of clarity of
+exposition. Corrections for both censoring and two-phase sampling make use of
+inverse probability of censoring weighting (IPCW), leading to IPCW-augmented
+one-step and TML estimators.
 
 ### Simulate Data
 
-```{r}
-# simulate simple data for tmle-shift sketch
-n_obs <- 1000  # number of observations
-n_w <- 1  # number of baseline covariates
-tx_mult <- 2  # multiplier for the effect of W = 1 on the treatment
+```{r make_data}
+# parameters for simulation example
+n_obs <- 200  # number of observations
 
-## baseline covariate -- simple, binary
-W <- as.numeric(replicate(n_w, rbinom(n_obs, 1, 0.5)))
+# baseline covariate -- simple, binary
+W <- rbinom(n_obs, 1, 0.5)
 
-## create treatment based on baseline W
-A <- as.numeric(rnorm(n_obs, mean = tx_mult * W, sd = 1))
+# create treatment based on baseline W
+A <- rnorm(n_obs, mean = 2 * W, sd = 0.5)
 
 # create outcome as a linear function of A, W + white noise
 Y <- A + W + rnorm(n_obs, mean = 0, sd = 1)
 
-# shift parameter
+# two-phase sampling based on covariates
+Delta_samp <- rbinom(n_obs, 1, plogis(W))
+
+# treatment shift parameter
 delta <- 0.5
 ```
 
-## Methodology
+## Estimating the Effects of Additive MTPs
 
-### Estimating Stochastic Interventions Effects with Generalized Linear Models
+The simplest way to compute an efficient estimator for an additive MTP is to fit
+each of the nuisance parameters internally. This procedure can be sped up by
+using generalized linear models (GLMs) to fit the outcome regression $Q_n$. The
+`txshift()` function provides a simple interface.
 
-The simplest way to compute the TML estimator for the stochastic treatment
-regime is to fit each of the major constituent parts (nuisance parameters) of
-the estimator with generalized linear models. To do this, one may merely call
-the `txshift` function, providing the standard inputs listed below.
-
-```{r}
-tmle_hal_shift_1 <- txshift(
+```{r est_simple}
+est_shift <- txshift(
   W = W, A = A, Y = Y, delta = delta,
-  fluctuation = "standard",
-  g_exp_fit_args = list(fit_type = "hal", n_bins = 5,
-                        grid_type = "equal_mass",
-                        lambda_seq = exp(seq(-1, -12, length = 500))),
-  Q_fit_args = list(fit_type = "glm", glm_formula = "Y ~ .")
+  g_exp_fit_args = list(
+    fit_type = "hal", n_bins = 5,
+    grid_type = "equal_mass",
+    lambda_seq = exp(seq(-1, -10, length = 100))
+  ),
+  Q_fit_args = list(
+    fit_type = "glm",
+    glm_formula = "Y ~ .^2"
+  )
 )
-tmle_hal_shift_1
+est_shift
 ```
 
-When computing any such TML estimator, we may, of course, vary the regressions
-used in fitting the nuisance parameters; however, an even simpler variation is
-to fit the step for the fluctuation submodels with a _weighted_ method, simply
-weighting each observation by an auxiliary covariate (often denoted $H_n$, and
-sometimes called the "clever covariate" in the literature) rather than using
-such a covariate directly in the submodel regression fit.
-
-```{r}
-tmle_hal_shift_2 <- txshift(
-  W = W, A = A, Y = Y, delta = delta,
-  fluctuation = "weighted",
-  g_exp_fit_args = list(fit_type = "hal", n_bins = 5,
-                        grid_type = "equal_mass",
-                        lambda_seq = exp(seq(-1, -12, length = 500))),
-  Q_fit_args = list(fit_type = "glm", glm_formula = "Y ~ .")
-)
-tmle_hal_shift_2
-```
-
-### Interlude: Constructing Optimal Stacked Regressions with `sl3`
+### Interlude: Ensemble Machine Learning with `sl3`
 
 To easily incorporate ensemble machine learning into the estimation procedure,
-we rely on the facilities provided in the [`sl3` R
-package](https://tlverse.org/sl3/) [@coyle2020sl3]. For a complete guide on
-using the `sl3` R package, consider consulting https://tlverse.org/sl3/ and
-https://tlverse.org/tlverse-handbook/sl3.html.
+`txshift` integrates with the [`sl3` R
+package](https://tlverse.org/sl3/) [@coyle2021sl3]. For a complete guide on
+using the `sl3` R package, consider consulting [the chapter on Super
+Learning](https://tlverse.org/tlverse-handbook/sl3.html) in @vdl2022targeted.
 
-```{r, eval = FALSE}
+```{r setup_sl, eval = FALSE}
 # SL learners to be used for most fits (e.g., IPCW, outcome regression)
 mean_learner <- Lrnr_mean$new()
 glm_learner <- Lrnr_glm$new()
@@ -151,76 +151,108 @@ Q_lib <- Stack$new(mean_learner, glm_learner, rf_learner)
 sl_learner <- Lrnr_sl$new(learners = Q_lib, metalearner = Lrnr_nnls$new())
 
 # SL learners for fitting the generalized propensity score fit
-hse_learner <- make_learner(Lrnr_density_semiparametric,
+hose_learner <- make_learner(Lrnr_density_semiparametric,
   mean_learner = glm_learner
 )
-mvd_learner <- make_learner(Lrnr_density_semiparametric,
+hese_learner <- make_learner(Lrnr_density_semiparametric,
   mean_learner = rf_learner,
   var_learner = glm_learner
 )
-g_lib <- Stack$new(hse_learner, mvd_learner)
-sl_learner_density <- Lrnr_sl$new(learners = g_lib,
-                                  metalearner = Lrnr_solnp_density$new())
-```
-
-### Estimating Stochastic Interventions Effects with Stacked Regressions
-
-Using the framework provided by the [`sl3` package](https://tlverse.org/sl3/),
-the nuisance parameters of the TML estimator may be fit with ensemble learning,
-using the cross-validation framework of the Super Learner algorithm of
-@vdl2007super.
-
-```{r, eval = FALSE}
-tmle_sl_shift_1 <- txshift(
-  W = W, A = A, Y = Y, delta = delta,
-  fluctuation = "standard",
-  g_exp_fit_args = list(fit_type = "sl",
-                        sl_learners_density = sl_learner_density),
-  Q_fit_args = list(fit_type = "sl", sl_learners = sl_learner)
+g_lib <- Stack$new(hose_learner, hese_learner)
+sl_learner_density <- Lrnr_sl$new(
+  learners = g_lib,
+  metalearner = Lrnr_solnp_density$new()
 )
-tmle_sl_shift_1
 ```
 
-As before, we may vary the regression for the submodel fluctuation procedure by
-weighting each observation by the value of the so-called clever covariate rather
-than using such an auxiliary covariate directly in the regression procedure:
+### Efficient Effect Estimates with Machine Learning
 
-```{r, eval = FALSE}
-tmle_sl_shift_2 <- txshift(
+Using the framework provided by the [`sl3`
+package](https://github.com/tlverse/sl3), the nuisance functions required for
+our efficient estimators may be fit with ensemble machine learning. The Super
+Learner algorithm [@vdl2007super] implemented in `sl3` uses the asymptotic
+optimality of V-fold cross-validation [@dudoit2005asymptotics;
+@vdl2004asymptotic; @vdv2006oracle] to select an optimal prediction functions
+from a library or to construct an optimal combination of prediction functions.
+
+```{r est_with_sl, eval = FALSE}
+est_shift_sl <- txshift(
   W = W, A = A, Y = Y, delta = delta,
-  fluctuation = "weighted",
-  g_exp_fit_args = list(fit_type = "sl",
-                        sl_learners_density = sl_learner_density),
-  Q_fit_args = list(fit_type = "sl", sl_learners = sl_learner)
+  g_exp_fit_args = list(
+    fit_type = "sl",
+    sl_learners_density = sl_learner_density
+  ),
+  Q_fit_args = list(
+    fit_type = "sl",
+    sl_learners = sl_learner
+  )
 )
-tmle_sl_shift_2
+est_shift_sl
 ```
 
-### Statistical Inference for Targeted Maximum Likelihood Estimates
+## Estimating the Effects of Additive MTPs Under Two-Phase Sampling
 
-Recall that the asymptotic distribution of TML estimators has been studied
-thoroughly:
-$$\psi_n - \psi_0 = (P_n - P_0) \cdot D(\bar{Q}_n^*, g_n) + R(\hat{P}^*, P_0),$$
-which, provided the following two conditions:
+In case-cohort studies in which two-phase sampling is used, the data structure
+takes the from $O = (W, \Delta A, Y, \Delta)$ as previously discussed. Under
+such sampling, the `txshift()` function may still be used to estimate the causal
+effect of an additive MTP -- only a few additional arguments need to be
+specified:
 
-1. If $D(\bar{Q}_n^{\star}, g_n)$ converges to $D(P_0)$ in $L_2(P_0)$ norm, and
-2. the size of the class of functions considered for estimation of
-   $\bar{Q}_n^{\star}$ and $g_n$ is bounded (technically, $\exists \mathcal{F}$
-   st $D(\bar{Q}_n^{\star}, g_n) \in \mathcal{F}$ *__whp__*, where $\mathcal{F}$
-   is a Donsker class),
-readily admits the conclusion that
-$\psi_n - \psi_0 = (P_n - P_0) \cdot D(P_0) + R(\hat{P}^{\star}, P_0)$.
+```{r ipcw_est_shift}
+est_shift_ipcw <- txshift(
+  W = W, A = A, Y = Y, C_samp = C, V = c("W", "Y"), delta = delta,
+  samp_fit_args = list(fit_type = "glm"),
+  g_exp_fit_args = list(
+    fit_type = "hal", n_bins = 5,
+    grid_type = "equal_mass",
+    lambda_seq = exp(seq(-1, -10, length = 100))
+  ),
+  Q_fit_args = list(
+    fit_type = "glm",
+    glm_formula = "Y ~ .^2"
+  ),
+  eif_reg_type = "glm"
+)
+est_shift_ipcw
+```
 
-Under the additional condition that the remainder term $R(\hat{P}^{\star}, P_0)$
-decays as $o_P \left( \frac{1}{\sqrt{n}} \right),$ we have that
+Note that we specify a few additional arguments in the call to `txshift()`,
+including `C_samp`, the indicator of inclusion in the two-phase sample; `V`, the
+set of other variables that may affect the sampling decision (in this case, both
+the baseline covariates and the outcome); `samp_fit_args`, which indicates how
+the sampling mechanism ought to be estimated; and `eif_reg_type`, which
+indicates how a particular reduced-dimension nuisance regression ought to be
+estimated (see @rose2011targeted2sd and @hejazi2020efficient for details). This
+last argument only has options for using a GLM or the highly adaptive lasso
+(HAL), a nonparametric regression estimator, using the [`hal9001`
+package](https://github.com/tlverse/hal9001) [@coyle2020hal9001]. In practice,
+we recommend leaving this argument to the default and fitting this nuisance
+function with HAL; however, this is significantly more costly computationally.
+
+## Statistical Inference for One-step and TML Estimators
+
+The efficient estimators implemented in `txshift` are asymptotically linear;
+thus, the estimator $\psi_n$ converges to the true parameter value $\psi_0$:
+$$\psi_n - \psi_0 = (P_n - P_0) \cdot D(\bar{Q}_n^{\star}, g_n) +
+  R(\hat{P}^{\star}, P_0),$$
+which yields
 $$\psi_n - \psi_0 = (P_n - P_0) \cdot D(P_0) + o_P \left( \frac{1}{\sqrt{n}}
  \right),$$
-which, by a central limit theorem, establishes a Gaussian limiting distribution
-for the estimator:
+provided the following conditions,
 
+1. if $D(\bar{Q}_n^{\star}, g_n)$ converges to $D(P_0)$ in $L_2(P_0)$ norm;
+2. the size of the class of functions considered for estimation of
+   $\bar{Q}_n^{\star}$ and $g_n$ is bounded (technically, $\exists \mathcal{F}$
+   such that $D(\bar{Q}_n^{\star}, g_n) \in \mathcal{F}$ with high probability,
+   where $\mathcal{F}$ is a Donsker class); and
+3. the remainder term $R(\hat{P}^{\star}, P_0)$ decays as $o_P
+   \left( \frac{1}{\sqrt{n}} \right)$.
+
+By the central limit theorem, the estimators then have a Gaussian limiting
+distribution,
 $$\sqrt{n}(\psi_n - \psi) \to N(0, V(D(P_0))),$$
-where $V(D(P_0))$ is the variance of the efficient influence curve (canonical
-gradient) when $\psi$ admits an asymptotically linear representation.
+where $V(D(P_0))$ is the variance of the efficient influence function (or
+canonical gradient).
 
 The above implies that $\psi_n$ is a $\sqrt{n}$-consistent estimator of $\psi$,
 that it is asymptotically normal (as given above), and that it is locally
@@ -231,22 +263,27 @@ $$\psi_n \pm z_{\alpha} \cdot \frac{\sigma_n}{\sqrt{n}},$$
 where $\sigma_n^2$ is an estimator of $V(D(P_0))$. The estimator $\sigma_n^2$
 may be obtained using the bootstrap or computed directly via the following
 
-$$\sigma_n^2 = \frac{1}{n} \sum_{i = 1}^{n} D^2(\bar{Q}_n^{\star}, g_n)(O_i)$$
+$$\sigma_n^2 = \frac{1}{n} \sum_{i = 1}^{n} D^2(\bar{Q}_n^{\star}, g_n)(O_i).$$
 
-```{r}
-(ci_param <- confint(tmle_hal_shift_1))
+Such confidence intervals may easily be created with the `confint` method:
+
+```{r confint}
+(ci_est_shift <- confint(est_shift))
 ```
 
-## _Advanced Usage:_ User-Specified Regressions
+## _Advanced Usage:_ User-Specified Nuisance Regressions
 
 In some special cases it may be useful for the experienced user to compute the
-treatment mechanism and outcome regressions separately (i.e., outside of the
-`tmle_txshift` wrapper function), instead applying this user-facing wrapper only
-to invoke the _targeting_ steps involved in computing the TML estimator for the
-treatment shift parameter. In such cases, the optional arguments `gn_fit_ext`
-and `Qn_fit_ext` may be utilized. We present a case of using these here:
+treatment mechanism, censoring mechanism, outcome regression, and sampling
+mechanism fits separately (i.e., outside of the `txshift` wrapper function),
+instead applying the wrapper only to construct an efficient one-step or TML
+estimator. In such cases, the optional arguments ending in `_ext`.
 
-```{r}
+```{r, eval=FALSE}
+# compute censoring mechanism and produce IPC weights externally
+pi_mech <- plogis(W)
+ipcw_out <- pi_mech
+
 # compute treatment mechanism (propensity score) externally
 ## first, produce the down-shifted treatment data
 gn_downshift <- dnorm(A - delta, mean = tx_mult * W, sd = 1)
@@ -258,7 +295,7 @@ gn_upupshift <- dnorm(A + 2 * delta, mean = tx_mult * W, sd = 1)
 gn_noshift <- dnorm(A, mean = tx_mult * W, sd = 1)
 ## finally, put it all together into an object like what's produced internally
 gn_out <- as.data.table(cbind(gn_downshift, gn_noshift, gn_upshift,
-                              gn_upupshift))
+                              gn_upupshift))[C == 1, ]
 setnames(gn_out, c("downshift", "noshift", "upshift", "upupshift"))
 
 # compute outcome regression externally
@@ -268,21 +305,20 @@ Qn_noshift[Qn_noshift < 0] <- .Machine$double.neg.eps
 Qn_noshift[Qn_noshift > 1] <- 1 - .Machine$double.neg.eps
 Qn_upshift[Qn_upshift < 0] <- .Machine$double.neg.eps
 Qn_upshift[Qn_upshift > 1] <- 1 - .Machine$double.neg.eps
-Qn_out <- as.data.table(cbind(Qn_noshift, Qn_upshift))
+Qn_out <- as.data.table(cbind(Qn_noshift, Qn_upshift))[C == 1, ]
 setnames(Qn_out, c("noshift", "upshift"))
 
-# invoke the wrapper function only to apply the targeting step
-tmle_shift_spec <- txshift(W = W, A = A, Y = Y, delta = delta,
-                           fluctuation = "standard",
-                           samp_fit_args = NULL,
-                           g_exp_fit_args = list(fit_type = "external"),
-                           Q_fit_args = list(fit_type = "external"),
-                           gn_exp_fit_ext = gn_out,
-                           Qn_fit_ext = Qn_out)
-tmle_shift_spec
+# construct efficient estimator by applying wrapper function 
+est_shift_spec <- txshift(
+  W = W, A = A, Y = Y, delta = delta,
+ samp_fit_args = NULL,
+ samp_fit_ext = ipcw_out,
+ g_exp_fit_args = list(fit_type = "external"),
+ Q_fit_args = list(fit_type = "external"),
+ gn_exp_fit_ext = gn_out,
+ Qn_fit_ext = Qn_out
+)
 ```
-
----
 
 ## References
 

@@ -170,8 +170,8 @@ tmle <- txshift(
   estimator = "onestep",
   g_exp_fit_args = list(
     fit_type = "hal",
-    n_bins = 5,
-    lambda_seq = exp(seq(-1, -13, length = 50))
+    n_bins = 3,
+    lambda_seq = exp(seq(-1, -10, length = 50))
   ),
   Q_fit_args = list(
     fit_type = "glm",
@@ -179,14 +179,15 @@ tmle <- txshift(
   )
 )
 
+\dontrun{
 # construct a TML estimate, accounting for censoring
 tmle <- txshift(
   W = W, A = A, C_cens = C_cens, Y = Y, delta = 0.5,
   estimator = "onestep",
   g_exp_fit_args = list(
     fit_type = "hal",
-    n_bins = 5,
-    lambda_seq = exp(seq(-1, -13, length = 50))
+    n_bins = 3,
+    lambda_seq = exp(seq(-1, -10, length = 50))
   ),
   g_cens_fit_args = list(
     fit_type = "glm",
@@ -202,12 +203,12 @@ tmle <- txshift(
 ipcwtmle <- txshift(
   W = W, A = A, Y = Y, delta = 0.5,
   C_samp = C_samp, V = c("W", "Y"),
-  estimator = "onestep", max_iter = 5,
+  estimator = "onestep", max_iter = 3,
   samp_fit_args = list(fit_type = "glm"),
   g_exp_fit_args = list(
     fit_type = "hal",
-    n_bins = 5,
-    lambda_seq = exp(seq(-1, -13, length = 50))
+    n_bins = 3,
+    lambda_seq = exp(seq(-1, -10, length = 50))
   ),
   Q_fit_args = list(
     fit_type = "glm",
@@ -215,17 +216,18 @@ ipcwtmle <- txshift(
   ),
   eif_reg_type = "glm"
 )
+}
 
 # construct a TML estimate acconting for two-phase sampling and censoring
 ipcwtmle <- txshift(
   W = W, A = A, C_cens = C_cens, Y = Y, delta = 0.5,
   C_samp = C_samp, V = c("W", "Y"),
-  estimator = "onestep", max_iter = 5,
+  estimator = "onestep", max_iter = 3,
   samp_fit_args = list(fit_type = "glm"),
   g_exp_fit_args = list(
     fit_type = "hal",
-    n_bins = 5,
-    lambda_seq = exp(seq(-1, -13, length = 50))
+    n_bins = 3,
+    lambda_seq = exp(seq(-1, -10, length = 50))
   ),
   g_cens_fit_args = list(
     fit_type = "glm",

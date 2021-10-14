@@ -13,5 +13,5 @@
 
 ## Additional notes
 * This is an update to an existing CRAN package, submitted to correct build
-  failures introduced by a very recent update to a dependency `hal9001`, per
-  correspondence with CRAN maintainers.
+  failures introduced by a very recent update to the dependencies `hal9001`
+  (v0.4.1) and `haldensify` (v0.2.1).

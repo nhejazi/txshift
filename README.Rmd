@@ -212,7 +212,7 @@ After using the `txshift` R package, please cite the following:
             stochastic interventions in {R}},
           year  = {2020},
           doi = {10.21105/joss.02447},
-          url = {https://10.21105.joss.02447},
+          url = {https://doi.org/10.21105/joss.02447},
           journal = {Journal of Open Source Software},
           publisher = {The Open Journal}
         }

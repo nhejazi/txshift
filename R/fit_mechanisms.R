@@ -134,7 +134,8 @@ est_g_exp <- function(A,
       stats::predict(
         object = fit_g_exp_dens_hal,
         new_A = as.numeric(data_in$A),
-        new_W = as.matrix(data_in[, colnames(W), with = FALSE])
+        new_W = as.matrix(data_in[, colnames(W), with = FALSE]),
+        trim = FALSE
       )
   } else if (fit_type == "sl" & !is.null(sl_learners_density)) {
     suppressMessages(
@@ -148,7 +149,8 @@ est_g_exp <- function(A,
       stats::predict(
         object = fit_g_exp_dens_hal,
         new_A = as.numeric(data_in_downshifted$A),
-        new_W = as.matrix(data_in[, colnames(W), with = FALSE])
+        new_W = as.matrix(data_in[, colnames(W), with = FALSE]),
+        trim = FALSE
       )
   } else if (fit_type == "sl" & !is.null(sl_learners_density)) {
     suppressMessages(
@@ -162,7 +164,8 @@ est_g_exp <- function(A,
       stats::predict(
         object = fit_g_exp_dens_hal,
         new_A = as.numeric(data_in_upshifted$A),
-        new_W = as.matrix(data_in[, colnames(W), with = FALSE])
+        new_W = as.matrix(data_in[, colnames(W), with = FALSE]),
+        trim = FALSE
       )
   } else if (fit_type == "sl" & !is.null(sl_learners_density)) {
     suppressMessages(
@@ -176,7 +179,8 @@ est_g_exp <- function(A,
       stats::predict(
         object = fit_g_exp_dens_hal,
         new_A = as.numeric(data_in_upupshifted$A),
-        new_W = as.matrix(data_in[, colnames(W), with = FALSE])
+        new_W = as.matrix(data_in[, colnames(W), with = FALSE]),
+        trim = FALSE
       )
   } else if (fit_type == "sl" & !is.null(sl_learners_density)) {
     suppressMessages(
