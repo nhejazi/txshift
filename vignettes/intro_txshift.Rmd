@@ -170,7 +170,7 @@ sl_learner_density <- Lrnr_sl$new(
 ### Efficient Effect Estimates with Machine Learning
 
 Using the framework provided by the [`sl3`
-package](https://github.com/tlverse/sl3), the nuisance functions required for
+package](https://github.com/tlverse/sl3/), the nuisance functions required for
 our efficient estimators may be fit with ensemble machine learning. The Super
 Learner algorithm [@vdl2007super] implemented in `sl3` uses the asymptotic
 optimality of V-fold cross-validation [@dudoit2005asymptotics;
@@ -228,7 +228,7 @@ indicates how a particular reduced-dimension nuisance regression ought to be
 estimated (see @rose2011targeted2sd and @hejazi2020efficient for details). This
 last argument only has options for using a GLM or the highly adaptive lasso
 (HAL), a nonparametric regression estimator, using the [`hal9001`
-package](https://github.com/tlverse/hal9001) [@coyle2020hal9001]. In practice,
+package](https://github.com/tlverse/hal9001/) [@coyle2020hal9001]. In practice,
 we recommend leaving this argument to the default and fitting this nuisance
 function with HAL; however, this is significantly more costly computationally.
 
@@ -282,7 +282,7 @@ mechanism fits separately (i.e., outside of the `txshift` wrapper function),
 instead applying the wrapper only to construct an efficient one-step or TML
 estimator. In such cases, the optional arguments ending in `_ext`.
 
-```{r, eval=FALSE}
+```{r fit_external, eval=FALSE}
 # compute censoring mechanism and produce IPC weights externally
 pi_mech <- plogis(W)
 ipcw_out <- pi_mech
@@ -302,12 +302,14 @@ gn_out <- as.data.table(cbind(gn_downshift, gn_noshift, gn_upshift,
 setnames(gn_out, c("downshift", "noshift", "upshift", "upupshift"))
 
 # compute outcome regression externally
+# NOTE: transform Y to lie in the unit interval and bound predictions such that
+#       no values fall near the bounds of the interval
 Qn_noshift <- (W + A - min(Y)) / diff(range(Y))
 Qn_upshift <- (W + A + delta - min(Y)) / diff(range(Y))
-Qn_noshift[Qn_noshift < 0] <- .Machine$double.neg.eps
-Qn_noshift[Qn_noshift > 1] <- 1 - .Machine$double.neg.eps
-Qn_upshift[Qn_upshift < 0] <- .Machine$double.neg.eps
-Qn_upshift[Qn_upshift > 1] <- 1 - .Machine$double.neg.eps
+Qn_noshift[Qn_noshift < 0] <- 0.025
+Qn_noshift[Qn_noshift > 1] <- 0.975
+Qn_upshift[Qn_upshift < 0] <- 0.025
+Qn_upshift[Qn_upshift > 1] <- 0.975
 Qn_out <- as.data.table(cbind(Qn_noshift, Qn_upshift))[C == 1, ]
 setnames(Qn_out, c("noshift", "upshift"))
 
