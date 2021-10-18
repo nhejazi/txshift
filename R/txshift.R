@@ -166,7 +166,6 @@
 #'   ),
 #'   eif_reg_type = "glm"
 #' )
-#' }
 #'
 #' # construct a TML estimate acconting for two-phase sampling and censoring
 #' ipcwtmle <- txshift(
@@ -189,6 +188,7 @@
 #'   ),
 #'   eif_reg_type = "glm"
 #' )
+#' }
 txshift <- function(W,
                     A,
                     C_cens = rep(1, length(A)),
@@ -210,12 +210,12 @@ txshift <- function(W,
                     ),
                     g_cens_fit_args = list(
                       fit_type = c("glm", "sl", "external"),
-                      glm_formula = "C_cens ~ .",
+                      glm_formula = "C_cens ~ .^2",
                       sl_learners = NULL
                     ),
                     Q_fit_args = list(
                       fit_type = c("glm", "sl", "external"),
-                      glm_formula = "Y ~ .",
+                      glm_formula = "Y ~ .^2",
                       sl_learners = NULL
                     ),
                     eif_reg_type = c("hal", "glm"),

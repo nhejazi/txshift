@@ -19,8 +19,8 @@ txshift(
   g_exp_fit_args = list(fit_type = c("hal", "sl", "external"), lambda_seq = exp(seq(-1,
     -13, length = 300)), sl_learners_density = NULL),
   g_cens_fit_args = list(fit_type = c("glm", "sl", "external"), glm_formula =
-    "C_cens ~ .", sl_learners = NULL),
-  Q_fit_args = list(fit_type = c("glm", "sl", "external"), glm_formula = "Y ~ .",
+    "C_cens ~ .^2", sl_learners = NULL),
+  Q_fit_args = list(fit_type = c("glm", "sl", "external"), glm_formula = "Y ~ .^2",
     sl_learners = NULL),
   eif_reg_type = c("hal", "glm"),
   ipcw_efficiency = TRUE,
@@ -215,7 +215,6 @@ ipcwtmle <- txshift(
   ),
   eif_reg_type = "glm"
 )
-}
 
 # construct a TML estimate acconting for two-phase sampling and censoring
 ipcwtmle <- txshift(
@@ -238,4 +237,5 @@ ipcwtmle <- txshift(
   ),
   eif_reg_type = "glm"
 )
+}
 }
