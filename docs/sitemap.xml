@@ -1,7 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://code.nimahejazi.org/txshift/404.html</loc>
+  </url>
+  <url>
+    <loc>https://code.nimahejazi.org/txshift/CONTRIBUTING.html</loc>
+  </url>
+  <url>
+    <loc>https://code.nimahejazi.org/txshift/LICENSE-text.html</loc>
+  </url>
+  <url>
+    <loc>https://code.nimahejazi.org/txshift/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>https://code.nimahejazi.org/txshift/articles/intro_txshift.html</loc>
+  </url>
+  <url>
+    <loc>https://code.nimahejazi.org/txshift/authors.html</loc>
+  </url>
+  <url>
     <loc>https://code.nimahejazi.org/txshift/index.html</loc>
+  </url>
+  <url>
+    <loc>https://code.nimahejazi.org/txshift/news/index.html</loc>
   </url>
   <url>
     <loc>https://code.nimahejazi.org/txshift/reference/bound_precision.html</loc>
@@ -34,6 +55,9 @@
     <loc>https://code.nimahejazi.org/txshift/reference/fit_fluctuation.html</loc>
   </url>
   <url>
+    <loc>https://code.nimahejazi.org/txshift/reference/index.html</loc>
+  </url>
+  <url>
     <loc>https://code.nimahejazi.org/txshift/reference/ipcw_eif_update.html</loc>
   </url>
   <url>
@@ -61,12 +85,12 @@
     <loc>https://code.nimahejazi.org/txshift/reference/shift_additive.html</loc>
   </url>
   <url>
+    <loc>https://code.nimahejazi.org/txshift/reference/summary.txshift.html</loc>
+  </url>
+  <url>
     <loc>https://code.nimahejazi.org/txshift/reference/tmle_txshift.html</loc>
   </url>
   <url>
     <loc>https://code.nimahejazi.org/txshift/reference/txshift.html</loc>
-  </url>
-  <url>
-    <loc>https://code.nimahejazi.org/txshift/articles/intro_txshift.html</loc>
   </url>
 </urlset>

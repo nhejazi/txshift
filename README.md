@@ -40,9 +40,8 @@ likelihood (TML) estimator of such a causal parameter, originally
 proposed by Dı́az and van der Laan (2018), and makes use of analogous
 machinery to compute an efficient one-step estimator (Pfanzagl and
 Wefelmeyer 1985). `txshift` integrates with the [`sl3`
-package](https://github.com/tlverse/sl3)
-(<span class="citeproc-not-found" data-reference-id="coyle2020sl3">**???**</span>)
-to allow for ensemble machine learning to be leveraged in the estimation
+package](https://github.com/tlverse/sl3) (Coyle et al. 2021) to allow
+for ensemble machine learning to be leveraged in the estimation
 procedure.
 
 For many practical applications (e.g., vaccine efficacy trials),
@@ -291,20 +290,22 @@ from the National Library of Medicine (award number [T32
 LM012417](https://reporter.nih.gov/project-details/9248418)) and the
 National Institute of Allergy and Infectious Diseases (award number [R01
 AI074345](https://reporter.nih.gov/project-details/9926564)) of the
-National Institutess of Health.
+National Institutes of Health, as well as by the National Science
+Foundation (award number [DMS
+2102840](https://www.nsf.gov/awardsearch/showAward?AWD_ID=2102840)).
 
 -----
 
 ## License
 
-© 2017-2021 [Nima S. Hejazi](https://nimahejazi.org)
+© 2017-2022 [Nima S. Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the MIT license.
 See below for details:
 
     MIT License
     
-    Copyright (c) 2017-2021 Nima S. Hejazi
+    Copyright (c) 2017-2022 Nima S. Hejazi
     
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -329,6 +330,14 @@ See below for details:
 ## References
 
 <div id="refs" class="references">
+
+<div id="ref-coyle2021sl3">
+
+Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, Rachael V Phillips, and
+Oleg Sofrygin. 2021. *sl3: Modern Machine Learning Pipelines for Super
+Learning*. <https://doi.org/10.5281/zenodo.1342293>.
+
+</div>
 
 <div id="ref-diaz2020causal">
 

@@ -46,7 +46,7 @@ algorithm for the targeted maximum likelihood (TML) estimator of such a causal
 parameter, originally proposed by @diaz2018stochastic, and makes use of
 analogous machinery to compute an efficient one-step estimator
 [@pfanzagl1985contributions]. `txshift` integrates with the [`sl3`
-package](https://github.com/tlverse/sl3) [@coyle2020sl3] to allow for ensemble
+package](https://github.com/tlverse/sl3) [@coyle2021sl3] to allow for ensemble
 machine learning to be leveraged in the estimation procedure.
 
 For many practical applications (e.g., vaccine efficacy trials), observed data
@@ -260,20 +260,22 @@ National Library of Medicine (award number [T32
 LM012417](https://reporter.nih.gov/project-details/9248418))
 and the National Institute of Allergy and Infectious Diseases (award number
 [R01 AI074345](https://reporter.nih.gov/project-details/9926564)) of the
-National Institutess of Health.
+National Institutes of Health, as well as by the National Science Foundation
+(award number [DMS
+2102840](https://www.nsf.gov/awardsearch/showAward?AWD_ID=2102840)).
 
 ---
 
 ## License
 
-&copy; 2017-2021 [Nima S. Hejazi](https://nimahejazi.org)
+&copy; 2017-2022 [Nima S. Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the MIT license. See below
 for details:
 ```
 MIT License
 
-Copyright (c) 2017-2021 Nima S. Hejazi
+Copyright (c) 2017-2022 Nima S. Hejazi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
