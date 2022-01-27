@@ -12,6 +12,8 @@
 * There are no downstream dependencies.
 
 ## Additional notes
-* This is an update to an existing CRAN package, submitted to correct build
-  failures introduced by a very recent update to the dependencies `hal9001`
-  (v0.4.1) and `haldensify` (v0.2.1).
+* This is a resubmission of a package removed from CRAN due to a Solaris build
+  failure (no longer part of the CRAN build/check suite) that affected one of
+  its upstream dependencies (`hal9001`).
+* The upstream dependencies `hal9001` and `haldensify` have both recently been
+  re-uploaded to CRAN.

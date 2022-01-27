@@ -22,8 +22,9 @@ for computing one-step or targeted minimum loss-based (TML) estimates of the
 counterfactual means induced by additive modified treatment policies (MTPs),
 defined by a shifting function $\delta(A,W)$. For a technical presentation, the
 interested reader is invited to consult @diaz2018stochastic or the earlier work
-of @diaz2012population.  For background on Targeted Learning, consider
-consulting @vdl2011targeted, @vdl2018targeted, and @vdl2022targeted.
+of @diaz2012population and @haneuse2013estimation. For background on Targeted
+Learning, consider consulting @vdl2011targeted, @vdl2018targeted, and
+@vdl2022targeted.
 
 To start, let's load the packages we'll need and set a seed for simulation:
 
@@ -81,7 +82,7 @@ two-phase sample, for whom $\Delta = 1$. @hejazi2020efficient provide a detailed
 investigation of the methodological details of efficient estimation under such
 designs in the context of vaccine efficacy trials; their work was used in the
 analysis of immune correlates of protection for HIV-1 [@hejazi2020efficient] and
-COVID-19 [@gilbert2021covpn].  Of course, one may also account for loss to
+COVID-19 [@gilbert2021covpn]. Of course, one may also account for loss to
 follow-up (i.e., censoring), which the `txshift` package supports (through the
 `C_cens` argument of the eponymous `txshift` function), though we avoid this
 complication in our subsequent examples in the interest of clarity of
@@ -138,7 +139,7 @@ est_shift
 
 To easily incorporate ensemble machine learning into the estimation procedure,
 `txshift` integrates with the [`sl3` R
-package](https://tlverse.org/sl3/) [@coyle2021sl3]. For a complete guide on
+package](https://tlverse.org/sl3/) [@coyle-sl3-rpkg]. For a complete guide on
 using the `sl3` R package, consider consulting [the chapter on Super
 Learning](https://tlverse.org/tlverse-handbook/sl3.html) in @vdl2022targeted.
 
@@ -228,9 +229,10 @@ indicates how a particular reduced-dimension nuisance regression ought to be
 estimated (see @rose2011targeted2sd and @hejazi2020efficient for details). This
 last argument only has options for using a GLM or the highly adaptive lasso
 (HAL), a nonparametric regression estimator, using the [`hal9001`
-package](https://github.com/tlverse/hal9001/) [@coyle2020hal9001]. In practice,
-we recommend leaving this argument to the default and fitting this nuisance
-function with HAL; however, this is significantly more costly computationally.
+package](https://github.com/tlverse/hal9001/) [@coyle-hal9001-rpkg;
+hejazi2020hal9001-joss]. In practice, we recommend leaving this argument to the
+default and fitting this nuisance function with HAL; however, this is
+significantly more costly computationally.
 
 ## Statistical Inference for One-step and TML Estimators
 

@@ -39,14 +39,14 @@ Benkeser](https://www.sph.emory.edu/faculty/profile/#!dbenkes)
 ## What's `txshift`?
 
 The `txshift` R package is designed to provide facilities for the construction
-of efficient estimators of a causal parameter defined as the counterfactual mean
-of an outcome under stochastic mechanisms for treatment assignment
-[@diaz2012population]. `txshift ` implements and builds upon a simplified
-algorithm for the targeted maximum likelihood (TML) estimator of such a causal
-parameter, originally proposed by @diaz2018stochastic, and makes use of
-analogous machinery to compute an efficient one-step estimator
+of efficient estimators of the counterfactual mean of an outcome under
+stochastic interventions that depend on the natural value of treatment
+[@diaz2012population; @haneuse2013estimation]. `txshift `implements and builds
+upon a simplified algorithm for the targeted maximum likelihood (TML) estimator
+of such a causal parameter, originally proposed by @diaz2018stochastic, and
+makes use of analogous machinery to compute an efficient one-step estimator
 [@pfanzagl1985contributions]. `txshift` integrates with the [`sl3`
-package](https://github.com/tlverse/sl3) [@coyle2021sl3] to allow for ensemble
+package](https://github.com/tlverse/sl3) [@coyle-sl3-rpkg] to allow for ensemble
 machine learning to be leveraged in the estimation procedure.
 
 For many practical applications (e.g., vaccine efficacy trials), observed data
@@ -217,14 +217,14 @@ After using the `txshift` R package, please cite the following:
           publisher = {The Open Journal}
         }
 
-        @software{hejazi2020txshift-rpkg,
+        @software{hejazi2022txshift-rpkg,
           author = {Hejazi, Nima S and Benkeser, David C},
           title = {{txshift}: Efficient Estimation of the Causal Effects of
             Stochastic Interventions},
-          year  = {2020},
+          year  = {2022},
           doi = {10.5281/zenodo.4070042},
           url = {https://CRAN.R-project.org/package=txshift},
-          note = {R package version 0.3.4}
+          note = {R package version 0.3.7}
         }
 
 ---
@@ -247,7 +247,7 @@ After using the `txshift` R package, please cite the following:
 * [R/`haldensify`](https://github.com/nhejazi/haldensify) - A minimal package
   for estimating the conditional density treatment mechanism component of this
   parameter based on using the [highly adaptive
-  lasso](https://github.com/tlverse/hal9001) [@coyle2020hal9001-rpkg;
+  lasso](https://github.com/tlverse/hal9001) [@coyle-hal9001-rpkg;
   @hejazi2020hal9001-joss] in combination with a pooled hazard regression. This
   package implements a variant of the approach advocated by @diaz2011super.
 
@@ -256,13 +256,12 @@ After using the `txshift` R package, please cite the following:
 ## Funding
 
 The development of this software was supported in part through grants from the
-National Library of Medicine (award number [T32
-LM012417](https://reporter.nih.gov/project-details/9248418))
-and the National Institute of Allergy and Infectious Diseases (award number
-[R01 AI074345](https://reporter.nih.gov/project-details/9926564)) of the
-National Institutes of Health, as well as by the National Science Foundation
-(award number [DMS
-2102840](https://www.nsf.gov/awardsearch/showAward?AWD_ID=2102840)).
+National Library of Medicine (award no. [T32
+LM012417](https://reporter.nih.gov/project-details/9248418)) and the National
+Institute of Allergy and Infectious Diseases (award no.  [R01
+AI074345](https://reporter.nih.gov/project-details/9926564)) of the National
+Institutes of Health, as well as by the National Science Foundation (award no.
+[DMS 2102840](https://www.nsf.gov/awardsearch/showAward?AWD_ID=2102840)).
 
 ---
 
