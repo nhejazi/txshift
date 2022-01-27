@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.7</span>
       </span>
     </div>
 
@@ -83,7 +83,7 @@
 <a href="https://nimahejazi.org" class="external-link">Nima Hejazi</a> and <a href="https://www.sph.emory.edu/faculty/profile/#!dbenkes" class="external-link">David Benkeser</a>
 </h4>
             
-            <h4 data-toc-skip class="date">2021-12-29</h4>
+            <h4 data-toc-skip class="date">2022-01-27</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nhejazi/txshift/blob/HEAD/vignettes/intro_txshift.Rmd" class="external-link"><code>vignettes/intro_txshift.Rmd</code></a></small>
       <div class="hidden name"><code>intro_txshift.Rmd</code></div>
@@ -95,15 +95,15 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>Stochastic treatment regimes constitute a flexible framework for evaluating the effects of continuous-valued exposures/treatments. <em>Modified treatment policies</em>, one such technique within this framework, examine the effects attributable to shifting the observed (“natural”) value of a treatment, usually up or down by some scalar <span class="math inline">\(\delta\)</span>. The <code>txshift</code> package implements algorithms for computing one-step or targeted minimum loss-based (TML) estimates of the counterfactual means induced by additive modified treatment policies (MTPs), defined by a shifting function <span class="math inline">\(\delta(A,W)\)</span>. For a technical presentation, the interested reader is invited to consult <span class="citation">Dı́az and van der Laan (2018)</span> or the earlier work of <span class="citation">Dı́az and van der Laan (2012)</span>. For background on Targeted Learning, consider consulting <span class="citation">van der Laan and Rose (2011)</span>, <span class="citation">van der Laan and Rose (2018)</span>, and <span class="citation">van der Laan et al. (2022)</span>.</p>
+<p>Stochastic treatment regimes constitute a flexible framework for evaluating the effects of continuous-valued exposures/treatments. <em>Modified treatment policies</em>, one such technique within this framework, examine the effects attributable to shifting the observed (“natural”) value of a treatment, usually up or down by some scalar <span class="math inline">\(\delta\)</span>. The <code>txshift</code> package implements algorithms for computing one-step or targeted minimum loss-based (TML) estimates of the counterfactual means induced by additive modified treatment policies (MTPs), defined by a shifting function <span class="math inline">\(\delta(A,W)\)</span>. For a technical presentation, the interested reader is invited to consult <span class="citation">Dı́az and van der Laan (2018)</span> or the earlier work of <span class="citation">Dı́az and van der Laan (2012)</span> and <span class="citation">Haneuse and Rotnitzky (2013)</span>. For background on Targeted Learning, consider consulting <span class="citation">van der Laan and Rose (2011)</span>, <span class="citation">van der Laan and Rose (2018)</span>, and <span class="citation">van der Laan et al. (2022)</span>.</p>
 <p>To start, let’s load the packages we’ll need and set a seed for simulation:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/nhejazi/haldensify" class="external-link">haldensify</a></span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## haldensify v0.2.1: Highly Adaptive Lasso Conditional Density Estimation</span></code></pre>
+<pre><code><span class="co">## haldensify v0.2.2: Highly Adaptive Lasso Conditional Density Estimation</span></code></pre>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/nhejazi/txshift" class="external-link">txshift</a></span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## txshift v0.3.6: Efficient Estimation of the Causal Effects of Stochastic Interventions</span></code></pre>
+<pre><code><span class="co">## txshift v0.3.7: Efficient Estimation of the Causal Effects of Stochastic Interventions</span></code></pre>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">11249</span><span class="op">)</span></code></pre></div>
 <hr>
@@ -172,7 +172,7 @@
 <div class="section level3">
 <h3 id="interlude-ensemble-machine-learning-with-sl3">Interlude: Ensemble Machine Learning with <code>sl3</code><a class="anchor" aria-label="anchor" href="#interlude-ensemble-machine-learning-with-sl3"></a>
 </h3>
-<p>To easily incorporate ensemble machine learning into the estimation procedure, <code>txshift</code> integrates with the <a href="https://tlverse.org/sl3/" class="external-link"><code>sl3</code> R package</a> <span class="citation">(Coyle et al. 2021)</span>. For a complete guide on using the <code>sl3</code> R package, consider consulting <a href="https://tlverse.org/tlverse-handbook/sl3.html" class="external-link">the chapter on Super Learning</a> in <span class="citation">van der Laan et al. (2022)</span>.</p>
+<p>To easily incorporate ensemble machine learning into the estimation procedure, <code>txshift</code> integrates with the <a href="https://tlverse.org/sl3/" class="external-link"><code>sl3</code> R package</a> <span class="citation">(Coyle, Hejazi, Malenica, et al. 2022)</span>. For a complete guide on using the <code>sl3</code> R package, consider consulting <a href="https://tlverse.org/tlverse-handbook/sl3.html" class="external-link">the chapter on Super Learning</a> in <span class="citation">van der Laan et al. (2022)</span>.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tlverse.org/sl3" class="external-link">sl3</a></span><span class="op">)</span>
 
@@ -243,7 +243,7 @@
 <pre><code><span class="co">## Estimate: 1.9515</span></code></pre>
 <pre><code><span class="co">## Std. Error: 0.1398</span></code></pre>
 <pre><code><span class="co">## 95% CI: [1.6776, 2.2254]</span></code></pre>
-<p>Note that we specify a few additional arguments in the call to <code><a href="../reference/txshift.html">txshift()</a></code>, including <code>C_samp</code>, the indicator of inclusion in the two-phase sample; <code>V</code>, the set of other variables that may affect the sampling decision (in this case, both the baseline covariates and the outcome); <code>samp_fit_args</code>, which indicates how the sampling mechanism ought to be estimated; and <code>eif_reg_type</code>, which indicates how a particular reduced-dimension nuisance regression ought to be estimated (see <span class="citation">Rose and van der Laan (2011)</span> and <span class="citation">Hejazi et al. (2020)</span> for details). This last argument only has options for using a GLM or the highly adaptive lasso (HAL), a nonparametric regression estimator, using the <a href="https://github.com/tlverse/hal9001/" class="external-link"><code>hal9001</code> package</a> <span class="citation">(<span class="citeproc-not-found" data-reference-id="coyle2020hal9001"><strong>???</strong></span>)</span>. In practice, we recommend leaving this argument to the default and fitting this nuisance function with HAL; however, this is significantly more costly computationally.</p>
+<p>Note that we specify a few additional arguments in the call to <code><a href="../reference/txshift.html">txshift()</a></code>, including <code>C_samp</code>, the indicator of inclusion in the two-phase sample; <code>V</code>, the set of other variables that may affect the sampling decision (in this case, both the baseline covariates and the outcome); <code>samp_fit_args</code>, which indicates how the sampling mechanism ought to be estimated; and <code>eif_reg_type</code>, which indicates how a particular reduced-dimension nuisance regression ought to be estimated (see <span class="citation">Rose and van der Laan (2011)</span> and <span class="citation">Hejazi et al. (2020)</span> for details). This last argument only has options for using a GLM or the highly adaptive lasso (HAL), a nonparametric regression estimator, using the <a href="https://github.com/tlverse/hal9001/" class="external-link"><code>hal9001</code> package</a> [<span class="citation">Coyle, Hejazi, Phillips, et al. (2022)</span>; hejazi2020hal9001-joss]. In practice, we recommend leaving this argument to the default and fitting this nuisance function with HAL; however, this is significantly more costly computationally.</p>
 </div>
 <div class="section level2">
 <h2 id="statistical-inference-for-one-step-and-tml-estimators">Statistical Inference for One-step and TML Estimators<a class="anchor" aria-label="anchor" href="#statistical-inference-for-one-step-and-tml-estimators"></a>
@@ -317,8 +317,11 @@
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
 <div id="refs" class="references">
-<div id="ref-coyle2021sl3">
-<p>Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, Rachael V Phillips, and Oleg Sofrygin. 2021. <em>sl3: Modern Machine Learning Pipelines for Super Learning</em>. <a href="https://doi.org/10.5281/zenodo.1342293" class="external-link">https://doi.org/10.5281/zenodo.1342293</a>.</p>
+<div id="ref-coyle-sl3-rpkg">
+<p>Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, Rachael V Phillips, and Oleg Sofrygin. 2022. <em>sl3: Modern Machine Learning Pipelines for Super Learning</em>. <a href="https://doi.org/10.5281/zenodo.1342293" class="external-link">https://doi.org/10.5281/zenodo.1342293</a>.</p>
+</div>
+<div id="ref-coyle-hal9001-rpkg">
+<p>Coyle, Jeremy R, Nima S Hejazi, Rachael V Phillips, Lars W van der Laan, and Mark J van der Laan. 2022. <em>hal9001: The Scalable Highly Adaptive Lasso</em>. <a href="https://doi.org/10.5281/zenodo.3558313" class="external-link">https://doi.org/10.5281/zenodo.3558313</a>.</p>
 </div>
 <div id="ref-diaz2012population">
 <p>Dı́az, Iván, and Mark J van der Laan. 2012. “Population Intervention Causal Effects Based on Stochastic Interventions.” <em>Biometrics</em> 68 (2): 541–49.</p>
@@ -332,14 +335,17 @@
 <div id="ref-gilbert2021covpn">
 <p>Gilbert, Peter B, Youyi Fong, David Benkeser, Jessica Andriesen, Bhavesh Borate, Marco Carone, Lindsay N Carpp, et al. 2021. “CoVPN Covid-19 Vaccine Efficacy Trial Immune Correlates Statistical Analysis Plan.” <a href="https://doi.org/10.6084/m9.figshare.13198595" class="external-link">https://doi.org/10.6084/m9.figshare.13198595</a>.</p>
 </div>
+<div id="ref-haneuse2013estimation">
+<p>Haneuse, Sebastian, and Andrea Rotnitzky. 2013. “Estimation of the Effect of Interventions That Modify the Received Treatment.” <em>Statistics in Medicine</em> 32 (30): 5260–77.</p>
+</div>
 <div id="ref-hejazi2020efficient">
-<p>Hejazi, Nima S, Mark J van der Laan, Holly E Janes, Peter B Gilbert, and David C Benkeser. 2020. “Efficient Nonparametric Inference on the Effects of Stochastic Interventions Under Two-Phase Sampling, with Applications to Vaccine Efficacy Trials.” <em>Biometrics</em>. <a href="https://doi.org/10.1111/biom.13375" class="external-link">https://doi.org/10.1111/biom.13375</a>.</p>
+<p>Hejazi, Nima S, Mark J van der Laan, Holly E Janes, Peter B Gilbert, and David C Benkeser. 2020. “Efficient Nonparametric Inference on the Effects of Stochastic Interventions Under Two-Phase Sampling, with Applications to Vaccine Efficacy Trials.” <em>Biometrics</em> 77 (4): 1241–53. <a href="https://doi.org/10.1111/biom.13375" class="external-link">https://doi.org/10.1111/biom.13375</a>.</p>
 </div>
 <div id="ref-pearl2000causality">
-<p>Pearl, Judea. 2000. <em>Causality</em>. Cambridge university press.</p>
+<p>Pearl, Judea. 2000. <em>Causality</em>. Cambridge University Press.</p>
 </div>
 <div id="ref-rose2011targeted2sd">
-<p>Rose, Sherri, and Mark J van der Laan. 2011. “A Targeted Maximum Likelihood Estimator for Two-Stage Designs.” <em>The International Journal of Biostatistics</em> 7 (1): 1–21.</p>
+<p>Rose, Sherri, and Mark J van der Laan. 2011. “A Targeted Maximum Likelihood Estimator for Two-Stage Designs.” <em>International Journal of Biostatistics</em> 7 (1): 1–21.</p>
 </div>
 <div id="ref-vdl2022targeted">
 <p>van der Laan, Mark J, Jeremy R Coyle, Nima S Hejazi, Ivana Malenica, Rachael V Phillips, and Alan E Hubbard. 2022. <em>Targeted Learning in <code>R</code>: A Causal Data Science Handbook</em>. CRC Press. <a href="https://tlverse.org/tlverse-handbook/" class="external-link">https://tlverse.org/tlverse-handbook/</a>.</p>
@@ -380,7 +386,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>

@@ -32,17 +32,17 @@ Benkeser](https://www.sph.emory.edu/faculty/profile/#!dbenkes)
 ## What’s `txshift`?
 
 The `txshift` R package is designed to provide facilities for the
-construction of efficient estimators of a causal parameter defined as
-the counterfactual mean of an outcome under stochastic mechanisms for
-treatment assignment (Dı́az and van der Laan 2012). `txshift` implements
-and builds upon a simplified algorithm for the targeted maximum
-likelihood (TML) estimator of such a causal parameter, originally
-proposed by Dı́az and van der Laan (2018), and makes use of analogous
-machinery to compute an efficient one-step estimator (Pfanzagl and
-Wefelmeyer 1985). `txshift` integrates with the [`sl3`
-package](https://github.com/tlverse/sl3) (Coyle et al. 2021) to allow
-for ensemble machine learning to be leveraged in the estimation
-procedure.
+construction of efficient estimators of the counterfactual mean of an
+outcome under stochastic interventions that depend on the natural value
+of treatment (Dı́az and van der Laan 2012; Haneuse and Rotnitzky 2013).
+`txshift`implements and builds upon a simplified algorithm for the
+targeted maximum likelihood (TML) estimator of such a causal parameter,
+originally proposed by Dı́az and van der Laan (2018), and makes use of
+analogous machinery to compute an efficient one-step estimator (Pfanzagl
+and Wefelmeyer 1985). `txshift` integrates with the [`sl3`
+package](https://github.com/tlverse/sl3) (Coyle, Hejazi, Malenica, et
+al. 2022) to allow for ensemble machine learning to be leveraged in the
+estimation procedure.
 
 For many practical applications (e.g., vaccine efficacy trials),
 observed data is often subject to a two-phase sampling mechanism (i.e.,
@@ -104,7 +104,7 @@ treatment, consider the following example:
 
 ``` r
 library(txshift)
-#> txshift v0.3.6: Efficient Estimation of the Causal Effects of Stochastic
+#> txshift v0.3.7: Efficient Estimation of the Causal Effects of Stochastic
 #> Interventions
 library(sl3)
 set.seed(429153)
@@ -242,14 +242,14 @@ After using the `txshift` R package, please cite the following:
       publisher = {The Open Journal}
     }
 
-    @software{hejazi2020txshift-rpkg,
+    @software{hejazi2022txshift-rpkg,
       author = {Hejazi, Nima S and Benkeser, David C},
       title = {{txshift}: Efficient Estimation of the Causal Effects of
         Stochastic Interventions},
-      year  = {2020},
+      year  = {2022},
       doi = {10.5281/zenodo.4070042},
       url = {https://CRAN.R-project.org/package=txshift},
-      note = {R package version 0.3.4}
+      note = {R package version 0.3.7}
     }
 ```
 
@@ -275,24 +275,23 @@ After using the `txshift` R package, please cite the following:
   - [R/`haldensify`](https://github.com/nhejazi/haldensify) - A minimal
     package for estimating the conditional density treatment mechanism
     component of this parameter based on using the [highly adaptive
-    lasso](https://github.com/tlverse/hal9001)
-    (<span class="citeproc-not-found" data-reference-id="coyle2020hal9001-rpkg">**???**</span>;
-    Hejazi, Coyle, and van der Laan 2020) in combination with a pooled
-    hazard regression. This package implements a variant of the approach
-    advocated by Dı́az and van der Laan (2011).
+    lasso](https://github.com/tlverse/hal9001) (Coyle, Hejazi, Phillips,
+    et al. 2022; Hejazi, Coyle, and van der Laan 2020) in combination
+    with a pooled hazard regression. This package implements a variant
+    of the approach advocated by Dı́az and van der Laan (2011).
 
 -----
 
 ## Funding
 
 The development of this software was supported in part through grants
-from the National Library of Medicine (award number [T32
+from the National Library of Medicine (award no. [T32
 LM012417](https://reporter.nih.gov/project-details/9248418)) and the
-National Institute of Allergy and Infectious Diseases (award number [R01
+National Institute of Allergy and Infectious Diseases (award no. [R01
 AI074345](https://reporter.nih.gov/project-details/9926564)) of the
 National Institutes of Health, as well as by the National Science
-Foundation (award number [DMS
-2102840](https://www.nsf.gov/awardsearch/showAward?AWD_ID=2102840)).
+Foundation (award no.
+[DMS 2102840](https://www.nsf.gov/awardsearch/showAward?AWD_ID=2102840)).
 
 -----
 
@@ -331,11 +330,19 @@ See below for details:
 
 <div id="refs" class="references">
 
-<div id="ref-coyle2021sl3">
+<div id="ref-coyle-sl3-rpkg">
 
 Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, Rachael V Phillips, and
-Oleg Sofrygin. 2021. *sl3: Modern Machine Learning Pipelines for Super
+Oleg Sofrygin. 2022. *sl3: Modern Machine Learning Pipelines for Super
 Learning*. <https://doi.org/10.5281/zenodo.1342293>.
+
+</div>
+
+<div id="ref-coyle-hal9001-rpkg">
+
+Coyle, Jeremy R, Nima S Hejazi, Rachael V Phillips, Lars W van der Laan,
+and Mark J van der Laan. 2022. *hal9001: The Scalable Highly Adaptive
+Lasso*. <https://doi.org/10.5281/zenodo.3558313>.
 
 </div>
 
@@ -352,7 +359,7 @@ Series B (Statistical Methodology)* 82 (3): 661–83.
 
 Dı́az, Iván, and Mark J van der Laan. 2011. “Super Learner Based
 Conditional Density Estimation with Application to Marginal Structural
-Models.” *The International Journal of Biostatistics* 7 (1): 1–20.
+Models.” *International Journal of Biostatistics* 7 (1): 1–20.
 
 </div>
 
@@ -371,6 +378,14 @@ Springer Science & Business Media.
 
 </div>
 
+<div id="ref-haneuse2013estimation">
+
+Haneuse, Sebastian, and Andrea Rotnitzky. 2013. “Estimation of the
+Effect of Interventions That Modify the Received Treatment.” *Statistics
+in Medicine* 32 (30): 5260–77.
+
+</div>
+
 <div id="ref-hejazi2020hal9001-joss">
 
 Hejazi, Nima S, Jeremy R Coyle, and Mark J van der Laan. 2020. “hal9001:
@@ -384,7 +399,7 @@ Software* 5 (53): 2526. <https://doi.org/10.21105/joss.02526>.
 Hejazi, Nima S, Mark J van der Laan, Holly E Janes, Peter B Gilbert, and
 David C Benkeser. 2020. “Efficient Nonparametric Inference on the
 Effects of Stochastic Interventions Under Two-Phase Sampling, with
-Applications to Vaccine Efficacy Trials.” *Biometrics*.
+Applications to Vaccine Efficacy Trials.” *Biometrics* 77 (4): 1241–53.
 <https://doi.org/10.1111/biom.13375>.
 
 </div>
@@ -400,8 +415,8 @@ Asymptotic Statistical Theory.” *Statistics & Risk Modeling* 3 (3-4):
 <div id="ref-rose2011targeted2sd">
 
 Rose, Sherri, and Mark J van der Laan. 2011. “A Targeted Maximum
-Likelihood Estimator for Two-Stage Designs.” *The International Journal
-of Biostatistics* 7 (1): 1–21.
+Likelihood Estimator for Two-Stage Designs.” *International Journal of
+Biostatistics* 7 (1): 1–21.
 
 </div>
 
