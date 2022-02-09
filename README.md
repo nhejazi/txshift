@@ -104,7 +104,7 @@ treatment, consider the following example:
 
 ``` r
 library(txshift)
-#> txshift v0.3.7: Efficient Estimation of the Causal Effects of Stochastic
+#> txshift v0.3.8: Efficient Estimation of the Causal Effects of Stochastic
 #> Interventions
 library(sl3)
 set.seed(429153)
