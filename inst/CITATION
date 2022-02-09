@@ -1,14 +1,14 @@
 citHeader("Please cite the following works when using the 'txshift' software
-           package, including both the software tool and articles describing
-           the software package and statistical methodology.")
+           package, including both the software tool and any articles
+           describing the software package and statistical methodology.")
 
 year <- format(Sys.Date(), "%Y")
 note <- sprintf("R package version %s", meta$Version)
 
 bibentry(bibtype = "Manual",
          title = "{txshift}: Efficient estimation of the causal effects of stochastic interventions",
-         author = c(person("Nima", "Hejazi", "S"),
-                    person("David", "Benkeser", "C")),
+         author = c(person("Nima S", "Hejazi"),
+                    person("David", "Benkeser")),
          year = year,
          note = note,
          doi = "10.5281/zenodo.4070042",
@@ -16,8 +16,8 @@ bibentry(bibtype = "Manual",
 
 bibentry(bibtype = "Article",
          title = "{txshift}: Efficient estimation of the causal effects of stochastic interventions in {R}",
-         author = c(person("Nima", "Hejazi", "S"),
-                    person("David", "Benkeser", "C")),
+         author = c(person("Nima S", "Hejazi"),
+                    person("David", "Benkeser")),
          year = "2020",
          journal = "Journal of Open Source Software",
          publisher = "The Open Journal",
@@ -26,11 +26,11 @@ bibentry(bibtype = "Article",
 
 bibentry(bibtype = "Article",
          title = "Efficient nonparametric inference on the effects of stochastic interventions under two-phase sampling, with applications to vaccine efficacy trials",
-         author = c(person("Nima", "Hejazi", "S"),
-                    person("Mark", "van der Laan", "J"),
-                    person("Holly", "Janes", "E"),
-                    person("Peter", "Gilbert", "B"),
-                    person("David", "Benkeser", "C")),
+         author = c(person("Nima S", "Hejazi"),
+                    person("Mark J", "van der Laan"),
+                    person("Holly E", "Janes"),
+                    person("Peter B", "Gilbert"),
+                    person("David C", "Benkeser")),
          year = "2020",
          journal = "Biometrics",
          publisher = "Wiley Online Library",
