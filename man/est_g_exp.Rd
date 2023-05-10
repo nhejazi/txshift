@@ -11,8 +11,8 @@ est_g_exp(
   samp_weights = rep(1, length(A)),
   fit_type = c("hal", "sl"),
   sl_learners_density = NULL,
-  haldensify_args = list(grid_type = "equal_range", lambda_seq = exp(seq(-1, -13,
-    length = 300)))
+  haldensify_args = list(grid_type = "equal_range", lambda_seq = exp(seq(-1, -13, length
+    = 300)))
 )
 }
 \arguments{
