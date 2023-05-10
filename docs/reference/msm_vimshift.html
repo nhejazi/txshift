@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.9</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -63,21 +63,21 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">msm_vimshift</span><span class="op">(</span>
-  <span class="va">W</span>,
-  <span class="va">A</span>,
-  C_cens <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">Y</span><span class="op">)</span><span class="op">)</span>,
-  <span class="va">Y</span>,
-  C_samp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">Y</span><span class="op">)</span><span class="op">)</span>,
-  V <span class="op">=</span> <span class="cn">NULL</span>,
-  delta_grid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span><span class="op">)</span>,
-  msm_form <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"linear"</span>, knot <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span>,
-  estimator <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tmle"</span>, <span class="st">"onestep"</span><span class="op">)</span>,
-  weighting <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"identity"</span>, <span class="st">"variance"</span><span class="op">)</span>,
-  ci_level <span class="op">=</span> <span class="fl">0.95</span>,
-  ci_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"marginal"</span>, <span class="st">"simultaneous"</span><span class="op">)</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">msm_vimshift</span><span class="op">(</span></span>
+<span>  <span class="va">W</span>,</span>
+<span>  <span class="va">A</span>,</span>
+<span>  C_cens <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">Y</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="va">Y</span>,</span>
+<span>  C_samp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">Y</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  V <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  delta_grid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span><span class="op">)</span>,</span>
+<span>  msm_form <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"linear"</span>, knot <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span>,</span>
+<span>  estimator <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tmle"</span>, <span class="st">"onestep"</span><span class="op">)</span>,</span>
+<span>  weighting <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"identity"</span>, <span class="st">"variance"</span><span class="op">)</span>,</span>
+<span>  ci_level <span class="op">=</span> <span class="fl">0.95</span>,</span>
+<span>  ci_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"marginal"</span>, <span class="st">"simultaneous"</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -85,20 +85,30 @@
     <dl><dt>W</dt>
 <dd><p>A <code>matrix</code>, <code>data.frame</code>, or similar containing a set of
 baseline covariates.</p></dd>
+
+
 <dt>A</dt>
 <dd><p>A <code>numeric</code> vector corresponding to a treatment variable. The
 parameter of interest is defined as a location shift of this quantity.</p></dd>
+
+
 <dt>C_cens</dt>
 <dd><p>A <code>numeric</code> indicator for whether a given observation was
 subject to censoring by way of loss to follow-up. The default assumes no
 censoring due to loss to follow-up.</p></dd>
+
+
 <dt>Y</dt>
 <dd><p>A <code>numeric</code> vector of the observed outcomes.</p></dd>
+
+
 <dt>C_samp</dt>
 <dd><p>A <code>numeric</code> indicator for whether a given observation was
 subject to censoring by being omitted from the second-stage sample, used to
 compute an inverse probability of censoring weighted estimator in such
 cases. The default assumes no censoring due to two-phase sampling.</p></dd>
+
+
 <dt>V</dt>
 <dd><p>The covariates that are used in determining the sampling procedure
 that gives rise to censoring. The default is <code>NULL</code> and corresponds to
@@ -106,39 +116,56 @@ scenarios in which there is no censoring (in which case all values in the
 preceding argument <code>C</code> must be uniquely 1. To specify this, pass in a
 NAMED <code>list</code> identifying variables amongst W, A, Y that are thought to
 have played a role in defining the sampling/censoring mechanism (C).</p></dd>
+
+
 <dt>delta_grid</dt>
 <dd><p>A <code>numeric</code> vector giving the individual values of
 the shift parameter used in computing each of the estimates.</p></dd>
+
+
 <dt>msm_form</dt>
 <dd><p>A <code>list</code> specifying the type of working MSM to fit to
 summarize the counterfactual means. The <code>list</code> has two components:
 (1) <code>"type"</code>, which may be either "linear" or "piecewise", and (2)
 <code>"knot"</code>, which, if specified, must be a value in <code>delta_grid</code>.
 See examples for its use.</p></dd>
+
+
 <dt>estimator</dt>
 <dd><p>The type of estimator to be fit, either <code>"tmle"</code> for
 targeted maximum likelihood estimation or <code>"onestep"</code> for a one-step
 augmented inverse probability weighted (AIPW) estimator.</p></dd>
+
+
 <dt>weighting</dt>
 <dd><p>Whether to weight each parameter estimate by the inverse of
 its variance (in order to improve stability of the resultant MSM fit) or to
 simply weight all parameter estimates equally. The default is the option
 <code>"identity"</code>, weighting all estimates identically.</p></dd>
+
+
 <dt>ci_level</dt>
 <dd><p>A <code>numeric</code> indicating the desired coverage level of
 the confidence interval to be computed.</p></dd>
+
+
 <dt>ci_type</dt>
 <dd><p>Whether to construct a simultaneous confidence band covering
 all parameter estimates at once or marginal confidence intervals covering
 each parameter estimate separately. The default is to construct marginal
 confidence intervals for each parameter estimate rather than a simultaneous
 confidence band.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Additional arguments to be passed to <code><a href="txshift.html">txshift</a></code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A <code>list</code> containing estimates of the individual counterfactual
+    
+
+<p>A <code>list</code> containing estimates of the individual counterfactual
  means over a grid in the shift parameters (<code>delta_grid</code>), alongside
  the estimate of a marginal structural model that summarizes a trend through
  these counterfactual means.</p>
@@ -157,43 +184,43 @@ confidence band.</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://tlverse.org/sl3" class="external-link">"sl3"</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="va">n_obs</span> <span class="op">&lt;-</span> <span class="fl">100</span></span>
-<span class="r-in">  <span class="va">W</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">A</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n_obs</span>, mean <span class="op">=</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">W</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">Y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">A</span> <span class="op">-</span> <span class="va">W</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">msm</span> <span class="op">&lt;-</span> <span class="fu">msm_vimshift</span><span class="op">(</span></span>
-<span class="r-in">    W <span class="op">=</span> <span class="va">W</span>, A <span class="op">=</span> <span class="va">A</span>, Y <span class="op">=</span> <span class="va">Y</span>, estimator <span class="op">=</span> <span class="st">"tmle"</span>,</span>
-<span class="r-in">    g_exp_fit_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in">      fit_type <span class="op">=</span> <span class="st">"sl"</span>,</span>
-<span class="r-in">      sl_learners_density <span class="op">=</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_density_hse.html" class="external-link">Lrnr_density_hse</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_glm.html" class="external-link">Lrnr_glm</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">    <span class="op">)</span>,</span>
-<span class="r-in">    Q_fit_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in">      fit_type <span class="op">=</span> <span class="st">"glm"</span>,</span>
-<span class="r-in">      glm_formula <span class="op">=</span> <span class="st">"Y ~ ."</span></span>
-<span class="r-in">    <span class="op">)</span>,</span>
-<span class="r-in">    delta_grid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0.25</span><span class="op">)</span></span>
-<span class="r-in">  <span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="co"># fit a linear spline with knot at 0</span></span>
-<span class="r-in">  <span class="va">n_obs</span> <span class="op">&lt;-</span> <span class="fl">100</span></span>
-<span class="r-in">  <span class="va">W</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">A</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n_obs</span>, mean <span class="op">=</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">W</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">Y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="fl">0.1</span> <span class="op">*</span> <span class="va">A</span> <span class="op">*</span> <span class="op">(</span><span class="va">A</span> <span class="op">&gt;=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">-</span> <span class="fl">3</span> <span class="op">*</span> <span class="va">A</span> <span class="op">*</span> <span class="op">(</span><span class="va">A</span> <span class="op">&lt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">-</span> <span class="va">W</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">msm</span> <span class="op">&lt;-</span> <span class="fu">msm_vimshift</span><span class="op">(</span></span>
-<span class="r-in">    W <span class="op">=</span> <span class="va">W</span>, A <span class="op">=</span> <span class="va">A</span>, Y <span class="op">=</span> <span class="va">Y</span>, estimator <span class="op">=</span> <span class="st">"tmle"</span>,</span>
-<span class="r-in">    g_exp_fit_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in">      fit_type <span class="op">=</span> <span class="st">"sl"</span>,</span>
-<span class="r-in">      sl_learners_density <span class="op">=</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_density_hse.html" class="external-link">Lrnr_density_hse</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_glm.html" class="external-link">Lrnr_glm</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">    <span class="op">)</span>,</span>
-<span class="r-in">    Q_fit_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in">      fit_type <span class="op">=</span> <span class="st">"glm"</span>,</span>
-<span class="r-in">      glm_formula <span class="op">=</span> <span class="st">"Y ~ ."</span></span>
-<span class="r-in">    <span class="op">)</span>,</span>
-<span class="r-in">    delta_grid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0.25</span><span class="op">)</span>,</span>
-<span class="r-in">    msm_form <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"piecewise"</span>, knot <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
-<span class="r-in">  <span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://tlverse.org/sl3" class="external-link">"sl3"</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">n_obs</span> <span class="op">&lt;-</span> <span class="fl">100</span></span></span>
+<span class="r-in"><span>  <span class="va">W</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">A</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n_obs</span>, mean <span class="op">=</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">W</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">Y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">A</span> <span class="op">-</span> <span class="va">W</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">msm</span> <span class="op">&lt;-</span> <span class="fu">msm_vimshift</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    W <span class="op">=</span> <span class="va">W</span>, A <span class="op">=</span> <span class="va">A</span>, Y <span class="op">=</span> <span class="va">Y</span>, estimator <span class="op">=</span> <span class="st">"tmle"</span>,</span></span>
+<span class="r-in"><span>    g_exp_fit_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>      fit_type <span class="op">=</span> <span class="st">"sl"</span>,</span></span>
+<span class="r-in"><span>      sl_learners_density <span class="op">=</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_density_hse.html" class="external-link">Lrnr_density_hse</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_glm.html" class="external-link">Lrnr_glm</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span>,</span></span>
+<span class="r-in"><span>    Q_fit_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>      fit_type <span class="op">=</span> <span class="st">"glm"</span>,</span></span>
+<span class="r-in"><span>      glm_formula <span class="op">=</span> <span class="st">"Y ~ ."</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span>,</span></span>
+<span class="r-in"><span>    delta_grid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0.25</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># fit a linear spline with knot at 0</span></span></span>
+<span class="r-in"><span>  <span class="va">n_obs</span> <span class="op">&lt;-</span> <span class="fl">100</span></span></span>
+<span class="r-in"><span>  <span class="va">W</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">A</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n_obs</span>, mean <span class="op">=</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">W</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">Y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">n_obs</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="fl">0.1</span> <span class="op">*</span> <span class="va">A</span> <span class="op">*</span> <span class="op">(</span><span class="va">A</span> <span class="op">&gt;=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">-</span> <span class="fl">3</span> <span class="op">*</span> <span class="va">A</span> <span class="op">*</span> <span class="op">(</span><span class="va">A</span> <span class="op">&lt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">-</span> <span class="va">W</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">msm</span> <span class="op">&lt;-</span> <span class="fu">msm_vimshift</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    W <span class="op">=</span> <span class="va">W</span>, A <span class="op">=</span> <span class="va">A</span>, Y <span class="op">=</span> <span class="va">Y</span>, estimator <span class="op">=</span> <span class="st">"tmle"</span>,</span></span>
+<span class="r-in"><span>    g_exp_fit_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>      fit_type <span class="op">=</span> <span class="st">"sl"</span>,</span></span>
+<span class="r-in"><span>      sl_learners_density <span class="op">=</span> <span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_density_hse.html" class="external-link">Lrnr_density_hse</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va"><a href="https://tlverse.org/sl3/reference/Lrnr_glm.html" class="external-link">Lrnr_glm</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span>,</span></span>
+<span class="r-in"><span>    Q_fit_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>      fit_type <span class="op">=</span> <span class="st">"glm"</span>,</span></span>
+<span class="r-in"><span>      glm_formula <span class="op">=</span> <span class="st">"Y ~ ."</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span>,</span></span>
+<span class="r-in"><span>    delta_grid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0.25</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    msm_form <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"piecewise"</span>, knot <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: sl3</span>
 </code></pre></div>
     </div>
@@ -209,7 +236,7 @@ confidence band.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

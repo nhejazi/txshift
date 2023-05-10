@@ -41,7 +41,6 @@ eif <- function(Y,
                 fluc_mod_out = NULL,
                 C_samp = rep(1, length(Y)),
                 ipc_weights = rep(1, length(Y))) {
-
   # set TMLE as default estimator type
   estimator <- match.arg(estimator)
 

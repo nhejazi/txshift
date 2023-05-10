@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.9</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -63,19 +63,19 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">onestep_txshift</span><span class="op">(</span>
-  <span class="va">data_internal</span>,
-  C_samp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data_internal</span><span class="op">)</span><span class="op">)</span>,
-  V <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">delta</span>,
-  <span class="va">samp_estim</span>,
-  <span class="va">gn_cens_weights</span>,
-  <span class="va">Qn_estim</span>,
-  <span class="va">Hn_estim</span>,
-  eif_reg_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"hal"</span>, <span class="st">"glm"</span><span class="op">)</span>,
-  <span class="va">samp_fit_args</span>,
-  ipcw_efficiency <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">onestep_txshift</span><span class="op">(</span></span>
+<span>  <span class="va">data_internal</span>,</span>
+<span>  C_samp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data_internal</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  V <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">delta</span>,</span>
+<span>  <span class="va">samp_estim</span>,</span>
+<span>  <span class="va">gn_cens_weights</span>,</span>
+<span>  <span class="va">Qn_estim</span>,</span>
+<span>  <span class="va">Hn_estim</span>,</span>
+<span>  eif_reg_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"hal"</span>, <span class="st">"glm"</span><span class="op">)</span>,</span>
+<span>  <span class="va">samp_fit_args</span>,</span>
+<span>  ipcw_efficiency <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -84,11 +84,15 @@
 <dd><p>A <code>data.table</code> constructed internally by a call to
 <code><a href="txshift.html">txshift</a></code>. This contains the data elements needed for computing
 the one-step estimator.</p></dd>
+
+
 <dt>C_samp</dt>
 <dd><p>A <code>numeric</code> indicator for whether a given observation was
 included in the second-stage sample, used to compute an IPC-weighted
 one-step estimator in cases where two-stage sampling is performed. Default
 assumes no censoring due to sampling.</p></dd>
+
+
 <dt>V</dt>
 <dd><p>The covariates that are used in determining the sampling procedure
 that gives rise to censoring. The default is <code>NULL</code> and corresponds to
@@ -96,25 +100,37 @@ scenarios in which there is no censoring (in which case all values in the
 preceding argument <code>C</code> must be uniquely 1. To specify this, pass in a
 NAMED <code>list</code> identifying variables amongst W, A, Y that are thought to
 have played a role in defining the sampling/censoring mechanism (C).</p></dd>
+
+
 <dt>delta</dt>
 <dd><p>A <code>numeric</code> value indicating the shift in the treatment to
 be used in defining the target parameter. This is defined with respect to
 the scale of the treatment (A).</p></dd>
+
+
 <dt>samp_estim</dt>
 <dd><p>An object providing the value of the censoring mechanism
 evaluated across the full data. This object is passed in after being
 constructed by a call to the internal function <code><a href="est_samp.html">est_samp</a></code>.</p></dd>
+
+
 <dt>gn_cens_weights</dt>
 <dd><p>TODO: document</p></dd>
+
+
 <dt>Qn_estim</dt>
 <dd><p>An object providing the value of the outcome evaluated after
 imposing a shift in the treatment. This object is passed in after being
 constructed by a call to the internal function <code>est_Q</code>.</p></dd>
+
+
 <dt>Hn_estim</dt>
 <dd><p>An object providing values of the auxiliary ("clever")
 covariate, constructed from the treatment mechanism and required for
 targeted minimum loss estimation. This object object should be passed in
 after being constructed by a call to the internal function <code>est_Hn</code>.</p></dd>
+
+
 <dt>eif_reg_type</dt>
 <dd><p>Whether a flexible nonparametric function ought to be
 used in the dimension-reduced nuisance regression of the targeting step for
@@ -123,6 +139,8 @@ regression based on the Highly Adaptive Lasso (from <span class="pkg">hal9001</s
 this to <code>"glm"</code> to instead use a simple linear regression model.
 In this step, the efficient influence function (EIF) is regressed against
 covariates contributing to the censoring mechanism (i.e., EIF ~ V | C = 1).</p></dd>
+
+
 <dt>samp_fit_args</dt>
 <dd><p>A <code>list</code> of arguments, all but one of which are
 passed to <code><a href="est_samp.html">est_samp</a></code>. For details, consult the documentation
@@ -130,15 +148,20 @@ for <code><a href="est_samp.html">est_samp</a></code>. The first element (i.e., 
 used to determine how this regression is fit: "glm" for generalized linear
 model, "sl" for a Super Learner, and "external" for a user-specified input
 of the form produced by <code><a href="est_samp.html">est_samp</a></code>.</p></dd>
+
+
 <dt>ipcw_efficiency</dt>
 <dd><p>Whether to invoke an augmentation of the IPCW-TMLE
 procedure that performs an iterative process to ensure efficiency of the
 resulting estimate. The default is <code>TRUE</code>; set to <code>FALSE</code> to use
 an IPC-weighted loss rather than the IPC-augmented influence function.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>S3 object of class <code>txshift</code> containing the results of the
+    
+
+<p>S3 object of class <code>txshift</code> containing the results of the
  procedure to compute a one-step estimate of the treatment shift parameter.</p>
     </div>
     <div id="details">
@@ -159,7 +182,7 @@ an IPC-weighted loss rather than the IPC-augmented influence function.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
