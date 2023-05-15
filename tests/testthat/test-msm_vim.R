@@ -34,9 +34,13 @@ if (require("sl3")) {
     var_learner = glm_learner
   )
   g_lib <- Stack$new(hse_learner, mvd_learner)
+  cv_selector_density <- Lrnr_cv_selector$new(
+    eval_function = loss_loglik_true_cat
+  )
   sl_density <- Lrnr_sl$new(
     learners = g_lib,
-    metalearner = Lrnr_solnp_density$new()
+    metalearner = cv_selector_density
+    #metalearner = Lrnr_solnp_density$new()
   )
 
   # fit MSM over TMLEs
