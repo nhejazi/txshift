@@ -139,6 +139,7 @@ if (require("sl3")) {
   })
 
   # fit IPCW-TMLE and IPCW-one-step with SL for censoring estimation
+  set.seed(11249)
   ipcw_tmle_sl <- txshift(
     W = W, A = A, Y = Y, delta = delta_shift,
     C_samp = C_samp, V = c("W", "Y"),
@@ -152,6 +153,7 @@ if (require("sl3")) {
     Qn_fit_ext = Qn_est_sl[C_samp == 1, ],
     eif_reg_type = "hal"
   )
+  set.seed(11249)
   ipcw_os_sl <- txshift(
     W = W, A = A, Y = Y, delta = delta_shift,
     C_samp = C_samp, V = c("W", "Y"),
@@ -172,6 +174,7 @@ if (require("sl3")) {
   })
 
   # fit IPCW-TMLE and IPCW-one-step with GLM for censoring estimation
+  set.seed(11249)
   ipcw_tmle_glm <- txshift(
     W = W, A = A, Y = Y, delta = delta_shift,
     C_samp = C_samp, V = c("W", "Y"),
@@ -185,6 +188,7 @@ if (require("sl3")) {
     Qn_fit_ext = Qn_est_sl[C_samp == 1, ],
     eif_reg_type = "hal"
   )
+  set.seed(11249)
   ipcw_os_glm <- txshift(
     W = W, A = A, Y = Y, delta = delta_shift,
     C_samp = C_samp, V = c("W", "Y"),
