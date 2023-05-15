@@ -220,10 +220,11 @@ msm_vimshift <- function(W,
 
   # compute linear working MSM or single-knot spline model
   if (msm_form[["type"]] == "piecewise" && !is.na(msm_form[["knot"]])) {
-    msm_fit <- stats::lm(y ~ lspline::lspline(x, msm_form[["knot"]],
-      marginal = TRUE
-    ),
-    weights = weights, data = msm_data
+    msm_fit <- stats::lm(
+      y ~ lspline::lspline(x, msm_form[["knot"]],
+        marginal = TRUE
+      ),
+      weights = weights, data = msm_data
     )
   } else if (msm_form[["type"]] == "linear") {
     msm_fit <- stats::lm(y ~ x, weights = weights, data = msm_data)

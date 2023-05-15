@@ -94,7 +94,7 @@ one-step and TML estimators.
 
 ```{r make_data}
 # parameters for simulation example
-n_obs <- 200  # number of observations
+n_obs <- 200 # number of observations
 
 # baseline covariate -- simple, binary
 W <- rbinom(n_obs, 1, 0.5)
@@ -299,8 +299,10 @@ gn_upupshift <- dnorm(A + 2 * delta, mean = tx_mult * W, sd = 1)
 ## then, initialize and produce the un-shifted treatment data
 gn_noshift <- dnorm(A, mean = tx_mult * W, sd = 1)
 ## finally, put it all together into an object like what's produced internally
-gn_out <- as.data.table(cbind(gn_downshift, gn_noshift, gn_upshift,
-                              gn_upupshift))[C == 1, ]
+gn_out <- as.data.table(cbind(
+  gn_downshift, gn_noshift, gn_upshift,
+  gn_upupshift
+))[C == 1, ]
 setnames(gn_out, c("downshift", "noshift", "upshift", "upupshift"))
 
 # compute outcome regression externally
@@ -315,15 +317,15 @@ Qn_upshift[Qn_upshift > 1] <- 0.975
 Qn_out <- as.data.table(cbind(Qn_noshift, Qn_upshift))[C == 1, ]
 setnames(Qn_out, c("noshift", "upshift"))
 
-# construct efficient estimator by applying wrapper function 
+# construct efficient estimator by applying wrapper function
 est_shift_spec <- txshift(
   W = W, A = A, Y = Y, delta = delta,
- samp_fit_args = NULL,
- samp_fit_ext = ipcw_out,
- g_exp_fit_args = list(fit_type = "external"),
- Q_fit_args = list(fit_type = "external"),
- gn_exp_fit_ext = gn_out,
- Qn_fit_ext = Qn_out
+  samp_fit_args = NULL,
+  samp_fit_ext = ipcw_out,
+  g_exp_fit_args = list(fit_type = "external"),
+  Q_fit_args = list(fit_type = "external"),
+  gn_exp_fit_ext = gn_out,
+  Qn_fit_ext = Qn_out
 )
 ```
 

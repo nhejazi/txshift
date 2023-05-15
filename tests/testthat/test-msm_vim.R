@@ -34,12 +34,17 @@ if (require("sl3")) {
     var_learner = glm_learner
   )
   g_lib <- Stack$new(hse_learner, mvd_learner)
+  cv_selector_density <- Lrnr_cv_selector$new(
+    eval_function = loss_loglik_true_cat
+  )
   sl_density <- Lrnr_sl$new(
     learners = g_lib,
-    metalearner = Lrnr_solnp_density$new()
+    metalearner = cv_selector_density
+    #metalearner = Lrnr_solnp_density$new()
   )
 
   # fit MSM over TMLEs
+  set.seed(11249)
   tmle_fits <- lapply(delta_grid, function(delta) {
     tmle <- txshift(
       Y = Y, A = A, W = W, delta = delta, estimator = "tmle",
@@ -50,6 +55,7 @@ if (require("sl3")) {
   })
   tmle_psi <- do.call(c, lapply(tmle_fits, `[[`, "psi"))
 
+  set.seed(11249)
   msm_tmle <- msm_vimshift(
     W = W, A = A, Y = Y,
     delta_grid = delta_grid, estimator = "tmle", ci_type = "marginal",
@@ -58,10 +64,11 @@ if (require("sl3")) {
   )
 
   test_that("TML point estimates match with MSM-based estimates", {
-    expect_equal(tmle_psi, msm_tmle$param_est$psi, tol = 1e-2)
+    expect_equal(tmle_psi, msm_tmle$param_est$psi, tol = 1e-4)
   })
 
   # fit MSM over one-step estimates
+  set.seed(11249)
   os_fits <- lapply(delta_grid, function(delta) {
     os <- txshift(
       Y = Y, A = A, W = W, delta = delta, estimator = "onestep",
@@ -72,6 +79,7 @@ if (require("sl3")) {
   })
   os_psi <- do.call(c, lapply(os_fits, `[[`, "psi"))
 
+  set.seed(11249)
   msm_os <- msm_vimshift(
     W = W, A = A, Y = Y, estimator = "onestep", ci_type = "marginal",
     g_exp_fit_args = list(fit_type = "sl", sl_learners_density = sl_density),
@@ -79,6 +87,6 @@ if (require("sl3")) {
   )
 
   test_that("One-step point estimates match with MSM-based estimates", {
-    expect_equal(os_psi, msm_os$param_est$psi, tol = 1e-2)
+    expect_equal(os_psi, msm_os$param_est$psi, tol = 1e-4)
   })
 }

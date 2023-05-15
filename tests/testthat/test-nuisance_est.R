@@ -33,9 +33,13 @@ if (require("sl3")) {
     var_learner = glm_learner
   )
   g_lib <- Stack$new(hose_learner, hese_learner)
+  cv_selector_density <- Lrnr_cv_selector$new(
+    eval_function = loss_loglik_true_cat
+  )
   sl_density <- Lrnr_sl$new(
     learners = g_lib,
-    metalearner = Lrnr_solnp_density$new()
+    metalearner = cv_selector_density
+    #metalearner = Lrnr_solnp_density$new()
   )
 
   # fit exposure mechanism with HAL, SL, or GLM
@@ -135,6 +139,7 @@ if (require("sl3")) {
   })
 
   # fit IPCW-TMLE and IPCW-one-step with SL for censoring estimation
+  set.seed(11249)
   ipcw_tmle_sl <- txshift(
     W = W, A = A, Y = Y, delta = delta_shift,
     C_samp = C_samp, V = c("W", "Y"),
@@ -148,6 +153,7 @@ if (require("sl3")) {
     Qn_fit_ext = Qn_est_sl[C_samp == 1, ],
     eif_reg_type = "hal"
   )
+  set.seed(11249)
   ipcw_os_sl <- txshift(
     W = W, A = A, Y = Y, delta = delta_shift,
     C_samp = C_samp, V = c("W", "Y"),
@@ -168,6 +174,7 @@ if (require("sl3")) {
   })
 
   # fit IPCW-TMLE and IPCW-one-step with GLM for censoring estimation
+  set.seed(11249)
   ipcw_tmle_glm <- txshift(
     W = W, A = A, Y = Y, delta = delta_shift,
     C_samp = C_samp, V = c("W", "Y"),
@@ -181,6 +188,7 @@ if (require("sl3")) {
     Qn_fit_ext = Qn_est_sl[C_samp == 1, ],
     eif_reg_type = "hal"
   )
+  set.seed(11249)
   ipcw_os_glm <- txshift(
     W = W, A = A, Y = Y, delta = delta_shift,
     C_samp = C_samp, V = c("W", "Y"),

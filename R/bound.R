@@ -28,18 +28,24 @@ bound_precision <- function(vals) {
 #'  conditional density) to avoid numerical instability issues arising from
 #'  practical violations of the assumption of positivity.
 #'
-#' @param vals \code{numeric} vector of propensity score estimate values. Note
-#'  that, for this parameter, the propensity score is (conditional) density and
-#'  so it ought not be bounded from above.
+#' @param vals \code{numeric} vector of generalized propensity score estimates.
+#'  Note that the generalized propensity score is a (conditional) density and
+#'  should only be bounded/truncated away from zero.
+#' @param bound \code{numeric} atomic giving the lower limit of the generalized
+#'  propensity score estimates to be tolerated. Estimates less than this will
+#'  be truncated to this value. Note that the default value of 0.001 assumes a
+#'  relatively large sample size (n = 1000), and this is internally overwritten
+#'  by checking the sample size, so the actual lower bound used is the greater
+#'  of the value specified here and 1/n.
 #'
 #' @return A \code{numeric} vector of the same length as \code{vals}, where the
 #'  returned values are bounded such that the minimum is no lower than 1/n, for
 #'  the sample size n.
-bound_propensity <- function(vals) {
+bound_propensity <- function(vals, bound = 0.001) {
   # bound likelihood component g(a|w) away from 0 only
-  propensity_bound <- 1 / length(vals)
-  vals[vals < propensity_bound] <- propensity_bound
-  return(vals)
+  propensity_bound <- max(1 / length(vals), bound)
+  vals_bounded <- pmax(vals, propensity_bound)
+  return(vals_bounded)
 }
 
 ###############################################################################

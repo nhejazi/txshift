@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.9</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -58,6 +58,10 @@
     </div>
 
     <div class="section level2">
+<h2 class="page-header" data-toc-text="0.3.9" id="txshift-039">txshift 0.3.9<a class="anchor" aria-label="anchor" href="#txshift-039"></a></h2>
+<p>As of May 2023: * A new argument <code>bound</code> has been added to <code>bound_propensity</code> to specify the lower tolerated limit of generalized propensity score estimates. Estimates are bounded to the higher of the specified or default value of <code>bound</code> and the inverse of the sample size, 1/n.</p>
+</div>
+    <div class="section level2">
 <h2 class="page-header" data-toc-text="0.3.6" id="txshift-036">txshift 0.3.6<small>2021-10-18</small><a class="anchor" aria-label="anchor" href="#txshift-036"></a></h2>
 <p>As of October 2021: * Minor updates to ensure compatibility with v0.4.1 of <code>hal9001</code> and v0.2.1 of <code>haldensify</code>, both recently updated on CRAN. * Removal of the <code>LazyData</code> field from the <code>DESCRIPTION</code>, since no <code>data</code> directory is included with the package. * Minor tweaks to existing unit tests to remove <code>rlang</code> from the <code>Suggests</code> field of the <code>DESCRIPTION</code>. * Vignettes for the standard and IPCW-augmented estimation procedures have been combined to reduce redundancy and reduce build time per CRAN requests.</p>
 <p>As of May 2021: * The use of <code><a href="https://rdrr.io/pkg/hal9001/man/fit_hal.html" class="external-link">hal9001::fit_hal()</a></code> internally for evaluation of a conditional mean of the full-data EIF has been revised for compatibility with v0.4.0+ of the <code>hal9001</code> package. * Defaults passed in through the argument <code>g_exp_fit_args</code>, and to the function <code><a href="../reference/est_g_exp.html">est_g_exp()</a></code>, have been updated for compatibility with v0.1.5+ of the <code>haldensify</code> package.</p>
@@ -86,7 +90,7 @@
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.3.1" id="txshift-031">txshift 0.3.1<a class="anchor" aria-label="anchor" href="#txshift-031"></a></h2>
-<p>As of December 2019: * Changes arguments of <code><a href="https://rdrr.io/pkg/hal9001/man/fit_hal.html" class="external-link">hal9001::fit_hal</a></code> in pseudo-outcome regression for efficient estimation by explicitly including <code>max_degree = NULL</code>. * Change to TMLE convergence criterion: use a less strict criterion such that | Pn D | sigma / (sqrt(n) max(10, log(n))) instead of 1/n. Empirical studies suggest this curbs issues addressed by over-agressive updates from the targeting step. * Remove pinning of <code>sl3</code> dependency to a specific tag (formerly v1.2.0). * Lock dependency version: <code>sl3</code> &gt;= v1.3.6 and <code>hal9001</code> &gt;= v0.2.5.</p>
+<p>As of December 2019: * Changes arguments of <code><a href="https://rdrr.io/pkg/hal9001/man/fit_hal.html" class="external-link">hal9001::fit_hal</a></code> in pseudo-outcome regression for efficient estimation by explicitly including <code>max_degree = NULL</code>. * Change to TMLE convergence criterion: use a less strict criterion such that | Pn D | sigma / (sqrt(n) max(10, log(n))) instead of /n. Empirical studies suggest this curbs issues addressed by over-agressive updates from the targeting step. * Remove pinning of <code>sl3</code> dependency to a specific tag (formerly v1.2.0). * Lock dependency version: <code>sl3</code> &gt;= v1.3.6 and <code>hal9001</code> &gt;= v0.2.5.</p>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.3.0" id="txshift-030">txshift 0.3.0<a class="anchor" aria-label="anchor" href="#txshift-030"></a></h2>
@@ -144,7 +148,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
