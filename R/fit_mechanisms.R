@@ -557,15 +557,19 @@ est_samp <- function(V,
 #'
 #' @param gn_exp An estimate of the exposure density (a generalized propensity
 #'  score) using the output provided by \code{\link{est_g_exp}}.
+#' @param gps_bound \code{numeric} giving the lower limit of the generalized
+#'  propensity score estimates to be tolerated (default = 0.05). Estimates less
+#'  than this are truncated to this or 1/n. See \code{\link{bound_propensity}}
+#'  for details.
 #'
 #' @importFrom data.table as.data.table setnames
 #'
 #' @return A \code{data.table} with two columns, containing estimates of the
 #'  auxiliary covariate at the natural value of the exposure H(A, W) and at the
 #'  shifted value of the exposure H(A + delta, W).
-est_Hn <- function(gn_exp) {
+est_Hn <- function(gn_exp, gps_bound) {
   # set any g(a|w) = 0 values to a very small value above zero
-  gn_exp$noshift <- bound_propensity(gn_exp$noshift)
+  gn_exp$noshift <- bound_propensity(gn_exp$noshift, gps_bound)
 
   # compute the ratio of the propensity scores for Hn(A,W)
   ratio_g_noshift <- (gn_exp$downshift / gn_exp$noshift) +

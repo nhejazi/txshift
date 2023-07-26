@@ -33,16 +33,15 @@ bound_precision <- function(vals) {
 #'  should only be bounded/truncated away from zero.
 #' @param bound \code{numeric} atomic giving the lower limit of the generalized
 #'  propensity score estimates to be tolerated. Estimates less than this will
-#'  be truncated to this value. Note that the default value of 0.001 assumes a
-#'  relatively large sample size (n = 1000), and this is internally overwritten
-#'  by checking the sample size, so the actual lower bound used is the greater
-#'  of the value specified here and 1/n.
+#'  be truncated to this value (default = 0.005). Note that the default may be
+#'  internally overwritten by reference to the sample size (n), so the lower
+#'  bound used is the greater of the specified value and 1/n.
 #'
 #' @return A \code{numeric} vector of the same length as \code{vals}, where the
 #'  returned values are bounded such that the minimum is no lower than 1/n, for
 #'  the sample size n.
-bound_propensity <- function(vals, bound = 0.001) {
-  # bound likelihood component g(a|w) away from 0 only
+bound_propensity <- function(vals, bound = 0.005) {
+  # bound generalized propensity score g(a|w) away from 0 only
   propensity_bound <- max(1 / length(vals), bound)
   vals_bounded <- pmax(vals, propensity_bound)
   return(vals_bounded)

@@ -4,7 +4,7 @@
 \alias{bound_propensity}
 \title{Bound Generalized Propensity Score}
 \usage{
-bound_propensity(vals, bound = 0.001)
+bound_propensity(vals, bound = 0.005)
 }
 \arguments{
 \item{vals}{\code{numeric} vector of generalized propensity score estimates.
@@ -13,10 +13,9 @@ should only be bounded/truncated away from zero.}
 
 \item{bound}{\code{numeric} atomic giving the lower limit of the generalized
 propensity score estimates to be tolerated. Estimates less than this will
-be truncated to this value. Note that the default value of 0.001 assumes a
-relatively large sample size (n = 1000), and this is internally overwritten
-by checking the sample size, so the actual lower bound used is the greater
-of the value specified here and 1/n.}
+be truncated to this value (default = 0.005). Note that the default may be
+internally overwritten by reference to the sample size (n), so the lower
+bound used is the greater of the specified value and 1/n.}
 }
 \value{
 A \code{numeric} vector of the same length as \code{vals}, where the

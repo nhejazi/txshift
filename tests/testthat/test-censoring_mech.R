@@ -130,7 +130,7 @@ if (require("sl3")) {
   sl_density <- Lrnr_sl$new(
     learners = g_lib,
     metalearner = cv_selector_density
-    #metalearner = Lrnr_solnp_density$new()
+    # metalearner = Lrnr_solnp_density$new()
   )
 
   # fit exposure mechanism with SL

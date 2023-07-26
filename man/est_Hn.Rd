@@ -4,11 +4,16 @@
 \alias{est_Hn}
 \title{Estimate Auxiliary Covariate of Full Data Efficient Influence Function}
 \usage{
-est_Hn(gn_exp)
+est_Hn(gn_exp, gps_bound)
 }
 \arguments{
 \item{gn_exp}{An estimate of the exposure density (a generalized propensity
 score) using the output provided by \code{\link{est_g_exp}}.}
+
+\item{gps_bound}{\code{numeric} giving the lower limit of the generalized
+propensity score estimates to be tolerated (default = 0.05). Estimates less
+than this are truncated to this or 1/n. See \code{\link{bound_propensity}}
+for details.}
 }
 \value{
 A \code{data.table} with two columns, containing estimates of the

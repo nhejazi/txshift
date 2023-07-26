@@ -135,7 +135,7 @@
 <p>To illustrate how <code>txshift</code> may be used to ascertain the effect of a treatment, consider the following example:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/nhejazi/txshift" class="external-link">txshift</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; txshift v0.3.8: Efficient Estimation of the Causal Effects of Stochastic</span></span>
+<span><span class="co">#&gt; txshift v0.3.9: Efficient Estimation of the Causal Effects of Stochastic</span></span>
 <span><span class="co">#&gt; Interventions</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tlverse.org/sl3" class="external-link">sl3</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">429153</span><span class="op">)</span></span>
@@ -240,39 +240,39 @@
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
 <p>After using the <code>txshift</code> R package, please cite the following:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>    <span class="sc">@</span>article{hejazi2020efficient,</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>      author <span class="ot">=</span> {Hejazi, Nima S and {van der Laan}, Mark J and Janes, Holly</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>        E and Gilbert, Peter B and Benkeser, David C},</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>      title <span class="ot">=</span> {Efficient nonparametric inference on the effects of</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        stochastic interventions under two<span class="sc">-</span>phase sampling, with</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        applications to vaccine efficacy trials},</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>      year <span class="ot">=</span> {<span class="dv">2020</span>},</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>      doi <span class="ot">=</span> {<span class="fl">10.1111</span><span class="sc">/</span>biom<span class="fl">.13375</span>},</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>      url <span class="ot">=</span> {https<span class="sc">:</span><span class="er">//</span>doi.org<span class="sc">/</span><span class="fl">10.1111</span><span class="sc">/</span>biom<span class="fl">.13375</span>},</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>      journal <span class="ot">=</span> {Biometrics},</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>      publisher <span class="ot">=</span> {Wiley Online Library}</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="sc">@</span>article{hejazi2020txshift<span class="sc">-</span>joss,</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>      author <span class="ot">=</span> {Hejazi, Nima S and Benkeser, David C},</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>      title <span class="ot">=</span> {{txshift}<span class="sc">:</span> Efficient estimation of the causal effects of</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>        stochastic interventions <span class="cf">in</span> {R}},</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>      year  <span class="ot">=</span> {<span class="dv">2020</span>},</span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>      doi <span class="ot">=</span> {<span class="fl">10.21105</span><span class="sc">/</span>joss<span class="fl">.02447</span>},</span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>      url <span class="ot">=</span> {https<span class="sc">:</span><span class="er">//</span>doi.org<span class="sc">/</span><span class="fl">10.21105</span><span class="sc">/</span>joss<span class="fl">.02447</span>},</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>      journal <span class="ot">=</span> {Journal of Open Source Software},</span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>      publisher <span class="ot">=</span> {The Open Journal}</span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    <span class="sc">@</span>software{hejazi2022txshift<span class="sc">-</span>rpkg,</span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>      author <span class="ot">=</span> {Hejazi, Nima S and Benkeser, David C},</span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>      title <span class="ot">=</span> {{txshift}<span class="sc">:</span> Efficient Estimation of the Causal Effects of</span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>        Stochastic Interventions},</span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>      year  <span class="ot">=</span> {<span class="dv">2022</span>},</span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>      doi <span class="ot">=</span> {<span class="fl">10.5281</span><span class="sc">/</span>zenodo<span class="fl">.4070042</span>},</span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>      url <span class="ot">=</span> {https<span class="sc">:</span><span class="er">//</span>CRAN.R<span class="sc">-</span>project.org<span class="sc">/</span>package<span class="ot">=</span>txshift},</span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>      note <span class="ot">=</span> {R package version <span class="dv">0</span>.<span class="fl">3.7</span>}</span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>    <span class="sc">@</span>article{hejazi2020efficient,</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>      author <span class="ot">=</span> {Hejazi, Nima S and {van der Laan}, Mark J and Janes, Holly</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>        E and Gilbert, Peter B and Benkeser, David C},</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>      title <span class="ot">=</span> {Efficient nonparametric inference on the effects of</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>        stochastic interventions under two<span class="sc">-</span>phase sampling, with</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>        applications to vaccine efficacy trials},</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>      year <span class="ot">=</span> {<span class="dv">2020</span>},</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>      doi <span class="ot">=</span> {<span class="fl">10.1111</span><span class="sc">/</span>biom<span class="fl">.13375</span>},</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>      url <span class="ot">=</span> {https<span class="sc">:</span><span class="er">//</span>doi.org<span class="sc">/</span><span class="fl">10.1111</span><span class="sc">/</span>biom<span class="fl">.13375</span>},</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>      journal <span class="ot">=</span> {Biometrics},</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>      publisher <span class="ot">=</span> {Wiley Online Library}</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>    }</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>    <span class="sc">@</span>article{hejazi2020txshift<span class="sc">-</span>joss,</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>      author <span class="ot">=</span> {Hejazi, Nima S and Benkeser, David C},</span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>      title <span class="ot">=</span> {{txshift}<span class="sc">:</span> Efficient estimation of the causal effects of</span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>        stochastic interventions <span class="cf">in</span> {R}},</span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>      year  <span class="ot">=</span> {<span class="dv">2020</span>},</span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>      doi <span class="ot">=</span> {<span class="fl">10.21105</span><span class="sc">/</span>joss<span class="fl">.02447</span>},</span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>      url <span class="ot">=</span> {https<span class="sc">:</span><span class="er">//</span>doi.org<span class="sc">/</span><span class="fl">10.21105</span><span class="sc">/</span>joss<span class="fl">.02447</span>},</span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a>      journal <span class="ot">=</span> {Journal of Open Source Software},</span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>      publisher <span class="ot">=</span> {The Open Journal}</span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a>    }</span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a></span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a>    <span class="sc">@</span>software{hejazi2022txshift<span class="sc">-</span>rpkg,</span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a>      author <span class="ot">=</span> {Hejazi, Nima S and Benkeser, David C},</span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a>      title <span class="ot">=</span> {{txshift}<span class="sc">:</span> Efficient Estimation of the Causal Effects of</span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a>        Stochastic Interventions},</span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a>      year  <span class="ot">=</span> {<span class="dv">2022</span>},</span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>      doi <span class="ot">=</span> {<span class="fl">10.5281</span><span class="sc">/</span>zenodo<span class="fl">.4070042</span>},</span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a>      url <span class="ot">=</span> {https<span class="sc">:</span><span class="er">//</span>CRAN.R<span class="sc">-</span>project.org<span class="sc">/</span>package<span class="ot">=</span>txshift},</span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a>      note <span class="ot">=</span> {R package version <span class="dv">0</span>.<span class="fl">3.7</span>}</span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a>    }</span></code></pre></div>
 <hr>
 </div>
 <div class="section level2">
@@ -296,27 +296,27 @@
 </h2>
 <p>© 2017-2022 <a href="https://nimahejazi.org" class="external-link">Nima S. Hejazi</a></p>
 <p>The contents of this repository are distributed under the MIT license. See below for details:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>MIT License</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">Copyright</span> (c) <span class="dv">2017-2022</span> Nima S. Hejazi</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>Permission is hereby granted, free of charge, to any person obtaining a copy</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>of this software and associated documentation <span class="fu">files</span> (the <span class="st">"Software"</span>), to deal</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="cf">in</span> the Software without restriction, including without limitation the rights</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>to use, copy, modify, merge, publish, distribute, sublicense, and<span class="sc">/</span>or sell</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>copies of the Software, and to permit persons to whom the Software is</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>furnished to do so, subject to the following conditions<span class="sc">:</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>The above copyright notice and this permission notice shall be included <span class="cf">in</span> all</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>copies or substantial portions of the Software.</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>THE SOFTWARE IS PROVIDED <span class="st">"AS IS"</span>, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>SOFTWARE.</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>MIT License</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="fu">Copyright</span> (c) <span class="dv">2017-2022</span> Nima S. Hejazi</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>of this software and associated documentation <span class="fu">files</span> (the <span class="st">"Software"</span>), to deal</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="cf">in</span> the Software without restriction, including without limitation the rights</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>to use, copy, modify, merge, publish, distribute, sublicense, and<span class="sc">/</span>or sell</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>copies of the Software, and to permit persons to whom the Software is</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>furnished to do so, subject to the following conditions<span class="sc">:</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>The above copyright notice and this permission notice shall be included <span class="cf">in</span> all</span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>copies or substantial portions of the Software.</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>THE SOFTWARE IS PROVIDED <span class="st">"AS IS"</span>, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a>SOFTWARE.</span></code></pre></div>
 <hr>
 </div>
 <div class="section level2">
@@ -324,10 +324,10 @@
 </h2>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-coyle-sl3-rpkg" class="csl-entry">
-Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, Rachael V Phillips, and Oleg Sofrygin. 2022. <em><span class="nocase">sl3</span>: Modern Machine Learning Pipelines for Super Learning</em>. <a href="https://doi.org/10.5281/zenodo.1342293" class="external-link uri">https://doi.org/10.5281/zenodo.1342293</a>.
+Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, Rachael V Phillips, and Oleg Sofrygin. 2022. “<span class="nocase">sl3</span>: Modern Machine Learning Pipelines for Super Learning.” <a href="https://doi.org/10.5281/zenodo.1342293" class="external-link uri">https://doi.org/10.5281/zenodo.1342293</a>.
 </div>
 <div id="ref-coyle-hal9001-rpkg" class="csl-entry">
-Coyle, Jeremy R, Nima S Hejazi, Rachael V Phillips, Lars W van der Laan, and Mark J van der Laan. 2022. <em><span class="nocase">hal9001</span>: The Scalable Highly Adaptive Lasso</em>. <a href="https://doi.org/10.5281/zenodo.3558313" class="external-link uri">https://doi.org/10.5281/zenodo.3558313</a>.
+Coyle, Jeremy R, Nima S Hejazi, Rachael V Phillips, Lars W van der Laan, and Mark J van der Laan. 2022. “<span class="nocase">hal9001</span>: The Scalable Highly Adaptive Lasso.” <a href="https://doi.org/10.5281/zenodo.3558313" class="external-link uri">https://doi.org/10.5281/zenodo.3558313</a>.
 </div>
 <div id="ref-diaz2020causal" class="csl-entry">
 Dı́az, Iván, and Nima S Hejazi. 2020. “Causal Mediation Analysis for Stochastic Interventions.” <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em> 82 (3): 661–83. <a href="https://doi.org/10.1111/rssb.12362" class="external-link uri">https://doi.org/10.1111/rssb.12362</a>.

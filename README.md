@@ -104,7 +104,7 @@ treatment, consider the following example:
 
 ``` r
 library(txshift)
-#> txshift v0.3.8: Efficient Estimation of the Causal Effects of Stochastic
+#> txshift v0.3.9: Efficient Estimation of the Causal Effects of Stochastic
 #> Interventions
 library(sl3)
 set.seed(429153)
@@ -255,28 +255,26 @@ After using the `txshift` R package, please cite the following:
 
 ## Related
 
--   [R/`tmle3shift`](https://github.com/tlverse/tmle3shift) - An R
-    package providing an independent implementation of the same core
-    routines for the TML estimation procedure and statistical
-    methodology as is made available here, through reliance on a unified
-    interface for Targeted Learning provided by the
-    [`tmle3`](https://github.com/tlverse/tmle3) engine of the [`tlverse`
-    ecosystem](https://github.com/tlverse).
+- [R/`tmle3shift`](https://github.com/tlverse/tmle3shift) - An R package
+  providing an independent implementation of the same core routines for
+  the TML estimation procedure and statistical methodology as is made
+  available here, through reliance on a unified interface for Targeted
+  Learning provided by the [`tmle3`](https://github.com/tlverse/tmle3)
+  engine of the [`tlverse` ecosystem](https://github.com/tlverse).
 
--   [R/`medshift`](https://github.com/nhejazi/medshift) - An R package
-    providing facilities to estimate the causal effect of stochastic
-    treatment regimes in the mediation setting, including classical
-    (IPW) and augmented double robust (one-step) estimators. This is an
-    implementation of the methodology explored by Dı́az and Hejazi
-    (2020).
+- [R/`medshift`](https://github.com/nhejazi/medshift) - An R package
+  providing facilities to estimate the causal effect of stochastic
+  treatment regimes in the mediation setting, including classical (IPW)
+  and augmented double robust (one-step) estimators. This is an
+  implementation of the methodology explored by Dı́az and Hejazi (2020).
 
--   [R/`haldensify`](https://github.com/nhejazi/haldensify) - A minimal
-    package for estimating the conditional density treatment mechanism
-    component of this parameter based on using the [highly adaptive
-    lasso](https://github.com/tlverse/hal9001) (Coyle, Hejazi, Phillips,
-    et al. 2022; Hejazi, Coyle, and van der Laan 2020) in combination
-    with a pooled hazard regression. This package implements a variant
-    of the approach advocated by Dı́az and van der Laan (2011).
+- [R/`haldensify`](https://github.com/nhejazi/haldensify) - A minimal
+  package for estimating the conditional density treatment mechanism
+  component of this parameter based on using the [highly adaptive
+  lasso](https://github.com/tlverse/hal9001) (Coyle, Hejazi, Phillips,
+  et al. 2022; Hejazi, Coyle, and van der Laan 2020) in combination with
+  a pooled hazard regression. This package implements a variant of the
+  approach advocated by Dı́az and van der Laan (2011).
 
 ------------------------------------------------------------------------
 
@@ -331,8 +329,8 @@ See below for details:
 <div id="ref-coyle-sl3-rpkg" class="csl-entry">
 
 Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, Rachael V Phillips, and
-Oleg Sofrygin. 2022. *<span class="nocase">sl3</span>: Modern Machine
-Learning Pipelines for Super Learning*.
+Oleg Sofrygin. 2022. “<span class="nocase">sl3</span>: Modern Machine
+Learning Pipelines for Super Learning.”
 <https://doi.org/10.5281/zenodo.1342293>.
 
 </div>
@@ -340,8 +338,8 @@ Learning Pipelines for Super Learning*.
 <div id="ref-coyle-hal9001-rpkg" class="csl-entry">
 
 Coyle, Jeremy R, Nima S Hejazi, Rachael V Phillips, Lars W van der Laan,
-and Mark J van der Laan. 2022. *<span class="nocase">hal9001</span>: The
-Scalable Highly Adaptive Lasso*.
+and Mark J van der Laan. 2022. “<span class="nocase">hal9001</span>: The
+Scalable Highly Adaptive Lasso.”
 <https://doi.org/10.5281/zenodo.3558313>.
 
 </div>
@@ -388,9 +386,9 @@ in Medicine* 32 (30): 5260–77.
 
 <div id="ref-hejazi2020hal9001-joss" class="csl-entry">
 
-Hejazi, Nima S, Jeremy R Coyle, and Mark J van der Laan. 2020. “<span
-class="nocase">hal9001</span>: Scalable Highly Adaptive Lasso Regression
-in R.” *Journal of Open Source Software* 5 (53): 2526.
+Hejazi, Nima S, Jeremy R Coyle, and Mark J van der Laan. 2020.
+“<span class="nocase">hal9001</span>: Scalable Highly Adaptive Lasso
+Regression in R.” *Journal of Open Source Software* 5 (53): 2526.
 <https://doi.org/10.21105/joss.02526>.
 
 </div>
