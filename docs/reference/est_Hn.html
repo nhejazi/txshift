@@ -63,7 +63,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">est_Hn</span><span class="op">(</span><span class="va">gn_exp</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">est_Hn</span><span class="op">(</span><span class="va">gn_exp</span>, <span class="va">gps_bound</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -71,6 +71,13 @@
     <dl><dt>gn_exp</dt>
 <dd><p>An estimate of the exposure density (a generalized propensity
 score) using the output provided by <code><a href="est_g_exp.html">est_g_exp</a></code>.</p></dd>
+
+
+<dt>gps_bound</dt>
+<dd><p><code>numeric</code> giving the lower limit of the generalized
+propensity score estimates to be tolerated (default = 0.05). Estimates less
+than this are truncated to this or 1/n. See <code><a href="bound_propensity.html">bound_propensity</a></code>
+for details.</p></dd>
 
 </dl></div>
     <div id="value">

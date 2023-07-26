@@ -74,6 +74,7 @@
 <span>  estimator <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tmle"</span>, <span class="st">"onestep"</span><span class="op">)</span>,</span>
 <span>  fluctuation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"standard"</span>, <span class="st">"weighted"</span><span class="op">)</span>,</span>
 <span>  max_iter <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  gps_bound <span class="op">=</span> <span class="fl">0.005</span>,</span>
 <span>  samp_fit_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>fit_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"glm"</span>, <span class="st">"sl"</span>, <span class="st">"external"</span><span class="op">)</span>, sl_learners <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>,</span>
 <span>  g_exp_fit_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>fit_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"hal"</span>, <span class="st">"sl"</span>, <span class="st">"external"</span><span class="op">)</span>, lambda_seq <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>,</span>
 <span>    <span class="op">-</span><span class="fl">13</span>, length <span class="op">=</span> <span class="fl">300</span><span class="op">)</span><span class="op">)</span>, sl_learners_density <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>,</span>
@@ -151,6 +152,13 @@ tilting regression.</p></dd>
 <dt>max_iter</dt>
 <dd><p>A <code>numeric</code> integer giving the maximum number of steps
 to be taken in iterating to a solution of the efficient influence function.</p></dd>
+
+
+<dt>gps_bound</dt>
+<dd><p><code>numeric</code> giving the lower limit of the generalized
+propensity score estimates to be tolerated (default = 0.05). Estimates less
+than this are truncated to this or 1/n. See <code><a href="bound_propensity.html">bound_propensity</a></code>
+for details.</p></dd>
 
 
 <dt>samp_fit_args</dt>
