@@ -15,6 +15,7 @@ txshift(
   estimator = c("tmle", "onestep"),
   fluctuation = c("standard", "weighted"),
   max_iter = 10,
+  gps_bound = 0.005,
   samp_fit_args = list(fit_type = c("glm", "sl", "external"), sl_learners = NULL),
   g_exp_fit_args = list(fit_type = c("hal", "sl", "external"), lambda_seq = exp(seq(-1,
     -13, length = 300)), sl_learners_density = NULL),
@@ -71,6 +72,11 @@ tilting regression.}
 
 \item{max_iter}{A \code{numeric} integer giving the maximum number of steps
 to be taken in iterating to a solution of the efficient influence function.}
+
+\item{gps_bound}{\code{numeric} giving the lower limit of the generalized
+propensity score estimates to be tolerated (default = 0.05). Estimates less
+than this are truncated to this or 1/n. See \code{\link{bound_propensity}}
+for details.}
 
 \item{samp_fit_args}{A \code{list} of arguments, all but one of which are
 passed to \code{\link{est_samp}}. For details, consult the documentation of

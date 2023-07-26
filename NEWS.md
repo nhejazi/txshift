@@ -1,10 +1,13 @@
 # txshift 0.3.9
 
 As of May 2023:
-* A new argument `bound` has been added to `bound_propensity` to specify the
+* A new argument `bound` has been added to `bound_propensity()` to specify the
   lower tolerated limit of generalized propensity score estimates. Estimates
   are bounded to the higher of the specified or default value of `bound` and
   the inverse of the sample size, 1/n.
+* A new argument `gps_bound` has also been introduced to both `txshift()` and
+  `est_Hn()` in order to accommodate passing in truncation bounds for the
+  estimated generalized propensity score.
 
 # txshift 0.3.6
 
