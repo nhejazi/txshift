@@ -352,6 +352,7 @@ est_Q <- function(Y,
                   samp_weights = rep(1, length(Y)),
                   fit_type = c("sl", "glm"),
                   glm_formula = "Y ~ .",
+                  glm_family = "binomial",
                   sl_learners = NULL) {
   # set defaults and check arguments
   fit_type <- match.arg(fit_type)
@@ -365,10 +366,12 @@ est_Q <- function(Y,
   }
 
   # scale the outcome for logit transform
-  y_star <- scale_to_unit(vals = Y)
+  # don't do this before prediction
+  #y_star <- scale_to_unit(vals = Y)
 
   # generate the data objects for fitting the outcome regression
-  data_in <- data.table::as.data.table(cbind(y_star, C_cens, A, W))
+  #data_in <- data.table::as.data.table(cbind(y_star, C_cens, A, W))
+  data_in <- data.table::as.data.table(cbind(Y, C_cens, A, W))
   if (!is.matrix(W)) W <- as.matrix(W)
   data.table::setnames(data_in, c(
     "Y", "C_cens", "A",
@@ -385,7 +388,7 @@ est_Q <- function(Y,
   ))
   data.table::set(data_in_shifted, j = "C_cens", value = 1)
 
-  # fit a logistic regression and extract the predicted probabilities
+  # fit a glm and extract the predicted probabilities
   if (fit_type == "glm" & !is.null(glm_formula)) {
     # need to remove IPCW column from input data.table object for GLM fits
     data.table::set(data_in, j = "ipc_weights", value = NULL)
@@ -398,7 +401,7 @@ est_Q <- function(Y,
         data = data_in,
         weights = samp_weights,
         subset = C_cens == 1,
-        family = "binomial"
+        family = glm_family
       )
     )
 
@@ -431,14 +434,14 @@ est_Q <- function(Y,
       data = data_in[C_cens == 1, ],
       covariates = c("C_cens", "A", names_W),
       outcome = "Y",
-      outcome_type = "quasibinomial",
+      #outcome_type = "quasibinomial",
       weights = "ipc_weights"
     )
     task_noshift_nocens <- sl3::sl3_Task$new(
       data = data_in[, C_cens := 1],
       covariates = c("C_cens", "A", names_W),
       outcome = "Y",
-      outcome_type = "quasibinomial",
+      #outcome_type = "quasibinomial",
       weights = "ipc_weights"
     )
 
@@ -447,17 +450,22 @@ est_Q <- function(Y,
       data = data_in_shifted,
       covariates = c("C_cens", "A", names_W),
       outcome = "Y",
-      outcome_type = "quasibinomial",
+      #outcome_type = "quasibinomial",
       weights = "ipc_weights"
     )
 
     # fit new Super Learner to the natural (no shift) data and predict
     sl_fit_noshift <- sl_learners$train(task_noshift)
+    sl_fit_noshift$print()
     pred_star_Qn <- sl_fit_noshift$predict(task_noshift_nocens)
 
     # predict with Super Learner from unshifted data on the shifted data
     pred_star_Qn_shifted <- sl_fit_noshift$predict(task_shifted)
   }
+  
+  #scale estimates
+  pred_star_Qn <- (pred_star_Qn - min(Y)) / (max(Y) - min(Y))
+  pred_star_Qn_shifted <- ( pred_star_Qn_shifted - min(Y)) / (max(Y) - min(Y))
 
   # NOTE: clean up predictions and generate output
   # avoid values that are exactly 0 or 1 in the scaled estimates
