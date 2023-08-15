@@ -335,6 +335,7 @@ est_g_cens <- function(C_cens,
 #'  for fitting a (generalized) linear model via \code{\link[stats]{glm}}.
 #' @param sl_learners Object containing a set of instantiated learners from the
 #'  \pkg{sl3}, to be used in fitting an ensemble model.
+#' @param glm_family The family to be used for glm estimation of Q.
 #'
 #' @importFrom stats glm as.formula predict
 #' @importFrom data.table as.data.table setnames copy set
@@ -366,7 +367,7 @@ est_Q <- function(Y,
   }
 
   # scale the outcome for logit transform
-  # don't do this before prediction
+  # don't scale before prediction
   #y_star <- scale_to_unit(vals = Y)
 
   # generate the data objects for fitting the outcome regression
@@ -434,14 +435,12 @@ est_Q <- function(Y,
       data = data_in[C_cens == 1, ],
       covariates = c("C_cens", "A", names_W),
       outcome = "Y",
-      #outcome_type = "quasibinomial",
       weights = "ipc_weights"
     )
     task_noshift_nocens <- sl3::sl3_Task$new(
       data = data_in[, C_cens := 1],
       covariates = c("C_cens", "A", names_W),
       outcome = "Y",
-      #outcome_type = "quasibinomial",
       weights = "ipc_weights"
     )
 
@@ -450,7 +449,6 @@ est_Q <- function(Y,
       data = data_in_shifted,
       covariates = c("C_cens", "A", names_W),
       outcome = "Y",
-      #outcome_type = "quasibinomial",
       weights = "ipc_weights"
     )
 

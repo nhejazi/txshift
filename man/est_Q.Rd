@@ -13,6 +13,7 @@ est_Q(
   samp_weights = rep(1, length(Y)),
   fit_type = c("sl", "glm"),
   glm_formula = "Y ~ .",
+  glm_family = "binomial",
   sl_learners = NULL
 )
 }
@@ -44,6 +45,8 @@ provided. Consult the documentation of \pkg{sl3} for details.}
 
 \item{glm_formula}{A \code{character} giving a \code{\link[stats]{formula}}
 for fitting a (generalized) linear model via \code{\link[stats]{glm}}.}
+
+\item{glm_family}{The family to be used for glm estimation of Q.}
 
 \item{sl_learners}{Object containing a set of instantiated learners from the
 \pkg{sl3}, to be used in fitting an ensemble model.}
