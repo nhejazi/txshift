@@ -6,7 +6,7 @@
 #'  {A - delta}, {A + delta}, and {A + 2 * delta}).
 #'
 #' @param A A \code{numeric} vector of observed exposure values.
-#' @param W_g A \code{numeric} matrix of observed baseline covariate values for estimating g.
+#' @param W A \code{numeric} matrix of observed baseline covariate values for estimating g.
 #' @param delta A \code{numeric} value identifying a shift in the observed
 #'  value of the exposure under which observations are to be evaluated.
 #' @param samp_weights A \code{numeric} vector of observation-level sampling
@@ -32,7 +32,7 @@
 #'  (g(A | W)), an upshift (g(A + delta) | W), and an upshift of magnitude two
 #'  (g(A + 2 delta) | W).
 est_g_exp <- function(A,
-                      W_g,
+                      W,
                       delta = 0,
                       samp_weights = rep(1, length(A)),
                       fit_type = c("hal", "sl"),
@@ -52,7 +52,6 @@ est_g_exp <- function(A,
     )
   }
   
-  W <- W_g
 
   # make data objects from inputs
   data_in <- data.table::as.data.table(cbind(A, W))
