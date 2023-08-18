@@ -317,7 +317,7 @@ txshift <- function(W,
     samp_weights <- samp_estim <- C_samp
     data_internal <- data.table::data.table(W, A, C_cens, Y)
   }
-
+  
   # initial estimate of the treatment mechanism (generalized propensity score)
   if (!is.null(gn_exp_fit_ext) && g_exp_fit_type == "external") {
     gn_exp_estim <- gn_exp_fit_ext

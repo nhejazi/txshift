@@ -337,6 +337,7 @@ est_g_cens <- function(C_cens,
 #' @param sl_learners Object containing a set of instantiated learners from the
 #'  \pkg{sl3}, to be used in fitting an ensemble model.
 #' @param glm_family The family to be used for glm estimation of Q.
+#' @param outcome_type A type name for the outcome. Valid choices include "binomial", "categorical", "continuous", and "multivariate". 
 #'
 #' @importFrom stats glm as.formula predict
 #' @importFrom data.table as.data.table setnames copy set
@@ -355,6 +356,7 @@ est_Q <- function(Y,
                   fit_type = c("sl", "glm"),
                   glm_formula = "Y ~ .",
                   glm_family = "binomial",
+                  outcome_type,
                   sl_learners = NULL) {
   # set defaults and check arguments
   fit_type <- match.arg(fit_type)
@@ -436,13 +438,15 @@ est_Q <- function(Y,
       data = data_in[C_cens == 1, ],
       covariates = c("C_cens", "A", names_W),
       outcome = "Y",
-      weights = "ipc_weights"
+      weights = "ipc_weights",
+      outcome_type = outcome_type
     )
     task_noshift_nocens <- sl3::sl3_Task$new(
       data = data_in[, C_cens := 1],
       covariates = c("C_cens", "A", names_W),
       outcome = "Y",
-      weights = "ipc_weights"
+      weights = "ipc_weights",
+      outcome_type = outcome_type
     )
 
     # make sl3 task for data with the shifted exposure
@@ -450,7 +454,8 @@ est_Q <- function(Y,
       data = data_in_shifted,
       covariates = c("C_cens", "A", names_W),
       outcome = "Y",
-      weights = "ipc_weights"
+      weights = "ipc_weights",
+      outcome_type = outcome_type
     )
 
     # fit new Super Learner to the natural (no shift) data and predict
