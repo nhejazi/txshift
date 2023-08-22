@@ -11,6 +11,11 @@
 #'
 #' @return A \code{numeric} vector containing the shifted exposure values.
 shift_additive <- function(A, W = NULL, delta) {
-  shifted_treatment <- A + delta
+  if(delta < 0){
+    shifted_treatment <- ifelse((min(A)<= A + delta),  A + delta, A)
+  } else {
+    shifted_treatment <- ifelse((max(A)>= A + delta),  A + delta, A)
+  }
+ 
   return(shifted_treatment)
 }
