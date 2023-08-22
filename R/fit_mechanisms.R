@@ -391,6 +391,8 @@ est_Q <- function(Y,
     A = data_in$A, delta = delta
   ))
   data.table::set(data_in_shifted, j = "C_cens", value = 1)
+  
+  print(summary( data_in_shifted$A))
 
   # fit a glm and extract the predicted probabilities
   if (fit_type == "glm" & !is.null(glm_formula)) {
