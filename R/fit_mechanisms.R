@@ -59,22 +59,25 @@ est_g_exp <- function(A,
   data.table::setnames(data_in, c("A", colnames(W)))
   data.table::set(data_in, j = "ipc_weights", value = samp_weights)
 
+  minA <- min(data_in$A)
+  maxA <- max(data_in$A)
+  
   # need a data set with the exposure stochastically shifted DOWNWARDS A-delta
   data_in_downshifted <- data.table::copy(data_in)
   data.table::set(data_in_downshifted, j = "A", value = shift_additive(
-    A = data_in$A, delta = -delta
+    A = data_in$A, minA, maxA, delta = -delta
   ))
 
   # need a data set with the exposure stochastically shifted UPWARDS A+delta
   data_in_upshifted <- data.table::copy(data_in)
   data.table::set(data_in_upshifted, j = "A", value = shift_additive(
-    A = data_in$A, delta = delta
+    A = data_in$A, minA, maxA, delta = delta
   ))
 
   # need a data set with the exposure stochastically shifted UPWARDS A+2delta
   data_in_upupshifted <- data.table::copy(data_in)
   data.table::set(data_in_upupshifted, j = "A", value = shift_additive(
-    A = data_in$A, delta = 2 * delta
+    A = data_in$A, minA, maxA, delta = 2 * delta
   ))
 
   # if fitting sl3 density make sl3 tasks from the data
@@ -384,11 +387,14 @@ est_Q <- function(Y,
   names_W <- colnames(data_in)[stringr::str_detect(colnames(data_in), "W")]
   data.table::set(data_in, j = "ipc_weights", value = samp_weights)
 
+  minA <- min(data_in$A)
+  maxA <- max(data_in$A)
+  
   # counterfactual data with exposure shifted do(A + delta)
   # NOTE: also introduce joint intervention on the censoring node do(C = 1)
   data_in_shifted <- data.table::copy(data_in)
   data.table::set(data_in_shifted, j = "A", value = shift_additive(
-    A = data_in$A, delta = delta
+    A = data_in$A, minA, maxA, delta = delta
   ))
   data.table::set(data_in_shifted, j = "C_cens", value = 1)
   
