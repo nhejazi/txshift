@@ -341,7 +341,6 @@ est_g_cens <- function(C_cens,
 #'  \pkg{sl3}, to be used in fitting an ensemble model.
 #' @param glm_family The family to be used for glm estimation of Q.
 #' @param outcome_type A type name for the outcome. Valid choices include "binomial", "categorical", "continuous", and "multivariate". 
-#' @param foldsV Number of folds for task to estimate Q
 #'
 #' @importFrom stats glm as.formula predict
 #' @importFrom data.table as.data.table setnames copy set
@@ -361,8 +360,7 @@ est_Q <- function(Y,
                   glm_formula = "Y ~ .",
                   glm_family = "binomial",
                   outcome_type,
-                  sl_learners = NULL,
-                  foldsV=10L) {
+                  sl_learners = NULL) {
   # set defaults and check arguments
   fit_type <- match.arg(fit_type)
   if (fit_type == "sl") {
@@ -450,16 +448,14 @@ est_Q <- function(Y,
       covariates = c("C_cens", "A", names_W),
       outcome = "Y",
       weights = "ipc_weights",
-      outcome_type = outcome_type,
-      folds = make_folds(n=nrow(data_in[C_cens == 1, ]), fold_fun = folds_vfold, V=foldsV)
+      outcome_type = outcome_type
     )
     task_noshift_nocens <- sl3::sl3_Task$new(
       data = data_in[, C_cens := 1],
       covariates = c("C_cens", "A", names_W),
       outcome = "Y",
       weights = "ipc_weights",
-      outcome_type = outcome_type,
-      folds = make_folds(n=nrow(data_in[, C_cens := 1]), fold_fun = folds_vfold, V=foldsV)
+      outcome_type = outcome_type
     )
 
     # make sl3 task for data with the shifted exposure
@@ -468,8 +464,7 @@ est_Q <- function(Y,
       covariates = c("C_cens", "A", names_W),
       outcome = "Y",
       weights = "ipc_weights",
-      outcome_type = outcome_type,
-      folds = make_folds(n=nrow(data_in_shifted), fold_fun = folds_vfold, V=foldsV)
+      outcome_type = outcome_type
     )
 
     # fit new Super Learner to the natural (no shift) data and predict
