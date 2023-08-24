@@ -211,7 +211,8 @@ txshift <- function(W,
                     g_exp_fit_args = list(
                       fit_type = c("hal", "sl", "external"),
                       lambda_seq = exp(seq(-1, -13, length = 300)),
-                      sl_learners_density = NULL
+                      sl_learners_density = NULL,
+                      W_g = NULL
                     ),
                     g_cens_fit_args = list(
                       fit_type = c("glm", "sl", "external"),
@@ -242,6 +243,7 @@ txshift <- function(W,
   g_exp_fit_type <- unlist(g_exp_fit_args[names(g_exp_fit_args) == "fit_type"],
     use.names = FALSE
   )
+  
   g_cens_fit_type <-
     unlist(g_cens_fit_args[names(g_cens_fit_args) == "fit_type"],
       use.names = FALSE
@@ -249,10 +251,7 @@ txshift <- function(W,
   Q_fit_type <- unlist(Q_fit_args[names(Q_fit_args) == "fit_type"],
     use.names = FALSE
   )
-  samp_fit_args <- samp_fit_args[names(samp_fit_args) != "fit_type"]
-  g_exp_fit_args <- g_exp_fit_args[names(g_exp_fit_args) != "fit_type"]
-  g_cens_fit_args <- g_cens_fit_args[names(g_cens_fit_args) != "fit_type"]
-  Q_fit_args <- Q_fit_args[names(Q_fit_args) != "fit_type"]
+  
 
   # coerce W to matrix and, if no names in W, assign them generically
   if (!is.matrix(W)) W <- as.matrix(W)
@@ -261,6 +260,20 @@ txshift <- function(W,
     W_names <- paste0("W", seq_len(ncol(W)))
     colnames(W) <- W_names
   }
+  
+  #add options to have different adjustment set for g and Q
+  if(is.null(g_exp_fit_args[names(g_exp_fit_args) == "W_g"])==FALSE){
+    g_exp_Wnames <- unlist(g_exp_fit_args[names(g_exp_fit_args) == "W_g"],
+                           use.names = FALSE
+    )
+  } else {
+    g_exp_Wnames <- W_names
+  }
+  
+  samp_fit_args <- samp_fit_args[names(samp_fit_args) != "fit_type"]
+  g_exp_fit_args <- g_exp_fit_args[(names(g_exp_fit_args) %in% c("fit_type", "W_g"))==FALSE]
+  g_cens_fit_args <- g_cens_fit_args[names(g_cens_fit_args) != "fit_type"]
+  Q_fit_args <- Q_fit_args[names(Q_fit_args) != "fit_type"]
 
   # subset data and implement IPC weighting for two-phase sampling corrections
   if (!all(C_samp == 1) && !is.null(V)) {
@@ -304,14 +317,14 @@ txshift <- function(W,
     samp_weights <- samp_estim <- C_samp
     data_internal <- data.table::data.table(W, A, C_cens, Y)
   }
-
+  
   # initial estimate of the treatment mechanism (generalized propensity score)
   if (!is.null(gn_exp_fit_ext) && g_exp_fit_type == "external") {
     gn_exp_estim <- gn_exp_fit_ext
   } else {
     gn_exp_estim_in <- list(
       A = data_internal$A,
-      W = data_internal[, W_names, with = FALSE],
+      W = data_internal[, g_exp_Wnames, with = FALSE],
       delta = delta,
       samp_weights = samp_weights,
       fit_type = g_exp_fit_type

@@ -6,7 +6,7 @@
 #'  {A - delta}, {A + delta}, and {A + 2 * delta}).
 #'
 #' @param A A \code{numeric} vector of observed exposure values.
-#' @param W A \code{numeric} matrix of observed baseline covariate values.
+#' @param W A \code{numeric} matrix of observed baseline covariate values for estimating g.
 #' @param delta A \code{numeric} value identifying a shift in the observed
 #'  value of the exposure under which observations are to be evaluated.
 #' @param samp_weights A \code{numeric} vector of observation-level sampling
@@ -51,6 +51,7 @@ est_g_exp <- function(A,
       )
     )
   }
+  
 
   # make data objects from inputs
   data_in <- data.table::as.data.table(cbind(A, W))
@@ -58,22 +59,25 @@ est_g_exp <- function(A,
   data.table::setnames(data_in, c("A", colnames(W)))
   data.table::set(data_in, j = "ipc_weights", value = samp_weights)
 
+  minA <- min(data_in$A)
+  maxA <- max(data_in$A)
+  
   # need a data set with the exposure stochastically shifted DOWNWARDS A-delta
   data_in_downshifted <- data.table::copy(data_in)
   data.table::set(data_in_downshifted, j = "A", value = shift_additive(
-    A = data_in$A, delta = -delta
+    A = data_in$A, minA, maxA, delta = -delta
   ))
 
   # need a data set with the exposure stochastically shifted UPWARDS A+delta
   data_in_upshifted <- data.table::copy(data_in)
   data.table::set(data_in_upshifted, j = "A", value = shift_additive(
-    A = data_in$A, delta = delta
+    A = data_in$A, minA, maxA, delta = delta
   ))
 
   # need a data set with the exposure stochastically shifted UPWARDS A+2delta
   data_in_upupshifted <- data.table::copy(data_in)
   data.table::set(data_in_upupshifted, j = "A", value = shift_additive(
-    A = data_in$A, delta = 2 * delta
+    A = data_in$A, minA, maxA, delta = 2 * delta
   ))
 
   # if fitting sl3 density make sl3 tasks from the data
@@ -335,6 +339,9 @@ est_g_cens <- function(C_cens,
 #'  for fitting a (generalized) linear model via \code{\link[stats]{glm}}.
 #' @param sl_learners Object containing a set of instantiated learners from the
 #'  \pkg{sl3}, to be used in fitting an ensemble model.
+#' @param glm_family The family to be used for glm estimation of Q.
+#' @param outcome_type A type name for the outcome. Valid choices include "binomial", "categorical", "continuous", and "multivariate". 
+#' @param foldsV Number of folds for task to estimate Q
 #'
 #' @importFrom stats glm as.formula predict
 #' @importFrom data.table as.data.table setnames copy set
@@ -352,7 +359,10 @@ est_Q <- function(Y,
                   samp_weights = rep(1, length(Y)),
                   fit_type = c("sl", "glm"),
                   glm_formula = "Y ~ .",
-                  sl_learners = NULL) {
+                  glm_family = "binomial",
+                  outcome_type,
+                  sl_learners = NULL,
+                  foldsV=10L) {
   # set defaults and check arguments
   fit_type <- match.arg(fit_type)
   if (fit_type == "sl") {
@@ -365,10 +375,12 @@ est_Q <- function(Y,
   }
 
   # scale the outcome for logit transform
-  y_star <- scale_to_unit(vals = Y)
+  # don't scale before prediction
+  #y_star <- scale_to_unit(vals = Y)
 
   # generate the data objects for fitting the outcome regression
-  data_in <- data.table::as.data.table(cbind(y_star, C_cens, A, W))
+  #data_in <- data.table::as.data.table(cbind(y_star, C_cens, A, W))
+  data_in <- data.table::as.data.table(cbind(Y, C_cens, A, W))
   if (!is.matrix(W)) W <- as.matrix(W)
   data.table::setnames(data_in, c(
     "Y", "C_cens", "A",
@@ -377,15 +389,20 @@ est_Q <- function(Y,
   names_W <- colnames(data_in)[stringr::str_detect(colnames(data_in), "W")]
   data.table::set(data_in, j = "ipc_weights", value = samp_weights)
 
+  minA <- min(data_in$A)
+  maxA <- max(data_in$A)
+  
   # counterfactual data with exposure shifted do(A + delta)
   # NOTE: also introduce joint intervention on the censoring node do(C = 1)
   data_in_shifted <- data.table::copy(data_in)
   data.table::set(data_in_shifted, j = "A", value = shift_additive(
-    A = data_in$A, delta = delta
+    A = data_in$A, minA, maxA, delta = delta
   ))
   data.table::set(data_in_shifted, j = "C_cens", value = 1)
+  
+  print(summary( data_in_shifted$A))
 
-  # fit a logistic regression and extract the predicted probabilities
+  # fit a glm and extract the predicted probabilities
   if (fit_type == "glm" & !is.null(glm_formula)) {
     # need to remove IPCW column from input data.table object for GLM fits
     data.table::set(data_in, j = "ipc_weights", value = NULL)
@@ -398,7 +415,7 @@ est_Q <- function(Y,
         data = data_in,
         weights = samp_weights,
         subset = C_cens == 1,
-        family = "binomial"
+        family = glm_family
       )
     )
 
@@ -426,20 +443,23 @@ est_Q <- function(Y,
 
   # fit a binary Super Learner and get the predicted probabilities
   if (fit_type == "sl" & !is.null(sl_learners)) {
-    # make sl3 task for original data
+    
+     # make sl3 task for original data
     task_noshift <- sl3::sl3_Task$new(
       data = data_in[C_cens == 1, ],
       covariates = c("C_cens", "A", names_W),
       outcome = "Y",
-      outcome_type = "quasibinomial",
-      weights = "ipc_weights"
+      weights = "ipc_weights",
+      outcome_type = outcome_type,
+      folds = make_folds(n=nrow(data_in[C_cens == 1, ]), fold_fun = folds_vfold, V=foldsV)
     )
     task_noshift_nocens <- sl3::sl3_Task$new(
       data = data_in[, C_cens := 1],
       covariates = c("C_cens", "A", names_W),
       outcome = "Y",
-      outcome_type = "quasibinomial",
-      weights = "ipc_weights"
+      weights = "ipc_weights",
+      outcome_type = outcome_type,
+      folds = make_folds(n=nrow(data_in[, C_cens := 1]), fold_fun = folds_vfold, V=foldsV)
     )
 
     # make sl3 task for data with the shifted exposure
@@ -447,17 +467,23 @@ est_Q <- function(Y,
       data = data_in_shifted,
       covariates = c("C_cens", "A", names_W),
       outcome = "Y",
-      outcome_type = "quasibinomial",
-      weights = "ipc_weights"
+      weights = "ipc_weights",
+      outcome_type = outcome_type,
+      folds = make_folds(n=nrow(data_in_shifted), fold_fun = folds_vfold, V=foldsV)
     )
 
     # fit new Super Learner to the natural (no shift) data and predict
     sl_fit_noshift <- sl_learners$train(task_noshift)
+    sl_fit_noshift$print()
     pred_star_Qn <- sl_fit_noshift$predict(task_noshift_nocens)
 
     # predict with Super Learner from unshifted data on the shifted data
     pred_star_Qn_shifted <- sl_fit_noshift$predict(task_shifted)
   }
+  
+  #scale estimates
+  pred_star_Qn <- (pred_star_Qn - min(Y)) / (max(Y) - min(Y))
+  pred_star_Qn_shifted <- ( pred_star_Qn_shifted - min(Y)) / (max(Y) - min(Y))
 
   # NOTE: clean up predictions and generate output
   # avoid values that are exactly 0 or 1 in the scaled estimates

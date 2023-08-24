@@ -1,5 +1,13 @@
 # txshift 0.3.9
 
+As of August 2023:
+* Txshift has been modified to estimate Q on the original scale of the outcome,
+instead of scaling Y before estimating Q. This is helpful when the outcome is a 
+count and some of the algorithms in the SL library only handle non-negative integers.
+* A new argument `glm_family` has been added to `est_Q()` to specify the family
+when a glm is used to estimate Q.
+* @Lauren-EylerDang, #70
+
 As of May 2023:
 * A new argument `bound` has been added to `bound_propensity()` to specify the
   lower tolerated limit of generalized propensity score estimates. Estimates
