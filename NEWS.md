@@ -1,5 +1,13 @@
 # txshift 0.3.9
 
+As of October 2023:
+* A new argument `bound` has been added to `est_g_cens()` to specify the lower
+  tolerated limit of the censoring mechanism estimates. This is used to allow
+  for stable inverse probability of censoring weights to be applied. This bound
+  has been given a default value of 0.02.
+* The default value of `bound` in `bound_propensity()` has been changed from
+  0.005 to 0.01, as has the default value of `gps_bound` in `txshift()`.
+
 As of May 2023:
 * A new argument `bound` has been added to `bound_propensity()` to specify the
   lower tolerated limit of generalized propensity score estimates. Estimates

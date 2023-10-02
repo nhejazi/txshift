@@ -11,7 +11,8 @@ est_g_cens(
   samp_weights = rep(1, length(C_cens)),
   fit_type = c("sl", "glm"),
   glm_formula = "C_cens ~ .",
-  sl_learners = NULL
+  sl_learners = NULL,
+  bound = 0.02
 )
 }
 \arguments{
@@ -39,6 +40,10 @@ for fitting a (generalized) linear model via \code{\link[stats]{glm}}.}
 
 \item{sl_learners}{Object containing a set of instantiated learners from the
 \pkg{sl3}, to be used in fitting an ensemble model.}
+
+\item{bound}{\code{numeric} giving the lower limit of censoring mechanism
+estimates to be tolerated (default = 0.02). Estimates below this value are
+truncated to this or 1/n. See \code{\link{bound_propensity}} for details.}
 }
 \value{
 A \code{numeric} vector of the propensity score for censoring.

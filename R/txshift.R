@@ -38,9 +38,9 @@
 #' @param max_iter A \code{numeric} integer giving the maximum number of steps
 #'  to be taken in iterating to a solution of the efficient influence function.
 #' @param gps_bound \code{numeric} giving the lower limit of the generalized
-#'  propensity score estimates to be tolerated (default = 0.05). Estimates less
-#'  than this are truncated to this or 1/n. See \code{\link{bound_propensity}}
-#'  for details.
+#'  propensity score estimates to be tolerated (default = 0.01). Estimates
+#'  falling below this value are truncated to this or 1/n. For details, see
+#'  \code{\link{bound_propensity}}.
 #' @param samp_fit_args A \code{list} of arguments, all but one of which are
 #'  passed to \code{\link{est_samp}}. For details, consult the documentation of
 #'  \code{\link{est_samp}}. The first element (i.e., \code{fit_type}) is used
@@ -203,7 +203,7 @@ txshift <- function(W,
                     estimator = c("tmle", "onestep"),
                     fluctuation = c("standard", "weighted"),
                     max_iter = 10,
-                    gps_bound = 0.005,
+                    gps_bound = 0.01,
                     samp_fit_args = list(
                       fit_type = c("glm", "sl", "external"),
                       sl_learners = NULL
