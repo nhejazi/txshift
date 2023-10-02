@@ -43,7 +43,10 @@ the scale of the treatment (A).}
 evaluated across the full data. This object is passed in after being
 constructed by a call to the internal function \code{\link{est_samp}}.}
 
-\item{gn_cens_weights}{TODO: document}
+\item{gn_cens_weights}{An object providing the value of inverse probability
+of censoring weights, the inverse of the censoring mechanism estimate. The
+weights are used as part of the IPCW-EIF procedure to implement a joint
+intervention that removes the contribution of the censoring process.}
 
 \item{Qn_estim}{An object providing the value of the outcome evaluated after
 imposing a shift in the treatment. This object is passed in after being

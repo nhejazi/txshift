@@ -224,6 +224,9 @@ est_g_exp <- function(A,
 #'  for fitting a (generalized) linear model via \code{\link[stats]{glm}}.
 #' @param sl_learners Object containing a set of instantiated learners from the
 #'  \pkg{sl3}, to be used in fitting an ensemble model.
+#' @param bound \code{numeric} giving the lower limit of censoring mechanism
+#'  estimates to be tolerated (default = 0.02). Estimates below this value are
+#'  truncated to this or 1/n. See \code{\link{bound_propensity}} for details.
 #'
 #' @importFrom stats glm as.formula predict
 #' @importFrom data.table as.data.table setnames copy set
@@ -237,7 +240,8 @@ est_g_cens <- function(C_cens,
                        samp_weights = rep(1, length(C_cens)),
                        fit_type = c("sl", "glm"),
                        glm_formula = "C_cens ~ .",
-                       sl_learners = NULL) {
+                       sl_learners = NULL,
+                       bound = 0.02) {
   # set defaults and check arguments
   fit_type <- match.arg(fit_type)
   if (fit_type == "sl") {
@@ -301,6 +305,7 @@ est_g_cens <- function(C_cens,
   }
 
   # generate output
+  pred_g_cens <- bound_propensity(vals = pred_g_cens, bound = bound)
   return(pred_g_cens)
 }
 
