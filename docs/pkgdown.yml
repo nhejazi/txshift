@@ -3,7 +3,7 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   intro_txshift: intro_txshift.html
-last_built: 2024-09-21T20:13Z
+last_built: 2024-09-21T20:31Z
 urls:
   reference: https://code.nimahejazi.org/txshift/reference
   article: https://code.nimahejazi.org/txshift/articles

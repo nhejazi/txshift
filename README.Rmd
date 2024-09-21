@@ -231,25 +231,30 @@ After using the `txshift` R package, please cite the following:
 
 ## Related
 
-* [R/`tmle3shift`](https://github.com/tlverse/tmle3shift) - An R package
-  providing an independent implementation of the same core routines for the TML
-  estimation procedure and statistical methodology as is made available here,
-  through reliance on a unified interface for Targeted Learning provided by the
+* [R/`tmle3shift`](https://github.com/tlverse/tmle3shift) - An R package that
+  is an independent implementation of the same core methodology for TML
+  estimation as provided here but written based on the
   [`tmle3`](https://github.com/tlverse/tmle3) engine of the [`tlverse`
-  ecosystem](https://github.com/tlverse).
+  ecosystem](https://github.com/tlverse). Unlike `txshift`, this package does
+  not provide tools for estimation under two-phase sampling designs.
 
-* [R/`medshift`](https://github.com/nhejazi/medshift) - An R package providing
-  facilities to estimate the causal effect of stochastic treatment regimes in
-  the mediation setting, including classical (IPW) and augmented double robust
-  (one-step) estimators. This is an implementation of the methodology explored
-  by @diaz2020causal.
+* [R/`medshift`](https://github.com/nhejazi/medshift) - An experimental R
+  package for estimating causal mediation effects with stochastic interventions,
+  including via inverse probability weighted and asymptotically efficient
+  one-step estimators, as first described in @diaz2020causal.
 
-* [R/`haldensify`](https://github.com/nhejazi/haldensify) - A minimal package
-  for estimating the conditional density treatment mechanism component of this
-  parameter based on using the [highly adaptive
+* [R/`haldensify`](https://github.com/nhejazi/haldensify) - An R package for
+  estimating the generalized propensity score (conditional density) nuisance
+  parameter using the [highly adaptive
   lasso](https://github.com/tlverse/hal9001) [@coyle-hal9001-rpkg;
-  @hejazi2020hal9001-joss] in combination with a pooled hazard regression. This
-  package implements a variant of the approach advocated by @diaz2011super.
+  @hejazi2020hal9001-joss] via an application of pooled hazard regression
+  [@diaz2011super].
+
+* [R/`lmtp`](https://github.com/nt-williams/lmtp) - An R package for estimating
+  the causal effects of *longitudinal* modified treatment policies, which are a
+  generalization of the type of effect considered in this package. The LMTP
+  framework was first introduced in @diaz2021nonparametric and the `lmtp`
+  package is described in @williams2023lmtp.
 
 ---
 

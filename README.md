@@ -268,25 +268,32 @@ After using the `txshift` R package, please cite the following:
 ## Related
 
 - [R/`tmle3shift`](https://github.com/tlverse/tmle3shift) - An R package
-  providing an independent implementation of the same core routines for
-  the TML estimation procedure and statistical methodology as is made
-  available here, through reliance on a unified interface for Targeted
-  Learning provided by the [`tmle3`](https://github.com/tlverse/tmle3)
-  engine of the [`tlverse` ecosystem](https://github.com/tlverse).
+  that is an independent implementation of the same core methodology for
+  TML estimation as provided here but written based on the
+  [`tmle3`](https://github.com/tlverse/tmle3) engine of the [`tlverse`
+  ecosystem](https://github.com/tlverse). Unlike `txshift`, this package
+  does not provide tools for estimation under two-phase sampling
+  designs.
 
-- [R/`medshift`](https://github.com/nhejazi/medshift) - An R package
-  providing facilities to estimate the causal effect of stochastic
-  treatment regimes in the mediation setting, including classical (IPW)
-  and augmented double robust (one-step) estimators. This is an
-  implementation of the methodology explored by Dı́az and Hejazi (2020).
+- [R/`medshift`](https://github.com/nhejazi/medshift) - An experimental
+  R package for estimating causal mediation effects with stochastic
+  interventions, including via inverse probability weighted and
+  asymptotically efficient one-step estimators, as first described in
+  Dı́az and Hejazi (2020).
 
-- [R/`haldensify`](https://github.com/nhejazi/haldensify) - A minimal
-  package for estimating the conditional density treatment mechanism
-  component of this parameter based on using the [highly adaptive
+- [R/`haldensify`](https://github.com/nhejazi/haldensify) - An R package
+  for estimating the generalized propensity score (conditional density)
+  nuisance parameter using the [highly adaptive
   lasso](https://github.com/tlverse/hal9001) (Coyle, Hejazi, Phillips,
-  et al. 2022; Hejazi, Coyle, and van der Laan 2020) in combination with
-  a pooled hazard regression. This package implements a variant of the
-  approach advocated by Dı́az and van der Laan (2011).
+  et al. 2022; Hejazi, Coyle, and van der Laan 2020) via an application
+  of pooled hazard regression (Dı́az and van der Laan 2011).
+
+- [R/`lmtp`](https://github.com/nt-williams/lmtp) - An R package for
+  estimating the causal effects of *longitudinal* modified treatment
+  policies, which are a generalization of the type of effect considered
+  in this package. The LMTP framework was first introduced in Dı́az et
+  al. (2021) and the `lmtp` package is described in Williams and Dı́az
+  (2023).
 
 ------------------------------------------------------------------------
 
@@ -388,6 +395,16 @@ Springer Science & Business Media.
 
 </div>
 
+<div id="ref-diaz2021nonparametric" class="csl-entry">
+
+Dı́az, Iván, Nicholas Williams, Katherine L Hoffman, and Edward J
+Schenck. 2021. “Nonparametric Causal Effects Based on Longitudinal
+Modified Treatment Policies.” *Journal of the American Statistical
+Association* 118 (542): 846–57.
+<https://doi.org/10.1080/01621459.2021.1955691>.
+
+</div>
+
 <div id="ref-haneuse2013estimation" class="csl-entry">
 
 Haneuse, Sebastian, and Andrea Rotnitzky. 2013. “Estimation of the
@@ -428,6 +445,14 @@ Asymptotic Statistical Theory.” *Statistics & Risk Modeling* 3 (3-4):
 Rose, Sherri, and Mark J van der Laan. 2011. “A Targeted Maximum
 Likelihood Estimator for Two-Stage Designs.” *International Journal of
 Biostatistics* 7 (1): 1–21.
+
+</div>
+
+<div id="ref-williams2023lmtp" class="csl-entry">
+
+Williams, Nicholas, and Iván Dı́az. 2023. “Lmtp: An R Package for
+Estimating the Causal Effects of Modified Treatment Policies.”
+*Observational Studies* 9 (2): 103–22.
 
 </div>
 

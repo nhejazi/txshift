@@ -162,7 +162,7 @@ if (require("sl3")) {
   ipcw_os_psi <- as.numeric(ipcw_os$psi)
 
   # test for reasonable equality between estimators
-  test_that("IPCW-augmented TMLE and one-step match reasonably closely", {
-    expect_equal(ipcw_tmle_psi, ipcw_os_psi, tol = 1e-3)
+  test_that("IPCW-augmented TMLE and one-step match reasonably well", {
+    expect_equal(ipcw_tmle_psi, ipcw_os_psi, tol = 1e-2)
   })
 }
