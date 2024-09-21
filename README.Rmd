@@ -199,7 +199,7 @@ After using the `txshift` R package, please cite the following:
           title = {Efficient nonparametric inference on the effects of
             stochastic interventions under two-phase sampling, with
             applications to vaccine efficacy trials},
-          year = {2020},
+          year = {2021},
           doi = {10.1111/biom.13375},
           url = {https://doi.org/10.1111/biom.13375},
           journal = {Biometrics},
@@ -224,7 +224,7 @@ After using the `txshift` R package, please cite the following:
           year  = {2022},
           doi = {10.5281/zenodo.4070042},
           url = {https://CRAN.R-project.org/package=txshift},
-          note = {R package version 0.3.7}
+          note = {R package version 0.3.9}
         }
 
 ---
@@ -257,24 +257,24 @@ After using the `txshift` R package, please cite the following:
 
 The development of this software was supported in part through grants from the
 National Library of Medicine (award no. [T32
-LM012417](https://reporter.nih.gov/project-details/9248418)) and the National
+LM012417](https://reporter.nih.gov/project-details/9248418)), the National
 Institute of Allergy and Infectious Diseases (award no.  [R01
-AI074345](https://reporter.nih.gov/project-details/9926564)) of the National
-Institutes of Health, as well as by the National Science Foundation (award no.
-[DMS 2102840](https://www.nsf.gov/awardsearch/showAward?AWD_ID=2102840)).
+AI074345](https://reporter.nih.gov/project-details/9926564)), and the National
+Science Foundation (award no. [DMS
+2102840](https://www.nsf.gov/awardsearch/showAward?AWD_ID=2102840)).
 
 ---
 
 ## License
 
-&copy; 2017-2022 [Nima S. Hejazi](https://nimahejazi.org)
+&copy; 2017-2024 [Nima S. Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the MIT license. See below
 for details:
 ```
 MIT License
 
-Copyright (c) 2017-2022 Nima S. Hejazi
+Copyright (c) 2017-2024 Nima S. Hejazi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -298,4 +298,3 @@ SOFTWARE.
 ---
 
 ## References
-

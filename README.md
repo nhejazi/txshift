@@ -106,6 +106,9 @@ treatment, consider the following example:
 library(txshift)
 #> txshift v0.3.9: Efficient Estimation of the Causal Effects of Stochastic
 #> Interventions
+```
+
+``` r
 library(sl3)
 set.seed(429153)
 
@@ -132,9 +135,12 @@ tmle
 #> Counterfactual Mean of Shifted Treatment
 #> Intervention: Treatment + 0.5
 #> txshift Estimator: tmle
-#> Estimate: 0.7685
-#> Std. Error: 0.019
-#> 95% CI: [0.7292, 0.8037]
+#> Estimate: 0.7688
+#> Std. Error: 0.0189
+#> 95% CI: [0.7296, 0.8038]
+```
+
+``` r
 
 # fit a full-data one-step estimator for comparison (again, no sampling)
 os <- txshift(
@@ -150,9 +156,12 @@ os
 #> Counterfactual Mean of Shifted Treatment
 #> Intervention: Treatment + 0.5
 #> txshift Estimator: onestep
-#> Estimate: 0.7685
-#> Std. Error: 0.019
-#> 95% CI: [0.7292, 0.8037]
+#> Estimate: 0.7671
+#> Std. Error: 0.0192
+#> 95% CI: [0.7273, 0.8027]
+```
+
+``` r
 
 # fit an IPCW-TMLE to account for the two-phase sampling process
 tmle_ipcw <- txshift(
@@ -169,9 +178,12 @@ tmle_ipcw
 #> Counterfactual Mean of Shifted Treatment
 #> Intervention: Treatment + 0.5
 #> txshift Estimator: tmle
-#> Estimate: 0.7604
-#> Std. Error: 0.0203
-#> 95% CI: [0.7184, 0.7979]
+#> Estimate: 0.76
+#> Std. Error: 0.0205
+#> 95% CI: [0.7176, 0.7978]
+```
+
+``` r
 
 # compare with an IPCW-agumented one-step estimator under two-phase sampling
 os_ipcw <- txshift(
@@ -188,9 +200,9 @@ os_ipcw
 #> Counterfactual Mean of Shifted Treatment
 #> Intervention: Treatment + 0.5
 #> txshift Estimator: onestep
-#> Estimate: 0.7602
-#> Std. Error: 0.0203
-#> 95% CI: [0.7182, 0.7978]
+#> Estimate: 0.76
+#> Std. Error: 0.0204
+#> 95% CI: [0.7177, 0.7978]
 ```
 
 ------------------------------------------------------------------------
@@ -223,7 +235,7 @@ After using the `txshift` R package, please cite the following:
           title = {Efficient nonparametric inference on the effects of
             stochastic interventions under two-phase sampling, with
             applications to vaccine efficacy trials},
-          year = {2020},
+          year = {2021},
           doi = {10.1111/biom.13375},
           url = {https://doi.org/10.1111/biom.13375},
           journal = {Biometrics},
@@ -248,7 +260,7 @@ After using the `txshift` R package, please cite the following:
           year  = {2022},
           doi = {10.5281/zenodo.4070042},
           url = {https://CRAN.R-project.org/package=txshift},
-          note = {R package version 0.3.7}
+          note = {R package version 0.3.9}
         }
 
 ------------------------------------------------------------------------
@@ -282,25 +294,24 @@ After using the `txshift` R package, please cite the following:
 
 The development of this software was supported in part through grants
 from the National Library of Medicine (award no. [T32
-LM012417](https://reporter.nih.gov/project-details/9248418)) and the
+LM012417](https://reporter.nih.gov/project-details/9248418)), the
 National Institute of Allergy and Infectious Diseases (award no. [R01
-AI074345](https://reporter.nih.gov/project-details/9926564)) of the
-National Institutes of Health, as well as by the National Science
-Foundation (award no. [DMS
+AI074345](https://reporter.nih.gov/project-details/9926564)), and the
+National Science Foundation (award no. [DMS
 2102840](https://www.nsf.gov/awardsearch/showAward?AWD_ID=2102840)).
 
 ------------------------------------------------------------------------
 
 ## License
 
-© 2017-2022 [Nima S. Hejazi](https://nimahejazi.org)
+© 2017-2024 [Nima S. Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the MIT license.
 See below for details:
 
     MIT License
 
-    Copyright (c) 2017-2022 Nima S. Hejazi
+    Copyright (c) 2017-2024 Nima S. Hejazi
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -324,7 +335,8 @@ See below for details:
 
 ## References
 
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
 
 <div id="ref-coyle-sl3-rpkg" class="csl-entry">
 

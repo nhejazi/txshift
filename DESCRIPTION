@@ -44,8 +44,8 @@ Imports:
     data.table,
     assertthat,
     mvtnorm,
-    hal9001 (>= 0.4.1),
-    haldensify (>= 0.2.1),
+    hal9001 (>= 0.4.6),
+    haldensify (>= 0.2.3),
     lspline,
     ggplot2,
     scales,
@@ -58,16 +58,16 @@ Suggests:
     covr,
     future,
     future.apply,
-    origami (>= 1.0.3),
+    origami (>= 1.0.7),
     ranger,
     Rsolnp,
     nnls
 Enhances:
-    sl3 (>= 1.4.3)
+    sl3 (>= 1.4.5)
 License: MIT + file LICENSE
 URL: https://github.com/nhejazi/txshift
 BugReports: https://github.com/nhejazi/txshift/issues
 Encoding: UTF-8
 VignetteBuilder: knitr
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 RdMacros: Rdpack

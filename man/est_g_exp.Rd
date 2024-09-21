@@ -51,6 +51,6 @@ Estimate the Exposure Mechanism via Generalized Propensity Score
 \details{
 Compute the propensity score (exposure mechanism) for the observed
  data, including the shift. This gives the propensity score for the observed
- data (at the observed A) the counterfactual shifted exposure levels (at
- {A - delta}, {A + delta}, and {A + 2 * delta}).
+ data (at the observed A) the counterfactual shifted exposure levels at
+ (A - delta), (A + delta), and (A + 2 * delta).
 }
