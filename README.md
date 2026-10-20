@@ -34,12 +34,13 @@ Benkeser](https://sph.emory.edu/faculty-directory#!dbenkes)
 The `txshift` R package is designed to provide facilities for the
 construction of efficient estimators of the counterfactual mean of an
 outcome under stochastic interventions that depend on the natural value
-of treatment (Dı́az and van der Laan 2012; Haneuse and Rotnitzky 2013).
-`txshift`implements and builds upon a simplified algorithm for the
-targeted maximum likelihood (TML) estimator of such a causal parameter,
-originally proposed by Dı́az and van der Laan (2018), and makes use of
-analogous machinery to compute an efficient one-step estimator (Pfanzagl
-and Wefelmeyer 1985). `txshift` integrates with the [`sl3`
+of treatment (<span class="nocase">Dı́az and van der Laan</span> 2012;
+Haneuse and Rotnitzky 2013). `txshift`implements and builds upon a
+simplified algorithm for the targeted maximum likelihood (TML) estimator
+of such a causal parameter, originally proposed by
+<span class="nocase">Dı́az and van der Laan</span> (2018), and makes use
+of analogous machinery to compute an efficient one-step estimator
+(Pfanzagl and Wefelmeyer 1985). `txshift` integrates with the [`sl3`
 package](https://github.com/tlverse/sl3) (Coyle, Hejazi, Malenica, et
 al. 2022) to allow for ensemble machine learning to be leveraged in the
 estimation procedure.
@@ -48,15 +49,16 @@ For many practical applications (e.g., vaccine efficacy trials),
 observed data is often subject to a two-phase sampling mechanism (i.e.,
 through the use of a two-stage design). In such cases, efficient
 estimators (of both varieties) must be augmented to construct unbiased
-estimates of the population-level causal parameter. Rose and van der
-Laan (2011) first introduced an augmentation procedure that relies on
-introducing inverse probability of censoring (IPC) weights directly to
-an appropriate loss function or to the efficient influence function
-estimating equation. `txshift` extends this approach to compute
-IPC-weighted one-step and TML estimators of the counterfactual mean
-outcome under a shift stochastic treatment regime. The package is
-designed to implement the statistical methodology described in Hejazi et
-al. (2020) and extensions thereof.
+estimates of the population-level causal parameter.
+<span class="nocase">Rose and van der Laan</span> (2011) first
+introduced an augmentation procedure that relies on introducing inverse
+probability of censoring (IPC) weights directly to an appropriate loss
+function or to the efficient influence function estimating equation.
+`txshift` extends this approach to compute IPC-weighted one-step and TML
+estimators of the counterfactual mean outcome under a shift stochastic
+treatment regime. The package is designed to implement the statistical
+methodology described in <span class="nocase">Hejazi, van der Laan, et
+al.</span> (2020) and extensions thereof.
 
 ------------------------------------------------------------------------
 
@@ -104,11 +106,7 @@ treatment, consider the following example:
 
 ``` r
 library(txshift)
-#> txshift v0.4.0: Efficient Estimation of the Causal Effects of Stochastic
-#> Interventions
-```
-
-``` r
+#> txshift v0.4.0: Efficient Estimation of the Causal Effects of Stochastic Interventions
 library(sl3)
 set.seed(429153)
 
@@ -138,9 +136,6 @@ tmle
 #> Estimate: 0.7688
 #> Std. Error: 0.0189
 #> 95% CI: [0.7296, 0.8038]
-```
-
-``` r
 
 # fit a full-data one-step estimator for comparison (again, no sampling)
 os <- txshift(
@@ -159,9 +154,6 @@ os
 #> Estimate: 0.7671
 #> Std. Error: 0.0192
 #> 95% CI: [0.7273, 0.8027]
-```
-
-``` r
 
 # fit an IPCW-TMLE to account for the two-phase sampling process
 tmle_ipcw <- txshift(
@@ -181,9 +173,6 @@ tmle_ipcw
 #> Estimate: 0.76
 #> Std. Error: 0.0205
 #> 95% CI: [0.7176, 0.7978]
-```
-
-``` r
 
 # compare with an IPCW-agumented one-step estimator under two-phase sampling
 os_ipcw <- txshift(
@@ -257,7 +246,7 @@ After using the `txshift` R package, please cite the following:
           author = {Hejazi, Nima S and Benkeser, David C},
           title = {{txshift}: Efficient Estimation of the Causal Effects of
             Stochastic Interventions},
-          year  = {2022},
+          year  = {2026},
           doi = {10.5281/zenodo.4070042},
           url = {https://CRAN.R-project.org/package=txshift},
           note = {R package version 0.4.0}
@@ -284,9 +273,11 @@ After using the `txshift` R package, please cite the following:
 - [R/`haldensify`](https://github.com/nhejazi/haldensify) - An R package
   for estimating the generalized propensity score (conditional density)
   nuisance parameter using the [highly adaptive
-  lasso](https://github.com/tlverse/hal9001) (Coyle, Hejazi, Phillips,
-  et al. 2022; Hejazi, Coyle, and van der Laan 2020) via an application
-  of pooled hazard regression (Dı́az and van der Laan 2011).
+  lasso](https://github.com/tlverse/hal9001)
+  (<span class="nocase">Coyle, Hejazi, Phillips, et al.</span> 2022;
+  <span class="nocase">Hejazi, Coyle, et al.</span> 2020) via an
+  application of pooled hazard regression (<span class="nocase">Dı́az and
+  van der Laan</span> 2011).
 
 - [R/`lmtp`](https://github.com/nt-williams/lmtp) - An R package for
   estimating the causal effects of *longitudinal* modified treatment
@@ -311,14 +302,14 @@ National Science Foundation (award no. [DMS
 
 ## License
 
-© 2017-2024 [Nima S. Hejazi](https://nimahejazi.org)
+© 2017-2026 [Nima S. Hejazi](https://nimahejazi.org)
 
 The contents of this repository are distributed under the MIT license.
 See below for details:
 
     MIT License
 
-    Copyright (c) 2017-2024 Nima S. Hejazi
+    Copyright (c) 2017-2026 Nima S. Hejazi
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -342,24 +333,23 @@ See below for details:
 
 ## References
 
-<div id="refs" class="references csl-bib-body hanging-indent"
-entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 
 <div id="ref-coyle-sl3-rpkg" class="csl-entry">
 
 Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, Rachael V Phillips, and
-Oleg Sofrygin. 2022. “<span class="nocase">sl3</span>: Modern Machine
-Learning Pipelines for Super Learning.”
+Oleg Sofrygin. 2022. *<span class="nocase">sl3</span>: Modern Machine
+Learning Pipelines for Super Learning*. Released.
 <https://doi.org/10.5281/zenodo.1342293>.
 
 </div>
 
 <div id="ref-coyle-hal9001-rpkg" class="csl-entry">
 
-Coyle, Jeremy R, Nima S Hejazi, Rachael V Phillips, Lars W van der Laan,
-and Mark J van der Laan. 2022. “<span class="nocase">hal9001</span>: The
-Scalable Highly Adaptive Lasso.”
-<https://doi.org/10.5281/zenodo.3558313>.
+<span class="nocase">Coyle, Jeremy R, Nima S Hejazi, Rachael V Phillips,
+Lars W van der Laan, and Mark J van der Laan</span>. 2022.
+*<span class="nocase">hal9001</span>: The Scalable Highly Adaptive
+Lasso*. Released. <https://doi.org/10.5281/zenodo.3558313>.
 
 </div>
 
@@ -374,24 +364,27 @@ Series B (Statistical Methodology)* 82 (3): 661–83.
 
 <div id="ref-diaz2011super" class="csl-entry">
 
-Dı́az, Iván, and Mark J van der Laan. 2011. “Super Learner Based
-Conditional Density Estimation with Application to Marginal Structural
-Models.” *International Journal of Biostatistics* 7 (1): 1–20.
+<span class="nocase">Dı́az, Iván, and Mark J van der Laan</span>. 2011.
+“Super Learner Based Conditional Density Estimation with Application to
+Marginal Structural Models.” *International Journal of Biostatistics* 7
+(1): 1–20.
 
 </div>
 
 <div id="ref-diaz2012population" class="csl-entry">
 
-———. 2012. “Population Intervention Causal Effects Based on Stochastic
+<span class="nocase">Dı́az, Iván, and Mark J van der Laan</span>. 2012.
+“Population Intervention Causal Effects Based on Stochastic
 Interventions.” *Biometrics* 68 (2): 541–49.
 
 </div>
 
 <div id="ref-diaz2018stochastic" class="csl-entry">
 
-———. 2018. “Stochastic Treatment Regimes.” In *Targeted Learning in Data
-Science: Causal Inference for Complex Longitudinal Studies*, 167–80.
-Springer Science & Business Media.
+<span class="nocase">Dı́az, Iván, and Mark J van der Laan</span>. 2018.
+“Stochastic Treatment Regimes.” In *Targeted Learning in Data Science:
+Causal Inference for Complex Longitudinal Studies*. Springer Science &
+Business Media.
 
 </div>
 
@@ -415,20 +408,20 @@ in Medicine* 32 (30): 5260–77.
 
 <div id="ref-hejazi2020hal9001-joss" class="csl-entry">
 
-Hejazi, Nima S, Jeremy R Coyle, and Mark J van der Laan. 2020.
-“<span class="nocase">hal9001</span>: Scalable Highly Adaptive Lasso
-Regression in R.” *Journal of Open Source Software* 5 (53): 2526.
-<https://doi.org/10.21105/joss.02526>.
+<span class="nocase">Hejazi, Nima S, Jeremy R Coyle, and Mark J van der
+Laan</span>. 2020. “<span class="nocase">hal9001</span>: Scalable Highly
+Adaptive Lasso Regression in R.” *Journal of Open Source Software* 5
+(53): 2526. <https://doi.org/10.21105/joss.02526>.
 
 </div>
 
 <div id="ref-hejazi2020efficient" class="csl-entry">
 
-Hejazi, Nima S, Mark J van der Laan, Holly E Janes, Peter B Gilbert, and
-David C Benkeser. 2020. “Efficient Nonparametric Inference on the
-Effects of Stochastic Interventions Under Two-Phase Sampling, with
-Applications to Vaccine Efficacy Trials.” *Biometrics* 77 (4): 1241–53.
-<https://doi.org/10.1111/biom.13375>.
+<span class="nocase">Hejazi, Nima S, Mark J van der Laan, Holly E Janes,
+Peter B Gilbert, and David C Benkeser</span>. 2020. “Efficient
+Nonparametric Inference on the Effects of Stochastic Interventions Under
+Two-Phase Sampling, with Applications to Vaccine Efficacy Trials.”
+*Biometrics* 77 (4): 1241–53. <https://doi.org/10.1111/biom.13375>.
 
 </div>
 
@@ -442,9 +435,9 @@ Asymptotic Statistical Theory.” *Statistics & Risk Modeling* 3 (3-4):
 
 <div id="ref-rose2011targeted2sd" class="csl-entry">
 
-Rose, Sherri, and Mark J van der Laan. 2011. “A Targeted Maximum
-Likelihood Estimator for Two-Stage Designs.” *International Journal of
-Biostatistics* 7 (1): 1–21.
+<span class="nocase">Rose, Sherri, and Mark J van der Laan</span>. 2011.
+“A Targeted Maximum Likelihood Estimator for Two-Stage Designs.”
+*International Journal of Biostatistics* 7 (1): 1–21.
 
 </div>
 

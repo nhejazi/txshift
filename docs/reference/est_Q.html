@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0</span>
       </span>
     </div>
 
@@ -72,7 +72,8 @@
 <span>  samp_weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">Y</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  fit_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sl"</span>, <span class="st">"glm"</span><span class="op">)</span>,</span>
 <span>  glm_formula <span class="op">=</span> <span class="st">"Y ~ ."</span>,</span>
-<span>  sl_learners <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  sl_learners <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  scale_outcome <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -128,6 +129,17 @@ for fitting a (generalized) linear model via <code><a href="https://rdrr.io/r/st
 <dd><p>Object containing a set of instantiated learners from the
 <span class="pkg">sl3</span>, to be used in fitting an ensemble model.</p></dd>
 
+
+<dt id="arg-scale-outcome">scale_outcome<a class="anchor" aria-label="anchor" href="#arg-scale-outcome"></a></dt>
+<dd><p>A <code>logical</code> indicating whether the outcome should
+be scaled to the unit interval before estimating the outcome regression
+(the default). If <code>FALSE</code>, the outcome regression is estimated on the
+original scale of the outcome (e.g., for count outcomes, with learners that
+require non-negative integers), and its predictions are then scaled to the
+unit interval, as required by the targeting step. When <code>FALSE</code>,
+GLM-based fits use a Gaussian family; other working models (e.g., Poisson)
+may be specified via <code>sl_learners</code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -155,7 +167,7 @@ for fitting a (generalized) linear model via <code><a href="https://rdrr.io/r/st
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
       </footer></div>

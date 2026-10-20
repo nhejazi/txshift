@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">txshift</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0</span>
       </span>
     </div>
 
@@ -58,7 +58,8 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="0.3.9" id="txshift-039">txshift 0.3.9<a class="anchor" aria-label="anchor" href="#txshift-039"></a></h2>
+<h2 class="page-header" data-toc-text="0.4.0" id="txshift-040">txshift 0.4.0<a class="anchor" aria-label="anchor" href="#txshift-040"></a></h2>
+<p>As of October 2026: * Fixed escaping of braces in Rd documentation (e.g., <code><a href="../reference/est_g_exp.html">est_g_exp()</a></code>) flagged by <code>R CMD check</code> (“Lost braces”) on CRAN. * Updated moved URLs in the <code>README</code> and vignette. * Added <code>Additional_repositories</code> to the <code>DESCRIPTION</code>, pointing to the tlverse r-universe, from which the <code>sl3</code> package (in <code>Enhances</code>) may be installed. * A new argument <code>scale_outcome</code> has been added to <code><a href="../reference/est_Q.html">est_Q()</a></code> (and may be passed through <code>Q_fit_args</code> in <code><a href="../reference/txshift.html">txshift()</a></code>). When <code>FALSE</code>, the outcome regression is estimated on the original scale of the outcome (e.g., for count outcomes), with its predictions subsequently scaled to the unit interval for targeting. The default (<code>TRUE</code>) preserves the prior behavior. The targeting step is unchanged, using a logistic fluctuation model on the scaled outcome. Based on a contribution by <a href="https://github.com/Lauren-EylerDang" class="external-link">@Lauren-EylerDang</a> (<a href="https://github.com/nhejazi/txshift/issues/70" class="external-link">#70</a>, <a href="https://github.com/nhejazi/txshift/issues/71" class="external-link">#71</a>).</p>
 <p>As of October 2023: * A new argument <code>bound</code> has been added to <code><a href="../reference/est_g_cens.html">est_g_cens()</a></code> to specify the lower tolerated limit of the censoring mechanism estimates. This is used to allow for stable inverse probability of censoring weights to be applied. This bound has been given a default value of 0.02. * The default value of <code>bound</code> in <code><a href="../reference/bound_propensity.html">bound_propensity()</a></code> has been changed from 0.005 to 0.01, as has the default value of <code>gps_bound</code> in <code><a href="../reference/txshift.html">txshift()</a></code>.</p>
 <p>As of May 2023: * A new argument <code>bound</code> has been added to <code><a href="../reference/bound_propensity.html">bound_propensity()</a></code> to specify the lower tolerated limit of generalized propensity score estimates. Estimates are bounded to the higher of the specified or default value of <code>bound</code> and the inverse of the sample size, 1/n. * A new argument <code>gps_bound</code> has also been introduced to both <code><a href="../reference/txshift.html">txshift()</a></code> and <code><a href="../reference/est_Hn.html">est_Hn()</a></code> in order to accommodate passing in truncation bounds for the estimated generalized propensity score.</p>
 </div>
@@ -149,7 +150,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
       </footer></div>
