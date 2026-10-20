@@ -15,3 +15,5 @@
 ## Additional notes
 * This release addresses the "Lost braces" NOTEs in the Rd files reported on
   the CRAN check results page.
+* This release also ships new features (hence the minor version bump to
+  0.4.0); please see NEWS.md for details.
