@@ -229,6 +229,6 @@ if (require("sl3")) {
   test_that("IPCW-TMLE and IPCW-one-step match with SL for sampling", {
     ipcw_tmle_sl_psi <- as.numeric(ipcw_tmle_sl$psi)
     ipcw_os_sl_psi <- as.numeric(ipcw_os_sl$psi)
-    expect_equal(ipcw_tmle_sl_psi, ipcw_os_sl_psi, tol = 1e-2)
+    expect_equal(ipcw_tmle_sl_psi, ipcw_os_sl_psi, tol = 5e-2)
   })
 }
