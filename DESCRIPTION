@@ -37,7 +37,7 @@ Description: Efficient estimation of the population-level causal effects of
     implementation is described in NS Hejazi and DC Benkeser (2020)
     <doi:10.21105/joss.02447>. Estimation of nuisance parameters may be
     enhanced through the Super Learner ensemble model in 'sl3', available for
-    download from <https://tlverse.r-universe.dev> or GitHub.
+    download from <https://tlverse.r-universe.dev> or from GitHub.
 Depends: R (>= 3.2.0)
 Imports:
     stats,
