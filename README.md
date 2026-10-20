@@ -104,7 +104,7 @@ treatment, consider the following example:
 
 ``` r
 library(txshift)
-#> txshift v0.3.9: Efficient Estimation of the Causal Effects of Stochastic
+#> txshift v0.4.0: Efficient Estimation of the Causal Effects of Stochastic
 #> Interventions
 ```
 
@@ -260,7 +260,7 @@ After using the `txshift` R package, please cite the following:
           year  = {2022},
           doi = {10.5281/zenodo.4070042},
           url = {https://CRAN.R-project.org/package=txshift},
-          note = {R package version 0.3.9}
+          note = {R package version 0.4.0}
         }
 
 ------------------------------------------------------------------------

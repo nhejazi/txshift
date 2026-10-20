@@ -340,6 +340,14 @@ est_g_cens <- function(C_cens,
 #'  for fitting a (generalized) linear model via \code{\link[stats]{glm}}.
 #' @param sl_learners Object containing a set of instantiated learners from the
 #'  \pkg{sl3}, to be used in fitting an ensemble model.
+#' @param scale_outcome A \code{logical} indicating whether the outcome should
+#'  be scaled to the unit interval before estimating the outcome regression
+#'  (the default). If \code{FALSE}, the outcome regression is estimated on the
+#'  original scale of the outcome (e.g., for count outcomes, with learners that
+#'  require non-negative integers), and its predictions are then scaled to the
+#'  unit interval, as required by the targeting step. When \code{FALSE},
+#'  GLM-based fits use a Gaussian family; other working models (e.g., Poisson)
+#'  may be specified via \code{sl_learners}.
 #'
 #' @importFrom stats glm as.formula predict
 #' @importFrom data.table as.data.table setnames copy set
@@ -357,7 +365,8 @@ est_Q <- function(Y,
                   samp_weights = rep(1, length(Y)),
                   fit_type = c("sl", "glm"),
                   glm_formula = "Y ~ .",
-                  sl_learners = NULL) {
+                  sl_learners = NULL,
+                  scale_outcome = TRUE) {
   # set defaults and check arguments
   fit_type <- match.arg(fit_type)
   if (fit_type == "sl") {
@@ -369,8 +378,10 @@ est_Q <- function(Y,
     )
   }
 
-  # scale the outcome for logit transform
-  y_star <- scale_to_unit(vals = Y)
+  # scale the outcome for logit transform, unless fitting on original scale
+  y_star <- if (scale_outcome) scale_to_unit(vals = Y) else Y
+  glm_family <- if (scale_outcome) "binomial" else "gaussian"
+  sl_outcome_type <- if (scale_outcome) "quasibinomial" else NULL
 
   # generate the data objects for fitting the outcome regression
   data_in <- data.table::as.data.table(cbind(y_star, C_cens, A, W))
@@ -403,7 +414,7 @@ est_Q <- function(Y,
         data = data_in,
         weights = samp_weights,
         subset = C_cens == 1,
-        family = "binomial"
+        family = glm_family
       )
     )
 
@@ -436,14 +447,14 @@ est_Q <- function(Y,
       data = data_in[C_cens == 1, ],
       covariates = c("C_cens", "A", names_W),
       outcome = "Y",
-      outcome_type = "quasibinomial",
+      outcome_type = sl_outcome_type,
       weights = "ipc_weights"
     )
     task_noshift_nocens <- sl3::sl3_Task$new(
       data = data_in[, C_cens := 1],
       covariates = c("C_cens", "A", names_W),
       outcome = "Y",
-      outcome_type = "quasibinomial",
+      outcome_type = sl_outcome_type,
       weights = "ipc_weights"
     )
 
@@ -452,7 +463,7 @@ est_Q <- function(Y,
       data = data_in_shifted,
       covariates = c("C_cens", "A", names_W),
       outcome = "Y",
-      outcome_type = "quasibinomial",
+      outcome_type = sl_outcome_type,
       weights = "ipc_weights"
     )
 
@@ -462,6 +473,15 @@ est_Q <- function(Y,
 
     # predict with Super Learner from unshifted data on the shifted data
     pred_star_Qn_shifted <- sl_fit_noshift$predict(task_shifted)
+  }
+
+  # predictions on the original scale must be mapped to the unit interval
+  if (!scale_outcome) {
+    to_unit <- function(x) {
+      pmin(pmax((x - min(Y)) / (max(Y) - min(Y)), 0), 1)
+    }
+    pred_star_Qn <- to_unit(pred_star_Qn)
+    pred_star_Qn_shifted <- to_unit(pred_star_Qn_shifted)
   }
 
   # NOTE: clean up predictions and generate output

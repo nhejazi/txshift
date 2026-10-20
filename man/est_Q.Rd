@@ -13,7 +13,8 @@ est_Q(
   samp_weights = rep(1, length(Y)),
   fit_type = c("sl", "glm"),
   glm_formula = "Y ~ .",
-  sl_learners = NULL
+  sl_learners = NULL,
+  scale_outcome = TRUE
 )
 }
 \arguments{
@@ -47,6 +48,15 @@ for fitting a (generalized) linear model via \code{\link[stats]{glm}}.}
 
 \item{sl_learners}{Object containing a set of instantiated learners from the
 \pkg{sl3}, to be used in fitting an ensemble model.}
+
+\item{scale_outcome}{A \code{logical} indicating whether the outcome should
+be scaled to the unit interval before estimating the outcome regression
+(the default). If \code{FALSE}, the outcome regression is estimated on the
+original scale of the outcome (e.g., for count outcomes, with learners that
+require non-negative integers), and its predictions are then scaled to the
+unit interval, as required by the targeting step. When \code{FALSE},
+GLM-based fits use a Gaussian family; other working models (e.g., Poisson)
+may be specified via \code{sl_learners}.}
 }
 \value{
 A \code{data.table} with two columns, containing estimates of the
