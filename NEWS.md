@@ -1,5 +1,13 @@
 # txshift 0.3.9
 
+As of October 2026:
+* Fixed escaping of braces in Rd documentation (e.g., `est_g_exp()`) flagged
+  by `R CMD check` ("Lost braces") on CRAN.
+* Updated moved URLs in the `README` and vignette.
+* Added `Additional_repositories` to the `DESCRIPTION`, pointing to the
+  tlverse r-universe, from which the `sl3` package (in `Enhances`) may be
+  installed.
+
 As of October 2023:
 * A new argument `bound` has been added to `est_g_cens()` to specify the lower
   tolerated limit of the censoring mechanism estimates. This is used to allow

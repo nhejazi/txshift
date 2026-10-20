@@ -36,7 +36,7 @@ Description: Efficient estimation of the population-level causal effects of
     implementation is described in NS Hejazi and DC Benkeser (2020)
     <doi:10.21105/joss.02447>. Estimation of nuisance parameters may be
     enhanced through the Super Learner ensemble model in 'sl3', available for
-    download from GitHub using 'remotes::install_github("tlverse/sl3")'.
+    download from <https://tlverse.r-universe.dev> or GitHub.
 Depends: R (>= 3.2.0)
 Imports:
     stats,
@@ -62,6 +62,7 @@ Suggests:
     ranger,
     Rsolnp,
     nnls
+Additional_repositories: https://tlverse.r-universe.dev
 Enhances:
     sl3 (>= 1.4.5)
 License: MIT + file LICENSE
@@ -69,5 +70,5 @@ URL: https://github.com/nhejazi/txshift
 BugReports: https://github.com/nhejazi/txshift/issues
 Encoding: UTF-8
 VignetteBuilder: knitr
-RoxygenNote: 7.3.2
 RdMacros: Rdpack
+Config/roxygen2/version: 8.1.0

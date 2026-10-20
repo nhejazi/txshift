@@ -7,7 +7,7 @@
 
 [![R-CMD-check](https://github.com/nhejazi/txshift/workflows/R-CMD-check/badge.svg)](https://github.com/nhejazi/txshift/actions)
 [![Coverage
-Status](https://img.shields.io/codecov/c/github/nhejazi/txshift/master.svg)](https://codecov.io/github/nhejazi/txshift?branch=master)
+Status](https://img.shields.io/codecov/c/github/nhejazi/txshift/master.svg)](https://app.codecov.io/github/nhejazi/txshift?branch=master)
 [![CRAN](https://www.r-pkg.org/badges/version/txshift)](https://www.r-pkg.org/pkg/txshift)
 [![CRAN
 downloads](https://cranlogs.r-pkg.org/badges/txshift)](https://CRAN.R-project.org/package=txshift)
@@ -25,7 +25,7 @@ license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://open
 > Efficient Estimation of the Causal Effects of Stochastic Interventions
 
 **Authors:** [Nima Hejazi](https://nimahejazi.org) and [David
-Benkeser](https://www.sph.emory.edu/faculty/profile/#!dbenkes)
+Benkeser](https://sph.emory.edu/faculty-directory#!dbenkes)
 
 ------------------------------------------------------------------------
 
@@ -305,7 +305,7 @@ LM012417](https://reporter.nih.gov/project-details/9248418)), the
 National Institute of Allergy and Infectious Diseases (award no. [R01
 AI074345](https://reporter.nih.gov/project-details/9926564)), and the
 National Science Foundation (award no. [DMS
-2102840](https://www.nsf.gov/awardsearch/showAward?AWD_ID=2102840)).
+2102840](https://www.nsf.gov/awardsearch/show-award/?AWD_ID=2102840)).
 
 ------------------------------------------------------------------------
 
