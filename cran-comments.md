@@ -1,5 +1,8 @@
 ## Test environments
-* macOS (local), R 4.6.1
+* macOS 26 (local), R 4.6.1
+* macOS 26 arm64 (GitHub Actions), R 4.6.1
+* ubuntu 24.04 (GitHub Actions), R 4.6.1
+* windows server 2025 (GitHub Actions), R 4.6.1
 
 ## R CMD check results
 * There were 0 ERRORs.
