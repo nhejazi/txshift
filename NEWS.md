@@ -1,4 +1,4 @@
-# txshift 0.3.9
+# txshift 0.4.0
 
 As of October 2026:
 * Fixed escaping of braces in Rd documentation (e.g., `est_g_exp()`) flagged

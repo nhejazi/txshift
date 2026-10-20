@@ -1,6 +1,6 @@
 Package: txshift
 Title: Efficient Estimation of the Causal Effects of Stochastic Interventions
-Version: 0.3.9
+Version: 0.4.0
 Authors@R: c(
     person("Nima", "Hejazi", email = "nh@nimahejazi.org",
            role = c("aut", "cre", "cph"),
@@ -14,6 +14,7 @@ Authors@R: c(
     person("Jeremy", "Coyle", email = "jeremy.coyle@gmail.com",
            role = "ctb",
            comment = c(ORCID = "0000-0002-9874-6649")),
+    person("Lauren", "Eyler Dang", role = "ctb"),
     person("Mark", "van der Laan", email = "laan@berkeley.edu",
            role = c("ctb", "ths"),
            comment = c(ORCID = "0000-0003-1432-5511"))
