@@ -1,5 +1,9 @@
 title: txshift
-url: https://code.nimahejazi.org/txshift
+url: https://codex.nimahejazi.org/txshift
 template:
-  params:
-    bootswatch: readable
+  bootstrap: 5
+  light-switch: true
+  bslib:
+    bootswatch: simplex
+    link-color: "#006DAE"
+    link-color-dark: "#66A7CE"
