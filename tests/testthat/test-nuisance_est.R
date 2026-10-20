@@ -208,3 +208,23 @@ if (require("sl3")) {
     expect_equal(ipcw_tmle_glm_psi, ipcw_os_glm_psi, tol = 1e-2)
   })
 }
+
+test_that("Outcome regression can be fit on the original outcome scale", {
+  set.seed(43719)
+  n <- 200
+  W <- data.frame(W1 = runif(n), W2 = rbinom(n, 1, 0.5))
+  A <- rnorm(n, mean = W$W1)
+  Y <- rpois(n, lambda = exp(0.5 + 0.3 * A + 0.5 * W$W2))
+  Qn <- est_Q(
+    Y = Y, A = A, W = W, delta = 0.5, fit_type = "glm",
+    scale_outcome = FALSE
+  )
+
+  # predictions match a linear model on Y, re-scaled to the unit interval
+  fit <- glm(Y ~ ., family = gaussian(), data = data.frame(Y, A, W))
+  pred <- predict(fit, data.frame(A = A + 0.5, W), type = "response")
+  expect_equal(
+    Qn$upshift, unname(pmin(pmax((pred - min(Y)) / (max(Y) - min(Y)), 0), 1))
+  )
+  expect_true(all(Qn$noshift > 0 & Qn$noshift < 1))
+})

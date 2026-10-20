@@ -7,6 +7,13 @@ As of October 2026:
 * Added `Additional_repositories` to the `DESCRIPTION`, pointing to the
   tlverse r-universe, from which the `sl3` package (in `Enhances`) may be
   installed.
+* A new argument `scale_outcome` has been added to `est_Q()` (and may be passed
+  through `Q_fit_args` in `txshift()`). When `FALSE`, the outcome regression is
+  estimated on the original scale of the outcome (e.g., for count outcomes),
+  with its predictions subsequently scaled to the unit interval for targeting.
+  The default (`TRUE`) preserves the prior behavior. The targeting step is
+  unchanged, using a logistic fluctuation model on the scaled outcome.
+  Based on a contribution by @Lauren-EylerDang (#70, #71).
 
 As of October 2023:
 * A new argument `bound` has been added to `est_g_cens()` to specify the lower
